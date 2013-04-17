@@ -39,7 +39,7 @@ Scenario.defineCommand("talk", {
 		state.textSpeed = textSpeed;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
-		var textAreaWidth = GetScreenWidth() - 10;
+		var textAreaWidth = GetScreenWidth() - 20;
 		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = textBoxFont.wordWrapString(arguments[i], lineWidth);
