@@ -3,11 +3,11 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("lib/Scenario.js");
-
 RequireScript("Core/Threads.js");
 
-var textBoxFont = LoadFont("TextBoxFont.rfn");
+RequireScript("lib/Scenario.js");
+
+var textBoxFont = LoadFont("UITextFont.rfn");
 
 Scenario.defineCommand("fadeBGM", {
 	start: function(sceneState, state, volume, duration) {
@@ -39,7 +39,7 @@ Scenario.defineCommand("talk", {
 		state.textSpeed = textSpeed;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
-		var textAreaWidth = GetScreenWidth() - 20;
+		var textAreaWidth = GetScreenWidth() - 10;
 		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = textBoxFont.wordWrapString(arguments[i], lineWidth);
@@ -58,13 +58,15 @@ Scenario.defineCommand("talk", {
 		state.numLinesToDraw = 0;
 		state.topLine = 0;
 		state.lineToReveal = 0;
-		state.textSurface = CreateSurface(textAreaWidth, 54, CreateColor(0, 0, 0, 0));
+		state.textSurface = CreateSurface(textAreaWidth, textBoxFont.getHeight() * 3, CreateColor(0, 0, 0, 0));
 		state.mode = "fadein";
 		return true;
 	},
 	render: function(sceneState, state) {
-		var boxY = GetScreenHeight() - (60 * state.boxVisibility);
-		Rectangle(0, boxY, GetScreenWidth(), 60, CreateColor(0, 0, 0, 192 * state.boxVisibility));
+		var lineHeight = textBoxFont.getHeight();
+		var boxHeight = lineHeight * 3 + 10;
+		var boxY = GetScreenHeight() - (boxHeight * state.boxVisibility);
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.boxVisibility));
 		state.textSurface.setBlendMode(REPLACE);
 		state.textSurface.rectangle(0, 0, state.textSurface.width, state.textSurface.height, CreateColor(0, 0, 0, 0));
 		state.textSurface.setBlendMode(BLEND);
@@ -78,7 +80,7 @@ Scenario.defineCommand("talk", {
 		textAreaWidth -= textX;
 		for (var iLine = Math.min(state.lineToReveal - state.topLine + 1, lineCount - state.topLine, 3) - 1; iLine >= 0; --iLine) {
 			var trueLine = state.topLine + iLine;
-			var textY = (iLine * 16) - (state.scrollOffset * 16) - 1;
+			var textY = (iLine * lineHeight) - (state.scrollOffset * lineHeight) - 1;
 			var lineVisibility = iLine == 0 ? 1.0 - state.scrollOffset : 1.0;
 			if (state.speakerName != null && state.isNameShown && state.currentPage == 0 && trueLine == 0) {
 				textBoxFont.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
@@ -95,14 +97,14 @@ Scenario.defineCommand("talk", {
 				if (state.lineToReveal == trueLine) {
 					var shownArea = textAreaWidth * state.lineVisibility;
 					state.textSurface.setBlendMode(SUBTRACT);
-					state.textSurface.gradientRectangle((textX - 20) + shownArea, textY, 21, 21, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * state.boxVisibility), CreateColor(0, 0, 0, 0));
+					state.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * state.boxVisibility), CreateColor(0, 0, 0, 0));
 					state.textSurface.setBlendMode(REPLACE);
-					state.textSurface.rectangle((textX - 20) + shownArea + 20, textY, textAreaWidth - shownArea, 21, CreateColor(0, 0, 0, 0));
+					state.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight, CreateColor(0, 0, 0, 0));
 					state.textSurface.setBlendMode(BLEND);
 				}
 			}
 		}
-		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 3);
+		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 7);
 	},
 	update: function(sceneState, state) {
 		switch (state.mode) {
