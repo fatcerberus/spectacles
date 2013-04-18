@@ -9,10 +9,11 @@
 			.talk("maggie", 2.0,
 				"What's a diet? Isn't that that thing where you stop eating for like 2 seconds and starve to death? Why would I want to do that?!",
 				"You know what, screw it, I'm just going to eat you. You're nutritious, right?")
-			.playSound("Munch.flac")
+			.playSound("Munch.wav")
 			.pause(1000)
 			.talk("maggie", 2.0, "Tastes like chicken!")
 			.talk("Scott", 2.0, "...and there you have it, the resident hunger-pig just ate my girlfriend. Why does everyone suck but me?!")
+			.talk("Bruce", 2.0, "Actually, you kind of suck too, Scott...")
 			.pause(2000)
 			.overrideBGM("Bruce tells his story")
 			.pause(1000)
