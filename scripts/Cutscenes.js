@@ -39,7 +39,7 @@ Scenario.defineCommand("talk", {
 		state.textSpeed = textSpeed;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
-		var textAreaWidth = GetScreenWidth() - 10;
+		var textAreaWidth = GetScreenWidth() - 20;
 		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = textBoxFont.wordWrapString(arguments[i], lineWidth);
@@ -48,7 +48,6 @@ Scenario.defineCommand("talk", {
 				state.text[page].push(wrappedText[iLine]);
 			}
 		}
-		state.isNameShown = state.speakerName != sceneState.lastSpeaker;
 		state.boxVisibility = 0.0;
 		state.textVisibility = 1.0;
 		state.nameVisibility = 0.0;
@@ -97,7 +96,7 @@ Scenario.defineCommand("talk", {
 					state.textSurface.setBlendMode(BLEND);
 				}
 			}
-			if (state.speakerName != null && state.isNameShown && state.currentPage == 0 && trueLine == 0) {
+			if (state.speakerName != null && state.currentPage == 0 && trueLine == 0) {
 				textBoxFont.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
 				state.textSurface.drawText(textBoxFont, 1, textY + 1, state.speakerText);
 				textBoxFont.setColorMask(CreateColor(255, 255, 128, state.textVisibility * state.nameVisibility * 255));
@@ -180,9 +179,7 @@ Scenario.defineCommand("talk", {
 				}
 				break;
 			case "finish":
-				sceneState.lastSpeaker = state.speakerName;
 				return false;
-				break;
 		}
 		return true;
 	},
