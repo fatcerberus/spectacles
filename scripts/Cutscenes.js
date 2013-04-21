@@ -35,7 +35,7 @@ Scenario.defineCommand("resetBGM", {
 Scenario.defineCommand("talk", {
 	start: function(sceneState, state, speaker, textSpeed /*...pages*/) {
 		state.speakerName = speaker;
-		state.speakerText = state.speakerName != null ? state.speakerName + ":" : null;
+		state.speakerText = state.speakerName != null ? state.speakerName.toUpperCase() + ":" : null;
 		state.textSpeed = textSpeed;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
@@ -82,12 +82,6 @@ Scenario.defineCommand("talk", {
 			var trueLine = state.topLine + iLine;
 			var textY = (iLine * lineHeight) - (state.scrollOffset * lineHeight) - 1;
 			var lineVisibility = iLine == 0 ? 1.0 - state.scrollOffset : 1.0;
-			if (state.speakerName != null && state.isNameShown && state.currentPage == 0 && trueLine == 0) {
-				textBoxFont.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
-				state.textSurface.drawText(textBoxFont, 1, textY + 1, state.speakerText);
-				textBoxFont.setColorMask(CreateColor(255, 255, 128, state.textVisibility * state.nameVisibility * 255));
-				state.textSurface.drawText(textBoxFont, 0, textY, state.speakerText);
-			}
 			if (state.lineVisibility > 0.0 || state.lineToReveal != trueLine) {
 				var lineText = state.text[state.currentPage][trueLine];
 				textBoxFont.setColorMask(CreateColor(0, 0, 0, 255 * state.textVisibility * lineVisibility));
@@ -102,6 +96,12 @@ Scenario.defineCommand("talk", {
 					state.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight, CreateColor(0, 0, 0, 0));
 					state.textSurface.setBlendMode(BLEND);
 				}
+			}
+			if (state.speakerName != null && state.isNameShown && state.currentPage == 0 && trueLine == 0) {
+				textBoxFont.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
+				state.textSurface.drawText(textBoxFont, 1, textY + 1, state.speakerText);
+				textBoxFont.setColorMask(CreateColor(255, 255, 128, state.textVisibility * state.nameVisibility * 255));
+				state.textSurface.drawText(textBoxFont, 0, textY, state.speakerText);
 			}
 		}
 		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 7);
