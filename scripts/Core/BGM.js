@@ -73,7 +73,7 @@ BGM = new (function()
 			this.stream.stop();
 		}
 		if (trackName !== null) {
-			this.stream = LoadSound("BGM/" + trackName + ".mid", true);
+			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
 			this.stream.setVolume(this.volumeFader.value * 255);
 			this.stream.play(true);
 		} else {

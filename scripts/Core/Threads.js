@@ -28,16 +28,14 @@ Threads = new (function()
 		var updateDelegate = new MultiDelegate();
 		updateDelegate.add(o, updater);
 		var renderDelegate = new MultiDelegate();
-		if (renderer !== null)
-		{
+		if (renderer !== null) {
 			renderDelegate.add(o, renderer);
 		}
 		var checkInputDelegate = new MultiDelegate();
 		if (inputHandler !== null) {
 			checkInputDelegate.add(o, inputHandler);
 		}
-		var newThread =
-		{
+		var newThread = {
 			id: this.nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
@@ -86,13 +84,11 @@ Threads = new (function()
 		var updateDelegate = new MultiDelegate();
 		updateDelegate.add(o, updater);
 		var renderDelegate = new MultiDelegate();
-		if (renderer !== null)
-		{
+		if (renderer !== null) {
 			renderDelegate.add(o, renderer);
 		}
 		var checkInputDelegate = new MultiDelegate();
-		var newThread =
-		{
+		var newThread = {
 			id: this.nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
@@ -103,7 +99,7 @@ Threads = new (function()
 		this.threads.push(newThread);
 		this.threads.sort(function(a, b) { return a.priority - b.priority; });
 		++this.nextThreadID;
-		this.waitOn(newThread.id);
+		this.waitFor(newThread.id);
 	};
 	
 	// .isRunning() method
@@ -112,14 +108,11 @@ Threads = new (function()
 	//     threadID: The ID of the thread to check.
 	this.isRunning = function(threadID)
 	{
-		if (threadID === 0)
-		{
+		if (threadID === 0) {
 			return false;
 		}
-		for (var i = 0; i < this.threads.length; ++i)
-		{
-			if (this.threads[i].id == threadID)
-			{
+		for (var i = 0; i < this.threads.length; ++i) {
+			if (this.threads[i].id == threadID) {
 				return true;
 			}
 		}
@@ -132,10 +125,8 @@ Threads = new (function()
 	//     threadID: The ID of the thread to terminate.
 	this.kill = function(threadID)
 	{
-		for (var i = 0; i < this.threads.length; ++i)
-		{
-			if (threadID == this.threads[i].id)
-			{
+		for (var i = 0; i < this.threads.length; ++i) {
+			if (threadID == this.threads[i].id) {
 				this.threads.splice(i,1);
 				--i;
 				continue;
@@ -147,8 +138,7 @@ Threads = new (function()
 	// Renders the current frame by calling all active threads' renderers.
 	this.renderAll = function()
 	{
-		for (var i = 0; i < this.threads.length; ++i)
-		{
+		for (var i = 0; i < this.threads.length; ++i) {
 			this.threads[i].renderer.invoke();
 		}
 	};
@@ -157,19 +147,16 @@ Threads = new (function()
 	// Calls all active threads' updaters to prepare for the next frame.
 	this.updateAll = function()
 	{
-		for (var i = 0; i < this.threads.length; ++i)
-		{
+		for (var i = 0; i < this.threads.length; ++i) {
 			var thread = this.threads[i];
 			thread.inputHandler.invoke();
 			var stillRunning = true;
-			if (!thread.isUpdating)
-			{
+			if (!thread.isUpdating) {
 				thread.isUpdating = true;
 				stillRunning = thread.updater.invoke();
 				thread.isUpdating = false;
 			}
-			if (!stillRunning)
-			{
+			if (!stillRunning) {
 				this.threads.splice(i, 1);
 				--i;
 				continue;
@@ -183,14 +170,12 @@ Threads = new (function()
 	//     threadID: The ID of the thread to wait for.
 	this.waitFor = function(threadID)
 	{
-		while (this.isRunning(threadID))
-		{
+		while (this.isRunning(threadID)) {
 			this.renderAll();
 			FlipScreen();
 			this.updateAll();
 		}
 	};
-	
 	
 	this.nextThreadID = 1;
 	this.threads = [];
