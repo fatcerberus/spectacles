@@ -21,15 +21,17 @@ function game()
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	BGM.track = "SpectaclesTheme";
-	// Engine.showLogo("TitleCard", 150);
+	Engine.showLogo("TitleCard", 150);
 	Threads.createEntityThread({
+		visibility: 0.0,
 		update: function() {
+			this.visibility = Math.min(this.visibility + 1.0 / Engine.frameRate, 1.0);
 			return true;
 		},
 		render: function() {
-			Rectangle(0, 0, GetScreenWidth(), GetScreenHeight(), CreateColor(128, 128, 64, 255));
+			Rectangle(0, 0, GetScreenWidth(), GetScreenHeight(), CreateColor(128, 128, 64, this.visibility * 255));
 		}
 	});
-	var choice = new MenuStrip("Spectacles", [ "New Game", "Continue" ]).open();
+	var choice = new MenuStrip("S:BS Tech Demo", [ "Sample Cutscene", "Sample Battle" ]).open();
 	MapEngine("main.rmp", Engine.frameRate);
 }
