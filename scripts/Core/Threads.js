@@ -31,15 +31,15 @@ Threads = new (function()
 		if (renderer !== null) {
 			renderDelegate.add(o, renderer);
 		}
-		var checkInputDelegate = new MultiDelegate();
+		var getInputDelegate = new MultiDelegate();
 		if (inputHandler !== null) {
-			checkInputDelegate.add(o, inputHandler);
+			getInputDelegate.add(o, inputHandler);
 		}
 		var newThread = {
 			id: this.nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
-			inputHandler: checkInputDelegate,
+			inputHandler: getInputDelegate,
 			priority: priority,
 			isUpdating: false
 		};
@@ -53,7 +53,7 @@ Threads = new (function()
 	// Creates a thread for a specified entity.
 	// Arguments:
 	//     entity:   The entity for which to create the thread. This should be an object having .update() and
-	//               optionally, .render() and .checkInput() methods. Each of these will be called once
+	//               optionally, .render() and .getInput() methods. Each of these will be called once
 	//               per frame until the thread either finishes (entity.update() returns false) or is terminated.
 	//     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
 	//               later in a frame than lower-priority ones.
@@ -64,7 +64,7 @@ Threads = new (function()
 		
 		var updater = entity.update;
 		var renderer = (typeof entity.render === 'function') ? entity.render : null;
-		var inputHandler = (typeof entity.checkInput === 'function') ? entity.checkInput : null;
+		var inputHandler = (typeof entity.getInput === 'function') ? entity.getInput : null;
 		return this.create(entity, updater, renderer, inputHandler, priority);
 	};
 	
@@ -87,12 +87,12 @@ Threads = new (function()
 		if (renderer !== null) {
 			renderDelegate.add(o, renderer);
 		}
-		var checkInputDelegate = new MultiDelegate();
+		var getInputDelegate = new MultiDelegate();
 		var newThread = {
 			id: this.nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
-			inputHandler: checkInputDelegate,
+			inputHandler: getInputDelegate,
 			priority: priority,
 			isUpdating: false
 		};
