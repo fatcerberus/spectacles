@@ -52,7 +52,7 @@ function MenuStrip(title, items)
 	{
 		switch (this.mode) {
 			case "change-item":
-				this.scrollProgress = Math.min(this.scrollProgress + 2.5 / Engine.frameRate, 1.0);
+				this.scrollProgress = Math.min(this.scrollProgress + 5.0 / Engine.frameRate, 1.0);
 				if (this.scrollProgress >= 1.0) {
 					var newSelection = this.selectedItem + this.scrollDirection;
 					if (newSelection < 0) {
@@ -107,21 +107,21 @@ function MenuStrip(title, items)
 	this.title = title != null ? title : "";
 	this.menuItems = items;
 	this.selectedItem = 0;
-	this.visibility = 0.0;
-	this.scrollDirection = 0;
-	this.scrollProgress = 0.0;
 	this.font = LoadFont("UITextFont.rfn");
 	var carouselWidth = 0;
 	for (i = 0; i < this.menuItems.length; ++i) {
 		carouselWidth = Math.max(this.font.getStringWidth(this.menuItems[i]) + 10, carouselWidth);
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
-	this.mode = "open";
-	var menuThread = Threads.createEntityThread(this);
-	Threads.waitFor(menuThread);
-	return this.chosenItem === null ? null : this.menuItems[this.chosenItem];
 }
 
 MenuStrip.prototype.open = function()
 {
+	this.visibility = 0.0;
+	this.scrollDirection = 0;
+	this.scrollProgress = 0.0;
+	this.mode = "open";
+	var menuThread = Threads.createEntityThread(this);
+	Threads.waitFor(menuThread);
+	return this.chosenItem === null ? null : this.menuItems[this.chosenItem];
 };
