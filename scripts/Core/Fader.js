@@ -17,7 +17,7 @@ function Fader(initialValue)
 	// Adjusts the fader's value over a specified time period.
 	// Arguments:
 	//     targetValue: The target value for the fader.
-	//     duration:    The number of frames over which to perform the adjustment.
+	//     duration:    The amount of time over which to perform the adjustment, in seconds.
 	this.adjust = function(targetValue, duration)
 	{
 		this.targetValue = targetValue;
@@ -35,7 +35,7 @@ function Fader(initialValue)
 	// Updates the fader for the next frame.
 	this.update = function()
 	{
-		this.currentValue += this.increment;
+		this.currentValue += this.increment / Engine.frameRate;
 		if ((this.currentValue > this.targetValue && this.increment > 0.0)
 		    || (this.currentValue < this.targetValue && this.increment < 0.0))
 		{

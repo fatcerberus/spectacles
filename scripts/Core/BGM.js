@@ -33,7 +33,7 @@ BGM = new (function()
 	//                   Defaults to 60 (1 second).
 	this.adjustVolume = function(newVolume, fadeDuration)
 	{
-		if (fadeDuration === undefined) { fadeDuration = 60; }
+		if (fadeDuration === undefined) { fadeDuration = 1.0; }
 		
 		newVolume = newVolume < 0.0 ? 0.0 : newVolume;
 		newVolume = newVolume > 1.0 ? 1.0 : newVolume;

@@ -16,7 +16,7 @@ RequireScript("Game.js");
 
 var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TITLE_CARD = true;
-var DBG_USE_FAST_TEXTBOXES = false;
+var DBG_USE_FAST_TEXTBOXES = true;
 
 function game()
 {
