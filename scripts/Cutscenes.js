@@ -37,6 +37,7 @@ Scenario.defineCommand("talk", {
 		state.speakerName = speaker;
 		state.speakerText = state.speakerName != null ? state.speakerName.toUpperCase() + ":" : null;
 		state.textSpeed = textSpeed;
+		if (DBG_USE_FAST_TEXTBOXES) state.textSpeed = 10.0;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
 		var textAreaWidth = GetScreenWidth() - 20;

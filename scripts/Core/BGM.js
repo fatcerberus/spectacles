@@ -75,7 +75,7 @@ BGM = new (function()
 		if (trackName !== null) {
 			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
 			this.stream.setVolume(this.volumeFader.value * 255);
-			this.stream.play(true);
+			if (!DBG_DISABLE_BGM) this.stream.play(true);
 		} else {
 			this.stream = null;
 		}
