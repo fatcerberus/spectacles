@@ -6,7 +6,7 @@
 RequireScript("Core/Fader.js");
 RequireScript("Core/Threads.js");
 
-function MenuStrip(title, items)
+function MenuStrip(title, isCancelable, items)
 {
 	this.render = function()
 	{
@@ -92,7 +92,7 @@ function MenuStrip(title, items)
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			this.chosenItem = this.selectedItem;
 			this.mode = "close";
-		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B))) {
+		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) && this.isCancelable) {
 			this.chosenItem = null;
 			this.mode = "close";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
@@ -105,6 +105,7 @@ function MenuStrip(title, items)
 	};
 	
 	this.title = title != null ? title : "";
+	this.isCancelable = isCancelable;
 	this.menuItems = items;
 	this.selectedItem = 0;
 	this.font = LoadFont("UITextFont.rfn");
