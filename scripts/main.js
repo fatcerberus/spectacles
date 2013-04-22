@@ -8,6 +8,7 @@ RequireScript("lib/tween.js");
 
 RequireScript("Core/Engine.js");
 RequireScript("Core/BGM.js");
+RequireScript("TitleScreen.js");
 RequireScript("Session.js");
 /*ALPHA*/ RequireScript("Cutscenes.js");
 /*ALPHA*/ RequireScript("MenuStrip.js");
@@ -22,16 +23,6 @@ function game()
 	SetRenderScript("Threads.renderAll();");
 	BGM.track = "SpectaclesTheme";
 	Engine.showLogo("TitleCard", 150);
-	Threads.createEntityThread({
-		visibility: 0.0,
-		update: function() {
-			this.visibility = Math.min(this.visibility + 1.0 / Engine.frameRate, 1.0);
-			return true;
-		},
-		render: function() {
-			Rectangle(0, 0, GetScreenWidth(), GetScreenHeight(), CreateColor(128, 128, 64, this.visibility * 255));
-		}
-	});
-	var choice = new MenuStrip("S:BS Tech Demo", [ "Sample Cutscene", "Sample Battle" ]).open();
+	var choice = new TitleScreen("SpectaclesTheme").show();
 	MapEngine("main.rmp", Engine.frameRate);
 }
