@@ -48,5 +48,7 @@ TitleScreen.prototype.show = function()
 	this.fader.adjust(0.0, 2.0 * Engine.frameRate);
 	Threads.waitFor(thread);
 	this.fader.dispose();
+	BGM.track = null;
+	BGM.volume = 1.0;
 	return choice;
 };

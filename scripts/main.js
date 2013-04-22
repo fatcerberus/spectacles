@@ -11,7 +11,6 @@ RequireScript("Core/BGM.js");
 RequireScript("TitleScreen.js");
 RequireScript("Session.js");
 /*ALPHA*/ RequireScript("Cutscenes.js");
-/*ALPHA*/ RequireScript("MenuStrip.js");
 
 RequireScript("Game.js");
 

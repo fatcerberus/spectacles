@@ -341,11 +341,11 @@ Scenario.defineCommand("facePerson", {
 
 Scenario.defineCommand("fadeTo", {
 	start: function(scene, state, color, duration) {
-		if (duration === undefined) { duration = 250; }
+		if (duration === undefined) { duration = 0.25; }
 		state.color = color;
 		state.duration = duration;
 		if (state.duration <= 0) scene.fadeMask = color;
-		var multiplier = state.duration > 0 ? 1000 / state.duration : 0;
+		var multiplier = state.duration > 0 ? 1.0 / state.duration : 0;
 		var fadeFromRGBA = [ scene.fadeMask.red, scene.fadeMask.green, scene.fadeMask.blue, scene.fadeMask.alpha ];
 		var fadeToRGBA = [ state.color.red, state.color.green, state.color.blue, state.color.alpha ];
 		state.interval = [];
@@ -376,57 +376,54 @@ Scenario.defineCommand("fadeTo", {
 
 Scenario.defineCommand("focusOnPerson", {
 	start: function(scene, state, person, duration) {
-		if (duration === undefined) { duration = 250; }
+		if (duration === undefined) { duration = 0.25; }
 		DetachCamera();
-		state.xTarget = GetPersonX(person);
-		state.yTarget = GetPersonY(person);
-		state.x = duration > 0 ? GetCameraX() : state.xTarget;
-		state.y = duration > 0 ? GetCameraY() : state.yTarget;
-		var multiplier = duration > 0 ? 1000 / duration : 0;
-		state.xInterval = multiplier * ((state.xTarget - state.x) / scene.frameRate);
-		state.yInterval = multiplier * ((state.yTarget - state.y) / scene.frameRate);
+		state.targetXY = [ GetPersonX(person), GetPersonY(person) ];
+		state.currentXY = duration > 0 ? [ GetCameraX(), GetCameraY() ] : state.targetXY;
+		var multiplier = duration > 0 ? 1.0 / duration : 0.0;
+		for (var i = 0; i < state.targetXY.length; ++i) {
+			state.intervalXY[i] = multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
+		}
 	},
 	update: function(scene, state) {
-		state.x += state.xInterval;
-		if (state.x > state.xTarget && state.xInterval > 0) {
-			state.x = state.xTarget;
-		} else if (state.x < state.xTarget && state.yInterval < 0.0) {
-			state.x = state.xTarget;
+		for (var i = 0; i < state.targetXY.length; ++i) {
+			state.currentXY[i] += state.intervalXY[i];
+			if (state.currentXY[i] > state.targetXY[i] && state.intervalXY[i] > 0.0) {
+				state.currentXY[i] = state.targetXY[i];
+			} else if (state.currentXY[i] < state.targetXY[i] && state.intervalXY[i] < 0.0) {
+				state.currentXY[i] = state.targetXY[i];
+			}
 		}
-		state.y += state.yInterval;
-		if (state.y > state.yTarget && state.yInterval > 0) {
-			state.y = state.yTarget;
-		} else if (state.y < state.yTarget && state.yInterval < 0.0) {
-			state.y = state.yTarget;
-		}
-		SetCameraX(state.x);
-		SetCameraY(state.y);
-		return state.x != state.xTarget || state.y != state.yTarget;
+		SetCameraX(state.currentXY[0]);
+		SetCameraY(state.currentXY[1]);
+		return state.currentXY[0] != state.targetXY[0] || state.currentXY[1] != state.targetXY[1];
 	}
 });
 
 Scenario.defineCommand("followPerson", {
 	start: function(scene, state, person) {
-		state.Person = person;
-		state.XTarget = GetPersonX(state.Person);
-		state.YTarget = GetPersonY(state.Person);
-		state.X = GetCameraX();
-		state.Y = GetCameraY();
-		var PanDuration = 250;
-		var Multiplier = 1000 / PanDuration;
-		state.XInterval = Multiplier * ((state.XTarget - state.X) / scene.frameRate);
-		state.YInterval = Multiplier * ((state.YTarget - state.Y) / scene.frameRate);
+		state.person = person;
+		state.targetXY = [ GetPersonX(state.person), GetPersonY(state.person) ];
+		state.currentXY = [ GetCameraX(), GetCameraY() ];
+		var panDuration = 0.25;
+		var multiplier = 1.0 / panDuration;
+		for (var i = 0; i < state.targetXY.length; ++i) {
+			state.intervalXY[i] =  multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
+		}
 	},
 	update: function(scene, state) {
-		state.X += state.XInterval;
-		if (state.X > state.XTarget && state.XInterval > 0) state.X = state.XTarget;
-			else if (state.X < state.XTarget && state.XInterval < 0) state.X = state.XTarget;
-		state.Y += state.YInterval;
-		if (state.Y > state.YTarget && state.YInterval > 0) state.Y = state.YTarget;
-			else if (state.Y < state.YTarget && state.YInterval < 0) state.Y = state.YTarget;
-		SetCameraX(state.X); SetCameraY(state.Y);
-		if (state.X == state.XTarget && state.Y == state.YTarget) {
-			AttachCamera(state.Person);
+		for (var i = 0; i < state.targetXY.length; ++i) {
+			state.currentXY[i] += state.intervalXY[i];
+			if (state.currentXY[i] > state.targetXY[i] && state.intervalXY[i] > 0.0) {
+				state.currentXY[i] = state.targetXY[i];
+			} else if (state.currentXY[i] < state.targetXY[i] && state.intervalXY[i] < 0.0) {
+				state.currentXY[i] = state.targetXY[i];
+			}
+		}
+		SetCameraX(state.currentXY[0]);
+		SetCameraY(state.currentXY[1]);
+		if (state.currentXY[0] == state.targetXY[0] && state.currentXY[1] == state.targetXY[1]) {
+			AttachCamera(state.person);
 			return false;
 		}
 		return true;
@@ -517,11 +514,11 @@ Scenario.defineCommand("movePerson", {
 
 Scenario.defineCommand("panTo", {
 	start: function(scene, state, x, y, duration) {
-		if (duration === undefined) { duration = 250; }
+		if (duration === undefined) { duration = 0.25; }
 		state.targetXY = [ x, y ];
 		DetachCamera();
 		state.currentXY = duration != 0 ? [ GetCameraX(), GetCameraY() ] : state.targetXY;
-		var multiplier = 1000 / duration;
+		var multiplier = 1.0 / duration;
 		state.intervalXY = [];
 		for (var i = 0; i < state.targetXY.length; ++i) {
 			state.intervalXY[i] = multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
@@ -545,7 +542,7 @@ Scenario.defineCommand("panTo", {
 
 Scenario.defineCommand("pause", {
 	start: function(scene, state, duration) {
-		state.endTime = duration + GetTime();
+		state.endTime = GetTime() + duration * 1000;
 	},
 	update: function(scene, state) {
 		return GetTime() < state.endTime;
