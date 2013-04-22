@@ -43,16 +43,16 @@ function MenuStrip(title, isCancelable, items)
 		}
 		carouselX = GetScreenWidth() - 10 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
 		this.carouselSurface.blit(carouselX, menuY);
-		this.font.setColorMask(CreateColor(64, 64, 64, this.visibility * 255));
+		this.font.setColorMask(CreateColor(128, 128, 128, this.visibility * 255));
 		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 7, "<");
 		if (this.scrollDirection == -1) {
-			this.font.setColorMask(CreateColor(255, 255, 255, this.visibility * (1.0 - this.scrollProgress) * 255));
+			this.font.setColorMask(CreateColor(255, 192, 0, this.visibility * (1.0 - this.scrollProgress) * 255));
 			this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 7, "<");
 		}
-		this.font.setColorMask(CreateColor(64, 64, 64, this.visibility * 255));
+		this.font.setColorMask(CreateColor(128, 128, 128, this.visibility * 255));
 		this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 7, ">");
 		if (this.scrollDirection == 1) {
-			this.font.setColorMask(CreateColor(255, 255, 255, this.visibility * (1.0 - this.scrollProgress) * 255));
+			this.font.setColorMask(CreateColor(255, 192, 0, this.visibility * (1.0 - this.scrollProgress) * 255));
 			this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 7, ">");
 		}
 	};

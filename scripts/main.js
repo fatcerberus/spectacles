@@ -23,5 +23,7 @@ function game()
 	BGM.track = "SpectaclesTheme";
 	Engine.showLogo("TitleCard", 150);
 	var choice = new TitleScreen("SpectaclesTheme").show();
-	MapEngine("main.rmp", Engine.frameRate);
+	if (choice == "Start Demo") {
+		MapEngine("main.rmp", Engine.frameRate);
+	}
 }
