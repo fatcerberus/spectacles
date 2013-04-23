@@ -6,10 +6,16 @@
 RequireScript("Core/Fader.js");
 RequireScript("Core/Threads.js");
 
+// MenuStrip() constructor
+// Creates an object representing a menu strip.
+// Arguments:
+//     title:        The menu title, which is displayed on the left side of the strip. Specify null or an empty string
+//                   for an untitled menu.
+//     isCancelable: true to allow the menu strip to be canceled without making a selection; false otherwise.
+//     items:        A list of the menu items to be shown in the menu.
 function MenuStrip(title, isCancelable, items)
 {
-	this.render = function()
-	{
+	this.render = function() {
 		var height = this.font.getHeight() + 10;
 		var menuY = GetScreenHeight() - height * this.visibility;
 		var normalStripColor = CreateColor(0, 0, 0, this.visibility * 192);
@@ -56,9 +62,7 @@ function MenuStrip(title, isCancelable, items)
 			this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 7, ">");
 		}
 	};
-	
-	this.update = function()
-	{
+	this.update = function() {
 		switch (this.mode) {
 			case "open":
 				this.visibility = Math.min(this.visibility + 2.5 / Engine.frameRate, 1.0);
@@ -99,9 +103,7 @@ function MenuStrip(title, isCancelable, items)
 		}
 		return true;
 	};
-	
-	this.getInput = function()
-	{
+	this.getInput = function() {
 		if (this.mode != "idle") {
 			return;
 		}
@@ -132,6 +134,8 @@ function MenuStrip(title, isCancelable, items)
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 }
 
+// .open() method
+// Opens the menu strip to allow the player to choose a menu item.
 MenuStrip.prototype.open = function()
 {
 	this.visibility = 0.0;
