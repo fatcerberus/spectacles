@@ -38,8 +38,8 @@ Game = {
 				return 0;
 			}
 		},
-		enemyHP: function(unit) {
-			return unit.stats['VIT'].value * 100;
+		enemyHP: function(enemyUnit) {
+			return enemyUnit.stats['VIT'].value * 100;
 		},
 		partyMemberHP: function(partyMember) {
 			return partyMember.stats['VIT'].value * 10;
@@ -78,20 +78,49 @@ Game = {
 		'Sword Slash': {
 			weaponType: "Sword",
 			category: "Attack",
-			target: "one",
-			moves: [
+			targetType: "one",
+			actions: [
 				{
-					subject: "target",
+					rank: 2,
 					effects: [
 						{
+							targetHint: "selected",
 							type: "Damage",
-							category: "Physical",
+							category: "Sword",
 							power: 25
 						}
 					]
 				}
 			]
-		}
+		},
+		'Charge Slash': {
+			weaponType: "Sword",
+			category: "Attack",
+			targetType: "one",
+			actions: [
+				{
+					rank: 3,
+					targetHint: "user",
+					effects: [
+						{
+							type: "AddStatus",
+							status: "Off-Guard"
+						}
+					]
+				},
+				{
+					rank: 2,
+					targetHint: "selected",
+					effects: [
+						{
+							type: "Damage",
+							category: "Sword",
+							power: 50
+						}
+					]
+				}
+			]
+		},
 	},
 	
 	weapons: {
@@ -119,7 +148,11 @@ Game = {
 			},
 			weapon: "Temple Sword",
 			strategize: function(me, turnPreview) {
-				return "Sword Slash";
+				return {
+					type: "technique",
+					technique: "Charge Slash",
+					targets: [],
+				};
 			}
 		}
 	},

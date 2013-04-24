@@ -7,8 +7,8 @@
 // Provides the implementation for battle effects.
 BattleEffects = new (function()
 {
-	// .physicalDamage() function
-	// Returns a battle effect that inflicts physical damage on the target.
+	// .damage() function
+	// Returns a battle effect that inflicts damage on the target.
 	// Arguments:
 	//     power: The power of the effect, between 0 and 100.
 	this.damage = function(type, power)

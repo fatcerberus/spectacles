@@ -1,7 +1,7 @@
 /**
  * Scenario 3.1 for Sphere - © 2008-2013 Bruce E. Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
- * timelines and cooperative threading
+ * timelines and cooperative threading.
 **/
 
 var Scenario = Scenario || {};

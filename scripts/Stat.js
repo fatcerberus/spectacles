@@ -16,7 +16,7 @@ RequireScript("lib/MultiDelegate.js");
 //     growthRate:   The growth rate, which determines how fast the stat improves.
 function Stat(baseValue, initialLevel, enableGrowth, growthRate)
 {
-	if (initialGrowthLevel === undefined) { initialGrowthLevel = 1; }
+	if (initialLevel === undefined) { initialLevel = 1; }
 	if (enableGrowth === undefined) { enableGrowth = true; }
 	if (growthRate === undefined) { growthRate = 1.0; }
 	
@@ -26,7 +26,7 @@ function Stat(baseValue, initialLevel, enableGrowth, growthRate)
 		var requiredExperience = Math.ceil(level > 1 ? Math.pow(level, 3) / growthRate : 0);
 		this.levelUpExperience[level] = requiredExperience;
 	}
-	this.experiencePoints = this.levelUpExperience[initialGrowthLevel];
+	this.experiencePoints = this.levelUpExperience[initialLevel];
 	this.isGrowthEnabled = enableGrowth;
 	
 	// .levelUpEvent event
@@ -44,9 +44,9 @@ function Stat(baseValue, initialLevel, enableGrowth, growthRate)
 	};
 	this.experience setter = function(value)
 	{
-		var previousLevel = this.growthLevel;
+		var previousLevel = this.level;
 		this.experiencePoints = Math.min(Math.max(value, 0), this.levelUpExperience[100]);
-		var newLevel = this.growthLevel;
+		var newLevel = this.level;
 		for (var i = 0; i < newLevel - previousLevel; ++i) {
 			this.levelUpEvent.invoke(this, previousLevel + 1 + i);
 		}
@@ -69,6 +69,6 @@ function Stat(baseValue, initialLevel, enableGrowth, growthRate)
 	// Gets the stat's current value.
 	this.value getter = function()
 	{
-		return Math.max(Math.floor(this.baseValue * this.growthLevel / 100), 1);
+		return Math.max(Math.floor(this.baseValue * this.level / 100), 1);
 	};
 }

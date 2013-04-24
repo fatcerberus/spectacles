@@ -1,6 +1,6 @@
 /**
- * MultiDelegate.js - © 2012-2013 Bruce E. Pascoe
- * A simple multicast delegate implementation for JavaScript
+ * MultiDelegate for JavaScript - (c) 2012-2013 Bruce Pascoe
+ * A simple multicast delegate implementation for JavaScript.
 **/
 
 var MultiDelegate = MultiDelegate || {};

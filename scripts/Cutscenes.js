@@ -4,10 +4,17 @@
 ***/
 
 RequireScript("Core/Threads.js");
+RequireScript("Battle.js");
 
 RequireScript("lib/Scenario.js");
 
 var textBoxFont = LoadFont("UITextFont.rfn");
+
+Scenario.defineCommand("battle", {
+	start: function(sceneState, state, setup) {
+		new Battle(null, setup).run();
+	}
+});
 
 Scenario.defineCommand("fadeBGM", {
 	start: function(sceneState, state, volume, duration) {

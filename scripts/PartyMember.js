@@ -15,28 +15,7 @@ RequireScript("Game.js");
 //                  Defaults to 1.
 function PartyMember(character, battleLevel)
 {
-	// .learnSkill method
-	// Grants the party member the ability to use a technique.
-	// Arguments:
-	//     technique: The technique to learn.
-	this.learnSkill = function(technique)
-	{
-		this.skills.push(new Skill(technique));
-	};
-	
-	// .battleLevel property
-	// Gets the party member's overall battle level.
-	this.battleLevel getter = function()
-	{
-		var sum = 0;
-		for (var name in this.stats) {
-			sum += this.stats[name].level;
-		}
-		return Math.floor(sum / this.stats.length);
-	};
-	
-	
-	if (battleLevel === undefined) battleLevel = 1;
+	if (battleLevel === undefined) { battleLevel = 1; }
 	
 	this.character = character;
 	this.name = character.name;
@@ -50,3 +29,23 @@ function PartyMember(character, battleLevel)
 		this.learnSkill(this.character.techniques[i]);
 	}
 }
+
+// .battleLevel property
+// Gets the party member's overall battle level.
+PartyMember.prototype.battleLevel getter = function()
+{
+	var sum = 0;
+	for (var name in this.stats) {
+		sum += this.stats[name].level;
+	}
+	return Math.floor(sum / this.stats.length);
+};
+
+// .learnSkill method
+// Grants the party member the ability to use a technique.
+// Arguments:
+//     technique: The technique to learn.
+PartyMember.prototype.learnSkill = function(technique)
+{
+	this.skills.push(new Skill(technique));
+};

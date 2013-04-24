@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.0 for Sphere - (c)2013 Bruce Pascoe
+ * kh2Bar 1.0.1 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -58,35 +58,35 @@ kh2Bar.prototype.reading setter = function(value)
 // Renders the kh2Bar. This should be called once per frame.
 kh2Bar.prototype.render = function()
 {
-	var totalReserves = Math.ceil(this.maxValue / kh2Bar.SECTOR_SIZE - 1);
-	var reservesLeft = Math.ceil(this.value / kh2Bar.SECTOR_SIZE - 1);
-	var reservesDamaged = Math.ceil((this.damageAmount + this.value) / kh2Bar.SECTOR_SIZE - 1);
-	var barInUse = kh2Bar.SECTOR_SIZE;
-	if (reservesLeft == totalReserves) {
-		barInUse = this.maxValue % kh2Bar.SECTOR_SIZE;
-		if (barInUse == 0) {
-			barInUse = kh2Bar.SECTOR_SIZE;
+	var numReserves = Math.ceil(this.maxValue / kh2Bar.SECTOR_SIZE - 1);
+	var numReservesFilled = Math.ceil(this.value / kh2Bar.SECTOR_SIZE - 1);
+	var numReservesDamaged = Math.ceil((this.damageAmount + this.value) / kh2Bar.SECTOR_SIZE - 1);
+	var barWidthInUse = kh2Bar.SECTOR_SIZE;
+	if (numReservesFilled == numReserves) {
+		barWidthInUse = this.maxValue % kh2Bar.SECTOR_SIZE;
+		if (barWidthInUse == 0) {
+			barWidthInUse = kh2Bar.SECTOR_SIZE;
 		}
 	}
 	var barFilled = this.value % kh2Bar.SECTOR_SIZE;
 	if (barFilled == 0 && this.value > 0) {
-		barFilled = barInUse;
+		barFilled = barWidthInUse;
 	}
 	var barDamaged = Math.min(this.damageAmount, kh2Bar.SECTOR_SIZE - barFilled);
 	var usageColor = BlendColorsWeighted(kh2Bar.BACK_COLOR, kh2Bar.DAMAGE_COLOR, this.damageFade, 1.0 - this.damageFade);
 	Rectangle(this.x, this.y, kh2Bar.SECTOR_SIZE + 2, 16, kh2Bar.BORDER_COLOR);
 	this.drawSegment(this.x + 1, this.y + 1, barFilled, 16 - 2, kh2Bar.BAR_COLOR);
 	this.drawSegment(this.x + 1 + barFilled, this.y + 1, barDamaged, 16 - 2, usageColor);
-	this.drawSegment(this.x + 1 + barFilled + barDamaged, this.y + 1, barInUse - barFilled - barDamaged, 16 - 2, kh2Bar.BACK_COLOR);
+	this.drawSegment(this.x + 1 + barFilled + barDamaged, this.y + 1, barWidthInUse - barFilled - barDamaged, 16 - 2, kh2Bar.BACK_COLOR);
 	var slotXSize = 7;
 	var slotYSize = 7;
 	var slotX;
 	var slotY = this.y + 16 - slotYSize;
-	for (i = 0; i < totalReserves; ++i) {
+	for (i = 0; i < numReserves; ++i) {
 		var color;
-		if (i < reservesLeft) {
+		if (i < numReservesFilled) {
 			color = kh2Bar.BAR_COLOR;
-		} else if (i < reservesDamaged) {
+		} else if (i < numReservesDamaged) {
 			color = usageColor;
 		} else {
 			color = kh2Bar.BACK_COLOR;

@@ -1,7 +1,6 @@
-/***
- * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2013 Power-Command
-***/
+/**
+ * Spectacles: Bruce's Story - (c) 2006-2013 Power-Command
+**/
 
 RequireScript("lib/persist.js");
 RequireScript("lib/tween.js");
@@ -14,7 +13,7 @@ RequireScript("Session.js");
 
 RequireScript("Game.js");
 
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_USE_FAST_TEXTBOXES = true;
 
@@ -24,6 +23,8 @@ function game()
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
+	
+	new Battle(null, "Robert III").go();
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.track = "SpectaclesTheme";
 		Engine.showLogo("TitleCard", 150);
