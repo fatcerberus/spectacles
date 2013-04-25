@@ -69,8 +69,11 @@ Game = {
 	},
 	
 	statuses: {
-		'Zombie': function(unit) {
-			
+		'Zombie': {
+			healed: function(subject, event) {
+				subject.takeDamage(event.amount);
+				event.cancel = true;
+			}
 		}
 	},
 	

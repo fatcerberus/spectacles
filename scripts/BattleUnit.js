@@ -3,17 +3,24 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Stat.js");
-RequireScript("PartyMember.js");
 RequireScript("BattleUnitMoveMenu.js");
+RequireScript("PartyMember.js");
+RequireScript("Stat.js");
+RequireScript("StatusEffect.js");
 
 // BattleUnit() constructor
 // Creates an object representing an active battler.
 // Arguments:
 //     battle: The battle in which the unit is participating.
-//     basis:  The party member or enemy description the unit is to represent.
+//     basis:  The party member or enemy class the unit represents.
 function BattleUnit(battle, basis)
 {
+	this.invokeStatuses = function(eventName, event) {
+		for (var i = 0; i < this.statuses.length; ++i) {
+			this.statuses[i].invoke(eventName, event);
+		}
+	};
+	
 	this.resetCTBTimer = function(rank) {
 		this.ctbTimer = Game.math.timeUntilNextTurn(this, rank);
 	};
@@ -41,21 +48,8 @@ function BattleUnit(battle, basis)
 	this.actionQueue = [];
 	this.moveTargets = null;
 	this.moveMenu = new BattleUnitMoveMenu(this.battle, this);
+	this.addStatus("Zombie");
 	this.resetCTBTimer(2);
-	
-	// .damaged event
-	// Invoked when the unit takes damage.
-	// Arguments for event handler:
-	//     sender: The BattleUnit that caused the event.
-	//     amount: The number of hit points lost.
-	this.damaged = new MultiDelegate();
-	
-	// .healed event
-	// Invoked when the unit recovers HP.
-	// Arguments for event handler:
-	//     sender: The BattleUnit that caused the event.
-	//     amount: The number of hit points recovered.
-	this.healed = new MultiDelegate();
 }
 
 // .health property
@@ -117,7 +111,7 @@ BattleUnit.prototype.tick = function()
 //     status: The status to inflict.
 BattleUnit.prototype.addStatus = function(status)
 {
-	this.statuses.push(status);
+	this.statuses.push(new StatusEffect(this, status));
 };
 
 // .die() method
@@ -136,11 +130,18 @@ BattleUnit.prototype.die = function()
 //     amount: The number of hit points to restore.
 BattleUnit.prototype.heal = function(amount)
 {
-	if (amount >= 0) {
-		this.hpValue = Math.min(this.hpValue + Math.floor(amount), this.maxHP);
-		this.healed.invoke(this, amount);
+	var healEvent = {
+		amount: Math.floor(amount),
+		cancel: false
+	};
+	this.invokeStatuses("healed", healEvent);
+	if (healEvent.cancel) {
+		return;
+	}
+	if (healEvent.amount >= 0) {
+		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
 	} else {
-		this.takeDamage(amount, true);
+		this.takeDamage(healEvent.amount, true);
 	}
 };
 
@@ -184,11 +185,18 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	if (this.isDefending && !ignoreDefend) {
 		amount = Math.ceil(amount / 2);
 	}
-	if (amount >= 0) {
-		this.hpValue = Math.max(this.hpValue - amount, 0);
-		this.damaged.invoke(this, amount);
+	var damageEvent = {
+		amount: amount,
+		cancel: false
+	};
+	this.invokeStatuses("damaged", damageEvent);
+	if (damageEvent.cancel) {
+		return;
+	}
+	if (damageEvent.amount >= 0) {
+		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 	} else {
-		this.heal(amount);
+		this.heal(damageEvent.amount);
 	}
 };
 
