@@ -113,11 +113,20 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 // Executes a battler action.
 // Arguments:
 //     actingUnit:  The BattleUnit performing the move.
-//     targetUnits: The list of BattleUnits, if any, targetted by the acting unit.
+//     targetUnits: The list of BattleUnits, if any, targetted by the acting unit's move.
 //     action:      The action being executed.
 Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 {
-	//TODO: implement me!
+	for (var i = 0; i < action.effects.length; ++i) {
+		var effectTargets = null;
+		if (action.effects[i].targetHint == "selected") {
+			effectTargets = targetUnits;
+		} else if (action.effects[i].targetHint == "user") {
+			effectTargets = [ actingUnit ];
+		}
+		var effectProgram = Game.effects[action.effects[i].type];
+		effectProgram(actingUnit, effectTargets, action.effects[i]);
+	}
 };
 
 // .spawnEnemy() method

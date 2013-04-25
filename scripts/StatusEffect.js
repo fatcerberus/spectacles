@@ -5,6 +5,11 @@
 
 RequireScript("Game.js");
 
+// StatusEffect() constructor
+// Creates an object representing a status effect.
+// Arguments:
+//     subject: The BattleUnit affected by the status effect.
+//     name:    The name of the status class (e.g. "Poison") this effect represents.
 function StatusEffect(subject, name)
 {
 	if (!name in Game.statuses) {
@@ -15,6 +20,13 @@ function StatusEffect(subject, name)
 	this.context = {};
 }
 
+// .invoke() method
+// Invokes the status, raising a specified status event.
+// Arguments:
+//     eventName: The name of the event to raise. If the correct hook function doesn't exist in
+//                the status definition, .invoke() does nothing.
+//     event:     An object specifying the parameters for the event. Note that the hook function may
+//                add or change properties in the event object.
 StatusEffect.prototype.invoke = function(eventName, event)
 {
 	if (eventName in this.statusClass) {

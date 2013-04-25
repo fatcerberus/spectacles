@@ -77,6 +77,22 @@ Game = {
 		}
 	},
 	
+	effects: {
+		'Add Status': function(user, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].addStatus(effect.status);
+			}
+		},
+		'Damage': function(user, targets, effect) {
+			var reducer = targets.length;
+			for (var i = 0; i < targets.length; ++i) {
+				var target = targets[i];
+				var damage = Math.floor(Game.math.damage[effect.category](user, target, effect.power) / reducer);
+				target.takeDamage(damage);
+			}
+		}
+	},
+	
 	techniques: {
 		'Sword Slash': {
 			weaponType: "Sword",
@@ -103,10 +119,10 @@ Game = {
 			actions: [
 				{
 					rank: 3,
-					targetHint: "user",
 					effects: [
 						{
-							type: "AddStatus",
+							targetHint: "user",
+							type: "Add Status",
 							status: "Off-Guard"
 						}
 					]
@@ -116,6 +132,7 @@ Game = {
 					targetHint: "selected",
 					effects: [
 						{
+							targetHint: "selected",
 							type: "Damage",
 							category: "Sword",
 							power: 50
@@ -124,6 +141,23 @@ Game = {
 				}
 			]
 		},
+		'Necromancy': {
+			weaponType: null,
+			category: "Strategy",
+			targetType: "one",
+			actions: [
+				{
+					rank: 3,
+					targetHint: "selected",
+					effects: [
+						{
+							type: "AddStatus",
+							status: "Zombie"
+						}
+					]
+				}
+			]
+		}
 	},
 	
 	weapons: {

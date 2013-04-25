@@ -20,7 +20,6 @@ function BattleUnit(battle, basis)
 			this.statuses[i].invoke(eventName, event);
 		}
 	};
-	
 	this.resetCTBTimer = function(rank) {
 		this.ctbTimer = Game.math.timeUntilNextTurn(this, rank);
 	};
@@ -106,7 +105,7 @@ BattleUnit.prototype.tick = function()
 };
 
 // .addStatus() method
-// Inflicts a status on the battler.
+// Inflicts a status effect on the battler.
 // Arguments:
 //     status: The status to inflict.
 BattleUnit.prototype.addStatus = function(status)
@@ -175,7 +174,7 @@ BattleUnit.prototype.revive = function(health)
 // Inflicts damage on the battler.
 // Arguments:
 //     amount:       Required. The amount of damage to inflict.
-//     ignoreDefend: If set to true, prevents damage reduction when the battler is Defending.
+//     ignoreDefend: If set to true, prevents damage reduction when the battler is defending.
 //                   Defaults to false.
 BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 {
