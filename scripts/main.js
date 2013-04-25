@@ -2,16 +2,17 @@
  * Spectacles: Bruce's Story - (c) 2006-2013 Power-Command
 **/
 
-RequireScript("lib/persist.js");
-RequireScript("lib/tween.js");
-
 RequireScript("Core/Engine.js");
 RequireScript("Core/BGM.js");
-RequireScript("TitleScreen.js");
+RequireScript("Core/Threads.js");
+RequireScript("Battle.js"); /*ALPHA*/
+RequireScript("Cutscenes.js"); /*ALPHA*/
 RequireScript("Session.js");
-/*ALPHA*/ RequireScript("Cutscenes.js");
-
+RequireScript("TitleScreen.js");
 RequireScript("Game.js");
+
+RequireScript("lib/persist.js");
+RequireScript("lib/tween.js");
 
 var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TITLE_CARD = true;
@@ -24,7 +25,10 @@ function game()
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	
-	new Battle(null, "Robert III").go();
+	/*ALPHA*/
+	var session = new Session();
+	new Battle(session, "Robert III").go();
+	
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.track = "SpectaclesTheme";
 		Engine.showLogo("TitleCard", 150);

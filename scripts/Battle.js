@@ -41,6 +41,7 @@ function Battle(session, battleClass)
 		return this.battleResult == null;
 	};
 	
+	this.session = session;
 	this.setup = Game.battles[battleClass];
 	this.battleResult = null;
 	this.allBattleUnits = [];
@@ -61,6 +62,14 @@ Battle.prototype.battleLevel getter = function()
 // Starts the battle.
 Battle.prototype.go = function()
 {
+	this.allBattleUnits = [];
+	this.playerUnits = [];
+	for (var name in this.session.party.members) {
+		var unit = new BattleUnit(this, this.session.party.members[name]);
+		
+		this.playerUnits.push(unit);
+		this.allBattleUnits.push(unit);
+	}
 	this.enemyUnits = [];
 	for (var i = 0; i < this.setup.enemies.length; ++i) {
 		var enemyInfo = Game.enemies[this.setup.enemies[i]];
@@ -137,4 +146,13 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 {
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.enemyUnits.push(newUnit);
+};
+
+// .enemiesOf() method
+// Gets a list of all units opposing a specified unit.
+// Arguments:
+//     unit: The unit for which to find enemies.
+Battle.prototype.enemiesOf = function(unit)
+{
+	return this.playerUnits;
 };

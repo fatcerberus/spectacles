@@ -32,7 +32,7 @@ function BattleUnit(battle, basis)
 		for (var name in Game.namedStats) {
 			this.stats[name] = this.partyMember.stats[name];
 		}
-		this.maxHPValue = Game.math.partyMemberHP(partyMember);
+		this.maxHPValue = Game.math.partyMemberHP(this.partyMember);
 	} else {
 		this.enemyInfo = basis;
 		this.name = this.enemyInfo.name;
@@ -47,6 +47,9 @@ function BattleUnit(battle, basis)
 	this.actionQueue = [];
 	this.moveTargets = null;
 	this.moveMenu = new BattleUnitMoveMenu(this.battle, this);
+	this.aiState = {
+		turnsTaken: 0,
+	};
 	this.addStatus("Zombie");
 	this.resetCTBTimer(2);
 }
@@ -86,7 +89,7 @@ BattleUnit.prototype.tick = function()
 			if (this.partyMember != null) {
 				var move = this.moveMenu.show();
 			} else {
-				var move = this.enemyInfo.strategize(this, this.battle.predictTurns(this, null));
+				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
 			}
 			var technique = Game.techniques[move.technique];
 			this.moveTargets = move.targets;

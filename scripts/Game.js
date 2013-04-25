@@ -20,7 +20,7 @@ Game = {
 			'Bow': function(attacker, target) {
 				return 1.0;
 			}
-		},		
+		},
 		damage: {
 			'Bow': function(attacker, target, power) {
 				return 0;
@@ -63,7 +63,8 @@ Game = {
 			},
 			techniques: [
 				"Sword Slash",
-				"Quickstrike"
+				"Quickstrike",
+				"Necromancy"
 			]
 		}
 	},
@@ -88,6 +89,7 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
 				var damage = Math.floor(Game.math.damage[effect.category](user, target, effect.power) / reducer);
+				Abort(target.name + " took " + damage + " HP of damage");
 				target.takeDamage(damage);
 			}
 		}
@@ -183,12 +185,14 @@ Game = {
 				'MAG': 75,
 				'AGI': 75
 			},
+			immunities: [],
 			weapon: "Temple Sword",
-			strategize: function(me, turnPreview) {
+			strategize: function(me, battle, turnPreview) {
+				enemies = battle.enemiesOf(me);
 				return {
 					type: "technique",
 					technique: "Charge Slash",
-					targets: [],
+					targets: [ enemies[0] ],
 				};
 			}
 		}
