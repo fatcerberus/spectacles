@@ -49,6 +49,7 @@ function Battle(session, battleClass)
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
+	Console.writeLine("Started battle - battledef: " + battleClass);
 }
 
 // .battleLevel property
@@ -115,7 +116,9 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 		}
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
-	return forecast.slice(0, 10);
+	forecast = forecast.slice(0, 10);
+	Console.writeLine("predictTurns - acting: " + actingUnit.name + ", next up: " + forecast[0].unit.name)
+	return forecast;
 };
 
 // .runAction() method
@@ -133,8 +136,8 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 		} else if (action.effects[i].targetHint == "user") {
 			effectTargets = [ actingUnit ];
 		}
-		var effectProgram = Game.effects[action.effects[i].type];
-		effectProgram(actingUnit, effectTargets, action.effects[i]);
+		var effect = Game.effects[action.effects[i].type];
+		effect(actingUnit, effectTargets, action.effects[i]);
 	}
 };
 

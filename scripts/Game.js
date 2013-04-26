@@ -25,19 +25,19 @@ Game = {
 		},
 		damage: {
 			'Bow': function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			'Gun': function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			'Magic': function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			'Physical': function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			'Sword': function(attacker, target, power) {
-				return 0;
+				return 1;
 			}
 		},
 		enemyHP: function(enemyUnit) {
@@ -91,7 +91,6 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
 				var damage = Math.floor(Game.math.damage[effect.category](user, target, effect.power) / reducer);
-				Abort(target.name + " took " + damage + " HP of damage");
 				target.takeDamage(damage);
 			}
 		}
@@ -116,6 +115,24 @@ Game = {
 				}
 			]
 		},
+		'Quickstrike': {
+			weaponType: "Sword",
+			category: "Attack",
+			targetType: "one",
+			actions: [
+				{
+					rank: 1,
+					effects: [
+						{
+							targetHint: "selected",
+							type: "Damage",
+							category: "Sword",
+							power: 10
+						}
+					]
+				}
+			]
+		},
 		'Charge Slash': {
 			weaponType: "Sword",
 			category: "Attack",
@@ -133,7 +150,6 @@ Game = {
 				},
 				{
 					rank: 2,
-					targetHint: "selected",
 					effects: [
 						{
 							targetHint: "selected",
@@ -152,10 +168,10 @@ Game = {
 			actions: [
 				{
 					rank: 3,
-					targetHint: "selected",
 					effects: [
 						{
-							type: "AddStatus",
+							targetHint: "selected",
+							type: "Add Status",
 							status: "Zombie"
 						}
 					]
@@ -177,7 +193,7 @@ Game = {
 	},
 	
 	enemies: {
-		'Robert III': {
+		'Robert (II)': {
 			name: "Robert",
 			baseStats: {
 				'VIT': 75,
@@ -201,10 +217,10 @@ Game = {
 	},
 	
 	battles: {
-		'Robert III': {
+		'RSB II': {
 			battleLevel: 50,
 			enemies: [
-				"Robert III"
+				"Robert (II)"
 			]
 		}
 	},

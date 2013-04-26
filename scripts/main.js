@@ -25,12 +25,12 @@ function game()
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
-	Console = new Console(10);
+	Console = new Console(15);
 	Console.writeLine(Game.title);
 	
 	/*ALPHA*/
 	var session = new Session();
-	new Battle(session, "Robert III").go();
+	new Battle(session, "RSB II").go();
 	
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.track = "SpectaclesTheme";

@@ -3,7 +3,9 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript("Core/Console.js");
 RequireScript("BattleUnitMoveMenu.js");
+RequireScript("MenuStrip.js"); /*ALPHA*/
 RequireScript("PartyMember.js");
 RequireScript("Stat.js");
 RequireScript("StatusEffect.js");
@@ -12,7 +14,7 @@ RequireScript("StatusEffect.js");
 // Creates an object representing an active battler.
 // Arguments:
 //     battle: The battle in which the unit is participating.
-//     basis:  The party member or enemy class the unit represents.
+//     basis:  The party member or enemy class to use as a basis for the unit.
 function BattleUnit(battle, basis)
 {
 	this.invokeStatuses = function(eventName, event) {
@@ -22,6 +24,7 @@ function BattleUnit(battle, basis)
 	};
 	this.resetCTBTimer = function(rank) {
 		this.ctbTimer = Game.math.timeUntilNextTurn(this, rank);
+		Console.writeLine(this.name + "'s CV reset to " + this.ctbTimer + " (rank " + rank + ")");
 	};
 	
 	this.battle = battle;
@@ -50,7 +53,7 @@ function BattleUnit(battle, basis)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.addStatus("Zombie");
+	Console.writeLine("Created unit " + this.name + " - maxHP: " + this.maxHPValue);
 	this.resetCTBTimer(2);
 }
 
@@ -82,16 +85,26 @@ BattleUnit.prototype.tick = function()
 	--this.ctbTimer;
 	if (this.ctbTimer == 0) {
 		this.battle.suspend();
+		Console.writeLine(this.name + "'s turn is up");
 		var action = null;
 		if (this.actionQueue.length > 0) {
 			action = this.actionQueue.shift();
 		} else {
 			if (this.partyMember != null) {
-				var move = this.moveMenu.show();
+				// var move = this.moveMenu.show();
+				var technique = new MenuStrip(this.name + " will use...", false, this.partyMember.character.techniques).open();
+				var move = {
+					type: "technique",
+					technique: technique,
+					targets: [
+						this.battle.enemiesOf(this)[0]
+					]
+				}
 			} else {
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
 			}
 			var technique = Game.techniques[move.technique];
+			Console.writeLine(this.name + " is using " + move.technique);
 			this.moveTargets = move.targets;
 			var action = technique.actions[0];
 			for (var i = 1; i < technique.actions.length; ++i) {
@@ -113,6 +126,7 @@ BattleUnit.prototype.tick = function()
 //     status: The status to inflict.
 BattleUnit.prototype.addStatus = function(status)
 {
+	Console.writeLine(this.name + " afflicted with status " + status);
 	this.statuses.push(new StatusEffect(this, status));
 };
 
@@ -142,6 +156,7 @@ BattleUnit.prototype.heal = function(amount)
 	}
 	if (healEvent.amount >= 0) {
 		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
+		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
 	}
@@ -197,6 +212,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	}
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
+		Console.writeLine(this.name + " damaged for " + damageEvent.amount + " HP - remaining: " + this.hpValue);
 	} else {
 		this.heal(damageEvent.amount);
 	}
