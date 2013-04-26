@@ -25,7 +25,7 @@ function game()
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
-	Console = new Console(15);
+	Console = new Console(17);
 	
 	/*ALPHA*/
 	var session = new Session();

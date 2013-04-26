@@ -57,7 +57,8 @@ function BattleUnit(battle, basis)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	Console.writeLine("Created unit " + this.name + " - maxHP: " + this.maxHPValue);
+	var unitType = this.partyMember != null ? "party" : "AI";
+	Console.writeLine("Created " + unitType + " unit " + this.name + " - maxHP: " + this.maxHPValue);
 	this.resetCounter(2);
 }
 
@@ -129,7 +130,9 @@ BattleUnit.prototype.tick = function()
 			for (var i = 1; i < technique.actions.length; ++i) {
 				this.actionQueue.push(technique.actions[i]);
 			}
-			Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
+			if (this.actionQueue.length > 0) {
+				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
+			}
 		}
 		this.battle.runAction(this, this.moveTargets, action);
 		this.resetCounter(action.rank);
