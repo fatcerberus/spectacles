@@ -13,7 +13,7 @@ function Console(numLines)
 	this.render = function() {
 		var visibility = this.fader.value;
 		var boxHeight = this.numLines * this.font.getHeight() + 10;
-		var boxY = GetScreenHeight() - boxHeight * visibility;
+		var boxY = -boxHeight * (1.0 - visibility);
 		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, visibility * 128));
 		for (var i = 0; i < this.numLines; ++i) {
 			var lineToDraw = (this.nextLine - this.numLines) + i;
