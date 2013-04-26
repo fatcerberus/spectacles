@@ -15,9 +15,9 @@ RequireScript("Game.js");
 RequireScript("lib/persist.js");
 RequireScript("lib/tween.js");
 
-var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TITLE_CARD = true;
-var DBG_USE_FAST_TEXTBOXES = true;
+var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_TITLE_CARD = false;
+var DBG_USE_FAST_TEXTBOXES = false;
 
 function game()
 {

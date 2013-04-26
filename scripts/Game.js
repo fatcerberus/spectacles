@@ -7,6 +7,7 @@
 // Represents the game.
 Game = {
 	title: "Spectacles: Bruce's Story",
+	defaultBattleBGM: null,
 	
 	namedStats: {
 		'VIT': "Vitality",
@@ -238,6 +239,7 @@ Game = {
 	
 	battles: {
 		'RSB II': {
+			bgm: "MyDreamsButADropOfFuel",
 			battleLevel: 50,
 			enemies: [
 				"Robert (II)"

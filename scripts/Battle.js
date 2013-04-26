@@ -49,7 +49,7 @@ function Battle(session, battleClass)
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
-	Console.writeLine("Started battle - battledef: " + battleClass);
+	Console.writeLine("Battle engine started - battledef: " + battleClass);
 }
 
 // .battleLevel property
@@ -67,7 +67,6 @@ Battle.prototype.go = function()
 	this.playerUnits = [];
 	for (var name in this.session.party.members) {
 		var unit = new BattleUnit(this, this.session.party.members[name]);
-		
 		this.playerUnits.push(unit);
 		this.allBattleUnits.push(unit);
 	}
@@ -78,6 +77,11 @@ Battle.prototype.go = function()
 		this.enemyUnits.push(unit);
 		this.allBattleUnits.push(unit);
 	}
+	var battleBGMTrack = this.defaultBattleBGM;
+	if (this.setup.bgm != null) {
+		battleBGMTrack = this.setup.bgm;
+	}
+	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	Threads.waitFor(battleThread);
 	return this.battleResult;
