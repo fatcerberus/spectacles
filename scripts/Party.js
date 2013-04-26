@@ -26,7 +26,7 @@ Party.prototype.growthLevel getter = function()
 		}
 		return Math.floor(total / memberCount);
 	} else {
-		return 1;
+		return 50;
 	}
 }
 

@@ -15,10 +15,18 @@ function StatusEffect(subject, name)
 	if (!name in Game.statuses) {
 		Abort("[StatusEffect.js] Status():\nStatus class '" + name + "' doesn't exist.");
 	}
+	this.displayName = name;
 	this.subject = subject;
 	this.statusClass = Game.statuses[name];
 	this.context = {};
 }
+
+// .name property
+// Gets the display name of the status effect
+StatusEffect.prototype.name getter = function()
+{
+	return this.displayName;
+};
 
 // .invoke() method
 // Invokes the status, raising a specified status event.
@@ -29,7 +37,8 @@ function StatusEffect(subject, name)
 //                add or change properties in the event object.
 StatusEffect.prototype.invoke = function(eventName, event)
 {
-	if (eventName in this.statusClass) {
-		this.statusClass[eventName].call(this.context, this.subject, event);
+	if (!eventName in this.statusClass) {
+		return null;
 	}
+	this.statusClass[eventName].call(this.context, this.subject, event);
 };

@@ -38,6 +38,7 @@ function Console(numLines)
 	this.fader = new Fader(0.0);
 	this.thread = Threads.createEntityThread(this, 100);
 	this.writeLine("Specs Engine version 6.0");
+	this.writeLine("");
 	this.show();
 }
 

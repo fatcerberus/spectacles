@@ -26,7 +26,6 @@ function game()
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	Console = new Console(15);
-	Console.writeLine(Game.title);
 	
 	/*ALPHA*/
 	var session = new Session();

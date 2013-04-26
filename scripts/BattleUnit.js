@@ -22,13 +22,15 @@ function BattleUnit(battle, basis)
 			this.statuses[i].invoke(eventName, event);
 		}
 	};
-	this.resetCTBTimer = function(rank) {
-		this.ctbTimer = Game.math.timeUntilNextTurn(this, rank);
-		Console.writeLine(this.name + "'s CV reset to " + this.ctbTimer + " (rank " + rank + ")");
+	this.resetCounter = function(rank) {
+		this.counter = Game.math.timeUntilNextTurn(this, rank);
+		Console.writeLine(this.name + "'s CV reset to " + this.counter + " (rank " + rank + ")");
 	};
 	
 	this.battle = battle;
+	this.partyMember = null;
 	this.stats = {};
+	this.weapon = null;
 	if (basis instanceof PartyMember) {
 		this.partyMember = basis;
 		this.name = this.partyMember.name;
@@ -36,6 +38,7 @@ function BattleUnit(battle, basis)
 			this.stats[name] = this.partyMember.stats[name];
 		}
 		this.maxHPValue = Game.math.partyMemberHP(this.partyMember);
+		this.weapon = this.partyMember.weapon;
 	} else {
 		this.enemyInfo = basis;
 		this.name = this.enemyInfo.name;
@@ -43,10 +46,11 @@ function BattleUnit(battle, basis)
 			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.battleLevel, false);
 		}
 		this.maxHPValue = Game.math.enemyHP(this);
+		this.weapon = this.enemyInfo.weapon;
 	}
 	this.hpValue = this.maxHPValue;
 	this.statuses = [];
-	this.ctbTimer = null;
+	this.counter = 0;
 	this.actionQueue = [];
 	this.moveTargets = null;
 	this.moveMenu = new BattleUnitMoveMenu(this.battle, this);
@@ -54,7 +58,7 @@ function BattleUnit(battle, basis)
 		turnsTaken: 0,
 	};
 	Console.writeLine("Created unit " + this.name + " - maxHP: " + this.maxHPValue);
-	this.resetCTBTimer(2);
+	this.resetCounter(2);
 }
 
 // .health property
@@ -71,28 +75,39 @@ BattleUnit.prototype.hp getter = function()
 	return this.hpValue;
 };
 
+// .isPartyMember property
+// Gets a value indicating whether or not the unit represents a party member.
+BattleUnit.prototype.isPartyMember getter = function()
+{
+	return this.partyMember != null;
+};
+
 // .timeUntilNextTurn property
-// Returns the number of ticks until the battler can act.
+// Gets the number of ticks until the battler can act.
 BattleUnit.prototype.timeUntilNextTurn getter = function()
 {
-	return this.ctbTimer;
+	return this.counter;
 };
 
 // .tick() method
 // Advances the battler's CTB timer.
 BattleUnit.prototype.tick = function()
 {
-	--this.ctbTimer;
-	if (this.ctbTimer == 0) {
+	--this.counter;
+	if (this.counter == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
 		var action = null;
 		if (this.actionQueue.length > 0) {
+			Console.writeLine("Robert still has " + this.actionQueue.length + " action queued");
 			action = this.actionQueue.shift();
 		} else {
 			if (this.partyMember != null) {
+				/*ALPHA*/
+				var weaponName = this.weapon != null ? this.weapon : "unarmed";
+				var technique = new MenuStrip(this.name + " (" + weaponName + ")", false, this.partyMember.techniques).open();
+				
 				// var move = this.moveMenu.show();
-				var technique = new MenuStrip(this.name + " will use...", false, this.partyMember.character.techniques).open();
 				var move = {
 					type: "technique",
 					technique: technique,
@@ -104,15 +119,20 @@ BattleUnit.prototype.tick = function()
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
 			}
 			var technique = Game.techniques[move.technique];
-			Console.writeLine(this.name + " is using " + move.technique);
+			var moveOutput = this.name + " is using " + move.technique;
+			if (this.weapon != null && technique.weaponType != null) {
+				moveOutput += " - weaponLv: " + Game.weapons[this.weapon].level;
+			}
+			Console.writeLine(moveOutput);
 			this.moveTargets = move.targets;
 			var action = technique.actions[0];
 			for (var i = 1; i < technique.actions.length; ++i) {
 				this.actionQueue.push(technique.actions[i]);
 			}
+			Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 		}
 		this.battle.runAction(this, this.moveTargets, action);
-		this.resetCTBTimer(action.rank);
+		this.resetCounter(action.rank);
 		this.battle.resume();
 		return true;
 	} else {
@@ -123,11 +143,26 @@ BattleUnit.prototype.tick = function()
 // .addStatus() method
 // Inflicts a status effect on the battler.
 // Arguments:
-//     status: The status to inflict.
-BattleUnit.prototype.addStatus = function(status)
+//     statusName: The name of the status to inflict.
+BattleUnit.prototype.addStatus = function(statusName)
 {
-	Console.writeLine(this.name + " afflicted with status " + status);
-	this.statuses.push(new StatusEffect(this, status));
+	this.statuses.push(new StatusEffect(this, statusName));
+	Console.writeLine(this.name + " afflicted with status " + statusName);
+};
+
+// .removeStatus() method
+// Removes a status's influence on the battler.
+// Arguments:
+//     statusName: The name of the status to remove.
+BattleUnit.prototype.removeStatus = function(statusName)
+{
+	for (var i = 0; i < this.statuses.length; ++i) {
+		if (statusName == this.statuses[i].name) {
+			this.statuses.splice(i, 1);
+			--i; continue;
+		}
+	}
+	Console.writeLine(this.name + " lost status " + statusName);
 };
 
 // .die() method
@@ -212,7 +247,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	}
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
-		Console.writeLine(this.name + " damaged for " + damageEvent.amount + " HP - remaining: " + this.hpValue);
+		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
 	} else {
 		this.heal(damageEvent.amount);
 	}
@@ -232,7 +267,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextMoves)
 	if (assumedRank === undefined) assumedRank = 2;
 	if (nextMoves === undefined) nextMoves = null;
 	
-	var timeLeft = this.ctbTimer;
+	var timeLeft = this.counter;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
 		if (nextMoves !== null && i <= nextMoves.length) {

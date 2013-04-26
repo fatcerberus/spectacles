@@ -25,19 +25,20 @@ Game = {
 		},
 		damage: {
 			'Bow': function(attacker, target, power) {
-				return 1;
+				return 0;
 			},
 			'Gun': function(attacker, target, power) {
-				return 1;
+				return 0;
 			},
 			'Magic': function(attacker, target, power) {
-				return 1;
+				return 0;
 			},
 			'Physical': function(attacker, target, power) {
-				return 1;
+				return 0;
 			},
 			'Sword': function(attacker, target, power) {
-				return 1;
+				var weapon = Game.weapons[attacker.weapon];
+				return Math.floor(weapon.level * attacker.stats['STR'].value * power * (100 - target.stats['DEF'].value * 0.95) / 50000);
 			}
 		},
 		enemyHP: function(enemyUnit) {
@@ -47,7 +48,7 @@ Game = {
 			return partyMember.stats['VIT'].value * 10;
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return (101 - unit.stats['AGI'].value) * rank;
+			return rank * (101 - unit.stats['AGI'].value);
 		}
 	},
 	
@@ -63,6 +64,7 @@ Game = {
 				'MAG': 70,
 				'AGI': 70
 			},
+			weapon: "Temple Sword",
 			techniques: [
 				"Sword Slash",
 				"Quickstrike",
@@ -77,16 +79,25 @@ Game = {
 				subject.takeDamage(event.amount);
 				event.cancel = true;
 			}
+		},
+		'Off-Guard': {
+			damaged: function(subject, event) {
+				if (event.cancel) {
+					return;
+				}
+				event.amount = Math.floor(event.amount * 1.5);
+				subject.removeStatus("Off-Guard");
+			}
 		}
 	},
 	
 	effects: {
-		'Add Status': function(user, targets, effect) {
+		'addstatus': function(user, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].addStatus(effect.status);
 			}
 		},
-		'Damage': function(user, targets, effect) {
+		'damage': function(user, targets, effect) {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
@@ -107,7 +118,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "Damage",
+							type: "damage",
 							category: "Sword",
 							power: 25
 						}
@@ -125,7 +136,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "Damage",
+							type: "damage",
 							category: "Sword",
 							power: 10
 						}
@@ -143,7 +154,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "user",
-							type: "Add Status",
+							type: "addstatus",
 							status: "Off-Guard"
 						}
 					]
@@ -153,7 +164,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "Damage",
+							type: "damage",
 							category: "Sword",
 							power: 50
 						}
@@ -171,7 +182,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "Add Status",
+							type: "addstatus",
 							status: "Zombie"
 						}
 					]
@@ -183,7 +194,16 @@ Game = {
 	weapons: {
 		'Temple Sword': {
 			type: "Sword",
-			power: 10,
+			level: 75,
+			techniques: [
+				"Sword Slash",
+				"Quickstrike",
+				"Charge Slash"
+			]
+		},
+		'RSB\'s Sword': {
+			type: "Sword",
+			level: 60,
 			techniques: [
 				"Sword Slash",
 				"Quickstrike",
@@ -204,7 +224,7 @@ Game = {
 				'AGI': 75
 			},
 			immunities: [],
-			weapon: "Temple Sword",
+			weapon: "RSB's Sword",
 			strategize: function(me, battle, turnPreview) {
 				enemies = battle.enemiesOf(me);
 				return {

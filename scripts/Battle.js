@@ -117,7 +117,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
 	forecast = forecast.slice(0, 10);
-	Console.writeLine("predictTurns - acting: " + actingUnit.name + ", next up: " + forecast[0].unit.name)
+	Console.writeLine("Turn prediction - req. by: " + actingUnit.name + ", next: " + forecast[1].unit.name)
 	return forecast;
 };
 
@@ -157,5 +157,9 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 //     unit: The unit for which to find enemies.
 Battle.prototype.enemiesOf = function(unit)
 {
-	return this.playerUnits;
+	if (unit.isPartyMember) {
+		return this.enemyUnits;
+	} else {
+		return this.playerUnits;
+	}
 };
