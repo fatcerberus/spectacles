@@ -4,6 +4,7 @@
 
 RequireScript("Core/Engine.js");
 RequireScript("Core/BGM.js");
+RequireScript("Core/Console.js");
 RequireScript("Core/Threads.js");
 RequireScript("Battle.js"); /*ALPHA*/
 RequireScript("Cutscenes.js"); /*ALPHA*/
@@ -24,6 +25,8 @@ function game()
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
+	Console = new Console(10);
+	Console.writeLine(Game.title);
 	
 	/*ALPHA*/
 	var session = new Session();

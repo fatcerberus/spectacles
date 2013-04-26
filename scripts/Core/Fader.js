@@ -62,8 +62,8 @@ function Fader(initialValue)
 	// Initialize the fader.
 	if (initialValue === undefined) initialValue = 0.0;
 	
-	this.currentValue = 0.0;
-	this.targetValue = 0.0;
+	this.currentValue = initialValue;
+	this.targetValue = this.currentValue;
 	this.increment = 0.0;
 	this.threadID = Threads.createEntityThread(this);
 }

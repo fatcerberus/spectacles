@@ -6,6 +6,8 @@
 // Game object
 // Represents the game.
 Game = {
+	title: "Spectacles: Bruce's Story",
+	
 	namedStats: {
 		'VIT': "Vitality",
 		'STR': "Strength",
