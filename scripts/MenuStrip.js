@@ -26,7 +26,7 @@ function MenuStrip(title, isCancelable, items)
 		var litTitleColor = CreateColor(0, 0, 0, this.visibility * 255);
 		var titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.flashLevel, 1.0 - this.flashLevel);
 		this.font.setColorMask(titleColor);
-		this.font.drawText(10, menuY + 7, this.title);
+		this.font.drawText(5, menuY + 5, this.title);
 		this.carouselSurface.setBlendMode(REPLACE);
 		this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, CreateColor(0, 0, 0, 0));
 		this.carouselSurface.setBlendMode(BLEND);
@@ -43,23 +43,23 @@ function MenuStrip(title, isCancelable, items)
 			}
 			var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(this.menuItems[itemIndex]) / 2);
 			this.font.setColorMask(CreateColor(0, 0, 0, this.visibility * 255));
-			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 8, this.menuItems[itemIndex]);
+			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, this.menuItems[itemIndex]);
 			this.font.setColorMask(itemColor);
-			this.carouselSurface.drawText(this.font, textX - xOffset, 7, this.menuItems[itemIndex]);
+			this.carouselSurface.drawText(this.font, textX - xOffset, 5, this.menuItems[itemIndex]);
 		}
-		carouselX = GetScreenWidth() - 10 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
+		carouselX = GetScreenWidth() - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
 		this.carouselSurface.blit(carouselX, menuY);
 		this.font.setColorMask(CreateColor(128, 128, 128, this.visibility * 255));
-		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 7, "<");
+		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
 		if (this.scrollDirection == -1) {
 			this.font.setColorMask(CreateColor(255, 192, 0, this.visibility * (1.0 - this.scrollProgress) * 255));
-			this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 7, "<");
+			this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
 		}
 		this.font.setColorMask(CreateColor(128, 128, 128, this.visibility * 255));
-		this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 7, ">");
+		this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
 		if (this.scrollDirection == 1) {
 			this.font.setColorMask(CreateColor(255, 192, 0, this.visibility * (1.0 - this.scrollProgress) * 255));
-			this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 7, ">");
+			this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
 		}
 	};
 	this.update = function() {
@@ -126,7 +126,7 @@ function MenuStrip(title, isCancelable, items)
 	this.isCancelable = isCancelable;
 	this.menuItems = items;
 	this.selectedItem = 0;
-	this.font = LoadFont("UITextFont.rfn");
+	this.font = GetSystemFont();
 	var carouselWidth = 0;
 	for (i = 0; i < this.menuItems.length; ++i) {
 		carouselWidth = Math.max(this.font.getStringWidth(this.menuItems[i]) + 10, carouselWidth);

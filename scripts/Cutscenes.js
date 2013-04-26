@@ -8,7 +8,7 @@ RequireScript("Battle.js");
 
 RequireScript("lib/Scenario.js");
 
-var textBoxFont = LoadFont("UITextFont.rfn");
+var textBoxFont = GetSystemFont();
 
 Scenario.defineCommand("battle", {
 	start: function(sceneState, state, setup) {
@@ -47,7 +47,7 @@ Scenario.defineCommand("talk", {
 		if (DBG_USE_FAST_TEXTBOXES) state.textSpeed = 10.0;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
-		var textAreaWidth = GetScreenWidth() - 20;
+		var textAreaWidth = GetScreenWidth() - 10;
 		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = textBoxFont.wordWrapString(arguments[i], lineWidth);
@@ -111,7 +111,7 @@ Scenario.defineCommand("talk", {
 				state.textSurface.drawText(textBoxFont, 0, textY, state.speakerText);
 			}
 		}
-		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 7);
+		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 5);
 	},
 	update: function(sceneState, state) {
 		switch (state.mode) {
