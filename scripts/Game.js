@@ -38,8 +38,7 @@ Game = {
 				return 0;
 			},
 			'Sword': function(attacker, target, power) {
-				var weapon = Game.weapons[attacker.weapon];
-				return Math.floor(weapon.level * attacker.stats['STR'].value * power * (100 - target.stats['DEF'].value * 0.95) / 50000);
+				return Math.floor(attacker.weapon.level * attacker.stats['STR'].value * power * (100 - target.stats['DEF'].value * 0.95) / 50000);
 			}
 		},
 		enemyHP: function(enemyUnit) {
@@ -69,7 +68,11 @@ Game = {
 			techniques: [
 				"Sword Slash",
 				"Quickstrike",
-				"Necromancy"
+				"Necromancy",
+				"Flare",
+				//"Chill",
+				//"Lightning",
+				//"Quake"
 			]
 		}
 	},
@@ -189,11 +192,30 @@ Game = {
 					]
 				}
 			]
-		}
+		},
+		'Flare': {
+			weaponType: null,
+			category: "Magic",
+			targetType: "one",
+			actions: [
+				{
+					rank: 2,
+					effects: [
+						{
+							targetHint: "selected",
+							type: "damage",
+							category: "Magic",
+							power: 35
+						}
+					],
+				}
+			]
+		},
 	},
 	
 	weapons: {
 		'Temple Sword': {
+			name: "Temple Sword",
 			type: "Sword",
 			level: 75,
 			techniques: [

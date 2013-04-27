@@ -37,8 +37,7 @@ function Console(numLines)
 	this.font = GetSystemFont();
 	this.fader = new Fader(0.0);
 	this.thread = Threads.createEntityThread(this, 100);
-	this.writeLine("Specs Engine v6.0 console");
-	this.writeLine("(c) 2013 Power-Command");
+	this.writeLine("Specs Engine v6.0  (c)2013 Power-Command");
 	this.writeLine("");
 	this.show();
 }

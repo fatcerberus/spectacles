@@ -49,7 +49,7 @@ function Battle(session, battleClass)
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
-	Console.writeLine("Battle engine started - battledef: " + battleClass);
+	Console.writeLine("Battle session prepared - battledef: " + battleClass);
 }
 
 // .battleLevel property
@@ -63,6 +63,7 @@ Battle.prototype.battleLevel getter = function()
 // Starts the battle.
 Battle.prototype.go = function()
 {
+	Console.writeLine("Starting battle");
 	this.allBattleUnits = [];
 	this.playerUnits = [];
 	for (var name in this.session.party.members) {
@@ -141,6 +142,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 			effectTargets = [ actingUnit ];
 		}
 		var effect = Game.effects[action.effects[i].type];
+		Console.writeLine("Execute effect '" + action.effects[i].type + "' - retarget: " + action.effects[i].targetHint);
 		effect(actingUnit, effectTargets, action.effects[i]);
 	}
 };

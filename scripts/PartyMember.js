@@ -24,7 +24,7 @@ function PartyMember(character, battleLevel)
 	for (var name in Game.namedStats) {
 		this.stats[name] = new Stat(this.character.baseStats[name], battleLevel, true, 1.0);
 	}
-	this.weapon = this.character.weapon;
+	this.weapon = Game.weapons[this.character.weapon];
 	this.skills = [];
 	for (var i = 0; i < this.character.techniques.length; ++i) {
 		this.learnSkill(this.character.techniques[i]);
@@ -46,11 +46,11 @@ PartyMember.prototype.battleLevel getter = function()
 // Gets a list of the techniques the party member can currently use.
 PartyMember.prototype.techniques getter = function()
 {
-	var myWeaponType = this.weapon != null ? Game.weapons[this.weapon].type : null;
+	var weaponType = this.weapon != null ? this.weapon.type : null;
 	var list = [];
 	for (var i = 0; i < this.skills.length; ++i) {
 		var technique = Game.techniques[this.skills[i].name];
-		if (technique.weaponType != null && myWeaponType != technique.weaponType) {
+		if (technique.weaponType != null && weaponType != technique.weaponType) {
 			Abort(myWeaponType);
 			continue;
 		}

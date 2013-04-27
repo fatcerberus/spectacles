@@ -46,7 +46,7 @@ function BattleUnit(battle, basis)
 			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.battleLevel, false);
 		}
 		this.maxHPValue = Game.math.enemyHP(this);
-		this.weapon = this.enemyInfo.weapon;
+		this.weapon = Game.weapons[this.enemyInfo.weapon];
 	}
 	this.hpValue = this.maxHPValue;
 	this.statuses = [];
@@ -97,16 +97,17 @@ BattleUnit.prototype.tick = function()
 	--this.counter;
 	if (this.counter == 0) {
 		this.battle.suspend();
+		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
 		var action = null;
 		if (this.actionQueue.length > 0) {
-			Console.writeLine("Robert still has " + this.actionQueue.length + " action queued");
+			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
 			if (this.partyMember != null) {
 				/*ALPHA*/
-				var weaponName = this.weapon != null ? this.weapon : "unarmed";
-				var technique = new MenuStrip(this.name + " (" + weaponName + ")", false, this.partyMember.techniques).open();
+				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
+				var technique = new MenuStrip(this.name + " [" + weaponName + "]", false, this.partyMember.techniques).open();
 				
 				// var move = this.moveMenu.show();
 				var move = {
@@ -122,7 +123,7 @@ BattleUnit.prototype.tick = function()
 			var technique = Game.techniques[move.technique];
 			var moveOutput = this.name + " is using " + move.technique;
 			if (this.weapon != null && technique.weaponType != null) {
-				moveOutput += " - weaponLv: " + Game.weapons[this.weapon].level;
+				moveOutput += " - weaponLv: " + this.weapon.level;
 			}
 			Console.writeLine(moveOutput);
 			this.moveTargets = move.targets;
