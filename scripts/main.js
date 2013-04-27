@@ -21,7 +21,7 @@ var DBG_USE_FAST_TEXTBOXES = false;
 
 function game()
 {
-	Engine.initialize();
+	Engine.initialize(30);
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
@@ -29,7 +29,16 @@ function game()
 	
 	/*ALPHA*/
 	var session = new Session();
-	new Battle(session, "RSB II").go();
+	var battleResult = new Battle(session, "RSB II").go();
+	if (battleResult == BattleResult.enemyWon) {
+		Abort("You lost... Oh well, have fun in Terminus! Say hello to Scott Temple for me, okay?");
+	} else if (battleResult == BattleResult.partyWon) {
+		Abort("Yay! You win!");
+	} else if (battleResult == BattleResult.partyRetreated) {
+		Abort("You coward! You suck!");
+	} else {
+		Abort("Um... what's going on here? That was a really strange battle...");
+	}
 	
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.track = "SpectaclesTheme";

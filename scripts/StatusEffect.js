@@ -37,8 +37,9 @@ StatusEffect.prototype.name getter = function()
 //                add or change properties in the event object.
 StatusEffect.prototype.invoke = function(eventName, event)
 {
-	if (!eventName in this.statusClass) {
-		return null;
+	if (!(eventName in this.statusClass)) {
+		return;
 	}
+	Console.writeLine("Invoking status " + this.displayName + " - event: " + eventName);
 	this.statusClass[eventName].call(this.context, this.subject, event);
 };

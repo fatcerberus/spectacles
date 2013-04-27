@@ -22,29 +22,43 @@ BattleResult =
 function Battle(session, battleClass)
 {
 	this.tick = function() {
-		if (this.suspendCount > 0) {
+		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
+		var unitLists = [ this.enemyUnits, this.playerUnits ];
 		var actionTaken = false;
 		while (!actionTaken) {
-			for (var i = 0; i < this.allBattleUnits.length; ++i) {
-				actionTaken = this.allBattleUnits[i].tick() || actionTaken;
+			for (var iList = 0; iList < unitLists.length; ++iList) {
+				for (var i = 0; i < unitLists[iList].length; ++i) {
+					actionTaken = unitLists[iList][i].tick() || actionTaken;
+					if (!unitLists[iList][i].isAlive) {
+						unitLists[iList].splice(i, 1);
+						--i; continue;
+					}
+				}
+			}
+			if (this.playerUnits.length == 0) {
+				this.result = BattleResult.enemyWon;
+				return;
+			}
+			if (this.enemyUnits.length == 0) {
+				this.result = BattleResult.partyWon;
+				return;
 			}
 		}
 	};
 	
 	this.render = function() {
-		ApplyColorMask(CreateColor(0, 128, 0, 255));
+		ApplyColorMask(CreateColor(64, 64, 64, 255));
 	};
 	this.update = function() {
 		this.tick();
-		return this.battleResult == null;
+		return this.result == null;
 	};
 	
 	this.session = session;
 	this.setup = Game.battles[battleClass];
-	this.battleResult = null;
-	this.allBattleUnits = [];
+	this.result = null;
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	this.suspendCount = 0;
@@ -64,19 +78,16 @@ Battle.prototype.battleLevel getter = function()
 Battle.prototype.go = function()
 {
 	Console.writeLine("Starting battle");
-	this.allBattleUnits = [];
 	this.playerUnits = [];
 	for (var name in this.session.party.members) {
 		var unit = new BattleUnit(this, this.session.party.members[name]);
 		this.playerUnits.push(unit);
-		this.allBattleUnits.push(unit);
 	}
 	this.enemyUnits = [];
 	for (var i = 0; i < this.setup.enemies.length; ++i) {
 		var enemyInfo = Game.enemies[this.setup.enemies[i]];
 		var unit = new BattleUnit(this, enemyInfo);
 		this.enemyUnits.push(unit);
-		this.allBattleUnits.push(unit);
 	}
 	var battleBGMTrack = this.defaultBattleBGM;
 	if (this.setup.bgm != null) {
@@ -85,7 +96,7 @@ Battle.prototype.go = function()
 	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	Threads.waitFor(battleThread);
-	return this.battleResult;
+	return this.result;
 };
 
 // .suspend() method
@@ -113,11 +124,14 @@ Battle.prototype.resume = function()
 Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 {
 	var forecast = [];
+	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	for (var turnIndex = 0; turnIndex <= 9; ++turnIndex) {
-		for (var iUnit = 0; iUnit < this.allBattleUnits.length; ++iUnit) {
-			var unit = this.allBattleUnits[iUnit];
-			var timeUntilUp = unit.timeUntilTurn(turnIndex, 3, (actingUnit === unit) ? nextMoves : null);
-			forecast.push({ unit: unit, remainingTime: timeUntilUp });
+		for (var iList = 0; iList < unitLists.length; ++iList) {
+			for (var i = 0; i < unitLists[iList].length; ++i) {
+				var unit = unitLists[iList][i];
+				var timeUntilUp = unit.timeUntilTurn(turnIndex, 3, (actingUnit === unit) ? nextMoves : null);
+				forecast.push({ unit: unit, remainingTime: timeUntilUp });
+			}
 		}
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
@@ -142,7 +156,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 			effectTargets = [ actingUnit ];
 		}
 		var effect = Game.effects[action.effects[i].type];
-		Console.writeLine("Execute effect '" + action.effects[i].type + "' - retarget: " + action.effects[i].targetHint);
+		Console.writeLine("Applying effect '" + action.effects[i].type + "' - retarget: " + action.effects[i].targetHint);
 		effect(actingUnit, effectTargets, action.effects[i]);
 	}
 };

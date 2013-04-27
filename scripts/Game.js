@@ -74,6 +74,22 @@ Game = {
 				//"Lightning",
 				//"Quake"
 			]
+		},
+		'maggie': {
+			name: "maggie",
+			fullName: "maggie",
+			baseStats: {
+				'VIT': 100,
+				'STR': 90,
+				'DEF': 85,
+				'FOC': 65,
+				'MAG': 30,
+				'AGI': 40
+			},
+			weapon: null,
+			techniques: [
+				"Munch"
+			]
 		}
 	},
 	
@@ -108,6 +124,9 @@ Game = {
 				var damage = Math.floor(Game.math.damage[effect.category](user, target, effect.power) / reducer);
 				target.takeDamage(damage);
 			}
+		},
+		'eat': function(user, targets, effect) {
+			
 		}
 	},
 	
@@ -211,6 +230,22 @@ Game = {
 				}
 			]
 		},
+		'Munch': {
+			weaponType: null,
+			category: "Attack",
+			targetType: "one",
+			actions: [
+				{
+					rank: 5,
+					effects: [
+						{
+							targetHint: "selected",
+							type: "eat"
+						}
+					],
+				}
+			]
+		}
 	},
 	
 	weapons: {
@@ -224,7 +259,7 @@ Game = {
 				"Charge Slash"
 			]
 		},
-		'RSB\'s Sword': {
+		'RSB Sword': {
 			type: "Sword",
 			level: 60,
 			techniques: [
@@ -247,7 +282,7 @@ Game = {
 				'AGI': 75
 			},
 			immunities: [],
-			weapon: "RSB's Sword",
+			weapon: "RSB Sword",
 			strategize: function(me, battle, turnPreview) {
 				enemies = battle.enemiesOf(me);
 				return {
@@ -270,6 +305,7 @@ Game = {
 	},
 	
 	initialPartyMembers: [
-		"Scott"
+		"Scott",
+		"maggie" /*ALPHA*/
 	]
 };

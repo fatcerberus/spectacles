@@ -76,6 +76,13 @@ BattleUnit.prototype.hp getter = function()
 	return this.hpValue;
 };
 
+// .isAlive property
+// Gets a value indicating whether the unit is still alive.
+BattleUnit.prototype.isAlive getter = function()
+{
+	return this.hp > 0;
+};
+
 // .isPartyMember property
 // Gets a value indicating whether or not the unit represents a party member.
 BattleUnit.prototype.isPartyMember getter = function()
@@ -94,6 +101,9 @@ BattleUnit.prototype.timeUntilNextTurn getter = function()
 // Advances the battler's CTB timer.
 BattleUnit.prototype.tick = function()
 {
+	if (!this.isAlive) {
+		return false;
+	}
 	--this.counter;
 	if (this.counter == 0) {
 		this.battle.suspend();
@@ -107,7 +117,7 @@ BattleUnit.prototype.tick = function()
 			if (this.partyMember != null) {
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
-				var technique = new MenuStrip(this.name + " [" + weaponName + "]", false, this.partyMember.techniques).open();
+				var technique = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false, this.partyMember.techniques).open();
 				
 				// var move = this.moveMenu.show();
 				var move = {
@@ -166,7 +176,7 @@ BattleUnit.prototype.removeStatus = function(statusName)
 			--i; continue;
 		}
 	}
-	Console.writeLine(this.name + " lost status " + statusName);
+	Console.writeLine(this.name + " stripped of status " + statusName);
 };
 
 // .die() method
@@ -252,6 +262,9 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
+		if (this.hpValue <= 0) {
+			Console.writeLine(this.name + " died from lack of HP");
+		}
 	} else {
 		this.heal(damageEvent.amount);
 	}

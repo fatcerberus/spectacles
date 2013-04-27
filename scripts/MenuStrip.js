@@ -22,16 +22,18 @@ function MenuStrip(title, isCancelable, items)
 		var litStripColor = CreateColor(255, 255, 255, this.visibility * 192);
 		var stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.flashLevel, 1.0 - this.flashLevel);
 		Rectangle(0, menuY, GetScreenWidth(), height, stripColor);
-		var normalTitleColor = CreateColor(128, 128, 128, this.visibility * 255);
+		var normalTitleColor = CreateColor(64, 64, 64, this.visibility * 255);
 		var litTitleColor = CreateColor(0, 0, 0, this.visibility * 255);
 		var titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.flashLevel, 1.0 - this.flashLevel);
+		this.font.setColorMask(CreateColor(0, 0, 0, this.visibility * 255));
+		this.font.drawText(6, menuY + 6, this.title);
 		this.font.setColorMask(titleColor);
 		this.font.drawText(5, menuY + 5, this.title);
 		this.carouselSurface.setBlendMode(REPLACE);
 		this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, CreateColor(0, 0, 0, 0));
 		this.carouselSurface.setBlendMode(BLEND);
 		var xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carouselSurface.width;
-		var normalItemColor = CreateColor(255, 255, 128, this.visibility * 255);
+		var normalItemColor = CreateColor(255, 192, 0, this.visibility * 255);
 		var litItemColor = CreateColor(128, 128, 64, this.visibility * 255);
 		var itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.flashLevel, 1.0 - this.flashLevel);
 		for (var i = -1; i <= this.menuItems.length; ++i) {
@@ -41,11 +43,12 @@ function MenuStrip(title, isCancelable, items)
 			} else if (i < 0) {
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
 			}
-			var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(this.menuItems[itemIndex]) / 2);
+			var itemText = this.menuItems[itemIndex];
+			var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
 			this.font.setColorMask(CreateColor(0, 0, 0, this.visibility * 255));
-			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, this.menuItems[itemIndex]);
+			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, itemText);
 			this.font.setColorMask(itemColor);
-			this.carouselSurface.drawText(this.font, textX - xOffset, 5, this.menuItems[itemIndex]);
+			this.carouselSurface.drawText(this.font, textX - xOffset, 5, itemText);
 		}
 		carouselX = GetScreenWidth() - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
 		this.carouselSurface.blit(carouselX, menuY);
@@ -65,7 +68,7 @@ function MenuStrip(title, isCancelable, items)
 	this.update = function() {
 		switch (this.mode) {
 			case "open":
-				this.visibility = Math.min(this.visibility + 2.5 / Engine.frameRate, 1.0);
+				this.visibility = Math.min(this.visibility + 5.0 / Engine.frameRate, 1.0);
 				if (this.visibility >= 1.0) {
 					this.mode = "idle";
 				}
@@ -86,14 +89,14 @@ function MenuStrip(title, isCancelable, items)
 				}
 				break;
 			case "choose":
-				this.flashLevel = Math.min(this.flashLevel + 10.0 / Engine.frameRate, 1.0);
+				this.flashLevel = Math.min(this.flashLevel + 20.0 / Engine.frameRate, 1.0);
 				if (this.flashLevel >= 1.0) {
 					this.mode = "close";
 				}
 				break;
 			case "close":
-				this.visibility = Math.max(this.visibility - 2.5 / Engine.frameRate, 0.0);
-				this.flashLevel = Math.max(this.flashLevel - 10.0 / Engine.frameRate, 0.0);
+				this.visibility = Math.max(this.visibility - 5.0 / Engine.frameRate, 0.0);
+				this.flashLevel = Math.max(this.flashLevel - 20.0 / Engine.frameRate, 0.0);
 				if (this.visibility <= 0.0) {
 					this.mode = "finish";
 				}
@@ -129,7 +132,8 @@ function MenuStrip(title, isCancelable, items)
 	this.font = GetSystemFont();
 	var carouselWidth = 0;
 	for (i = 0; i < this.menuItems.length; ++i) {
-		carouselWidth = Math.max(this.font.getStringWidth(this.menuItems[i]) + 10, carouselWidth);
+		var itemText = this.menuItems[i];
+		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 }
@@ -143,7 +147,7 @@ MenuStrip.prototype.open = function()
 	this.scrollProgress = 0.0;
 	this.flashLevel = 0.0;
 	this.mode = "open";
-	var menuThread = Threads.createEntityThread(this);
+	var menuThread = Threads.createEntityThread(this, 100);
 	Threads.waitFor(menuThread);
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem];
 };
