@@ -11,8 +11,10 @@ RequireScript("Core/Threads.js");
 // Arguments:
 //     title:        The menu title, which is displayed on the left side of the strip. Specify null or an empty string
 //                   for an untitled menu.
-//     isCancelable: true to allow the menu strip to be canceled without making a selection; false otherwise.
-//     items:        A list of the menu items to be shown in the menu.
+//     isCancelable: true to allow the menu to be canceled without making a selection; false otherwise.
+//     items:        Optional. A list of strings specifying names of items in the menu. This is useful for a basic impromptu
+//                   menu, but for more flexibility, you should omit this parameter and use the .addItem() method to populate the
+//                   menu instead.
 function MenuStrip(title, isCancelable, items)
 {
 	this.render = function() {
@@ -43,7 +45,7 @@ function MenuStrip(title, isCancelable, items)
 			} else if (i < 0) {
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
 			}
-			var itemText = this.menuItems[itemIndex];
+			var itemText = this.menuItems[itemIndex].text;
 			var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
 			this.font.setColorMask(CreateColor(0, 0, 0, this.visibility * 255));
 			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, itemText);
@@ -125,21 +127,41 @@ function MenuStrip(title, isCancelable, items)
 		}
 	};
 	
+	if (items === undefined) { items = null; }
+	
 	this.title = title != null ? title : "";
 	this.isCancelable = isCancelable;
-	this.menuItems = items;
 	this.selectedItem = 0;
 	this.font = GetSystemFont();
-	var carouselWidth = 0;
-	for (i = 0; i < this.menuItems.length; ++i) {
-		var itemText = this.menuItems[i];
-		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
+	this.menuItems = [];
+	this.carouselSurface = null;
+	if (items != null) {
+		for (var i = 0; i < items.length; ++i) {
+			this.addItem(items[i]);
+		}
 	}
-	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
+}
+
+// .addItem() method
+// Adds a tagged item to the menu strip.
+// Arguments:
+//     text: The text to display on the menu strip when the item is selected.
+//     tag:  Optional. An object to associate with the menu item. If this argument is not provided,
+//           the item text is used as the tag.
+MenuStrip.prototype.addItem = function(text, tag)
+{
+	if (tag === undefined) { tag = text; }
+	
+	this.menuItems.push({
+		text: text,
+		tag: tag
+	});
 }
 
 // .open() method
 // Opens the menu strip to allow the player to choose a menu item.
+// Returns:
+//     The tag associated with the chosen item.
 MenuStrip.prototype.open = function()
 {
 	this.visibility = 0.0;
@@ -147,7 +169,13 @@ MenuStrip.prototype.open = function()
 	this.scrollProgress = 0.0;
 	this.flashLevel = 0.0;
 	this.mode = "open";
+	var carouselWidth = 0;
+	for (i = 0; i < this.menuItems.length; ++i) {
+		var itemText = this.menuItems[i].text;
+		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
+	}
+	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 	var menuThread = Threads.createEntityThread(this, 100);
 	Threads.waitFor(menuThread);
-	return this.chosenItem === null ? null : this.menuItems[this.chosenItem];
+	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 };
