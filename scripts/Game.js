@@ -10,12 +10,12 @@ Game = {
 	defaultBattleBGM: null,
 	
 	namedStats: {
-		'VIT': "Vitality",
-		'STR': "Strength",
-		'DEF': "Defense",
-		'FOC': "Focus",
-		'MAG': "Magic",
-		'AGI': "Agility"
+		vit: "Vitality",
+		str: "Strength",
+		def: "Defense",
+		foc: "Focus",
+		mag: "Magic",
+		agi: "Agility"
 	},
 	
 	math: {
@@ -38,17 +38,17 @@ Game = {
 				return 0;
 			},
 			sword: function(attacker, target, power) {
-				return Math.floor(attacker.weapon.level * attacker.stats['STR'].value * power * (100 - target.stats['DEF'].value * 0.95) / 50000);
+				return Math.floor(attacker.weapon.level * attacker.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000);
 			}
 		},
 		enemyHP: function(enemyUnit) {
-			return enemyUnit.stats['VIT'].value * 100;
+			return enemyUnit.stats.vit.value * 100;
 		},
 		partyMemberHP: function(partyMember) {
-			return partyMember.stats['VIT'].value * 10;
+			return partyMember.stats.vit.value * 10;
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return rank * (101 - unit.stats['AGI'].value);
+			return rank * (101 - unit.stats.agi.value);
 		}
 	},
 	
@@ -57,12 +57,12 @@ Game = {
 			name: "Scott",
 			fullName: "Scott Starcross",
 			baseStats: {
-				'VIT': 70,
-				'STR': 70,
-				'DEF': 70,
-				'FOC': 70,
-				'MAG': 70,
-				'AGI': 70
+				vit: 70,
+				str: 70,
+				def: 70,
+				foc: 70,
+				mag: 70,
+				agi: 70
 			},
 			weapon: 'templeSword',
 			techniques: [
@@ -79,12 +79,12 @@ Game = {
 			name: "maggie",
 			fullName: "maggie",
 			baseStats: {
-				'VIT': 100,
-				'STR': 90,
-				'DEF': 85,
-				'FOC': 65,
-				'MAG': 30,
-				'AGI': 40
+				vit: 100,
+				str: 90,
+				def: 85,
+				foc: 65,
+				mag: 30,
+				agi: 40
 			},
 			weapon: null,
 			techniques: [
@@ -97,19 +97,22 @@ Game = {
 		offGuard: {
 			name: "Off-Guard",
 			beginTurn: function(subject, event) {
-				subject.removeStatus('offGuard');
+				subject.liftStatus('offGuard');
 			},
 			damaged: function(subject, event) {
 				if (event.cancel) {
 					return;
 				}
 				event.amount = Math.floor(event.amount * 1.5);
-				subject.removeStatus('offGuard');
+				subject.liftStatus('offGuard');
 			}
 		},
 		zombie: {
 			name: "Zombie",
 			healed: function(subject, event) {
+				if (event.isPriority) {
+					return;
+				}
 				subject.takeDamage(event.amount);
 				event.cancel = true;
 			}
@@ -132,7 +135,7 @@ Game = {
 		},
 		devour: function(user, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].die();
+				user.devour(targets[i]);
 			}
 		}
 	},
@@ -286,12 +289,12 @@ Game = {
 		robert2: {
 			name: "Robert",
 			baseStats: {
-				'VIT': 75,
-				'STR': 75,
-				'DEF': 75,
-				'FOC': 75,
-				'MAG': 75,
-				'AGI': 75
+				vit: 75,
+				str: 75,
+				def: 75,
+				foc: 75,
+				mag: 75,
+				agi: 75
 			},
 			immunities: [],
 			weapon: 'rsbSword',

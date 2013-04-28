@@ -73,6 +73,19 @@ Battle.prototype.battleLevel getter = function()
 	return this.setup.battleLevel;
 };
 
+// .enemiesOf() method
+// Gets a list of all units opposing a specified unit.
+// Arguments:
+//     unit: The unit for which to find enemies.
+Battle.prototype.enemiesOf = function(unit)
+{
+	if (unit.isPartyMember) {
+		return this.enemyUnits;
+	} else {
+		return this.playerUnits;
+	}
+};
+
 // .go() method
 // Starts the battle.
 Battle.prototype.go = function()
@@ -99,23 +112,6 @@ Battle.prototype.go = function()
 	return this.result;
 };
 
-// .suspend() method
-// Pauses the battle.
-Battle.prototype.suspend = function()
-{
-	++this.suspendCount;
-};
-
-// .resume() method
-// Resumes a previously-suspended battle.
-Battle.prototype.resume = function()
-{
-	--this.suspendCount;
-	if (this.suspendCount < 0) {
-		this.suspendCount = 0;
-	}
-};
-
 // .predictTurns() method
 // Takes a forecast of the next 10 units to act.
 // Arguments:
@@ -138,6 +134,16 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 	forecast = forecast.slice(0, 10);
 	Console.writeLine("Turn prediction - req. by: " + actingUnit.name + ", next: " + forecast[1].unit.name)
 	return forecast;
+};
+
+// .resume() method
+// Resumes a previously-suspended battle.
+Battle.prototype.resume = function()
+{
+	--this.suspendCount;
+	if (this.suspendCount < 0) {
+		this.suspendCount = 0;
+	}
 };
 
 // .runAction() method
@@ -171,15 +177,9 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 	this.enemyUnits.push(newUnit);
 };
 
-// .enemiesOf() method
-// Gets a list of all units opposing a specified unit.
-// Arguments:
-//     unit: The unit for which to find enemies.
-Battle.prototype.enemiesOf = function(unit)
+// .suspend() method
+// Pauses the battle.
+Battle.prototype.suspend = function()
 {
-	if (unit.isPartyMember) {
-		return this.enemyUnits;
-	} else {
-		return this.playerUnits;
-	}
+	++this.suspendCount;
 };

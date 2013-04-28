@@ -49,7 +49,7 @@ function BattleUnit(battle, basis)
 		this.maxHPValue = Game.math.enemyHP(this);
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 	}
-	this.hpValue = this.maxHPValue;
+	this.hpValue = this.maxHP;
 	this.statuses = [];
 	this.counter = 0;
 	this.actionQueue = [];
@@ -59,7 +59,7 @@ function BattleUnit(battle, basis)
 		turnsTaken: 0,
 	};
 	var unitType = this.partyMember != null ? "party" : "AI";
-	Console.writeLine("Created " + unitType + " unit " + this.name + " - maxHP: " + this.maxHPValue);
+	Console.writeLine("Created " + unitType + " unit " + this.name + " - maxHP: " + this.maxHP);
 	this.resetCounter(2);
 }
 
@@ -91,11 +91,134 @@ BattleUnit.prototype.isPartyMember getter = function()
 	return this.partyMember != null;
 };
 
+// .maxHP property
+// Gets the maximum amount of HP the unit can have at a time.
+BattleUnit.prototype.maxHP getter = function()
+{
+	return this.maxHPValue;
+}
+
 // .timeUntilNextTurn property
 // Gets the number of ticks until the battler can act.
 BattleUnit.prototype.timeUntilNextTurn getter = function()
 {
 	return this.counter;
+};
+
+// .addStatus() method
+// Inflicts a status effect on the battler.
+// Arguments:
+//     handle: The status class handle for the status to inflict.
+BattleUnit.prototype.addStatus = function(handle)
+{
+	var statusEffect = new StatusEffect(this, handle)
+	this.statuses.push(statusEffect);
+	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
+};
+
+// .devour() method
+// Causes another unit to get eaten by this one.
+// Arguments:
+//     unit: The BattleUnit getting eaten.
+BattleUnit.prototype.devour = function(unit)
+{
+	this.heal(this.maxHP * unit.health / 100, true);
+	unit.die();
+	Console.writeLine(unit.name + " got eaten by " + this.name);
+};
+
+// .die() method
+// Inflicts unconditional instant death on the battler.
+BattleUnit.prototype.die = function()
+{
+	this.takeDamage(this.maxHP, true);
+};
+
+// .heal() method
+// Restores a specified amount of the battler's HP.
+// Arguments:
+//     amount:     The number of hit points to restore.
+//     isPriority: Optional. If true, specifies a priority healing effect. Certain statuses (e.g. Zombie) use
+//                 this flag to determine how to act on the effect. Defaults to false.
+BattleUnit.prototype.heal = function(amount, isPriority)
+{
+	if (isPriority === undefined) { isPriority = false; }
+	
+	var healEvent = {
+		amount: Math.floor(amount),
+		isPriority: isPriority,
+		cancel: false
+	};
+	this.invokeAllStatuses("healed", healEvent);
+	if (healEvent.cancel) {
+		return;
+	}
+	if (healEvent.amount >= 0) {
+		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
+		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
+	} else {
+		this.takeDamage(healEvent.amount, true);
+	}
+};
+
+// .liftStatus() method
+// Removes a status's influence on the battler.
+// Arguments:
+//     handle: The status class handle of the status to remove.
+BattleUnit.prototype.liftStatus = function(handle)
+{
+	for (var i = 0; i < this.statuses.length; ++i) {
+		if (handle == this.statuses[i].handle) {
+			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
+			this.statuses.splice(i, 1);
+			--i; continue;
+		}
+	}
+};
+
+// .revive() method
+// Revives the battler from KO and restores HP.
+// Arguments:
+//     health: The percentage of the battler's HP to restore. Must be greater than zero.
+//             Defaults to 100.
+BattleUnit.prototype.revive = function(health)
+{
+	if (health === undefined) health = 100;
+	
+	this.hpValue = Math.min(Math.floor(this.maxHP * health / 100), this.maxHP);
+};
+
+// .takeDamage() method
+// Inflicts damage on the battler.
+// Arguments:
+//     amount:       Required. The amount of damage to inflict.
+//     ignoreDefend: If set to true, prevents damage reduction when the battler is defending.
+//                   Defaults to false.
+BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
+{
+	if (ignoreDefend === undefined) { ignoreDefend = false; }
+	
+	amount = Math.floor(amount);
+	if (this.isDefending && !ignoreDefend) {
+		amount = Math.ceil(amount / 2);
+	}
+	var damageEvent = {
+		amount: amount,
+		cancel: false
+	};
+	this.invokeAllStatuses("damaged", damageEvent);
+	if (damageEvent.cancel) {
+		return;
+	}
+	if (damageEvent.amount >= 0) {
+		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
+		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
+		if (this.hpValue <= 0) {
+			Console.writeLine(this.name + " died from lack of HP");
+		}
+	} else {
+		this.heal(damageEvent.amount);
+	}
 };
 
 // .tick() method
@@ -157,123 +280,6 @@ BattleUnit.prototype.tick = function()
 		return true;
 	} else {
 		return false;
-	}
-};
-
-// .addStatus() method
-// Inflicts a status effect on the battler.
-// Arguments:
-//     handle: The status class handle for the status to inflict.
-BattleUnit.prototype.addStatus = function(handle)
-{
-	var statusEffect = new StatusEffect(this, handle)
-	this.statuses.push(statusEffect);
-	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
-};
-
-// .removeStatus() method
-// Removes a status's influence on the battler.
-// Arguments:
-//     handle: The status class handle of the status to remove.
-BattleUnit.prototype.removeStatus = function(handle)
-{
-	for (var i = 0; i < this.statuses.length; ++i) {
-		if (handle == this.statuses[i].handle) {
-			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
-			this.statuses.splice(i, 1);
-			--i; continue;
-		}
-	}
-};
-
-// .die() method
-// Inflicts instant death on the battler.
-// Remarks:
-//     This is implemented by inflicting non-piercing damage on the unit equal to its Max HP.
-//     As such, defending will reduce this damage. This is intended.
-BattleUnit.prototype.die = function()
-{
-	this.takeDamage(this.maxHP);
-};
-
-// .heal() method
-// Restores a specified amount of the battler's HP.
-// Arguments:
-//     amount: The number of hit points to restore.
-BattleUnit.prototype.heal = function(amount)
-{
-	var healEvent = {
-		amount: Math.floor(amount),
-		cancel: false
-	};
-	this.invokeAllStatuses("healed", healEvent);
-	if (healEvent.cancel) {
-		return;
-	}
-	if (healEvent.amount >= 0) {
-		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
-		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
-	} else {
-		this.takeDamage(healEvent.amount, true);
-	}
-};
-
-// .liftStatus() method
-// Removes a status effect from the battler.
-// Arguments:
-//     statusType: The status to remove.
-BattleUnit.prototype.liftStatus = function(statusType)
-{
-	for (var i = 0; i < this.statuses.length; ++i) {
-		if (this.statuses[i] instanceof StatusType) {
-			this.statuses.splice(i, 1);
-			--i;
-		}
-	}
-};
-
-// .revive() method
-// Revives the battler from KO and restores HP.
-// Arguments:
-//     health: The percentage of the battler's HP to restore. Must be greater than zero.
-//             Defaults to 100.
-BattleUnit.prototype.revive = function(health)
-{
-	if (health === undefined) health = 100;
-	
-	this.hpValue = Math.min(Math.floor(this.maxHP * health / 100), this.maxHP);
-};
-
-// .takeDamage() method
-// Inflicts damage on the battler.
-// Arguments:
-//     amount:       Required. The amount of damage to inflict.
-//     ignoreDefend: If set to true, prevents damage reduction when the battler is defending.
-//                   Defaults to false.
-BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
-{
-	if (ignoreDefend === undefined) { ignoreDefend = false; }
-	
-	amount = Math.floor(amount);
-	if (this.isDefending && !ignoreDefend) {
-		amount = Math.ceil(amount / 2);
-	}
-	var damageEvent = {
-		amount: amount,
-		cancel: false
-	};
-	this.invokeAllStatuses("damaged", damageEvent);
-	if (damageEvent.cancel) {
-		return;
-	}
-	if (damageEvent.amount >= 0) {
-		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
-		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
-		if (this.hpValue <= 0) {
-			Console.writeLine(this.name + " died from lack of HP");
-		}
-	} else {
-		this.heal(damageEvent.amount);
 	}
 };
 
