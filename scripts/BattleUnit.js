@@ -124,7 +124,7 @@ BattleUnit.prototype.devour = function(unit)
 {
 	this.heal(this.maxHP * unit.health / 100, true);
 	unit.die();
-	Console.writeLine(unit.name + " got eaten by " + this.name);
+	Console.writeLine(this.name + " devoured " + unit.name);
 };
 
 // .die() method

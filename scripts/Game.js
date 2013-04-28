@@ -130,7 +130,7 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
 				var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
-				target.takeDamage(damage);
+				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
 			}
 		},
 		devour: function(user, targets, effect) {
