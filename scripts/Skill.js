@@ -8,14 +8,27 @@ RequireScript("Stat.js");
 // Skill() constructor
 // Creates an object representing a battler skill.
 // Arguments:
-//     techniqueName: The name of the technique represented by this skill.
-function Skill(techniqueName)
+//     handle: The handle of the technique embodied by the skill.
+function Skill(handle)
 {
-	this.techniqueName = techniqueName;
+	if (!(handle in Game.techniques)) {
+		Abort("Skill() - Technique '" + handle + "' doesn't exist.");
+	}
+	this.handle = handle;
+	this.techniqueClass = Game.techniques[this.handle];
 	this.level = new Stat(100);
 }
 
+// .name property
+// Gets the name of the skill.
 Skill.prototype.name getter = function()
 {
-	return this.techniqueName;
-}
+	return this.techniqueClass.name;
+};
+
+// .technique property
+// Gets the technique embodied by the skill.
+Skill.prototype.technique getter = function()
+{
+	return this.techniqueClass;
+};

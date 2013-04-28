@@ -20,24 +20,24 @@ Game = {
 	
 	math: {
 		accuracy: {
-			'Bow': function(attacker, target) {
+			bow: function(attacker, target) {
 				return 1.0;
 			}
 		},
 		damage: {
-			'Bow': function(attacker, target, power) {
+			bow: function(attacker, target, power) {
 				return 0;
 			},
-			'Gun': function(attacker, target, power) {
+			gun: function(attacker, target, power) {
 				return 0;
 			},
-			'Magic': function(attacker, target, power) {
+			magic: function(attacker, target, power) {
 				return 0;
 			},
-			'Physical': function(attacker, target, power) {
+			physical: function(attacker, target, power) {
 				return 0;
 			},
-			'Sword': function(attacker, target, power) {
+			sword: function(attacker, target, power) {
 				return Math.floor(attacker.weapon.level * attacker.stats['STR'].value * power * (100 - target.stats['DEF'].value * 0.95) / 50000);
 			}
 		},
@@ -53,7 +53,7 @@ Game = {
 	},
 	
 	characters: {
-		'Scott': {
+		scott: {
 			name: "Scott",
 			fullName: "Scott Starcross",
 			baseStats: {
@@ -64,18 +64,18 @@ Game = {
 				'MAG': 70,
 				'AGI': 70
 			},
-			weapon: "Temple Sword",
+			weapon: 'templeSword',
 			techniques: [
-				"Sword Slash",
-				"Quickstrike",
-				"Necromancy",
-				"Flare",
-				//"Chill",
-				//"Lightning",
-				//"Quake"
+				'swordSlash',
+				'quickstrike',
+				'necromancy',
+				'flare',
+				//'chill',
+				//'lightning',
+				//'Quake'
 			]
 		},
-		'maggie': {
+		maggie: {
 			name: "maggie",
 			fullName: "maggie",
 			baseStats: {
@@ -88,50 +88,58 @@ Game = {
 			},
 			weapon: null,
 			techniques: [
-				"Munch"
+				'munch'
 			]
 		}
 	},
 	
 	statuses: {
-		'Zombie': {
-			healed: function(subject, event) {
-				subject.takeDamage(event.amount);
-				event.cancel = true;
-			}
-		},
-		'Off-Guard': {
+		offGuard: {
+			name: "Off-Guard",
+			beginTurn: function(subject, event) {
+				subject.removeStatus('offGuard');
+			},
 			damaged: function(subject, event) {
 				if (event.cancel) {
 					return;
 				}
 				event.amount = Math.floor(event.amount * 1.5);
-				subject.removeStatus("Off-Guard");
+				subject.removeStatus('offGuard');
 			}
-		}
+		},
+		zombie: {
+			name: "Zombie",
+			healed: function(subject, event) {
+				subject.takeDamage(event.amount);
+				event.cancel = true;
+			}
+		},
 	},
 	
 	effects: {
-		'addstatus': function(user, targets, effect) {
+		addStatus: function(user, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].addStatus(effect.status);
 			}
 		},
-		'damage': function(user, targets, effect) {
+		damage: function(user, targets, effect) {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var damage = Math.floor(Game.math.damage[effect.category](user, target, effect.power) / reducer);
+				var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
 				target.takeDamage(damage);
 			}
 		},
-		'eat': function(user, targets, effect) {
-			
+		devour: function(user, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].die();
+			}
 		}
 	},
 	
 	techniques: {
-		'Sword Slash': {
+		swordSlash: {
+			name: "Sword Slash",
 			weaponType: "Sword",
 			category: "Attack",
 			targetType: "one",
@@ -141,15 +149,16 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "damage",
-							category: "Sword",
+							type: 'damage',
+							damageType: 'sword',
 							power: 25
 						}
 					]
 				}
 			]
 		},
-		'Quickstrike': {
+		quickstrike: {
+			name: "Quickstrike",
 			weaponType: "Sword",
 			category: "Attack",
 			targetType: "one",
@@ -159,15 +168,16 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "damage",
-							category: "Sword",
+							type: 'damage',
+							damageType: 'sword',
 							power: 10
 						}
 					]
 				}
 			]
 		},
-		'Charge Slash': {
+		chargeSlash: {
+			name: "Charge Slash",
 			weaponType: "Sword",
 			category: "Attack",
 			targetType: "one",
@@ -177,8 +187,8 @@ Game = {
 					effects: [
 						{
 							targetHint: "user",
-							type: "addstatus",
-							status: "Off-Guard"
+							type: 'addStatus',
+							status: 'offGuard'
 						}
 					]
 				},
@@ -187,15 +197,15 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "damage",
-							category: "Sword",
+							type: 'damage',
+							damageType: 'sword',
 							power: 50
 						}
 					]
 				}
 			]
 		},
-		'Necromancy': {
+		necromancy: {
 			weaponType: null,
 			category: "Strategy",
 			targetType: "one",
@@ -205,14 +215,15 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "addstatus",
-							status: "Zombie"
+							type: 'addStatus',
+							status: 'zombie'
 						}
 					]
 				}
 			]
 		},
-		'Flare': {
+		flare: {
+			name: "Flare",
 			weaponType: null,
 			category: "Magic",
 			targetType: "one",
@@ -222,15 +233,16 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "damage",
-							category: "Magic",
+							type: 'damage',
+							category: 'magic',
 							power: 35
 						}
 					],
 				}
 			]
 		},
-		'Munch': {
+		munch: {
+			name: "Munch",
 			weaponType: null,
 			category: "Attack",
 			targetType: "one",
@@ -240,7 +252,7 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: "eat"
+							type: 'devour'
 						}
 					],
 				}
@@ -249,29 +261,29 @@ Game = {
 	},
 	
 	weapons: {
-		'Temple Sword': {
+		templeSword: {
 			name: "Temple Sword",
 			type: "Sword",
 			level: 75,
 			techniques: [
-				"Sword Slash",
-				"Quickstrike",
-				"Charge Slash"
+				'swordSlash',
+				'quickstrike',
+				'chargeSlash'
 			]
 		},
-		'RSB Sword': {
+		rsbSword: {
 			type: "Sword",
 			level: 60,
 			techniques: [
-				"Sword Slash",
-				"Quickstrike",
-				"Charge Slash"
+				'swordSlash',
+				'quickStrike',
+				'chargeSlash'
 			]
 		}
 	},
 	
 	enemies: {
-		'Robert (II)': {
+		robert2: {
 			name: "Robert",
 			baseStats: {
 				'VIT': 75,
@@ -282,12 +294,12 @@ Game = {
 				'AGI': 75
 			},
 			immunities: [],
-			weapon: "RSB Sword",
+			weapon: 'rsbSword',
 			strategize: function(me, battle, turnPreview) {
 				enemies = battle.enemiesOf(me);
 				return {
 					type: "technique",
-					technique: "Charge Slash",
+					technique: 'chargeSlash',
 					targets: [ enemies[0] ],
 				};
 			}
@@ -299,13 +311,13 @@ Game = {
 			bgm: "MyDreamsButADropOfFuel",
 			battleLevel: 50,
 			enemies: [
-				"Robert (II)"
+				'robert2'
 			]
 		}
 	},
 	
 	initialPartyMembers: [
-		"Scott",
-		"maggie" /*ALPHA*/
+		'scott',
+		'maggie' /*ALPHA*/
 	]
 };

@@ -25,7 +25,7 @@ function PartyMember(character, battleLevel)
 		this.stats[name] = new Stat(this.character.baseStats[name], battleLevel, true, 1.0);
 	}
 	this.weapon = Game.weapons[this.character.weapon];
-	this.skills = [];
+	this.skillList = [];
 	for (var i = 0; i < this.character.techniques.length; ++i) {
 		this.learnSkill(this.character.techniques[i]);
 	}
@@ -42,28 +42,27 @@ PartyMember.prototype.battleLevel getter = function()
 	return Math.floor(sum / this.stats.length);
 };
 
-// .techniques property
-// Gets a list of the techniques the party member can currently use.
-PartyMember.prototype.techniques getter = function()
+// .skills property
+// Gets a list of the skills the party member can currently use.
+PartyMember.prototype.skills getter = function()
 {
-	var weaponType = this.weapon != null ? this.weapon.type : null;
-	var list = [];
-	for (var i = 0; i < this.skills.length; ++i) {
-		var technique = Game.techniques[this.skills[i].name];
-		if (technique.weaponType != null && weaponType != technique.weaponType) {
-			Abort(myWeaponType);
+	var heldWeaponType = this.weapon != null ? this.weapon.type : null;
+	var usableSkills = [];
+	for (var i = 0; i < this.skillList.length; ++i) {
+		var technique = this.skillList[i].technique;
+		if (technique.weaponType != null && heldWeaponType != technique.weaponType) {
 			continue;
 		}
-		list.push(this.skills[i].name);
+		usableSkills.push(this.skillList[i]);
 	}
-	return list;
+	return usableSkills;
 };
 
 // .learnSkill method
 // Grants the party member the ability to use a technique.
 // Arguments:
-//     technique: The technique to learn.
-PartyMember.prototype.learnSkill = function(techniqueName)
+//     handle: The handle of the technique to learn.
+PartyMember.prototype.learnSkill = function(handle)
 {
-	this.skills.push(new Skill(techniqueName));
+	this.skillList.push(new Skill(handle));
 };

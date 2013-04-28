@@ -9,37 +9,44 @@ RequireScript("Game.js");
 // Creates an object representing a status effect.
 // Arguments:
 //     subject: The BattleUnit affected by the status effect.
-//     name:    The name of the status class (e.g. "Poison") this effect represents.
-function StatusEffect(subject, name)
+//     handle:  The status definition handle, e.g. 'zombie', as listed in Game.js.
+function StatusEffect(subject, handle)
 {
-	if (!name in Game.statuses) {
-		Abort("[StatusEffect.js] Status():\nStatus class '" + name + "' doesn't exist.");
+	if (!(handle in Game.statuses)) {
+		Abort("Status():\nStatus class '" + handle + "' doesn't exist.");
 	}
-	this.displayName = name;
+	this.statusHandle = handle;
+	this.statusClass = Game.statuses[this.statusHandle];
 	this.subject = subject;
-	this.statusClass = Game.statuses[name];
 	this.context = {};
 }
+
+// .handle property
+// Gets the handle of the status class represented by this StatusEffect.
+StatusEffect.prototype.handle getter = function()
+{
+	return this.statusHandle;
+};
 
 // .name property
 // Gets the display name of the status effect
 StatusEffect.prototype.name getter = function()
 {
-	return this.displayName;
+	return this.statusClass.name;
 };
 
 // .invoke() method
 // Invokes the status, raising a specified status event.
 // Arguments:
-//     eventName: The name of the event to raise. If the correct hook function doesn't exist in
-//                the status definition, .invoke() does nothing.
+//     eventHandle: The handle of the event to raise. If the correct event hook doesn't exist in
+//                  the status definition, .invoke() does nothing.
 //     event:     An object specifying the parameters for the event. Note that the hook function may
 //                add or change properties in the event object.
-StatusEffect.prototype.invoke = function(eventName, event)
+StatusEffect.prototype.invoke = function(eventHandle, event)
 {
-	if (!(eventName in this.statusClass)) {
+	if (!(eventHandle in this.statusClass)) {
 		return;
 	}
-	Console.writeLine("Invoking status " + this.displayName + " - event: " + eventName);
-	this.statusClass[eventName].call(this.context, this.subject, event);
+	Console.writeLine("Invoking status " + this.name + " - event: " + eventHandle);
+	this.statusClass[eventHandle].call(this.context, this.subject, event);
 };

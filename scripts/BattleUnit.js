@@ -17,7 +17,8 @@ RequireScript("StatusEffect.js");
 //     basis:  The party member or enemy class to use as a basis for the unit.
 function BattleUnit(battle, basis)
 {
-	this.invokeStatuses = function(eventName, event) {
+	this.invokeAllStatuses = function(eventName, event) {
+		if (event === undefined) { event = null; }
 		for (var i = 0; i < this.statuses.length; ++i) {
 			this.statuses[i].invoke(eventName, event);
 		}
@@ -109,17 +110,22 @@ BattleUnit.prototype.tick = function()
 		this.battle.suspend();
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
+		this.invokeAllStatuses('beginTurn');
 		var action = null;
 		if (this.actionQueue.length > 0) {
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
 			if (this.partyMember != null) {
+				// var move = this.moveMenu.show();
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
-				var technique = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false, this.partyMember.techniques).open();
-				
-				// var move = this.moveMenu.show();
+				var skillList = this.partyMember.skills;
+				var moveMenu = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false);
+				for (var i = 0; i < skillList.length; ++i) {
+					moveMenu.addItem(skillList[i].name, skillList[i].technique);
+				}
+				var technique = moveMenu.open();
 				var move = {
 					type: "technique",
 					technique: technique,
@@ -129,17 +135,17 @@ BattleUnit.prototype.tick = function()
 				}
 			} else {
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
+				move.technique = Game.techniques[move.technique];
 			}
-			var technique = Game.techniques[move.technique];
-			var moveOutput = this.name + " is using " + move.technique;
-			if (this.weapon != null && technique.weaponType != null) {
+			var moveOutput = this.name + " is using " + move.technique.name;
+			if (this.weapon != null && move.technique.weaponType != null) {
 				moveOutput += " - weaponLv: " + this.weapon.level;
 			}
 			Console.writeLine(moveOutput);
 			this.moveTargets = move.targets;
-			var action = technique.actions[0];
-			for (var i = 1; i < technique.actions.length; ++i) {
-				this.actionQueue.push(technique.actions[i]);
+			var action = move.technique.actions[0];
+			for (var i = 1; i < move.technique.actions.length; ++i) {
+				this.actionQueue.push(move.technique.actions[i]);
 			}
 			if (this.actionQueue.length > 0) {
 				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
@@ -157,26 +163,27 @@ BattleUnit.prototype.tick = function()
 // .addStatus() method
 // Inflicts a status effect on the battler.
 // Arguments:
-//     statusName: The name of the status to inflict.
-BattleUnit.prototype.addStatus = function(statusName)
+//     handle: The status class handle for the status to inflict.
+BattleUnit.prototype.addStatus = function(handle)
 {
-	this.statuses.push(new StatusEffect(this, statusName));
-	Console.writeLine(this.name + " afflicted with status " + statusName);
+	var statusEffect = new StatusEffect(this, handle)
+	this.statuses.push(statusEffect);
+	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
 };
 
 // .removeStatus() method
 // Removes a status's influence on the battler.
 // Arguments:
-//     statusName: The name of the status to remove.
-BattleUnit.prototype.removeStatus = function(statusName)
+//     handle: The status class handle of the status to remove.
+BattleUnit.prototype.removeStatus = function(handle)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
-		if (statusName == this.statuses[i].name) {
+		if (handle == this.statuses[i].handle) {
+			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;
 		}
 	}
-	Console.writeLine(this.name + " stripped of status " + statusName);
 };
 
 // .die() method
@@ -199,7 +206,7 @@ BattleUnit.prototype.heal = function(amount)
 		amount: Math.floor(amount),
 		cancel: false
 	};
-	this.invokeStatuses("healed", healEvent);
+	this.invokeAllStatuses("healed", healEvent);
 	if (healEvent.cancel) {
 		return;
 	}
@@ -255,7 +262,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		amount: amount,
 		cancel: false
 	};
-	this.invokeStatuses("damaged", damageEvent);
+	this.invokeAllStatuses("damaged", damageEvent);
 	if (damageEvent.cancel) {
 		return;
 	}
