@@ -40,6 +40,10 @@ function BattleUnit(battle, basis)
 		}
 		this.maxHPValue = Game.math.partyMemberHP(this.partyMember);
 		this.weapon = this.partyMember.weapon;
+		this.skills = [];
+		for (var i = 0; i < this.partyMember.skills.length; ++i) {
+			this.skills.push(this.partyMember.skills[i]);
+		}
 	} else {
 		this.enemyInfo = basis;
 		this.name = this.enemyInfo.name;
@@ -49,6 +53,7 @@ function BattleUnit(battle, basis)
 		this.maxHPValue = Game.math.enemyHP(this);
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 	}
+	this.newSkills = [];
 	this.hpValue = this.maxHP;
 	this.statuses = [];
 	this.counter = 0;
@@ -91,6 +96,17 @@ BattleUnit.prototype.isPartyMember getter = function()
 	return this.partyMember != null;
 };
 
+// .level property
+// Gets the unit's battle level.
+BattleUnit.prototype.level getter = function()
+{
+	if (this.partyMember != null) {
+		return this.partyMember.level;
+	} else {
+		return this.battle.battleLevel;
+	}
+};
+
 // .maxHP property
 // Gets the maximum amount of HP the unit can have at a time.
 BattleUnit.prototype.maxHP getter = function()
@@ -119,12 +135,16 @@ BattleUnit.prototype.addStatus = function(handle)
 // .devour() method
 // Causes another unit to get eaten by this one.
 // Arguments:
-//     unit: The BattleUnit getting eaten.
-BattleUnit.prototype.devour = function(unit)
+//     unitToEat: The BattleUnit being eaten.
+BattleUnit.prototype.devour = function(unitToEat)
 {
-	this.heal(this.maxHP * unit.health / 100, true);
-	unit.die();
-	Console.writeLine(this.name + " devoured " + unit.name);
+	this.heal(this.maxHP * unitToEat.health / 100, true);
+	if (this.isPartyMember && !unitToEat.isPartyMember) {
+		var munchGrowth = unitToEat.enemyInfo.munchGrowth;
+		this.growSkill(munchGrowth.technique, munchGrowth.experience);
+	}
+	unitToEat.die();
+	Console.writeLine(unitToEat.name + " successfully eaten by " + this.name);
 };
 
 // .die() method
@@ -158,6 +178,30 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
+	}
+};
+
+// .growSkill() method
+// Adds experience to a party unit's existing skill or teaches it a new one.
+// Arguments:
+//     handle:     The technique handle for the skill to grow. If the unit doesn't already know the technique,
+//                 it will be taught.
+//     experience: The amount of experience to add to an existing skill.
+BattleUnit.prototype.growSkill = function(handle, experience)
+{
+	var hasSkill = false;
+	for (var i = 0; i < this.skills.length; ++i) {
+		if (handle == this.skills[i].handle) {
+			hasSkill = true;
+			this.skills[i].experience += experience;
+			Console.writeLine(this.name + "'s skill " + this.skills[i].name + " gained " + experience + " EXP");
+		}
+	}
+	if (!hasSkill) {
+		var skill = this.partyMember.learnSkill(handle);
+		this.skills.push(skill);
+		this.newSkills.push(skill);
+		Console.writeLine(this.name + " learned " + skill.name);
 	}
 };
 
@@ -243,10 +287,9 @@ BattleUnit.prototype.tick = function()
 				// var move = this.moveMenu.show();
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
-				var skillList = this.partyMember.skills;
 				var moveMenu = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false);
-				for (var i = 0; i < skillList.length; ++i) {
-					moveMenu.addItem(skillList[i].name, skillList[i].technique);
+				for (var i = 0; i < this.skills.length; ++i) {
+					moveMenu.addItem(this.skills[i].name, this.skills[i].technique);
 				}
 				var technique = moveMenu.open();
 				var move = {

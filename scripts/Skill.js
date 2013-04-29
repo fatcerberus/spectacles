@@ -19,6 +19,17 @@ function Skill(handle)
 	this.level = new Stat(100);
 }
 
+// .experience property
+// Gets or sets the skill's experience point count.
+Skill.prototype.experience getter = function()
+{
+	return this.level.experience;
+};
+Skill.prototype.experience setter = function(value)
+{
+	this.level.experience = value;
+};
+
 // .name property
 // Gets the name of the skill.
 Skill.prototype.name getter = function()

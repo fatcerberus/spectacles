@@ -18,6 +18,14 @@ Game = {
 		agi: "Agility"
 	},
 	
+	elements: {
+		fire: "Fire",
+		ice: "Ice",
+		lightning: "Lightning",
+		earth: "Earth",
+		fat: "Fat"
+	},
+	
 	math: {
 		accuracy: {
 			bow: function(attacker, target) {
@@ -32,7 +40,7 @@ Game = {
 				return 0;
 			},
 			magic: function(attacker, target, power) {
-				return 0;
+				return Math.floor(attacker.level * power * (attacker.stats.mag.value * 2 + attacker.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000);
 			},
 			physical: function(attacker, target, power) {
 				return 0;
@@ -64,15 +72,12 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
-			weapon: 'templeSword',
+			startingWeapon: 'templeSword',
 			techniques: [
 				'swordSlash',
 				'quickstrike',
 				'necromancy',
-				'flare',
-				//'chill',
-				//'lightning',
-				//'Quake'
+				'omni'
 			]
 		},
 		maggie: {
@@ -86,9 +91,9 @@ Game = {
 				mag: 30,
 				agi: 40
 			},
-			weapon: null,
 			techniques: [
-				'munch'
+				'munch',
+				'fatSlam'
 			]
 		}
 	},
@@ -105,6 +110,9 @@ Game = {
 				}
 				event.amount = Math.floor(event.amount * 1.5);
 				subject.liftStatus('offGuard');
+			},
+			getEaten: function(subject, event) {
+				event.successOdds *= 2.0;
 			}
 		},
 		zombie: {
@@ -209,6 +217,7 @@ Game = {
 			]
 		},
 		necromancy: {
+			name: "Necromancy",
 			weaponType: null,
 			category: "Strategy",
 			targetType: "one",
@@ -237,8 +246,28 @@ Game = {
 						{
 							targetHint: "selected",
 							type: 'damage',
-							category: 'magic',
-							power: 35
+							damageType: 'magic',
+							power: 35,
+							element: 'fire'
+						}
+					],
+				}
+			]
+		},
+		omni: {
+			name: "Omni",
+			weaponType: null,
+			category: "Magic",
+			targetType: "one",
+			actions: [
+				{
+					rank: 4,
+					effects: [
+						{
+							targetHint: "selected",
+							type: 'damage',
+							damageType: 'magic',
+							power: 100
 						}
 					],
 				}
@@ -256,6 +285,26 @@ Game = {
 						{
 							targetHint: "selected",
 							type: 'devour'
+						}
+					],
+				}
+			]
+		},
+		fatSlam: {
+			name: "Fat Slam",
+			weaponType: null,
+			category: "Attack",
+			targetType: "one",
+			actions: [
+				{
+					rank: 3,
+					effects: [
+						{
+							targetHint: "selected",
+							type: 'damage',
+							damageType: 'physical',
+							power: 75,
+							element: 'fat'
 						}
 					],
 				}
@@ -298,6 +347,10 @@ Game = {
 			},
 			immunities: [],
 			weapon: 'rsbSword',
+			munchGrowth: {
+				technique: 'omni',
+				experience: 1000
+			},
 			strategize: function(me, battle, turnPreview) {
 				enemies = battle.enemiesOf(me);
 				return {
