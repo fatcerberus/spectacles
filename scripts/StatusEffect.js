@@ -47,6 +47,7 @@ StatusEffect.prototype.invoke = function(eventHandle, event)
 	if (!(eventHandle in this.statusClass)) {
 		return;
 	}
-	Console.writeLine("Invoking status " + this.name + " - event: " + eventHandle);
+	Console.writeLine("Invoking status " + this.name);
+	Console.append("event: " + eventHandle);
 	this.statusClass[eventHandle].call(this.context, this.subject, event);
 };

@@ -37,7 +37,8 @@ function Console(numLines)
 	this.font = GetSystemFont();
 	this.fader = new Fader(0.0);
 	this.thread = Threads.createEntityThread(this, 100);
-	this.writeLine("Specs Engine v6.0  (c)2013 Power-Command");
+	this.writeLine("Specs Engine v6.0");
+	this.append("(c)2013 Power-Command");
 	this.writeLine("");
 	this.show();
 }
@@ -47,6 +48,20 @@ function Console(numLines)
 Console.prototype.dispose = function()
 {
 	Threads.kill(this.thread);
+};
+
+// .append() method
+// Appends additional output text to the last line in the console.
+// Arguments:
+//     text: The text to append.
+Console.prototype.append = function(text)
+{
+	if (this.nextLine == 0) {
+		Console.writeLine(text);
+		return;
+	}
+	var lineInBuffer = (this.nextLine - 1) % this.numLines;
+	this.buffer[lineInBuffer] += " >>" + text;
 };
 
 // .hide() method

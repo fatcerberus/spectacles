@@ -63,7 +63,8 @@ function Battle(session, battleClass)
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
-	Console.writeLine("Battle session prepared - battledef: " + battleClass);
+	Console.writeLine("Battle session prepared");
+	Console.append("battledef " + battleClass);
 }
 
 // .battleLevel property
@@ -132,7 +133,9 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
 	forecast = forecast.slice(0, 10);
-	Console.writeLine("Turn prediction - req. by: " + actingUnit.name + ", next: " + forecast[1].unit.name)
+	Console.writeLine("Turn prediction");
+	Console.append("rq. by " + actingUnit.name);
+	Console.append("next: " + forecast[1].unit.name)
 	return forecast;
 };
 
@@ -162,7 +165,8 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 			effectTargets = [ actingUnit ];
 		}
 		var effect = Game.effects[action.effects[i].type];
-		Console.writeLine("Applying effect '" + action.effects[i].type + "' - retarget: " + action.effects[i].targetHint);
+		Console.writeLine("Applying effect '" + action.effects[i].type + "'");
+		Console.append("retarget: " + action.effects[i].targetHint);
 		effect(actingUnit, effectTargets, action.effects[i]);
 	}
 };

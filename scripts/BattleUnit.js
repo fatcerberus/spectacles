@@ -64,7 +64,8 @@ function BattleUnit(battle, basis)
 		turnsTaken: 0,
 	};
 	var unitType = this.partyMember != null ? "party" : "AI";
-	Console.writeLine("Created " + unitType + " unit " + this.name + " - maxHP: " + this.maxHP);
+	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
+	Console.append("maxHP: " + this.maxHP);
 	this.resetCounter(2);
 }
 
@@ -303,11 +304,10 @@ BattleUnit.prototype.tick = function()
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
 				move.technique = Game.techniques[move.technique];
 			}
-			var moveOutput = this.name + " is using " + move.technique.name;
+			Console.writeLine(this.name + " is using " + move.technique.name);
 			if (this.weapon != null && move.technique.weaponType != null) {
-				moveOutput += " - weaponLv: " + this.weapon.level;
+				Console.append("weaponLv: " + this.weapon.level);
 			}
-			Console.writeLine(moveOutput);
 			this.moveTargets = move.targets;
 			var action = move.technique.actions[0];
 			for (var i = 1; i < move.technique.actions.length; ++i) {
