@@ -139,13 +139,25 @@ BattleUnit.prototype.addStatus = function(handle)
 //     unitToEat: The BattleUnit being eaten.
 BattleUnit.prototype.devour = function(unitToEat)
 {
-	this.heal(this.maxHP * unitToEat.health / 100, true);
-	if (this.isPartyMember && !unitToEat.isPartyMember) {
-		var munchGrowth = unitToEat.enemyInfo.munchGrowth;
-		this.growSkill(munchGrowth.technique, munchGrowth.experience);
+	var munchEffect = {
+		odds: (101 - unitToEat.health) / 1000,
+		cancel: false
+	};
+	unitToEat.invokeAllStatuses("getEaten", munchEffect);
+	Console.writeLine("Odds of " + unitToEat.name + " getting eaten are ~1:" + Math.round(1 / munchEffect.odds));
+	if (!munchEffect.cancel && Math.random() < munchEffect.odds) {
+		this.heal(this.maxHP * unitToEat.health / 100, true);
+		if (this.isPartyMember && !unitToEat.isPartyMember) {
+			var munchGrowth = unitToEat.enemyInfo.munchGrowth;
+			this.growSkill(munchGrowth.technique, munchGrowth.experience);
+		}
+		unitToEat.die();
+		var munchSound = LoadSound("Munch.wav", false);
+		munchSound.play(false);
+		Console.writeLine(unitToEat.name + " successfully eaten by " + this.name);
+	} else {
+		Console.writeLine(this.name + " failed to eat " + unitToEat.name);
 	}
-	unitToEat.die();
-	Console.writeLine(unitToEat.name + " successfully eaten by " + this.name);
 };
 
 // .die() method
