@@ -80,6 +80,9 @@ Game = {
 		partyMemberHP: function(partyMember) {
 			return partyMember.stats.vit.value * 10;
 		},
+		retreatChance: function(enemyUnits) {
+			return 1.0;
+		},
 		timeUntilNextTurn: function(unit, rank) {
 			return rank * (101 - unit.stats.agi.value);
 		}
@@ -184,6 +187,14 @@ Game = {
 				{
 					rank: 2,
 					accuracyType: 'sword',
+					baseExperience: {
+						user: {
+							str: 1
+						},
+						target: {
+							def: 1
+						}
+					},
 					effects: [
 						{
 							targetHint: "selected",
@@ -204,6 +215,11 @@ Game = {
 				{
 					rank: 1,
 					accuracyType: 'sword',
+					baseExperience: {
+						user: {
+							str: 1
+						}
+					},
 					effects: [
 						{
 							targetHint: "selected",

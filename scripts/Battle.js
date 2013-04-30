@@ -165,8 +165,8 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 	if ('accuracyType' in action) {
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (var i = 0; i < targetUnits.length; ++i) {
-			var odds = Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]) * accuracyRate;
-			Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + Math.round(1 / odds));
+			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]) * accuracyRate, 0.0), 1.0);
+			Console.writeLine("Odds against hitting " + targetUnits[i].name + " are " + (Math.round(1 / odds) - 1) + ":1");
 			if (Math.random() < odds) {
 				targetsHit.push(targetUnits[i]);
 			} else {
@@ -178,6 +178,33 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 	}
 	if (targetsHit.length == 0) {
 		return;
+	}
+	if ('baseExperience' in action) {
+		if ('user' in action.baseExperience && actingUnit.isPartyMember) {
+			for (var stat in Game.namedStats) {
+				if (stat in action.baseExperience.user) {
+					var experience = action.baseExperience.user[stat];
+					actingUnit.stats[stat].experience += experience;
+					Console.writeLine(actingUnit.name + " gained " + experience + " EXP for " + Game.namedStats[stat]);
+					Console.append("value: " + actingUnit.stats[stat].value);
+				}
+			}
+		}
+		if ('target' in action.baseExperience) {
+			for (var i = 0; i < targetsHit.length; ++i) {
+				if (!targetsHit[i].partyMember) {
+					continue;
+				}
+				for (var stat in Game.namedStats) {
+					if (stat in action.baseExperience.target) {
+						var experience = action.baseExperience.target[stat];
+						targetsHit[i].stats[stat].experience += experience;
+						Console.writeLine(targetsHit[i].name + " gained " + experience + " EXP for " + Game.namedStats[stat]);
+						Console.append("value: " + targetsHit[i].stats[stat].value);
+					}
+				}
+			}
+		}
 	}
 	for (var i = 0; i < action.effects.length; ++i) {
 		var effectTargets = null;

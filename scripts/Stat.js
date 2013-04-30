@@ -44,6 +44,9 @@ function Stat(baseValue, initialLevel, enableGrowth, growthRate)
 	};
 	this.experience setter = function(value)
 	{
+		if (!this.isGrowthEnabled) {
+			Abort("Stat.experience - Can't change experience value for fixed stat");
+		}
 		var previousLevel = this.level;
 		this.experiencePoints = Math.min(Math.max(value, 0), this.levelUpExperience[100]);
 		var newLevel = this.level;
