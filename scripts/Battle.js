@@ -163,8 +163,10 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 {
 	var targetsHit = [];
 	if ('accuracyType' in action) {
+		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (var i = 0; i < targetUnits.length; ++i) {
-			var odds = Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]);
+			var odds = Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]) * accuracyRate;
+			Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + Math.round(1 / odds));
 			if (Math.random() < odds) {
 				targetsHit.push(targetUnits[i]);
 			} else {

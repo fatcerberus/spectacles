@@ -99,7 +99,6 @@ Game = {
 			},
 			startingWeapon: 'templeSword',
 			techniques: [
-				'munch',
 				'swordSlash',
 				'quickstrike',
 				'necromancy',
