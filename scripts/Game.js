@@ -7,7 +7,9 @@
 // Represents the game.
 Game = {
 	title: "Spectacles: Bruce's Story",
+	
 	defaultBattleBGM: null,
+	defaultMoveRank: 2,
 	
 	namedStats: {
 		vit: "Vitality",
@@ -33,23 +35,35 @@ Game = {
 			},
 			devour: function(user, target) {
 				return (user.health - target.health + 1) / 5000;
+			},
+			gun: function(user, target) {
+				return 1.0;
+			},
+			magic: function(user, target) {
+				return 1.0;
+			},
+			physical: function(user, target) {
+				return 1.0;
+			},
+			sword: function(user, target) {
+				return 1.0;
 			}
 		},
 		damage: {
 			bow: function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			gun: function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			magic: function(attacker, target, power) {
-				return Math.floor(attacker.level * power * (attacker.stats.mag.value * 2 + attacker.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000);
+				return Math.max(Math.floor(attacker.level * power * (attacker.stats.mag.value * 2 + attacker.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000), 1);
 			},
 			physical: function(attacker, target, power) {
-				return 0;
+				return 1;
 			},
 			sword: function(attacker, target, power) {
-				return Math.floor(attacker.weapon.level * attacker.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000);
+				return Math.max(Math.floor(attacker.weapon.level * attacker.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000), 1);
 			}
 		},
 		enemyHP: function(enemyUnit) {
@@ -137,8 +151,13 @@ Game = {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
-				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
+				var odds = Game.math.accuracy[effect.damageType](user, target);
+				if (Math.random() < odds) {
+					var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
+					target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
+				} else {
+					target.evade(user);
+				}
 			}
 		},
 		devour: function(user, targets, effect) {
@@ -151,7 +170,7 @@ Game = {
 					}
 					targets[i].die();
 				} else {
-					user.whiff();
+					targets[i].evade(user);
 				}
 			}
 		}
@@ -162,7 +181,7 @@ Game = {
 			name: "Sword Slash",
 			weaponType: "Sword",
 			category: "Attack",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 2,
@@ -181,7 +200,7 @@ Game = {
 			name: "Quickstrike",
 			weaponType: "Sword",
 			category: "Attack",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 1,
@@ -200,7 +219,7 @@ Game = {
 			name: "Charge Slash",
 			weaponType: "Sword",
 			category: "Attack",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 3,
@@ -229,7 +248,7 @@ Game = {
 			name: "Necromancy",
 			weaponType: null,
 			category: "Strategy",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 3,
@@ -247,7 +266,7 @@ Game = {
 			name: "Flare",
 			weaponType: null,
 			category: "Magic",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 2,
@@ -267,7 +286,7 @@ Game = {
 			name: "Omni",
 			weaponType: null,
 			category: "Magic",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 4,
@@ -286,7 +305,7 @@ Game = {
 			name: "Munch",
 			weaponType: null,
 			category: "Attack",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 5,
@@ -304,7 +323,7 @@ Game = {
 			name: "Fat Slam",
 			weaponType: null,
 			category: "Attack",
-			targetType: "one",
+			targetType: "single",
 			actions: [
 				{
 					rank: 3,

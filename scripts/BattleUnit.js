@@ -25,7 +25,8 @@ function BattleUnit(battle, basis)
 	};
 	this.resetCounter = function(rank) {
 		this.counter = Game.math.timeUntilNextTurn(this, rank);
-		Console.writeLine(this.name + "'s CV reset to " + this.counter + " (rank " + rank + ")");
+		Console.writeLine(this.name + "'s CV reset to " + this.counter);
+		Console.append("rank: " + rank);
 	};
 	
 	this.battle = battle;
@@ -66,7 +67,7 @@ function BattleUnit(battle, basis)
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
-	this.resetCounter(2);
+	this.resetCounter(Game.defaultMoveRank);
 }
 
 // .health property
@@ -139,6 +140,15 @@ BattleUnit.prototype.die = function()
 {
 	Console.writeLine(this.name + " afflicted with instant death");
 	this.hpValue = 0;
+};
+
+// .evade() method
+// Applies evasion bonuses when an attack misses.
+// Arguments:
+//     attacker: The BattleUnit whose attack was evaded.
+BattleUnit.prototype.evade = function(attacker)
+{
+	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
 // .heal() method
@@ -253,7 +263,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 };
 
 // .tick() method
-// Advances the battler's CTB timer.
+// Decrements the battler's CTB counter.
 BattleUnit.prototype.tick = function()
 {
 	if (!this.isAlive) {
@@ -315,31 +325,24 @@ BattleUnit.prototype.tick = function()
 // .timeUntilTurn() method
 // Estimates the time remaining until a future turn.
 // Arguments:
-//     turnIndex:   Required. How many turns ahead to look. Zero means the next turn.
-//     assumedRank: The rank to assume when the move to be used isn't known.
-//                  Defaults to 2.
-//     nextMoves:   The move(s) the battler will perform next, if any.
+//     turnIndex:   How many turns ahead to look. Zero means the next turn.
+//     assumedRank: Optional. The action rank to assume when the exact move to be used isn't known.
+//                  If this is not specified, the value of Game.defaultMoveRank is used.
+//     nextActions: Optional. The action(s) the battler is to perform next.
 // Returns:
 //     The estimated number of ticks until the specified turn.
-BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextMoves)
+BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextActions)
 {
-	if (assumedRank === undefined) assumedRank = 2;
-	if (nextMoves === undefined) nextMoves = null;
+	if (assumedRank === undefined) { assumedRank = Game.defaultMoveRank; }
+	if (nextActions === undefined) { nextActions = null; }
 	
 	var timeLeft = this.counter;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
-		if (nextMoves !== null && i <= nextMoves.length) {
-			rank = nextMoves[i].rank;
+		if (nextActions !== null && i <= nextActions.length) {
+			rank = nextActions[i].rank;
 		}
 		timeLeft += Game.math.timeUntilNextTurn(this, rank);
 	}
 	return timeLeft;
 }
-
-// .whiff() method
-// Declares that an action performed by the BattleUnit failed.
-BattleUnit.prototype.whiff = function()
-{
-	Console.writeLine("Action originated by " + this.name + " was evaded");
-};

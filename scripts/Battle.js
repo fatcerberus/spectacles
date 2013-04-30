@@ -130,7 +130,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
 				var unit = unitLists[iList][i];
-				var timeUntilUp = unit.timeUntilTurn(turnIndex, 3, (actingUnit === unit) ? nextMoves : null);
+				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextMoves : null);
 				forecast.push({ unit: unit, remainingTime: timeUntilUp });
 			}
 		}
@@ -138,7 +138,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
 	forecast = forecast.slice(0, 10);
 	Console.writeLine("Turn prediction");
-	Console.append("rq. by " + actingUnit.name);
+	Console.append("reqBy: " + actingUnit.name);
 	Console.append("next: " + forecast[1].unit.name)
 	return forecast;
 };
