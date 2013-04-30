@@ -28,6 +28,14 @@ Game = {
 		fat: "Fat"
 	},
 	
+	weaponTypes: {
+		bow: "Bow",
+		guitar: "Guitar",
+		pistol: "Pistol",
+		rifle: "Rifle",
+		sword: "Sword"
+	},
+	
 	math: {
 		accuracy: {
 			bow: function(user, target) {
@@ -36,7 +44,7 @@ Game = {
 			devour: function(user, target) {
 				return (user.health - target.health + 1) / 5000;
 			},
-			gun: function(user, target) {
+			pistol: function(user, target) {
 				return 1.0;
 			},
 			magic: function(user, target) {
@@ -91,6 +99,7 @@ Game = {
 			},
 			startingWeapon: 'templeSword',
 			techniques: [
+				'munch',
 				'swordSlash',
 				'quickstrike',
 				'necromancy',
@@ -151,27 +160,17 @@ Game = {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var odds = Game.math.accuracy[effect.damageType](user, target);
-				if (Math.random() < odds) {
-					var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
-					target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
-				} else {
-					target.evade(user);
-				}
+				var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
+				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
 			}
 		},
 		devour: function(user, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				var odds = Game.math.accuracy.devour(user, targets[i]) * effect.successRate;
-				if (Math.random() < odds) {
-					if (!targets[i].isPartyMember) {
-						var munchGrowthInfo = targets[i].enemyInfo.munchGrowth;
-						user.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
-					}
-					targets[i].die();
-				} else {
-					targets[i].evade(user);
+				if (!targets[i].isPartyMember) {
+					var munchGrowthInfo = targets[i].enemyInfo.munchGrowth;
+					user.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
 				}
+				targets[i].die();
 			}
 		}
 	},
@@ -179,12 +178,13 @@ Game = {
 	techniques: {
 		swordSlash: {
 			name: "Sword Slash",
-			weaponType: "Sword",
-			category: "Attack",
+			category: 'attack',
+			weaponType: 'sword',
 			targetType: "single",
 			actions: [
 				{
 					rank: 2,
+					accuracyType: 'sword',
 					effects: [
 						{
 							targetHint: "selected",
@@ -198,12 +198,13 @@ Game = {
 		},
 		quickstrike: {
 			name: "Quickstrike",
-			weaponType: "Sword",
-			category: "Attack",
+			category: 'attack',
+			weaponType: 'sword',
 			targetType: "single",
 			actions: [
 				{
 					rank: 1,
+					accuracyType: 'sword',
 					effects: [
 						{
 							targetHint: "selected",
@@ -217,8 +218,8 @@ Game = {
 		},
 		chargeSlash: {
 			name: "Charge Slash",
-			weaponType: "Sword",
-			category: "Attack",
+			category: 'attack',
+			weaponType: 'sword',
 			targetType: "single",
 			actions: [
 				{
@@ -233,6 +234,7 @@ Game = {
 				},
 				{
 					rank: 2,
+					accuracyType: 'sword',
 					effects: [
 						{
 							targetHint: "selected",
@@ -246,8 +248,7 @@ Game = {
 		},
 		necromancy: {
 			name: "Necromancy",
-			weaponType: null,
-			category: "Strategy",
+			category: 'strategy',
 			targetType: "single",
 			actions: [
 				{
@@ -264,12 +265,12 @@ Game = {
 		},
 		flare: {
 			name: "Flare",
-			weaponType: null,
-			category: "Magic",
+			category: 'magic',
 			targetType: "single",
 			actions: [
 				{
 					rank: 2,
+					accuracyType: 'magic',
 					effects: [
 						{
 							targetHint: "selected",
@@ -284,12 +285,12 @@ Game = {
 		},
 		omni: {
 			name: "Omni",
-			weaponType: null,
-			category: "Magic",
+			category: 'magic',
 			targetType: "single",
 			actions: [
 				{
 					rank: 4,
+					accuracyType: 'magic',
 					effects: [
 						{
 							targetHint: "selected",
@@ -303,12 +304,12 @@ Game = {
 		},
 		munch: {
 			name: "Munch",
-			weaponType: null,
-			category: "Attack",
+			category: 'attack',
 			targetType: "single",
 			actions: [
 				{
 					rank: 5,
+					accuracyType: 'devour',
 					effects: [
 						{
 							targetHint: "selected",
@@ -321,12 +322,12 @@ Game = {
 		},
 		fatSlam: {
 			name: "Fat Slam",
-			weaponType: null,
-			category: "Attack",
+			category: 'attack',
 			targetType: "single",
 			actions: [
 				{
 					rank: 3,
+					accuracyType: 'physical',
 					effects: [
 						{
 							targetHint: "selected",
@@ -344,7 +345,7 @@ Game = {
 	weapons: {
 		templeSword: {
 			name: "Temple Sword",
-			type: "Sword",
+			type: 'sword',
 			level: 75,
 			techniques: [
 				'swordSlash',
@@ -353,7 +354,7 @@ Game = {
 			]
 		},
 		rsbSword: {
-			type: "Sword",
+			type: 'sword',
 			level: 60,
 			techniques: [
 				'swordSlash',

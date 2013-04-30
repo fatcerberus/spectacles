@@ -161,10 +161,26 @@ Battle.prototype.resume = function()
 //     action:      The action being executed.
 Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 {
+	var targetsHit = [];
+	if ('accuracyType' in action) {
+		for (var i = 0; i < targetUnits.length; ++i) {
+			var odds = Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]);
+			if (Math.random() < odds) {
+				targetsHit.push(targetUnits[i]);
+			} else {
+				targetUnits[i].evade(actingUnit);
+			}
+		}
+	} else {
+		targetsHit = targetUnits;
+	}
+	if (targetsHit.length == 0) {
+		return;
+	}
 	for (var i = 0; i < action.effects.length; ++i) {
 		var effectTargets = null;
 		if (action.effects[i].targetHint == "selected") {
-			effectTargets = targetUnits;
+			effectTargets = targetsHit;
 		} else if (action.effects[i].targetHint == "user") {
 			effectTargets = [ actingUnit ];
 		}
