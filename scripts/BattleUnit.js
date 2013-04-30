@@ -133,38 +133,12 @@ BattleUnit.prototype.addStatus = function(handle)
 	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
 };
 
-// .devour() method
-// Causes another unit to get eaten by this one.
-// Arguments:
-//     unitToEat: The BattleUnit being eaten.
-BattleUnit.prototype.devour = function(unitToEat)
-{
-	var munchEffect = {
-		odds: (101 - unitToEat.health) / 1000,
-		cancel: false
-	};
-	unitToEat.invokeAllStatuses("getEaten", munchEffect);
-	Console.writeLine("Odds of " + unitToEat.name + " getting eaten are ~1:" + Math.round(1 / munchEffect.odds));
-	if (!munchEffect.cancel && Math.random() < munchEffect.odds) {
-		this.heal(this.maxHP * unitToEat.health / 100, true);
-		if (this.isPartyMember && !unitToEat.isPartyMember) {
-			var munchGrowth = unitToEat.enemyInfo.munchGrowth;
-			this.growSkill(munchGrowth.technique, munchGrowth.experience);
-		}
-		unitToEat.die();
-		var munchSound = LoadSound("Munch.wav", false);
-		munchSound.play(false);
-		Console.writeLine(unitToEat.name + " successfully eaten by " + this.name);
-	} else {
-		Console.writeLine(this.name + " failed to eat " + unitToEat.name);
-	}
-};
-
 // .die() method
 // Inflicts unconditional instant death on the battler.
 BattleUnit.prototype.die = function()
 {
-	this.takeDamage(this.maxHP, true);
+	Console.writeLine(this.name + " afflicted with instant death");
+	this.hpValue = 0;
 };
 
 // .heal() method
@@ -240,7 +214,7 @@ BattleUnit.prototype.liftStatus = function(handle)
 //             Defaults to 100.
 BattleUnit.prototype.revive = function(health)
 {
-	if (health === undefined) health = 100;
+	if (health === undefined) { health = 100; }
 	
 	this.hpValue = Math.min(Math.floor(this.maxHP * health / 100), this.maxHP);
 };
@@ -362,3 +336,10 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextMoves)
 	}
 	return timeLeft;
 }
+
+// .whiff() method
+// Declares that an action performed by the BattleUnit failed.
+BattleUnit.prototype.whiff = function()
+{
+	Console.writeLine("Action originated by " + this.name + " was evaded");
+};

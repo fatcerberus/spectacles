@@ -56,15 +56,19 @@ function Battle(session, battleClass)
 		return this.result == null;
 	};
 	
+	if (!(battleClass in Game.battles)) {
+		Abort("Battle(): Battle definition '" + battleClass + "' doesn't exist.");
+	}
 	this.session = session;
-	this.setup = Game.battles[battleClass];
+	this.battleClass = battleClass;
+	this.setup = Game.battles[this.battleClass];
 	this.result = null;
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
 	Console.writeLine("Battle session prepared");
-	Console.append("battledef " + battleClass);
+	Console.append("battle def: " + this.battleClass);
 }
 
 // .battleLevel property
@@ -91,7 +95,7 @@ Battle.prototype.enemiesOf = function(unit)
 // Starts the battle.
 Battle.prototype.go = function()
 {
-	Console.writeLine("Starting battle");
+	Console.writeLine("Starting battle '" + this.battleClass + "'");
 	this.playerUnits = [];
 	for (var name in this.session.party.members) {
 		var unit = new BattleUnit(this, this.session.party.members[name]);

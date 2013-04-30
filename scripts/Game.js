@@ -28,8 +28,11 @@ Game = {
 	
 	math: {
 		accuracy: {
-			bow: function(attacker, target) {
+			bow: function(user, target) {
 				return 1.0;
+			},
+			devour: function(user, target) {
+				return (user.health - target.health + 1) / 5000;
 			}
 		},
 		damage: {
@@ -110,9 +113,6 @@ Game = {
 				}
 				event.amount = Math.floor(event.amount * 1.5);
 				subject.liftStatus('offGuard');
-			},
-			getEaten: function(subject, event) {
-				event.successOdds *= 2.0;
 			}
 		},
 		zombie: {
@@ -124,7 +124,7 @@ Game = {
 				subject.takeDamage(event.amount);
 				event.cancel = true;
 			}
-		},
+		}
 	},
 	
 	effects: {
@@ -143,7 +143,16 @@ Game = {
 		},
 		devour: function(user, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				user.devour(targets[i]);
+				var odds = Game.math.accuracy.devour(user, targets[i]) * effect.successRate;
+				if (Math.random() < odds) {
+					if (!targets[i].isPartyMember) {
+						var munchGrowthInfo = targets[i].enemyInfo.munchGrowth;
+						user.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
+					}
+					targets[i].die();
+				} else {
+					user.whiff();
+				}
 			}
 		}
 	},
@@ -284,7 +293,8 @@ Game = {
 					effects: [
 						{
 							targetHint: "selected",
-							type: 'devour'
+							type: 'devour',
+							successRate: 1.0
 						}
 					],
 				}
@@ -363,7 +373,7 @@ Game = {
 	},
 	
 	battles: {
-		'RSB II': {
+		robert2: {
 			bgm: "MyDreamsButADropOfFuel",
 			battleLevel: 50,
 			enemies: [

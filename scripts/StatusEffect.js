@@ -13,7 +13,7 @@ RequireScript("Game.js");
 function StatusEffect(subject, handle)
 {
 	if (!(handle in Game.statuses)) {
-		Abort("Status():\nStatus class '" + handle + "' doesn't exist.");
+		Abort("StatusEffect(): Status definition '" + handle + "' doesn't exist.");
 	}
 	this.statusHandle = handle;
 	this.statusClass = Game.statuses[this.statusHandle];

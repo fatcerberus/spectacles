@@ -29,7 +29,7 @@ function game()
 	
 	/*ALPHA*/
 	var session = new Session();
-	var battleResult = new Battle(session, "RSB II").go();
+	var battleResult = new Battle(session, "robert2").go();
 	if (battleResult == BattleResult.enemyWon) {
 		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay?");
 	} else if (battleResult == BattleResult.partyWon) {
