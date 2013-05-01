@@ -79,15 +79,15 @@ Game = {
 				var growthRate = 'growthRate' in technique ? technique.growthRate : 1.0;
 				return actor.level * growthRate;
 			},
-			targetStat: function(target, statID, action, proficiency) {
-				var growthRate = 'growthRate' in target.character && statID in target.character.growthRate ? target.character.growthRate[statID] : 1.0;
-				var base = 'baseExperience' in action && 'target' in action.baseExperience && statID in action.baseExperience.target
-					? action.baseExperience.target[statID] : 0;
+			targetStat: function(unit, statID, action, proficiency) {
+				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
+				var base = 'baseExperience' in action && 'target' in action.baseExperience && statID in action.baseExperience.target ? action.baseExperience.target[statID] : 0;
 				return base * proficiency * growthRate;
 			},
-			userStat: function(actor, statID, action, proficiency) {
-				var growthRate = 'growthRate' in actor.character && statID in actor.character.growthRate ? actor.character.growthRate[statID] : 1.0;
-				return action.baseExperience.user[statID] * proficiency * growthRate;
+			userStat: function(unit, statID, action, proficiency) {
+				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
+				var base = 'baseExperience' in action && 'user' in action.baseExperience && statID in action.baseExperience.user ? action.baseExperience.user[statID] : 0;
+				return base * proficiency * growthRate;
 			},
 		},
 		enemyHP: function(enemyUnit) {
