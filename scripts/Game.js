@@ -58,28 +58,36 @@ Game = {
 			}
 		},
 		damage: {
-			bow: function(attacker, target, power) {
+			bow: function(actor, target, power) {
 				return 1;
 			},
-			gun: function(attacker, target, power) {
+			gun: function(actor, target, power) {
 				return 1;
 			},
-			magic: function(attacker, target, power) {
-				return Math.max(Math.floor(attacker.level * power * (attacker.stats.mag.value * 2 + attacker.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000), 1);
+			magic: function(actor, target, power) {
+				return Math.max(Math.floor(actor.level * power * (actor.stats.mag.value * 2 + actor.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000), 1);
 			},
-			physical: function(attacker, target, power) {
+			physical: function(actor, target, power) {
 				return 1;
 			},
-			sword: function(attacker, target, power) {
-				return Math.max(Math.floor(attacker.weapon.level * attacker.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000), 1);
+			sword: function(actor, target, power) {
+				return Math.max(Math.floor(actor.weapon.level * actor.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000), 1);
 			}
 		},
 		experience: {
-			skill: function() {
-				return 0;
+			skill: function(actor, technique) {
+				var growthRate = 'growthRate' in technique ? technique.growthRate : 1.0;
+				return actor.level * growthRate;
 			},
-			stat: function(base, proficiency) {
-				return base * proficiency;
+			targetStat: function(target, statID, action, proficiency) {
+				var growthRate = 'growthRate' in target.character && statID in target.character.growthRate ? target.character.growthRate[statID] : 1.0;
+				var base = 'baseExperience' in action && 'target' in action.baseExperience && statID in action.baseExperience.target
+					? action.baseExperience.target[statID] : 0;
+				return base * proficiency * growthRate;
+			},
+			userStat: function(actor, statID, action, proficiency) {
+				var growthRate = 'growthRate' in actor.character && statID in actor.character.growthRate ? actor.character.growthRate[statID] : 1.0;
+				return action.baseExperience.user[statID] * proficiency * growthRate;
 			},
 		},
 		enemyHP: function(enemyUnit) {
@@ -161,24 +169,24 @@ Game = {
 	},
 	
 	effects: {
-		addStatus: function(user, targets, effect) {
+		addStatus: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].addStatus(effect.status);
 			}
 		},
-		damage: function(user, targets, effect) {
+		damage: function(actor, targets, effect) {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var damage = Math.floor(Game.math.damage[effect.damageType](user, target, effect.power) / reducer);
+				var damage = Math.floor(Game.math.damage[effect.damageType](actor, target, effect.power) / reducer);
 				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
 			}
 		},
-		devour: function(user, targets, effect) {
+		devour: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				if (!targets[i].isPartyMember) {
 					var munchGrowthInfo = targets[i].enemyInfo.munchGrowth;
-					user.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
+					actor.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
 				}
 				targets[i].die();
 			}

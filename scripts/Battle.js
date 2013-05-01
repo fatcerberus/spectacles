@@ -182,31 +182,27 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 	if (targetsHit.length == 0) {
 		return;
 	}
-	if ('baseExperience' in action) {
-		var proficiency = Math.floor(skill.level * actingUnit.level / 100);
-		if ('user' in action.baseExperience && actingUnit.isPartyMember) {
-			for (var stat in Game.namedStats) {
-				if (stat in action.baseExperience.user) {
-					var experience = Math.max(Game.math.experience.stat(action.baseExperience.user[stat], proficiency), 1);
-					actingUnit.stats[stat].experience += experience;
-					Console.writeLine(actingUnit.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-					Console.append("statVal: " + actingUnit.stats[stat].value);
-				}
+	var proficiency = Math.floor(skill.level * actingUnit.level / 100);
+	if (actingUnit.isPartyMember) {
+		for (var stat in Game.namedStats) {
+			var experience = Math.max(Game.math.experience.userStat(actingUnit, stat, action, proficiency), 0);
+			if (experience > 0) {
+				actingUnit.stats[stat].experience += experience;
+				Console.writeLine(actingUnit.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
+				Console.append("statVal: " + actingUnit.stats[stat].value);
 			}
 		}
-		if ('target' in action.baseExperience) {
-			for (var i = 0; i < targetsHit.length; ++i) {
-				if (!targetsHit[i].partyMember) {
-					continue;
-				}
-				for (var stat in Game.namedStats) {
-					if (stat in action.baseExperience.target) {
-						var experience = Math.max(Game.math.experience.stat(action.baseExperience.target[stat], proficiency), 1);
-						targetsHit[i].stats[stat].experience += experience;
-						Console.writeLine(targetsHit[i].name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-						Console.append("statVal: " + targetsHit[i].stats[stat].value);
-					}
-				}
+	}
+	for (var i = 0; i < targetsHit.length; ++i) {
+		if (!targetsHit[i].partyMember) {
+			continue;
+		}
+		for (var stat in Game.namedStats) {
+			var experience = Math.max(Game.math.experience.targetStat(targetsHit[i], stat, action, proficiency), 0);
+			if (experience > 0) {
+				targetsHit[i].stats[stat].experience += experience;
+				Console.writeLine(targetsHit[i].name + " got " + experience + " EXP for " + Game.namedStats[stat]);
+				Console.append("statVal: " + targetsHit[i].stats[stat].value);
 			}
 		}
 	}
@@ -230,6 +226,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
+	Console.writeLine("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.enemyUnits.push(newUnit);
 };

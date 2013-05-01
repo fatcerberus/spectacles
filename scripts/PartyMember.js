@@ -10,10 +10,10 @@ RequireScript("Game.js");
 // PartyMember() constructor
 // Creates an object representing an active member of a Party.
 // Arguments:
-//     character:   The character represented by this party member.
+//     characterID: The handle of the character represented by this party member.
 //     battleLevel: Optional. The party member's initial battle level.
 //                  Defaults to 1.
-function PartyMember(character, battleLevel)
+function PartyMember(characterID, battleLevel)
 {
 	this.refreshSkills = function()
 	{
@@ -30,8 +30,8 @@ function PartyMember(character, battleLevel)
 	
 	if (battleLevel === undefined) { battleLevel = 1; }
 	
-	this.character = character;
-	this.name = this.character.name;
+	this.characterID = characterID;
+	this.nameString = this.character.name;
 	this.fullName = this.character.fullName;
 	this.stats = {};
 	for (var name in Game.namedStats) {
@@ -44,6 +44,13 @@ function PartyMember(character, battleLevel)
 	this.weapon = 'startingWeapon' in this.character ? Game.weapons[this.character.startingWeapon] : null;
 }
 
+// .character property
+// Gets the character definition for the character this party member represents.
+PartyMember.prototype.character getter = function()
+{
+	return Game.characters[this.characterID];
+};
+
 // .level property
 // Gets the party member's current battle level.
 PartyMember.prototype.level getter = function()
@@ -55,6 +62,17 @@ PartyMember.prototype.level getter = function()
 		++count;
 	}
 	return Math.floor(sum / count);
+};
+
+// .name property
+// Gets or sets the name of the party member.
+PartyMember.prototype.name getter = function()
+{
+	return this.nameString;
+};
+PartyMember.prototype.name setter = function(value)
+{
+	this.nameString = value;
 };
 
 // .skills property

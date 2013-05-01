@@ -12,16 +12,16 @@ function Party()
 	this.members = {};
 }
 
-// .growthLevel property
-// Retrieves the average growth level of all party members.
-Party.prototype.growthLevel getter = function()
+// .level property
+// Retrieves the average level of all party members.
+Party.prototype.level getter = function()
 {
 	if (this.members.length > 0) {
 		var total = 0;
 		var memberCount = 0;
 		for (var i in this.members) {
 			++memberCount;
-			total += this.members[i].battleLevel;
+			total += this.members[i].level;
 			
 		}
 		return Math.floor(total / memberCount);
@@ -33,37 +33,32 @@ Party.prototype.growthLevel getter = function()
 // .add() method
 // Adds a character to the party.
 // Arguments:
-//     character: The character to be added.
-Party.prototype.add = function(character)
+//     character: The ID of the character to be added.
+Party.prototype.add = function(characterID)
 {
-	var newMember = new PartyMember(character, this.growthLevel);
-	this.members[character.name] = newMember;
+	var newMember = new PartyMember(characterID, this.level);
+	this.members[characterID] = newMember;
 };
 
 // .hasMember() method
 // Determines whether a character is currently in the party.
 // Arguments:
-//     character: The character to check for.
+//     characterID: The ID of the character to check for.
 // Returns:
 //     true if the character is in the party, false otherwise.
-Party.prototype.hasMember = function(character)
+Party.prototype.hasMember = function(characterID)
 {
-	for (var i in this.members) {
-		if (this.members[i].character === character) {
-			return true; 
-		}
-	}
-	return false;
+	return characterID in this.members;
 };
 
 // .remove() method
 // Removes a character from the party.
 // Arguments:
-//     character: The character to be removed.
-Party.prototype.remove = function(character)
+//     character: The ID of the character to be removed.
+Party.prototype.remove = function(characterID)
 {
-	for (var i in this.members) {
-		if (this.members[i].character === character) {
+	for (var id in this.members) {
+		if (id === characterID) {
 			delete this.members[i];
 		}
 	}

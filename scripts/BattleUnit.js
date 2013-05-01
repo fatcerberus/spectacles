@@ -36,6 +36,7 @@ function BattleUnit(battle, basis)
 	this.weapon = null;
 	if (basis instanceof PartyMember) {
 		this.partyMember = basis;
+		this.character = this.partyMember.character;
 		this.name = this.partyMember.name;
 		for (var name in Game.namedStats) {
 			this.stats[name] = this.partyMember.stats[name];
@@ -281,7 +282,7 @@ BattleUnit.prototype.tick = function()
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
-			if (this.partyMember != null) {
+			if (this.isPartyMember) {
 				// var move = this.moveMenu.show();
 				
 				/*ALPHA*/
@@ -291,6 +292,11 @@ BattleUnit.prototype.tick = function()
 					moveMenu.addItem(this.skills[i].name, this.skills[i]);
 				}
 				this.skillUsed = moveMenu.open();
+				var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
+				var experience = Game.math.experience.skill(this, this.skillUsed.technique);
+				this.skillUsed.experience += experience;
+				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
+				Console.append("level: " + this.skillUsed.level);
 				var move = {
 					type: "technique",
 					technique: this.skillUsed.technique,

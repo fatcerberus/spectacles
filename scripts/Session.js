@@ -13,7 +13,7 @@ function Session()
 	this.party = new Party();
 	for (var i = 0; i < Game.initialPartyMembers.length; ++i) {
 		var name = Game.initialPartyMembers[i];
-		this.party.add(Game.characters[name]);
+		this.party.add(name);
 	}
 }
 
