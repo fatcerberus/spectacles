@@ -7,6 +7,7 @@ RequireScript("Core/Console.js");
 RequireScript("BattleUnitMoveMenu.js");
 RequireScript("MenuStrip.js"); /*ALPHA*/
 RequireScript("PartyMember.js");
+RequireScript("Skill.js");
 RequireScript("Stat.js");
 RequireScript("StatusEffect.js");
 
@@ -282,23 +283,26 @@ BattleUnit.prototype.tick = function()
 		} else {
 			if (this.partyMember != null) {
 				// var move = this.moveMenu.show();
+				
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
 				var moveMenu = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false);
 				for (var i = 0; i < this.skills.length; ++i) {
-					moveMenu.addItem(this.skills[i].name, this.skills[i].technique);
+					moveMenu.addItem(this.skills[i].name, this.skills[i]);
 				}
-				var technique = moveMenu.open();
+				this.skillUsed = moveMenu.open();
 				var move = {
 					type: "technique",
-					technique: technique,
+					technique: this.skillUsed.technique,
 					targets: [
 						this.battle.enemiesOf(this)[0]
 					]
 				}
+				
 			} else {
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
-				move.technique = Game.techniques[move.technique];
+				this.skillUsed = new Skill(move.technique, 100);
+				move.technique = this.skillUsed.technique;
 			}
 			Console.writeLine(this.name + " is using " + move.technique.name);
 			if (this.weapon != null && move.technique.weaponType != null) {
@@ -313,7 +317,7 @@ BattleUnit.prototype.tick = function()
 				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 			}
 		}
-		this.battle.runAction(this, this.moveTargets, action);
+		this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
 		this.resetCounter(action.rank);
 		this.battle.resume();
 		return true;

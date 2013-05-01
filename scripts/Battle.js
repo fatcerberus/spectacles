@@ -157,9 +157,10 @@ Battle.prototype.resume = function()
 // Executes a battler action.
 // Arguments:
 //     actingUnit:  The BattleUnit performing the move.
-//     targetUnits: The list of BattleUnits, if any, targetted by the acting unit's move.
-//     action:      The action being executed.
-Battle.prototype.runAction = function(actingUnit, targetUnits, action)
+//     targetUnits: The list of BattleUnits, if any, targetted by the action.
+//     skill:       The Skill used by the acting unit to intiate the action.
+//     action:      The action to be executed.
+Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
 	var targetsHit = [];
 	if ('accuracyType' in action) {
@@ -168,8 +169,10 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]) * accuracyRate, 0.0), 1.0);
 			Console.writeLine("Odds against hitting " + targetUnits[i].name + " are " + (Math.round(1 / odds) - 1) + ":1");
 			if (Math.random() < odds) {
+				Console.append("hit");
 				targetsHit.push(targetUnits[i]);
 			} else {
+				Console.append("miss");
 				targetUnits[i].evade(actingUnit);
 			}
 		}
@@ -180,13 +183,14 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 		return;
 	}
 	if ('baseExperience' in action) {
+		var proficiency = Math.floor(skill.level * actingUnit.level / 100);
 		if ('user' in action.baseExperience && actingUnit.isPartyMember) {
 			for (var stat in Game.namedStats) {
 				if (stat in action.baseExperience.user) {
-					var experience = action.baseExperience.user[stat];
+					var experience = Math.max(Game.math.experience.stat(action.baseExperience.user[stat], proficiency), 1);
 					actingUnit.stats[stat].experience += experience;
-					Console.writeLine(actingUnit.name + " gained " + experience + " EXP for " + Game.namedStats[stat]);
-					Console.append("value: " + actingUnit.stats[stat].value);
+					Console.writeLine(actingUnit.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
+					Console.append("statVal: " + actingUnit.stats[stat].value);
 				}
 			}
 		}
@@ -197,10 +201,10 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, action)
 				}
 				for (var stat in Game.namedStats) {
 					if (stat in action.baseExperience.target) {
-						var experience = action.baseExperience.target[stat];
+						var experience = Math.max(Game.math.experience.stat(action.baseExperience.target[stat], proficiency), 1);
 						targetsHit[i].stats[stat].experience += experience;
-						Console.writeLine(targetsHit[i].name + " gained " + experience + " EXP for " + Game.namedStats[stat]);
-						Console.append("value: " + targetsHit[i].stats[stat].value);
+						Console.writeLine(targetsHit[i].name + " got " + experience + " EXP for " + Game.namedStats[stat]);
+						Console.append("statVal: " + targetsHit[i].stats[stat].value);
 					}
 				}
 			}

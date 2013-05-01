@@ -38,8 +38,8 @@ function PartyMember(character, battleLevel)
 		this.stats[name] = new Stat(this.character.baseStats[name], battleLevel, true, 1.0);
 	}
 	this.skillList = [];
-	for (var i = 0; i < this.character.techniques.length; ++i) {
-		this.learnSkill(this.character.techniques[i]);
+	for (var i = 0; i < this.character.skills.length; ++i) {
+		this.learnSkill(this.character.skills[i]);
 	}
 	this.weapon = 'startingWeapon' in this.character ? Game.weapons[this.character.startingWeapon] : null;
 }

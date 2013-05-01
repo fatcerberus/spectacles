@@ -74,6 +74,14 @@ Game = {
 				return Math.max(Math.floor(attacker.weapon.level * attacker.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000), 1);
 			}
 		},
+		experience: {
+			skill: function() {
+				return 0;
+			},
+			stat: function(base, proficiency) {
+				return base * proficiency;
+			},
+		},
 		enemyHP: function(enemyUnit) {
 			return enemyUnit.stats.vit.value * 100;
 		},
@@ -101,7 +109,7 @@ Game = {
 				agi: 70
 			},
 			startingWeapon: 'templeSword',
-			techniques: [
+			skills: [
 				'swordSlash',
 				'quickstrike',
 				'necromancy',
@@ -119,7 +127,7 @@ Game = {
 				mag: 30,
 				agi: 40
 			},
-			techniques: [
+			skills: [
 				'munch',
 				'fatSlam'
 			]
@@ -250,6 +258,15 @@ Game = {
 				{
 					rank: 2,
 					accuracyType: 'sword',
+					baseExperience: {
+						user: {
+							str: 3,
+							agi: 2
+						},
+						target: {
+							def: 5
+						}
+					},
 					effects: [
 						{
 							targetHint: "selected",
