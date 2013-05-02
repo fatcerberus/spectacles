@@ -102,7 +102,7 @@ PartyMember.prototype.weapon setter = function(value)
 //     The newly learned skill.
 PartyMember.prototype.learnSkill = function(handle)
 {
-	var skill = new Skill(handle);
+	var skill = new Skill(handle, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
 	return skill;

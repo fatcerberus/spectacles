@@ -42,7 +42,7 @@ TitleScreen.prototype.show = function()
 	this.fader.value = 0.0;
 	this.fader.adjust(1.0, 2.0);
 	var thread = Threads.createEntityThread(this);
-	var choice = new MenuStrip("Tech Demo", false, [ "Start Demo", "Quit" ]).open();
+	var choice = new MenuStrip("S:BS Tech Demo", false, [ "Start Demo", "Quit" ]).open();
 	BGM.adjustVolume(0.0, 2.0);
 	this.mode = "fade-out";
 	this.fader.adjust(0.0, 2.0);

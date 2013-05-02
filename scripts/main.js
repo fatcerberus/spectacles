@@ -1,6 +1,7 @@
-/**
- * Spectacles: Bruce's Story - (c) 2006-2013 Power-Command
-**/
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (C) 2012 Power-Command
+***/
 
 RequireScript("Core/Engine.js");
 RequireScript("Core/BGM.js");
@@ -29,7 +30,7 @@ function game()
 	
 	/*ALPHA*/
 	var session = new Session();
-	var battleResult = new Battle(session, "robert2").go();
+	var battleResult = new Battle(session, 'robert2').go();
 	if (battleResult == BattleResult.enemyWon) {
 		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay?");
 	} else if (battleResult == BattleResult.partyWon) {

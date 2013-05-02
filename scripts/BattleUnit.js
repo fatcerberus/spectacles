@@ -4,6 +4,7 @@
 ***/
 
 RequireScript("Core/Console.js");
+RequireScript("BattleSprite.js");
 RequireScript("BattleUnitMoveMenu.js");
 RequireScript("MenuStrip.js"); /*ALPHA*/
 RequireScript("PartyMember.js");
@@ -11,12 +12,22 @@ RequireScript("Skill.js");
 RequireScript("Stat.js");
 RequireScript("StatusEffect.js");
 
+// BattleRow enumeration
+// Specifies a BattleUnit's relative distance from its opponents.
+var BattleRow = {
+	front: -1,
+	middle: 0,
+	rear: 1
+};
+
 // BattleUnit() constructor
 // Creates an object representing an active battler.
 // Arguments:
-//     battle: The battle in which the unit is participating.
-//     basis:  The party member or enemy class to use as a basis for the unit.
-function BattleUnit(battle, basis)
+//     battle:      The battle in which the unit is participating.
+//     basis:       The party member or enemy class to use as a basis for the unit.
+//     position:    The position of the unit in the party order.
+//     startingRow: The row the unit starts in.
+function BattleUnit(battle, basis, position, startingRow)
 {
 	this.invokeAllStatuses = function(eventName, event) {
 		if (event === undefined) { event = null; }
@@ -31,6 +42,7 @@ function BattleUnit(battle, basis)
 	};
 	
 	this.battle = battle;
+	this.rowValue = startingRow;
 	this.partyMember = null;
 	this.stats = {};
 	this.weapon = null;
@@ -66,11 +78,20 @@ function BattleUnit(battle, basis)
 	this.aiState = {
 		turnsTaken: 0,
 	};
+	this.sprite = new BattleSprite(this, position, this.row, this.isPartyMember);
+	this.sprite.enter();
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 	this.resetCounter(Game.defaultMoveRank);
 }
+
+// .dispose() method
+// Frees any resources used by the BattleUnit.
+BattleUnit.prototype.dispose = function()
+{
+	this.sprite.dispose();
+};
 
 // .health property
 // Gets the unit's remaining health as a percentage.
@@ -117,6 +138,17 @@ BattleUnit.prototype.maxHP getter = function()
 {
 	return this.maxHPValue;
 }
+
+// .row property
+// Gets or sets the unit's current row.
+BattleUnit.prototype.row getter = function()
+{
+	return this.rowValue;
+}
+BattleUnit.prototype.row setter = function(value)
+{
+	this.rowValue = value;
+};
 
 // .timeUntilNextTurn property
 // Gets the number of ticks until the battler can act.

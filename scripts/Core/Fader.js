@@ -45,13 +45,19 @@ function Fader(initialValue)
 		return true;
 	};
 	
+	// .isFading property
+	// Gets a boolean value indicating whether the fader is currently being adjusted.
+	this.fading getter = function()
+	{
+		return this.increment != 0.0;
+	};
+	
 	// .value property
 	// Gets or sets the fader's immediate value.
 	this.value getter = function()
 	{
 		return this.currentValue;
 	};
-	
 	this.value setter = function(value)
 	{
 		this.targetValue = value;

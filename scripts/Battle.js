@@ -3,6 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript("BattleScreen.js");
 RequireScript("BattleUnit.js");
 
 // BattleResult enumeration
@@ -17,9 +18,9 @@ BattleResult =
 // Battle() constructor
 // Creates an object representing a battle session.
 // Arguments:
-//     session: The game session in which the battle is taking place.
-//     setup:   The starting parameters for the battle.
-function Battle(session, battleClass)
+//     session:  The game session in which the battle is taking place.
+//     battleID: The ID of the battle definition to use to set up the fight.
+function Battle(session, battleID)
 {
 	this.tick = function() {
 		if (this.suspendCount > 0 || this.result != null) {
@@ -30,8 +31,10 @@ function Battle(session, battleClass)
 		while (!actionTaken) {
 			for (var iList = 0; iList < unitLists.length; ++iList) {
 				for (var i = 0; i < unitLists[iList].length; ++i) {
-					actionTaken = unitLists[iList][i].tick() || actionTaken;
-					if (!unitLists[iList][i].isAlive) {
+					var unit = unitLists[iList][i];
+					actionTaken = unit.tick() || actionTaken;
+					if (!unit.isAlive) {
+						unit.dispose();
 						unitLists[iList].splice(i, 1);
 						--i; continue;
 					}
@@ -48,34 +51,31 @@ function Battle(session, battleClass)
 		}
 	};
 	
-	this.render = function() {
-		ApplyColorMask(CreateColor(64, 64, 64, 255));
-	};
 	this.update = function() {
 		this.tick();
 		return this.result == null;
 	};
 	
-	if (!(battleClass in Game.battles)) {
+	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleClass + "' doesn't exist.");
 	}
 	this.session = session;
-	this.battleClass = battleClass;
-	this.setup = Game.battles[this.battleClass];
+	this.battleID = battleID;
+	this.parameters = Game.battles[this.battleID];
 	this.result = null;
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	this.suspendCount = 0;
 	this.conditions = [];
 	Console.writeLine("Battle session prepared");
-	Console.append("battle def: " + this.battleClass);
+	Console.append("battle def: " + this.battleID);
 }
 
 // .battleLevel property
 // Gets the enemy battle level for the battle.
 Battle.prototype.battleLevel getter = function()
 {
-	return this.setup.battleLevel;
+	return this.parameters.battleLevel;
 };
 
 // .enemiesOf() method
@@ -95,25 +95,29 @@ Battle.prototype.enemiesOf = function(unit)
 // Starts the battle.
 Battle.prototype.go = function()
 {
-	Console.writeLine("Starting battle '" + this.battleClass + "'");
+	Console.writeLine("Starting battle '" + this.battleID + "'");
 	this.playerUnits = [];
+	var position = 0;
 	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name]);
+		var unit = new BattleUnit(this, this.session.party.members[name], position, BattleRow.middle);
 		this.playerUnits.push(unit);
+		++position;
 	}
 	this.enemyUnits = [];
-	for (var i = 0; i < this.setup.enemies.length; ++i) {
-		var enemyInfo = Game.enemies[this.setup.enemies[i]];
-		var unit = new BattleUnit(this, enemyInfo);
+	for (var i = 0; i < this.parameters.enemies.length; ++i) {
+		var enemyInfo = Game.enemies[this.parameters.enemies[i]];
+		var unit = new BattleUnit(this, enemyInfo, i, BattleRow.middle);
 		this.enemyUnits.push(unit);
 	}
 	var battleBGMTrack = this.defaultBattleBGM;
-	if (this.setup.bgm != null) {
-		battleBGMTrack = this.setup.bgm;
+	if (this.parameters.bgm != null) {
+		battleBGMTrack = this.parameters.bgm;
 	}
 	BGM.override(battleBGMTrack);
+	this.battleScreen = new BattleScreen(this);
 	var battleThread = Threads.createEntityThread(this);
 	Threads.waitFor(battleThread);
+	this.battleScreen.dispose();
 	return this.result;
 };
 
@@ -167,7 +171,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (var i = 0; i < targetUnits.length; ++i) {
 			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit, targetUnits[i]) * accuracyRate, 0.0), 1.0);
-			Console.writeLine("Odds against hitting " + targetUnits[i].name + " are " + (Math.round(1 / odds) - 1) + ":1");
+			Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 			if (Math.random() < odds) {
 				Console.append("hit");
 				targetsHit.push(targetUnits[i]);

@@ -42,7 +42,7 @@ Scenario.defineCommand("resetBGM", {
 Scenario.defineCommand("talk", {
 	start: function(sceneState, state, speaker, textSpeed /*...pages*/) {
 		state.speakerName = speaker;
-		state.speakerText = state.speakerName != null ? state.speakerName.toUpperCase() + ":" : null;
+		state.speakerText = state.speakerName != null ? state.speakerName + ":" : null;
 		state.textSpeed = textSpeed;
 		if (DBG_USE_FAST_TEXTBOXES) state.textSpeed = 10.0;
 		state.text = [];

@@ -443,7 +443,6 @@ Game = {
 	},
 	
 	initialPartyMembers: [
-		'scott',
-		'maggie' /*ALPHA*/
+		'scott'
 	]
 };
