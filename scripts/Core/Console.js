@@ -5,19 +5,19 @@
 
 RequireScript("Core/Fader.js");
 RequireScript("Core/Threads.js");
+RequireScript("Core/Tween.js");
 
 // Console() constructor
 // Creates an object representing a text-based console.
 function Console(numLines)
 {
 	this.render = function() {
-		var visibility = this.fader.value;
-		if (visibility <= 0.0) {
+		if (this.openness <= 0.0) {
 			return;
 		}
 		var boxHeight = this.numLines * this.font.getHeight() + 10;
-		var boxY = -boxHeight * (1.0 - visibility);
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, visibility * 128));
+		var boxY = -boxHeight * (1.0 - this.openness);
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.openness * 128));
 		for (var i = 0; i < this.numLines; ++i) {
 			var lineToDraw = (this.nextLine - this.numLines) + i;
 			if (lineToDraw >= 0) {
@@ -25,7 +25,7 @@ function Console(numLines)
 				var y = boxY + 5 + i * this.font.getHeight();
 				this.font.setColorMask(CreateColor(0, 0, 0, 128));
 				this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-				this.font.setColorMask(CreateColor(255, 255, 255, visibility * 128));
+				this.font.setColorMask(CreateColor(255, 255, 255, this.openness * 128));
 				this.font.drawText(5, y, this.buffer[lineInBuffer]);
 			}
 		}
@@ -38,7 +38,7 @@ function Console(numLines)
 	this.buffer = [];
 	this.nextLine = 0;
 	this.font = GetSystemFont();
-	this.fader = new Fader(0.0);
+	this.openness = 0.0;
 	this.thread = Threads.createEntityThread(this, 100);
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2013 Power-Command");
@@ -71,14 +71,18 @@ Console.prototype.append = function(text)
 // Hides the console window.
 Console.prototype.hide = function()
 {
-	this.fader.adjust(0.0, 0.25);
+	new Tween(this, 1.0, 'linear', {
+		openness: 0.0
+	});
 }
 
 // .show() method
 // Shows the console window.
 Console.prototype.show = function()
 {
-	this.fader.adjust(1.0, 0.25);
+	new Tween(this, 1.0, 'easeOutBounce', {
+		openness: 1.0
+	});
 }
 
 // .writeLine() method

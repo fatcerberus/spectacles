@@ -14,7 +14,6 @@ RequireScript("TitleScreen.js");
 RequireScript("Game.js");
 
 RequireScript("lib/persist.js");
-RequireScript("lib/tween.js");
 
 var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TITLE_CARD = false;
@@ -27,6 +26,7 @@ function game()
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	Console = new Console(17);
+	Console.show();
 	
 	/*ALPHA*/
 	var session = new Session();
