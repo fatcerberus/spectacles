@@ -288,6 +288,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
+		this.sprite.message(damageEvent.amount);
 		if (this.hpValue <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}

@@ -4,6 +4,7 @@
 ***/
 
 RequireScript("Core/Threads.js");
+RequireScript("Core/Tween.js");
 
 RequireScript("lib/SpriteImage.js");
 
@@ -17,17 +18,13 @@ function BattleSprite(unit, position, row, isMirrored)
 {
 	this.render = function() {
 		var direction;
-		var x = this.xFader.value;
-		var y;
-		switch (this.position) {
-			case 0: y = 160; break;
-			case 1: y = 128; break;
-			case 2: y = 192; break;
-		}
-		Rectangle(x + 1, y + 1, 14, 30, CreateColor(32, 32, 32, 255));
+		Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
+		this.idFont.setColorMask(CreateColor(128, 128, 128, 255));
+		this.idFont.drawText(this.x + 5, this.y + 17, this.unit.name[0]);
+		this.idFont.setColorMask(CreateColor(0, 0, 0, 255));
+		this.idFont.drawText(this.x + 9 - this.idFont.getStringWidth(this.damageText) / 2, this.y + 22, this.damageText);
 		this.idFont.setColorMask(CreateColor(255, 255, 255, 255));
-		this.idFont.drawText(x + 5, y + 17, this.unit.name[0]);
-		
+		this.idFont.drawText(this.x + 8 - this.idFont.getStringWidth(this.damageText) / 2, this.y + 21, this.damageText);
 	};
 	this.update = function() {
 		return true;
@@ -38,7 +35,14 @@ function BattleSprite(unit, position, row, isMirrored)
 	this.isMirrored = isMirrored;
 	this.idFont = GetSystemFont(); /*ALPHA*/
 	this.rowValue = row;
-	this.xFader = new Fader(isMirrored ? 320.0 : -16.0);
+	this.x = isMirrored ? 320 : -16;
+	this.y = -32;
+	this.damageText = "";
+	switch (this.position) {
+		case 0: this.y = 160; break;
+		case 1: this.y = 128; break;
+		case 2: this.y = 192; break;
+	}
 	this.state = "idle";
 	this.thread = Threads.createEntityThread(this, 1);
 };
@@ -67,13 +71,16 @@ BattleSprite.prototype.row setter = function(value)
 // Causes the battle sprite to enter the battlefield from offscreen.
 BattleSprite.prototype.enter = function()
 {
-	this.xFader.adjust(this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16, 0.5);
+	new Tween(this, 0.5, 'linear', {
+		x: this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16
+	});
 };
 
-// .showDamage() method
-// Displays damage taken by the battler.
+// .display() method
+// Displays status text over the sprite.
 // Arguments:
 //     amount: The amount of damage taken.
-BattleSprite.prototype.showDamage = function(amount)
+BattleSprite.prototype.message = function(amount, animation)
 {
+	this.damageText = amount;
 };
