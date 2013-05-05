@@ -11,6 +11,9 @@ RequireScript("Core/Tween.js");
 // Creates an object representing a text-based console.
 function Console(numLines)
 {
+	this.showEasing = 'easeOutBack';
+	this.hideEasing = 'easeInBack';
+	
 	this.render = function() {
 		if (this.openness <= 0.0) {
 			return;
@@ -71,18 +74,14 @@ Console.prototype.append = function(text)
 // Hides the console window.
 Console.prototype.hide = function()
 {
-	new Tween(this, 1.0, 'linear', {
-		openness: 0.0
-	});
+	new Tween(this, 0.5, this.hideEasing, { openness: 0.0 });
 }
 
 // .show() method
 // Shows the console window.
 Console.prototype.show = function()
 {
-	new Tween(this, 1.0, 'easeOutBounce', {
-		openness: 1.0
-	});
+	new Tween(this, 0.5, this.showEasing, { openness: 1.0 });
 }
 
 // .writeLine() method

@@ -17,6 +17,11 @@ RequireScript("Core/Tween.js");
 //                   menu instead.
 function MenuStrip(title, isCancelable, items)
 {
+	this.flashEasing = 'linear';
+	this.scrollEasing = 'linear';
+	this.showEasing = 'easeOutQuad';
+	this.hideEasing = 'easeInQuad';
+	
 	this.render = function() {
 		var height = this.font.getHeight() + 10;
 		var menuY = GetScreenHeight() - height * this.openness;
@@ -90,10 +95,10 @@ function MenuStrip(title, isCancelable, items)
 				break;
 			case "choose":
 				if (this.flashTween.isFinished()) {
-					this.flashTween = new Tween(this, 0.1, 'linear', {
+					this.flashTween = new Tween(this, 0.125, this.flashEasing, {
 						brightness: 0.0
 					});
-					this.hideTween = new Tween(this, 0.25, 'easeInQuad', {
+					this.hideTween = new Tween(this, 0.25, this.hideEasing, {
 						openness: 0.0
 					});
 					this.mode = "close";
@@ -115,7 +120,7 @@ function MenuStrip(title, isCancelable, items)
 		}
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			this.chosenItem = this.selectedItem;
-			this.flashTween = new Tween(this, 0.1, 'linear', {
+			this.flashTween = new Tween(this, 0.125, this.flashEasing, {
 				brightness: 1.0
 			});
 			this.mode = "choose";
@@ -124,13 +129,13 @@ function MenuStrip(title, isCancelable, items)
 			this.mode = "close";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
 			this.scrollDirection = -1;
-			this.scrollTween = new Tween(this, 0.25, 'easeOutQuad', {
+			this.scrollTween = new Tween(this, 0.25, this.scrollEasing, {
 				scrollProgress: 1.0
 			});
 			this.mode = "change-item";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
 			this.scrollDirection = 1;
-			this.scrollTween = new Tween(this, 0.25, 'easeOutQuad', {
+			this.scrollTween = new Tween(this, 0.25, this.scrollEasing, {
 				scrollProgress: 1.0
 			});
 			this.mode = "change-item";
@@ -185,7 +190,7 @@ MenuStrip.prototype.open = function()
 		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
-	this.openTween = new Tween(this, 0.25, 'easeOutQuad', {
+	this.openTween = new Tween(this, 0.25, this.showEasing, {
 		openness: 1.0
 	});
 	var menuThread = Threads.createEntityThread(this, 100);
