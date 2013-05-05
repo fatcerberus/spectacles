@@ -171,11 +171,11 @@ function Tween(o, duration, easingType, endValues)
 	this.thread = Threads.createEntityThread(this);
 };
 
-// .isActive() method
+// .isFinished() method
 // Determines whether the tweening operation is still active.
 // Returns:
-//     true if the tween is still working; false otherwise.
+//     true if the tween has run its course; false otherwise.
 Tween.prototype.isFinished = function()
 {
-	return this.elapsed < this.duration;
+	return this.elapsed >= this.duration;
 };
