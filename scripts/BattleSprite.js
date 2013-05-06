@@ -20,8 +20,11 @@ RequireScript("lib/SpriteImage.js");
 function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
 {
 	this.messageStyles = {
-		damage: { color: CreateColor(255, 255, 255, 255), yStart: 32, yEnd: 0, easing: 'easeOutBounce', duration: 1.5 },
-		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 24, easing: 'easeOutBack', duration: 2.0 }
+		afflict: { color: CreateColor(255, 255, 128, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.25 },
+		damage: { color: CreateColor(255, 255, 255, 255), yStart: 32, yEnd: 0, easing: 'easeOutBounce', duration: 0.5, delay: 1.0 },
+		dispel: { color: CreateColor(255, 192, 192, 255), yStart: 16, yEnd: 40, easing: 'easeInOutQuad', duration: 1.0, delay: 0.25 },
+		evade: { color: CreateColor(192, 192, 160, 255), yStart: 48, yEnd: 0, easing: 'easeOutElastic', duration: 0.5, delay: 0.5 }
+		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 24, easing: 'easeOutQuad', duration: 1.0, delay: 1.0 },
 	};
 	
 	this.render = function() {
@@ -108,19 +111,33 @@ BattleSprite.prototype.enter = function(isImmediate)
 };
 
 // .showMessage() method
-// Displays status text over the sprite.
+// Displays a message over the sprite.
 // Arguments:
-//     amount: The amount of damage taken.
-BattleSprite.prototype.showMessage = function(text, style)
+//     text:          The text to display.
+//     styleName:     The name of the message style to use. The message style can be one of the following:
+//                        'afflict': Used to display a newly acquired status effect.
+//                        'damage': Used to display HP lost as damage.
+//                        'dispel': Used to display a newly lost status effect.
+//                        'heal': Used to display HP regained.
+//                        'evade': Used to display evasion messages (miss, immune, etc.).
+//     waitUntilDone: Optional. If true, .showMessage() won't return until the message times out. The
+//                    default is false.
+BattleSprite.prototype.showMessage = function(text, styleName, waitUntilDone)
 {
-	styleInfo = this.messageStyles[style];
+	if (waitUntilDone === void null) { waitUntilDone = false; }
+	
+	style = this.messageStyles[styleName];
 	var message = {
 		text: text,
-		color: styleInfo.color,
-		height: styleInfo.yStart,
-		endTime: styleInfo.duration * 1000 + GetTime()
+		color: style.color,
+		height: style.yStart,
+		endTime: (style.duration + style.delay) * 1000 + GetTime()
 	};
-	var tween = new Tween(message, styleInfo.duration - 1.0, styleInfo.easing, { height: styleInfo.yEnd });
-	message.tween = tween;
 	this.messages.push(message);
+	new Tween(message, style.duration, style.easing, { height: style.yEnd });
+	if (waitUntilDone) {
+		Threads.doWith(message, function() {
+			return GetTime() < this.endTime;
+		});
+	}
 };

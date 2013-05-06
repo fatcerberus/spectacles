@@ -79,6 +79,9 @@ function BattleUnit(battle, basis, position, startingRow)
 		turnsTaken: 0,
 	};
 	this.sprite = new BattleSprite(this, position, this.row, this.isPartyMember);
+	if (!this.isPartyMember) {
+		this.sprite.enter(true);
+	}
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -164,6 +167,7 @@ BattleUnit.prototype.addStatus = function(handle)
 {
 	var statusEffect = new StatusEffect(this, handle)
 	this.statuses.push(statusEffect);
+	this.sprite.showMessage(statusEffect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
 };
 
@@ -188,6 +192,7 @@ BattleUnit.prototype.enter = function()
 //     attacker: The BattleUnit whose attack was evaded.
 BattleUnit.prototype.evade = function(attacker)
 {
+	this.sprite.showMessage("miss", 'evade', true);
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
@@ -212,7 +217,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 	}
 	if (healEvent.amount >= 0) {
 		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
-		this.sprite.showMessage(healEvent.amount, 'heal');
+		this.sprite.showMessage(healEvent.amount, 'heal', true);
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
@@ -251,6 +256,7 @@ BattleUnit.prototype.liftStatus = function(handle)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
 		if (handle == this.statuses[i].handle) {
+			this.sprite.showMessage(this.statuses[i].name, 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;
@@ -295,7 +301,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
-		this.sprite.showMessage(damageEvent.amount, 'damage');
+		this.sprite.showMessage(damageEvent.amount, 'damage', true);
 		if (this.hpValue <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}

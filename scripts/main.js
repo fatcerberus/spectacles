@@ -15,7 +15,7 @@ RequireScript("Game.js");
 
 RequireScript("lib/persist.js");
 
-var DBG_DISABLE_BATTLE_EVENTS = false;
+var DBG_DISABLE_BATTLE_EVENTS = true;
 var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_USE_FAST_TEXTBOXES = false;
@@ -32,7 +32,7 @@ function game()
 		BGM.track = "SpectaclesTheme";
 		Engine.showLogo("TitleCard", 150);
 	}
-	var fileID = new TitleScreen("SpectaclesTheme").show();
+	var fileID = null; //new TitleScreen("SpectaclesTheme").show();
 	if (fileID == null) {
 		var world = persist.getWorldState();
 		world.session = new Session();
