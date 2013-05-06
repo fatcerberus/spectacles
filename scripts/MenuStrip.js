@@ -17,10 +17,10 @@ RequireScript("Core/Tween.js");
 //                   menu instead.
 function MenuStrip(title, isCancelable, items)
 {
-	this.flashEasing = 'linear';
-	this.scrollEasing = 'linear';
-	this.showEasing = 'easeOutQuad';
-	this.hideEasing = 'easeInQuad';
+	this.showStyle = { easing: 'easeOutQuad', duration: 0.25 };
+	this.scrollStyle = { easing: 'linear', duration: 0.25 };
+	this.flashStyle = { easing: 'linear', duration: 0.125 };
+	this.hideStyle = { easing: 'easeInQuad', duration: 0.25 };
 	
 	this.render = function() {
 		var height = this.font.getHeight() + 10;
@@ -95,12 +95,8 @@ function MenuStrip(title, isCancelable, items)
 				break;
 			case "choose":
 				if (this.flashTween.isFinished()) {
-					this.flashTween = new Tween(this, 0.125, this.flashEasing, {
-						brightness: 0.0
-					});
-					this.hideTween = new Tween(this, 0.25, this.hideEasing, {
-						openness: 0.0
-					});
+					this.flashTween = new Tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 0.0 });
+					this.hideTween = new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 });
 					this.mode = "close";
 				}
 				break;
@@ -120,24 +116,18 @@ function MenuStrip(title, isCancelable, items)
 		}
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			this.chosenItem = this.selectedItem;
-			this.flashTween = new Tween(this, 0.125, this.flashEasing, {
-				brightness: 1.0
-			});
+			this.flashTween = new Tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 1.0 });
 			this.mode = "choose";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) && this.isCancelable) {
 			this.chosenItem = null;
 			this.mode = "close";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
 			this.scrollDirection = -1;
-			this.scrollTween = new Tween(this, 0.25, this.scrollEasing, {
-				scrollProgress: 1.0
-			});
+			this.scrollTween = new Tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 });
 			this.mode = "change-item";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
 			this.scrollDirection = 1;
-			this.scrollTween = new Tween(this, 0.25, this.scrollEasing, {
-				scrollProgress: 1.0
-			});
+			this.scrollTween = new Tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 });
 			this.mode = "change-item";
 		}
 	};
@@ -190,9 +180,7 @@ MenuStrip.prototype.open = function()
 		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
-	this.openTween = new Tween(this, 0.25, this.showEasing, {
-		openness: 1.0
-	});
+	this.openTween = new Tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 });
 	var menuThread = Threads.createEntityThread(this, 100);
 	Threads.waitFor(menuThread);
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;

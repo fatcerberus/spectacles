@@ -8,24 +8,10 @@ RequireScript("Core/Threads.js");
 // Tween() constructor
 // Creates an object representing a tween.
 // Remarks:
-//     The easing functions used here were copied from the jQuery Easing Plugin project, available
-//     on GitHub here:  [ https://github.com/danro/jquery-easing ]
+//     The easing functions used here were adapted from the jQuery Easing Plugin project, available
+//     on GitHub here: <https://github.com/danro/jquery-easing>
 function Tween(o, duration, easingType, endValues)
 {
-	this.update = function()
-	{
-		this.elapsed += 1.0 / Engine.frameRate;
-		for (var p in this.difference) {
-			this.object[p] = this.easings[this.easingType](this.elapsed, this.start[p], this.difference[p], this.duration);
-		}
-		if (this.elapsed >= this.duration) {
-			this.object[p] = this.start[p] + this.difference[p];
-			return false;
-		} else {
-			return true;
-		}
-	};
-	
 	this.easings = {
 		linear: function(t, b, c, d) {
 			return c * t / d + b;
@@ -155,6 +141,21 @@ function Tween(o, duration, easingType, endValues)
 			return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
 		}
 	}
+	
+	this.update = function()
+	{
+		this.elapsed += 1.0 / Engine.frameRate;
+		for (var p in this.difference) {
+			this.object[p] = this.easings[this.easingType](this.elapsed, this.start[p], this.difference[p], this.duration);
+		}
+		if (this.elapsed >= this.duration) {
+			this.object[p] = this.start[p] + this.difference[p];
+			return false;
+		} else {
+			return true;
+		}
+	};
+	
 	if (!(easingType in this.easings)) {
 		Abort("Tween() - Invalid easing type '" + ease + "'.");
 	}
