@@ -134,7 +134,7 @@ function MenuStrip(title, isCancelable, items)
 	
 	if (items === undefined) { items = null; }
 	
-	this.title = title != null ? title : "";
+	this.title = title == null ? "" : title.toLowerCase();
 	this.isCancelable = isCancelable;
 	this.selectedItem = 0;
 	this.font = GetSystemFont();
@@ -158,7 +158,7 @@ MenuStrip.prototype.addItem = function(text, tag)
 	if (tag === undefined) { tag = text; }
 	
 	this.menuItems.push({
-		text: text,
+		text: text.toLowerCase(),
 		tag: tag
 	});
 }

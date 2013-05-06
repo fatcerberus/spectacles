@@ -97,17 +97,17 @@ Battle.prototype.go = function()
 {
 	Console.writeLine("Starting battle '" + this.battleID + "'");
 	this.playerUnits = [];
-	var position = 0;
-	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name], position, BattleRow.middle);
-		this.playerUnits.push(unit);
-		++position;
-	}
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyInfo = Game.enemies[this.parameters.enemies[i]];
 		var unit = new BattleUnit(this, enemyInfo, i, BattleRow.middle);
 		this.enemyUnits.push(unit);
+	}
+	var position = 0;
+	for (var name in this.session.party.members) {
+		var unit = new BattleUnit(this, this.session.party.members[name], position, BattleRow.middle);
+		this.playerUnits.push(unit);
+		++position;
 	}
 	var battleBGMTrack = this.defaultBattleBGM;
 	if (this.parameters.bgm != null) {
@@ -116,6 +116,17 @@ Battle.prototype.go = function()
 	BGM.override(battleBGMTrack);
 	this.battleScreen = new BattleScreen(this);
 	var battleThread = Threads.createEntityThread(this);
+	this.suspend();
+	for (var i = 0; i < this.enemyUnits.length; ++i) {
+		this.enemyUnits[i].enter();
+	}
+	if (!DBG_DISABLE_BATTLE_EVENTS && 'onStart' in this.parameters) {
+		this.parameters.onStart.call(this);
+	}
+	for (var i = 0; i < this.playerUnits.length; ++i) {
+		this.playerUnits[i].enter();
+	}
+	this.resume();
 	Threads.waitFor(battleThread);
 	this.battleScreen.dispose();
 	return this.result;

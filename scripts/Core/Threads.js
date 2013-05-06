@@ -81,6 +81,9 @@ Threads = new (function()
 	//     .doWith() will not return as long as the thread it creates remains running.
 	this.doWith = function(o, updater, renderer, priority)
 	{
+		if (renderer === void null) { renderer = null; }
+		if (priority === void null) { priority = 0; }
+		
 		var updateDelegate = new MultiDelegate();
 		updateDelegate.add(o, updater);
 		var renderDelegate = new MultiDelegate();

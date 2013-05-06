@@ -79,7 +79,6 @@ function BattleUnit(battle, basis, position, startingRow)
 		turnsTaken: 0,
 	};
 	this.sprite = new BattleSprite(this, position, this.row, this.isPartyMember);
-	this.sprite.enter();
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -176,6 +175,13 @@ BattleUnit.prototype.die = function()
 	this.hpValue = 0;
 };
 
+// .enter() method
+// Causes the unit to enter the battlefield.
+BattleUnit.prototype.enter = function()
+{
+	this.sprite.enter();
+};
+
 // .evade() method
 // Applies evasion bonuses when an attack misses.
 // Arguments:
@@ -200,12 +206,13 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		isPriority: isPriority,
 		cancel: false
 	};
-	this.invokeAllStatuses("healed", healEvent);
+	this.invokeAllStatuses('healed', healEvent);
 	if (healEvent.cancel) {
 		return;
 	}
 	if (healEvent.amount >= 0) {
 		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
+		this.sprite.showMessage(healEvent.amount, 'heal');
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
@@ -281,14 +288,14 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		amount: amount,
 		cancel: false
 	};
-	this.invokeAllStatuses("damaged", damageEvent);
+	this.invokeAllStatuses('damaged', damageEvent);
 	if (damageEvent.cancel) {
 		return;
 	}
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
-		this.sprite.message(damageEvent.amount);
+		this.sprite.showMessage(damageEvent.amount, 'damage');
 		if (this.hpValue <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}

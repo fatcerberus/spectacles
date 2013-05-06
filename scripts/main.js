@@ -15,39 +15,29 @@ RequireScript("Game.js");
 
 RequireScript("lib/persist.js");
 
+var DBG_DISABLE_BATTLE_EVENTS = false;
 var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TITLE_CARD = false;
+var DBG_DISABLE_TITLE_CARD = true;
 var DBG_USE_FAST_TEXTBOXES = false;
 
 function game()
 {
-	Engine.initialize(30);
+	Engine.initialize();
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	Console = new Console(17);
-	Console.show();
-	
-	/*ALPHA*/
-	var session = new Session();
-	var battleResult = new Battle(session, 'robert2').go();
-	if (battleResult == BattleResult.enemyWon) {
-		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay?");
-	} else if (battleResult == BattleResult.partyWon) {
-		Abort("Yay! You win!\n\nWait a minute... you didn't cheat by having maggie eat Robert, did you...? I'm on to you!");
-	} else if (battleResult == BattleResult.partyRetreated) {
-		Abort("You coward! You suck!");
-	} else {
-		Abort("Um... what's going on here? That was a really strange battle...");
-	}
-	/*ALPHA*/
 	
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.track = "SpectaclesTheme";
 		Engine.showLogo("TitleCard", 150);
 	}
-	var choice = new TitleScreen("SpectaclesTheme").show();
-	if (choice == "Start Demo") {
+	var fileID = new TitleScreen("SpectaclesTheme").show();
+	if (fileID == null) {
+		var world = persist.getWorldState();
+		world.session = new Session();
 		MapEngine("main.rmp", Engine.frameRate);
+	} else {
+		// TODO: implement loading game session from a file
 	}
 }
