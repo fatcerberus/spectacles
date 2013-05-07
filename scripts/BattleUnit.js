@@ -79,9 +79,6 @@ function BattleUnit(battle, basis, position, startingRow)
 		turnsTaken: 0,
 	};
 	this.sprite = new BattleSprite(this, position, this.row, this.isPartyMember);
-	if (!this.isPartyMember) {
-		this.sprite.enter(true);
-	}
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -167,7 +164,7 @@ BattleUnit.prototype.addStatus = function(handle)
 {
 	var statusEffect = new StatusEffect(this, handle)
 	this.statuses.push(statusEffect);
-	this.sprite.showMessage(statusEffect.name, 'afflict');
+	this.sprite.showMessage("+", 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
 };
 
@@ -249,14 +246,14 @@ BattleUnit.prototype.growSkill = function(handle, experience)
 };
 
 // .liftStatus() method
-// Removes a status's influence on the battler.
+// Nullifies a status effects's influence on the battler.
 // Arguments:
 //     handle: The status class handle of the status to remove.
 BattleUnit.prototype.liftStatus = function(handle)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
 		if (handle == this.statuses[i].handle) {
-			this.sprite.showMessage(this.statuses[i].name, 'dispel');
+			this.sprite.showMessage("+", 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;

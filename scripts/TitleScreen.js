@@ -37,6 +37,9 @@ function TitleScreen(themeTrack)
 
 TitleScreen.prototype.show = function()
 {
+	if (DBG_DISABLE_TITLE_SCREEN) {
+		return new Session();
+	}
 	BGM.track = this.themeTrack;
 	this.mode = "fade-in";
 	this.fader.value = 0.0;
@@ -50,5 +53,5 @@ TitleScreen.prototype.show = function()
 	this.fader.dispose();
 	BGM.track = null;
 	BGM.volume = 1.0;
-	return null;
+	return new Session();
 };

@@ -117,11 +117,14 @@ Battle.prototype.go = function()
 	this.battleScreen = new BattleScreen(this);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
-	if (!DBG_DISABLE_BATTLE_EVENTS && 'onStart' in this.parameters) {
-		this.parameters.onStart.call(this);
+	for (var i = 0; i < this.enemyUnits.length; ++i) {
+		this.enemyUnits[i].enter();
 	}
 	for (var i = 0; i < this.playerUnits.length; ++i) {
 		this.playerUnits[i].enter();
+	}
+	if (!DBG_DISABLE_BATTLE_EVENTS && 'onStart' in this.parameters) {
+		this.parameters.onStart.call(this);
 	}
 	this.resume();
 	Threads.waitFor(battleThread);

@@ -6,6 +6,8 @@
 RequireScript("Core/Threads.js");
 RequireScript("BattleSprite.js"); /*ALPHA*/
 
+RequireScript("lib/Scenario.js");
+
 // BattleScreen() constructor
 // Creates an object representing a battle screen.
 // Arguments:
@@ -21,7 +23,25 @@ function BattleScreen(battle)
 		return true;
 	};
 	
-	this.thread = Threads.createEntityThread(this);
+	Scenario.defineCommand('$showBattle', {
+		start: function(scene, state, battleScreen) {
+			battleScreen.thread = Threads.createEntityThread(battleScreen);
+		}
+	});
+	new Scenario()
+		.fadeTo(CreateColor(255, 255, 255, 255), 0.5)
+		.fadeTo(CreateColor(255, 255, 255, 0), 0.5)
+		.fadeTo(CreateColor(255, 255, 255, 255), 0.5)
+		.$showBattle(this)
+		.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
+		.run();
+	var transition = {
+		capture: GrabImage(0, 0, GetScreenWidth(), GetScreenHeight()),
+		phase: 0,
+		fadeness: 0.0,
+		tween: null
+	};
+	transition.tween = new Tween(transition, 0.5, 'easeInOutQuad', { fadeness: 1.0 });
 };
 
 // .dispose() method

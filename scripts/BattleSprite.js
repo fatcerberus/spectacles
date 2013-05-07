@@ -20,11 +20,11 @@ RequireScript("lib/SpriteImage.js");
 function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
 {
 	this.messageStyles = {
-		afflict: { color: CreateColor(255, 255, 128, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.25 },
-		damage: { color: CreateColor(255, 255, 255, 255), yStart: 32, yEnd: 0, easing: 'easeOutBounce', duration: 0.5, delay: 1.0 },
-		dispel: { color: CreateColor(255, 192, 192, 255), yStart: 16, yEnd: 40, easing: 'easeInOutQuad', duration: 1.0, delay: 0.25 },
-		evade: { color: CreateColor(192, 192, 160, 255), yStart: 48, yEnd: 0, easing: 'easeOutElastic', duration: 0.5, delay: 0.5 }
-		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 24, easing: 'easeOutQuad', duration: 1.0, delay: 1.0 },
+		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
+		damage: { color: CreateColor(255, 255, 255, 255), yStart: 32, yEnd: 0, easing: 'easeOutBounce', duration: 0.5, delay: 0.25 },
+		dispel: { color: CreateColor(192, 192, 0, 255), yStart: 16, yEnd: 0, easing: 'easeInBack', duration: 0.5, delay: 0.5 },
+		evade: { color: CreateColor(192, 192, 160, 255), yStart: 48, yEnd: 0, easing: 'easeOutElastic', duration: 0.5, delay: 0.25 },
+		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 24, easing: 'easeOutQuad', duration: 1.0, delay: 0.25 }
 	};
 	
 	this.render = function() {
@@ -101,9 +101,9 @@ BattleSprite.prototype.enter = function(isImmediate)
 	
 	var newX = this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16;
 	if (!isImmediate) {
-		this.enterTween = new Tween(this, 0.5, 'linear', { x: newX });
-		Threads.doWith(this, function() {
-			return !this.enterTween.isFinished();
+		this.enterTween = new Tween(this, 1.0, 'linear', { x: newX });
+		Threads.doWith(this.enterTween, function() {
+			return !this.isFinished();
 		});
 	} else {
 		this.x = newX;
