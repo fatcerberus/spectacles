@@ -16,10 +16,17 @@ RequireScript("Game.js");
 RequireScript("lib/persist.js");
 
 var DBG_DISABLE_BATTLE_EVENTS = true;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_USE_FAST_TEXTBOXES = true;
+
+function delegate(o, methodName)
+{
+	return function(/*...*/) {
+		o[methodName].apply(o, arguments)
+	};
+}
 
 function game()
 {

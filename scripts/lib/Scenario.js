@@ -1,5 +1,5 @@
 /**
- * Scenario 3.1 for Sphere - © 2008-2013 Bruce E. Pascoe
+ * Scenario 3.1.1 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -299,9 +299,9 @@ Scenario.prototype.run = function()
 
 // Register predefined commands
 Scenario.defineCommand("call", {
-	start: function(scene, state, method, parameters) {
-		method.apply(null, parameters);
-	},
+	start: function(scene, state, method /*...*/) {
+		method.apply(null, [].slice.call(arguments, 3));
+	}
 });
 
 Scenario.defineCommand("facePerson", {

@@ -177,6 +177,7 @@ Battle.prototype.resume = function()
 //     action:      The action to be executed.
 Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
+	this.battleScreen.announce(action, CreateColor(64, 64, 192, 255));
 	var targetsHit = [];
 	if ('accuracyType' in action) {
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
