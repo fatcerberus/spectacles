@@ -3,35 +3,38 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript("Core/Fader.js");
+RequireScript("Core/Tween.js");
 RequireScript("MenuStrip.js");
 
 function TitleScreen(themeTrack)
 {
 	this.render = function() {
 		this.image.blit(0, 0);
-		ApplyColorMask(CreateColor(0, 0, 0, (1.0 - this.fader.value) * 255));
+		ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
 	};
 	this.update = function() {
 		switch (this.mode) {
 			case "fade-in":
-				if (this.fader.value >= 1.0) {
-					this.mode = "idle";
+				if (this.fadeTween.isFinished()) {
+					this.choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
+					this.fadeTween = new Tween(this, 2.0, 'linear', { fadeness: 1.0 });
+					this.mode = "fade-out";
+					BGM.adjustVolume(0.0, 2.0);
 				}
 				break;
 			case "fade-out":
-				if (this.fader.value <= 0.0) {
+				if (this.fadeTween.isFinished()) {
 					this.mode = "finish";
 				}
 				break;
 			case "finish":
-				return false;
+				return BGM.volume > 0.0;
 		}
 		return true;
 	};
 	
+	this.fadeness = 1.0;
 	this.image = LoadImage("TitleScreen.png");
-	this.fader = new Fader();
 	this.themeTrack = themeTrack;
 }
 
@@ -42,15 +45,9 @@ TitleScreen.prototype.show = function()
 	}
 	BGM.track = this.themeTrack;
 	this.mode = "fade-in";
-	this.fader.value = 0.0;
-	this.fader.adjust(1.0, 2.0);
-	var thread = Threads.createEntityThread(this);
-	var choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
-	BGM.adjustVolume(0.0, 2.0);
-	this.mode = "fade-out";
-	this.fader.adjust(0.0, 2.0);
-	Threads.waitFor(thread);
-	this.fader.dispose();
+	this.fadeTween = new Tween(this, 2.0, 'linear', { fadeness: 0.0 });
+	this.choice = null;
+	Threads.waitFor(Threads.createEntityThread(this));
 	BGM.track = null;
 	BGM.volume = 1.0;
 	return new Session();
