@@ -69,7 +69,7 @@ function BattleScreen()
 	//     A reference to a kh2Bar object that represents the new life bar.
 	this.createLifeBar = function(name, capacity)
 	{
-		var lifeBar = new kh2Bar(capacity);
+		var lifeBar = new kh2Bar(capacity, CreateColor(255, 255, 255, 255));
 		this.$lifeBars.push(lifeBar);
 		return lifeBar;
 	};

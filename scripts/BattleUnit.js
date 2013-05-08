@@ -308,7 +308,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
 		if (this.lifeBar != null) {
-			this.lifeBar.reading = this.hpValue;
+			this.lifeBar.setReading(this.hpValue);
 		}
 		this.sprite.showMessage(damageEvent.amount, 'damage');
 		if (this.hpValue <= 0) {
