@@ -55,6 +55,7 @@ function BattleSprite(name, position, row, isMirrored)
 		var newX = this.$isMirrored ? 256 + this.$row * 16 : 48 - this.$row * 16;
 		if (!isImmediate) {
 			var enterTween = new Tween(this, 1.0, 'linear', { $x: newX });
+			enterTween.start();
 			Threads.doWith(enterTween, function() {
 				return !this.isFinished();
 			});
@@ -103,7 +104,7 @@ function BattleSprite(name, position, row, isMirrored)
 			endTime: (style.duration + style.delay) * 1000 + GetTime()
 		};
 		this.$messages.push(message);
-		new Tween(message, style.duration, style.easing, { height: style.yEnd });
+		new Tween(message, style.duration, style.easing, { height: style.yEnd }).start();
 	};
 	
 	// .update() method

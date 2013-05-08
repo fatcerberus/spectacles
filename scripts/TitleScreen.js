@@ -18,6 +18,7 @@ function TitleScreen(themeTrack)
 				if (this.fadeTween.isFinished()) {
 					this.choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
 					this.fadeTween = new Tween(this, 2.0, 'linear', { fadeness: 1.0 });
+					this.fadeTween.start();
 					this.mode = "fade-out";
 					BGM.adjustVolume(0.0, 2.0);
 				}
@@ -46,6 +47,7 @@ TitleScreen.prototype.show = function()
 	BGM.track = this.themeTrack;
 	this.mode = "fade-in";
 	this.fadeTween = new Tween(this, 2.0, 'linear', { fadeness: 0.0 });
+	this.fadeTween.start();
 	this.choice = null;
 	Threads.waitFor(Threads.createEntityThread(this));
 	BGM.track = null;

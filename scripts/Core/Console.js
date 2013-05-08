@@ -74,14 +74,14 @@ Console.prototype.append = function(text)
 // Hides the console window.
 Console.prototype.hide = function()
 {
-	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 });
+	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 }).start();
 }
 
 // .show() method
 // Shows the console window.
 Console.prototype.show = function()
 {
-	new Tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 });
+	new Tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 }).start();
 }
 
 // .writeLine() method

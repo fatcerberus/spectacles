@@ -96,7 +96,9 @@ function MenuStrip(title, isCancelable, items)
 			case "choose":
 				if (this.flashTween.isFinished()) {
 					this.flashTween = new Tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 0.0 });
+					this.flashTween.start();
 					this.hideTween = new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 });
+					this.hideTween.start();
 					this.mode = "close";
 				}
 				break;
@@ -117,6 +119,7 @@ function MenuStrip(title, isCancelable, items)
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			this.chosenItem = this.selectedItem;
 			this.flashTween = new Tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 1.0 });
+			this.flashTween.start();
 			this.mode = "choose";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) && this.isCancelable) {
 			this.chosenItem = null;
@@ -124,10 +127,12 @@ function MenuStrip(title, isCancelable, items)
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
 			this.scrollDirection = -1;
 			this.scrollTween = new Tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 });
+			this.scrollTween.start();
 			this.mode = "change-item";
 		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
 			this.scrollDirection = 1;
 			this.scrollTween = new Tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 });
+			this.scrollTween.start();
 			this.mode = "change-item";
 		}
 	};
@@ -181,6 +186,7 @@ MenuStrip.prototype.open = function()
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 	this.openTween = new Tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 });
+	this.openTween.start();
 	var menuThread = Threads.createEntityThread(this, 100);
 	Threads.waitFor(menuThread);
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;

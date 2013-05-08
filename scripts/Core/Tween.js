@@ -164,6 +164,13 @@ function Tween(o, duration, easingType, endValues)
 		return this.$elapsed >= this.$duration;
 	};
 	
+	// .start() method
+	// Starts the tweening operation.
+	this.start = function()
+	{
+		Threads.createEntityThread(this);
+	}
+	
 	// .update() method
 	// Advances the Tween by one frame.
 	this.update = function()
@@ -179,6 +186,4 @@ function Tween(o, duration, easingType, endValues)
 			return true;
 		}
 	};
-
-	Threads.createEntityThread(this);
 };
