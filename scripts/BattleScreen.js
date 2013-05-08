@@ -24,28 +24,31 @@ function BattleScreen()
 	this.dispose = function()
 	{
 		Threads.kill(this.thread);
-		for (var i = 0; i < this.$sprites.length; ++i) {
-			this.$sprites[i].dispose();
-		}
 	};
 	
 	// .announceAction() method
 	// Momentarily displays the name of an action being performed.
 	// Arguments:
-	//     action:      The action being executed.
+	//     action:      The action being performed.
+	//     alignment:   The alignment of the unit performing the action. Can be one of the following:
+	//                      'party': A member of the player's party.
+	//                      'enemy': An enemy battler.
 	//     bannerColor: The background color to use for the announcement banner.
-	this.announceAction = function(actionName, bannerColor)
+	this.announceAction = function(actionName, alignment, bannerColor)
 	{
 		var announcement = {
 			text: actionName,
+			alignment: alignment,
 			color: bannerColor,
 			font: GetSystemFont(),
 			endTime: 1000 + GetTime(),
 			render: function() {
+				var xCenterLeft = Math.round(GetScreenWidth() * 0.25);
+				var xCenterRight = Math.round(GetScreenWidth() * 0.75);
 				var width = this.font.getStringWidth(this.text) + 20;
 				var height = this.font.getHeight() + 10;
-				var x = GetScreenWidth() / 2 - width / 2;
-				var y = 134;
+				var x = this.alignment == 'enemy' ? xCenterLeft - width / 2 : xCenterRight - width / 2;
+				var y = 96;
 				Rectangle(x, y, width, height, this.color);
 				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64));
 				this.font.setColorMask(CreateColor(0, 0, 0, 255));
@@ -57,7 +60,7 @@ function BattleScreen()
 				return GetTime() < this.endTime;
 			}
 		};
-		Threads.waitFor(Threads.createEntityThread(announcement, 10));
+		Threads.createEntityThread(announcement, 10);
 	};
 	
 	// .createLifeBar() method

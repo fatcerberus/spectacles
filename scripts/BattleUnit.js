@@ -94,13 +94,6 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.resetCounter(Game.defaultMoveRank);
 }
 
-// .dispose() method
-// Frees any resources used by the BattleUnit.
-BattleUnit.prototype.dispose = function()
-{
-	this.sprite.dispose();
-};
-
 // .health property
 // Gets the unit's remaining health as a percentage.
 BattleUnit.prototype.health getter = function()

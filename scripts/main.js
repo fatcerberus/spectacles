@@ -30,7 +30,6 @@ function delegate(o, methodName)
 function game()
 {
 	Engine.initialize();
-	BGM.override("ThePromise");
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");

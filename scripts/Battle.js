@@ -34,7 +34,6 @@ function Battle(session, battleID)
 					var unit = unitLists[iList][i];
 					actionTaken = unit.tick() || actionTaken;
 					if (!unit.isAlive) {
-						unit.dispose();
 						unitLists[iList].splice(i, 1);
 						--i; continue;
 					}
@@ -180,7 +179,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
-		this.battleScreen.announceAction(action.announceAs, bannerColor);
+		this.battleScreen.announceAction(action.announceAs, actingUnit.isPartyMember ? 'party' : 'enemy', bannerColor);
 	}
 	var targetsHit = [];
 	if ('accuracyType' in action) {
