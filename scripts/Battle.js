@@ -79,9 +79,9 @@ Battle.prototype.battleLevel getter = function()
 };
 
 // .enemiesOf() method
-// Gets a list of all units opposing a specified unit.
+// Gets a list of all the units opposing a specified unit.
 // Arguments:
-//     unit: The unit for which to find enemies.
+//     unit: The BattleUnit for which to find enemies.
 Battle.prototype.enemiesOf = function(unit)
 {
 	if (unit.isPartyMember) {
@@ -96,6 +96,7 @@ Battle.prototype.enemiesOf = function(unit)
 Battle.prototype.go = function()
 {
 	Console.writeLine("Starting battle '" + this.battleID + "'");
+	this.battleScreen = new BattleScreen();
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
@@ -114,16 +115,16 @@ Battle.prototype.go = function()
 		battleBGMTrack = this.parameters.bgm;
 	}
 	BGM.override(battleBGMTrack);
-	this.battleScreen = new BattleScreen(this);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
+	this.battleScreen.go();
 	for (var i = 0; i < this.enemyUnits.length; ++i) {
 		this.enemyUnits[i].enter();
 	}
 	for (var i = 0; i < this.playerUnits.length; ++i) {
 		this.playerUnits[i].enter();
 	}
-	if (!DBG_DISABLE_BATTLE_EVENTS && 'onStart' in this.parameters) {
+	if ('onStart' in this.parameters) {
 		this.parameters.onStart.call(this);
 	}
 	this.resume();
@@ -177,7 +178,10 @@ Battle.prototype.resume = function()
 //     action:      The action to be executed.
 Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
-	this.battleScreen.announce(action, CreateColor(64, 64, 192, 255));
+	if ('announceAs' in action && action.announceAs != null) {
+		var bannerColor = actingUnit.isPartyMember ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
+		this.battleScreen.announceAction(action.announceAs, bannerColor);
+	}
 	var targetsHit = [];
 	if ('accuracyType' in action) {
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;

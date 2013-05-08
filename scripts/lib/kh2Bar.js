@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.0.1 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 1.1 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -7,7 +7,6 @@ kh2Bar = kh2Bar || {};
 
 kh2Bar.SECTOR_SIZE = 250;
 kh2Bar.BORDER_COLOR = CreateColor(0, 64, 0);
-kh2Bar.BAR_COLOR = CreateColor(0, 255, 0);
 kh2Bar.DAMAGE_COLOR = CreateColor(255, 0, 0);
 kh2Bar.BACK_COLOR = CreateColor(24, 24, 24);
 kh2Bar.DAMAGE_FADE_DELAY = 0.0;
@@ -15,10 +14,8 @@ kh2Bar.DAMAGE_FADE_DELAY = 0.0;
 // kh2Bar() constructor
 // Creates an object representing a kh2Bar HP gauge.
 // Arguments:
-//     x:        The X coordinate, in pixels, of the top left corner of the gauge relative to the screen
-//     y:        The Y coordinate, in pixels, of the top left corner of the gauge relative to the screen
 //     maxValue: The largest value representable by the gauge.
-function kh2Bar(x, y, maxValue)
+function kh2Bar(maxValue, color)
 {
 	this.drawSegment = function(x, y, width, height, color) {
 		var halfHeight = Math.ceil(height / 2);
@@ -28,10 +25,11 @@ function kh2Bar(x, y, maxValue)
 		GradientRectangle(x, yHalf, width, halfHeight, color, color, dimColor, dimColor);
 	};
 	
-	this.x = x;
-	this.y = y;
+	if (color === void null) { color = CreateColor(0, 255, 0); }
+	
 	this.maxValue = maxValue;
 	this.value = this.maxValue;
+	this.color = color;
 	this.damageAmount = 0;
 	this.damageFade = 1.0;
 	this.damageDelay = 0.0;
@@ -55,8 +53,11 @@ kh2Bar.prototype.reading setter = function(value)
 };
 
 // .render() method
-// Renders the kh2Bar. This should be called once per frame.
-kh2Bar.prototype.render = function()
+// Renders the kh2Bar.
+// Arguments:
+//     x: The X coordinate, in pixels, of the top left corner of the gauge.
+//     y: The Y coordinate, in pixels, of the top left corner of the gauge.
+kh2Bar.prototype.render = function(x, y)
 {
 	var numReserves = Math.ceil(this.maxValue / kh2Bar.SECTOR_SIZE - 1);
 	var numReservesFilled = Math.ceil(this.value / kh2Bar.SECTOR_SIZE - 1);
@@ -74,31 +75,31 @@ kh2Bar.prototype.render = function()
 	}
 	var barDamaged = Math.min(this.damageAmount, kh2Bar.SECTOR_SIZE - barFilled);
 	var usageColor = BlendColorsWeighted(kh2Bar.BACK_COLOR, kh2Bar.DAMAGE_COLOR, this.damageFade, 1.0 - this.damageFade);
-	Rectangle(this.x, this.y, kh2Bar.SECTOR_SIZE + 2, 16, kh2Bar.BORDER_COLOR);
-	this.drawSegment(this.x + 1, this.y + 1, barFilled, 16 - 2, kh2Bar.BAR_COLOR);
-	this.drawSegment(this.x + 1 + barFilled, this.y + 1, barDamaged, 16 - 2, usageColor);
-	this.drawSegment(this.x + 1 + barFilled + barDamaged, this.y + 1, barWidthInUse - barFilled - barDamaged, 16 - 2, kh2Bar.BACK_COLOR);
+	Rectangle(x, y, kh2Bar.SECTOR_SIZE + 2, 16, kh2Bar.BORDER_COLOR);
+	this.drawSegment(x + 1, y + 1, barFilled, 16 - 2, this.color);
+	this.drawSegment(x + 1 + barFilled, y + 1, barDamaged, 16 - 2, usageColor);
+	this.drawSegment(x + 1 + barFilled + barDamaged, y + 1, barWidthInUse - barFilled - barDamaged, 16 - 2, kh2Bar.BACK_COLOR);
 	var slotXSize = 7;
 	var slotYSize = 7;
 	var slotX;
-	var slotY = this.y + 16 - slotYSize;
+	var slotY = y + 16 - slotYSize;
 	for (i = 0; i < numReserves; ++i) {
 		var color;
 		if (i < numReservesFilled) {
-			color = kh2Bar.BAR_COLOR;
+			color = this.color;
 		} else if (i < numReservesDamaged) {
 			color = usageColor;
 		} else {
 			color = kh2Bar.BACK_COLOR;
 		}
-		slotX = this.x + (kh2Bar.SECTOR_SIZE + 2 - slotXSize) - i * (slotXSize - 1);
+		slotX = x + (kh2Bar.SECTOR_SIZE + 2 - slotXSize) - i * (slotXSize - 1);
 		OutlinedRectangle(slotX, slotY, slotXSize, slotYSize, kh2Bar.BORDER_COLOR);
 		this.drawSegment(slotX + 1, slotY + 1, slotXSize - 2, slotYSize - 2, color);
 	}
 };
 
 // .update() method
-// Updates the kh2Bar's state variables. This should be called once per frame.
+// Advances the kh2Bar's internal state by one frame.
 kh2Bar.prototype.update = function()
 {
 	this.damageDelay -= 1.0 / Engine.frameRate;

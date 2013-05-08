@@ -410,6 +410,7 @@ Game = {
 	enemies: {
 		robert2: {
 			name: "Robert",
+			hasLifeBar: true,
 			baseStats: {
 				vit: 75,
 				str: 75,

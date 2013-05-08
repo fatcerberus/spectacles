@@ -3,74 +3,131 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Threads.js");
-RequireScript("BattleSprite.js"); /*ALPHA*/
-
-RequireScript("lib/Scenario.js");
+RequireScript('Core/Threads.js');
+RequireScript('lib/kh2Bar.js');
+RequireScript('lib/Scenario.js');
+RequireScript('BattleSprite.js');
 
 // BattleScreen() constructor
 // Creates an object representing a battle screen.
-// Arguments:
-//     battle: The Battle associated with this battle screen.
-function BattleScreen(battle)
+function BattleScreen()
 {
-	this.startThread = function() {
+	this.$startThread = function() {
 		this.thread = Threads.createEntityThread(this);
 	};
+	this.$lifeBars = [];
+	this.$sprites = [];
 	
-	this.render = function() {
+	// .dispose() method
+	// Frees all outstanding resources associated with the BattleScreen.
+	this.dispose = function()
+	{
+		Threads.kill(this.thread);
+		for (var i = 0; i < this.$sprites.length; ++i) {
+			this.$sprites[i].dispose();
+		}
+	};
+	
+	// .announceAction() method
+	// Momentarily displays the name of an action being performed.
+	// Arguments:
+	//     action:      The action being executed.
+	//     bannerColor: The background color to use for the announcement banner.
+	this.announceAction = function(actionName, bannerColor)
+	{
+		var announcement = {
+			text: actionName,
+			color: bannerColor,
+			font: GetSystemFont(),
+			endTime: 1000 + GetTime(),
+			render: function() {
+				var width = this.font.getStringWidth(this.text) + 20;
+				var height = this.font.getHeight() + 10;
+				var x = GetScreenWidth() / 2 - width / 2;
+				var y = 134;
+				Rectangle(x, y, width, height, this.color);
+				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64));
+				this.font.setColorMask(CreateColor(0, 0, 0, 255));
+				this.font.drawText(x + 11, y + 6, this.text);
+				this.font.setColorMask(CreateColor(255, 255, 255, 255));
+				this.font.drawText(x + 10, y + 5, this.text);
+			},
+			update: function() {
+				return GetTime() < this.endTime;
+			}
+		};
+		Threads.waitFor(Threads.createEntityThread(announcement, 10));
+	};
+	
+	// .createLifeBar() method
+	// Creates an enemy life bar to be displayed on this BattleScreen.
+	// Arguments:
+	//     name:     The name of the battler the life bar belongs to.
+	//     capacity: The HP capacity of the new life bar.
+	// Returns:
+	//     A reference to a kh2Bar object representing the new life bar.
+	this.createLifeBar = function(name, capacity)
+	{
+		var lifeBar = new kh2Bar(capacity);
+		this.$lifeBars.push(lifeBar);
+		return lifeBar;
+	};
+	
+	// .createSprite() method
+	// Creates a battler sprite to be displayed on this BattleScreen.
+	// Arguments:
+	//     name: The name of the battler represented by the new sprite.
+	// Returns:
+	//     A reference to a BattleSprite object representing the new sprite.
+	this.createSprite = function(name, position, row, isMirrored, alreadyThere)
+	{
+		var sprite = new BattleSprite(name, position, row, isMirrored, alreadyThere);
+		this.$sprites.push(sprite);
+		return sprite;
+	};
+	
+	// .go() method
+	// Presents the BattleScreen to the player.
+	this.go = function()
+	{
+		new Scenario()
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.fadeTo(CreateColor(255, 255, 255, 0), 0.5)
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.call(delegate(this, '$startThread'))
+			.fadeTo(CreateColor(0, 0, 0, 0), 1.5)
+			.run();
+	};
+	
+	// .render() method
+	// Renders the BattleScreen.
+	this.render = function()
+	{
 		Rectangle(0, 0, 320, 112, CreateColor(0, 128, 0, 255));
 		Rectangle(0, 112, 320, 16, CreateColor(64, 64, 64, 255));
 		Rectangle(0, 128, 320, 112, CreateColor(192, 128, 0, 255));
-	};
-	this.update = function() {
-		return true;
-	};
-	
-	var startThread = delegate(this, 'startThread');
-	new Scenario()
-		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-		.fadeTo(CreateColor(255, 255, 255, 0), 0.5)
-		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-		.call(startThread)
-		.fadeTo(CreateColor(0, 0, 0, 0), 1.5)
-		.run();
-};
-
-// .dispose() method
-// Frees any resources associated with the BattleScreen.
-BattleScreen.prototype.dispose = function()
-{
-	Threads.kill(this.thread);
-};
-
-// .announce() method
-// Announces the use of a battler action to the player.
-BattleScreen.prototype.announce = function(action, boxColor)
-{
-	if (!('announceAs' in action)) {
-		return;
-	}
-	var announcement = {
-		text: action.announceAs,
-		color: boxColor,
-		font: GetSystemFont(),
-		endTime: 1000 + GetTime(),
-		render: function() {
-			var width = this.font.getStringWidth(this.text) + 20;
-			var height = this.font.getHeight() + 10;
-			var x = GetScreenWidth() / 2 - width / 2;
-			var y = 132;
-			Rectangle(x, y, width, height, this.color);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64));
-			this.font.setColorMask(CreateColor(0, 0, 0, 255));
-			this.font.drawText(x + 11, y + 6, this.text);
-			this.font.setColorMask(CreateColor(255, 255, 255, 255));
-			this.font.drawText(x + 10, y + 5, this.text);
-		},
-		update: function() {
-			return GetTime() < this.endTime;
+		for (var i = 0; i < this.$sprites.length; ++i) {
+			this.$sprites[i].render();
+		}
+		for (var i = 0; i < this.$lifeBars.length; ++i) {
+			var x = 5;
+			var y = 5;
+			this.$lifeBars[i].render(x, y);
 		}
 	};
-	Threads.waitFor(Threads.createEntityThread(announcement, 10));
+	
+	// .update() method
+	// Advances the BattleScreen's internal state by one frame.
+	// Returns:
+	//     true if the BattleScreen is still active; false otherwise.
+	this.update = function()
+	{
+		for (var i = 0; i < this.$sprites.length; ++i) {
+			this.$sprites[i].update();
+		}
+		for (var i = 0; i < this.$lifeBars.length; ++i) {
+			this.$lifeBars[i].update();
+		}
+		return true;
+	};
 };

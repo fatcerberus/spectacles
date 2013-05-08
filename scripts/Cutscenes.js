@@ -44,7 +44,6 @@ Scenario.defineCommand("talk", {
 		state.speakerName = speaker;
 		state.speakerText = state.speakerName != null ? state.speakerName + ":" : null;
 		state.textSpeed = textSpeed;
-		if (DBG_USE_FAST_TEXTBOXES) state.textSpeed = 10.0;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
 		var textAreaWidth = GetScreenWidth() - 10;
@@ -67,6 +66,7 @@ Scenario.defineCommand("talk", {
 		state.lineToReveal = 0;
 		state.textSurface = CreateSurface(textAreaWidth, textBoxFont.getHeight() * 3, CreateColor(0, 0, 0, 0));
 		state.mode = "fadein";
+		if (DBG_DISABLE_TEXTBOXES) state.mode = "finish";
 		return true;
 	},
 	render: function(sceneState, state) {

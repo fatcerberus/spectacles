@@ -11,13 +11,11 @@ RequireScript("lib/SpriteImage.js");
 // BattleSprite() constructor
 // Creates an object representing a battler sprite.
 // Arguments:
-//     unit:           The BattleUnit this sprite represents.
-//     position:       The position of the unit in the party order.
-//     row:            The row (front, middle, rear) that the battler is in.
-//     isMirrored:     If true, the sprite enters from the right. Otherwise, it enters from the left.
-//     isAlreadyThere: If true, the sprite is immediately displayed on the battlefield. If this is false,
-//                     .enter() must be called to bring the sprite out.
-function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
+//     name:         The name of the battler this sprite represents.
+//     position:     The position of the unit in the party order.
+//     row:          The row (front, middle, rear) that the battler is in.
+//     isMirrored:   If true, the sprite enters from the right. Otherwise, it enters from the left.
+function BattleSprite(name, position, row, isMirrored)
 {
 	this.messageStyles = {
 		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
@@ -31,7 +29,7 @@ function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
 		var direction;
 		Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 		this.idFont.setColorMask(CreateColor(128, 128, 128, 255));
-		this.idFont.drawText(this.x + 5, this.y + 17, this.unit.name[0]);
+		this.idFont.drawText(this.x + 5, this.y + 17, this.name[0]);
 		for (var i = 0; i < this.messages.length; ++i) {
 			var message = this.messages[i];
 			var x = this.x + 8 - this.idFont.getStringWidth(message.text) / 2;
@@ -51,7 +49,7 @@ function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
 		return true;
 	};
 	
-	this.unit = unit;
+	this.name = name;
 	this.position = position;
 	this.isMirrored = isMirrored;
 	this.idFont = GetSystemFont(); /*ALPHA*/
@@ -65,14 +63,11 @@ function BattleSprite(unit, position, row, isMirrored, isAlreadyThere)
 		case 2: this.y = 192; break;
 	}
 	this.state = "idle";
-	if (isAlreadyThere) {
-		this.enter(true);
-	}
-	this.thread = Threads.createEntityThread(this, 1);
+	this.hasEntered = false;
 };
 
 // .dispose() method
-// Frees any resources used by the BattleSprite.
+// Frees all outstanding resources associated with the BattleSprite.
 BattleSprite.prototype.dispose = function()
 {
 	Threads.kill(this.thread);
@@ -99,6 +94,9 @@ BattleSprite.prototype.enter = function(isImmediate)
 {
 	if (isImmediate === void null) { isImmediate = false; }
 	
+	if (this.hasEntered) {
+		return;
+	}
 	var newX = this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16;
 	if (!isImmediate) {
 		this.enterTween = new Tween(this, 1.0, 'linear', { x: newX });
@@ -108,24 +106,21 @@ BattleSprite.prototype.enter = function(isImmediate)
 	} else {
 		this.x = newX;
 	}
+	this.hasEntered = true;
 };
 
 // .showMessage() method
 // Displays a message over the sprite.
 // Arguments:
 //     text:          The text to display.
-//     styleName:     The name of the message style to use. The message style can be one of the following:
+//     styleName:     The name of the message style to use. Can be one of the following:
 //                        'afflict': Used to display a newly acquired status effect.
 //                        'damage': Used to display HP lost as damage.
 //                        'dispel': Used to display a newly lost status effect.
 //                        'heal': Used to display HP regained.
 //                        'evade': Used to display evasion messages (miss, immune, etc.).
-//     waitUntilDone: Optional. If true, .showMessage() won't return until the message times out. The
-//                    default is false.
-BattleSprite.prototype.showMessage = function(text, styleName, waitUntilDone)
+BattleSprite.prototype.showMessage = function(text, styleName)
 {
-	if (waitUntilDone === void null) { waitUntilDone = false; }
-	
 	style = this.messageStyles[styleName];
 	var message = {
 		text: text,
@@ -135,9 +130,4 @@ BattleSprite.prototype.showMessage = function(text, styleName, waitUntilDone)
 	};
 	this.messages.push(message);
 	new Tween(message, style.duration, style.easing, { height: style.yEnd });
-	if (waitUntilDone) {
-		Threads.doWith(message, function() {
-			return GetTime() < this.endTime;
-		});
-	}
 };

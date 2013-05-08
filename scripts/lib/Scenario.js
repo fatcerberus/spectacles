@@ -150,7 +150,7 @@ function Scenario()
 		for (var iThread = 0; iThread < this.threads.length; ++iThread) {
 			var renderer = this.threads[iThread].renderer;
 			if (renderer != null) {
-				renderer(this,this.threads[iThread].state);
+				renderer(this, this.threads[iThread].state);
 			}
 		}
 	};

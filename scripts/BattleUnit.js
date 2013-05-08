@@ -4,8 +4,7 @@
 ***/
 
 RequireScript("Core/Console.js");
-RequireScript("BattleSprite.js");
-RequireScript("BattleUnitMoveMenu.js");
+RequireScript("MoveMenu.js");
 RequireScript("MenuStrip.js"); /*ALPHA*/
 RequireScript("PartyMember.js");
 RequireScript("Skill.js");
@@ -42,6 +41,7 @@ function BattleUnit(battle, basis, position, startingRow)
 	};
 	
 	this.battle = battle;
+	this.battleScreen = this.battle.battleScreen;
 	this.rowValue = startingRow;
 	this.partyMember = null;
 	this.stats = {};
@@ -59,6 +59,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var i = 0; i < this.partyMember.skills.length; ++i) {
 			this.skills.push(this.partyMember.skills[i]);
 		}
+		this.lifeBar = null;
 	} else {
 		this.enemyInfo = basis;
 		this.name = this.enemyInfo.name;
@@ -67,6 +68,11 @@ function BattleUnit(battle, basis, position, startingRow)
 		}
 		this.maxHPValue = Game.math.enemyHP(this);
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
+		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
+			this.lifeBar = this.battleScreen.createLifeBar(this.name, this.maxHPValue);
+		} else {
+			this.lifeBar = null;
+		}
 	}
 	this.newSkills = [];
 	this.hpValue = this.maxHP;
@@ -74,11 +80,14 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.counter = 0;
 	this.actionQueue = [];
 	this.moveTargets = null;
-	this.moveMenu = new BattleUnitMoveMenu(this.battle, this);
+	this.moveMenu = new MoveMenu(this.battle, this);
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.sprite = new BattleSprite(this, position, this.row, this.isPartyMember);
+	this.sprite = this.battleScreen.createSprite(this.name, position, this.row, this.isPartyMember);
+	if (!this.isPartyMember) {
+		this.sprite.enter(true);
+	}
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -189,7 +198,7 @@ BattleUnit.prototype.enter = function()
 //     attacker: The BattleUnit whose attack was evaded.
 BattleUnit.prototype.evade = function(attacker)
 {
-	this.sprite.showMessage("miss", 'evade', true);
+	this.sprite.showMessage("miss", 'evade');
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
@@ -214,7 +223,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 	}
 	if (healEvent.amount >= 0) {
 		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
-		this.sprite.showMessage(healEvent.amount, 'heal', true);
+		this.sprite.showMessage(healEvent.amount, 'heal');
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
@@ -298,7 +307,10 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 	if (damageEvent.amount >= 0) {
 		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
 		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
-		this.sprite.showMessage(damageEvent.amount, 'damage', true);
+		if (this.lifeBar != null) {
+			this.lifeBar.reading = this.hpValue;
+		}
+		this.sprite.showMessage(damageEvent.amount, 'damage');
 		if (this.hpValue <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}
@@ -326,7 +338,7 @@ BattleUnit.prototype.tick = function()
 			action = this.actionQueue.shift();
 		} else {
 			if (this.isPartyMember) {
-				// var move = this.moveMenu.show();
+				//var move = this.moveMenu.show();
 				
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
@@ -341,7 +353,7 @@ BattleUnit.prototype.tick = function()
 				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
 				Console.append("level: " + this.skillUsed.level);
 				var move = {
-					type: "technique",
+					type: 'technique',
 					technique: this.skillUsed.technique,
 					targets: [
 						this.battle.enemiesOf(this)[0]
