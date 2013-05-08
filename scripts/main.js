@@ -16,7 +16,7 @@ RequireScript("Game.js");
 RequireScript("lib/persist.js");
 
 var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 

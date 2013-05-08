@@ -62,16 +62,19 @@ Scenario.defineCommand("talk", {
 		state.numLinesToDraw = 0;
 		state.topLine = 0;
 		state.lineToReveal = 0;
-		state.textSurface = CreateSurface(textAreaWidth, textBoxFont.getHeight() * 3, CreateColor(0, 0, 0, 0));
+		state.textSurface = CreateSurface(textAreaWidth, textBoxFont.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		state.mode = "fadein";
 		if (DBG_DISABLE_TEXTBOXES) state.mode = "finish";
 		return true;
 	},
 	render: function(sceneState, state) {
 		var lineHeight = textBoxFont.getHeight();
-		var boxHeight = lineHeight * 3 + 10;
+		var boxHeight = lineHeight * 3 + 11;
 		var boxY = GetScreenHeight() - (boxHeight * state.boxVisibility);
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.boxVisibility));
+		//Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.boxVisibility));
+		var topColor = CreateColor(0, 0, 0, 192 * state.boxVisibility);
+		var bottomColor = CreateColor(0, 0, 0, 160 * state.boxVisibility);
+		GradientRectangle(0, boxY, GetScreenWidth(), boxHeight, topColor, topColor, bottomColor, bottomColor);
 		state.textSurface.setBlendMode(REPLACE);
 		state.textSurface.rectangle(0, 0, state.textSurface.width, state.textSurface.height, CreateColor(0, 0, 0, 0));
 		state.textSurface.setBlendMode(BLEND);
@@ -85,7 +88,7 @@ Scenario.defineCommand("talk", {
 		textAreaWidth -= textX;
 		for (var iLine = Math.min(state.lineToReveal - state.topLine + 1, lineCount - state.topLine, 3) - 1; iLine >= 0; --iLine) {
 			var trueLine = state.topLine + iLine;
-			var textY = (iLine * lineHeight) - (state.scrollOffset * lineHeight) - 1;
+			var textY = iLine * lineHeight - state.scrollOffset * lineHeight;
 			var lineVisibility = iLine == 0 ? 1.0 - state.scrollOffset : 1.0;
 			if (state.lineVisibility > 0.0 || state.lineToReveal != trueLine) {
 				var lineText = state.text[state.currentPage][trueLine];
@@ -96,16 +99,16 @@ Scenario.defineCommand("talk", {
 				if (state.lineToReveal == trueLine) {
 					var shownArea = textAreaWidth * state.lineVisibility;
 					state.textSurface.setBlendMode(SUBTRACT);
-					state.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * state.boxVisibility), CreateColor(0, 0, 0, 0));
+					state.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * state.boxVisibility), CreateColor(0, 0, 0, 0));
 					state.textSurface.setBlendMode(REPLACE);
-					state.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight, CreateColor(0, 0, 0, 0));
+					state.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
 					state.textSurface.setBlendMode(BLEND);
 				}
 			}
 			if (state.speakerName != null && state.currentPage == 0 && trueLine == 0) {
 				textBoxFont.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
 				state.textSurface.drawText(textBoxFont, 1, textY + 1, state.speakerText);
-				textBoxFont.setColorMask(CreateColor(255, 255, 128, state.textVisibility * state.nameVisibility * 255));
+				textBoxFont.setColorMask(CreateColor(255, 192, 0, state.textVisibility * state.nameVisibility * 255));
 				state.textSurface.drawText(textBoxFont, 0, textY, state.speakerText);
 			}
 		}
