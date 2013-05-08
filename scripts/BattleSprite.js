@@ -36,11 +36,11 @@ function BattleSprite(name, position, row, isMirrored)
 		case 2: this.$y = 192; break;
 	}
 	this.$hasEntered = false;
-
+	
 	// .name property
 	// The name of the battler represented by this BattleSprite.
 	this.name = name;
-
+	
 	// .enter() method
 	// Causes the battle sprite to enter the battlefield from offscreen.
 	// Arguments:

@@ -12,7 +12,7 @@ RequireScript("Core/Threads.js");
 //     on GitHub here: <https://github.com/danro/jquery-easing>
 function Tween(o, duration, easingType, endValues)
 {
-	this.easings = {
+	this.$easings = {
 		linear: function(t, b, c, d) {
 			return c * t / d + b;
 		},
@@ -141,42 +141,44 @@ function Tween(o, duration, easingType, endValues)
 			return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
 		}
 	}
+	if (!(easingType in this.$easings)) {
+		Abort("Tween() - Invalid easing type '" + ease + "'.");
+	}
+	this.$object = o;
+	this.$start = {};
+	this.$difference = {};
+	for (var p in endValues) {
+		this.$start[p] = this.$object[p];
+		this.$difference[p] = endValues[p] - this.$start[p];
+	}
+	this.$duration = duration;
+	this.$elapsed = 0.0;
+	this.$easingType = easingType;
 	
+	// .isFinished() method
+	// Determines whether the tweening operation is still active.
+	// Returns:
+	//     true if the tween has run its course; false otherwise.
+	this.isFinished = function()
+	{
+		return this.$elapsed >= this.$duration;
+	};
+	
+	// .update() method
+	// Advances the Tween by one frame.
 	this.update = function()
 	{
-		this.elapsed += 1.0 / Engine.frameRate;
-		for (var p in this.difference) {
-			this.object[p] = this.easings[this.easingType](this.elapsed, this.start[p], this.difference[p], this.duration);
+		this.$elapsed += 1.0 / Engine.frameRate;
+		for (var p in this.$difference) {
+			this.$object[p] = this.$easings[this.$easingType](this.$elapsed, this.$start[p], this.$difference[p], this.$duration);
 		}
-		if (this.elapsed >= this.duration) {
-			this.object[p] = this.start[p] + this.difference[p];
+		if (this.$elapsed >= this.$duration) {
+			this.$object[p] = this.$start[p] + this.$difference[p];
 			return false;
 		} else {
 			return true;
 		}
 	};
-	
-	if (!(easingType in this.easings)) {
-		Abort("Tween() - Invalid easing type '" + ease + "'.");
-	}
-	this.object = o;
-	this.start = {};
-	this.difference = {};
-	for (var p in endValues) {
-		this.start[p] = o[p];
-		this.difference[p] = endValues[p] - this.start[p];
-	}
-	this.duration = duration;
-	this.elapsed = 0.0;
-	this.easingType = easingType;
-	this.thread = Threads.createEntityThread(this);
-};
 
-// .isFinished() method
-// Determines whether the tweening operation is still active.
-// Returns:
-//     true if the tween has run its course; false otherwise.
-Tween.prototype.isFinished = function()
-{
-	return this.elapsed >= this.duration;
+	Threads.createEntityThread(this);
 };
