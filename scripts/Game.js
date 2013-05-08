@@ -44,6 +44,9 @@ Game = {
 			devour: function(user, target) {
 				return (user.health - target.health + 1) / 5000;
 			},
+			instaKill: function(user, target) {
+				return 1.0;
+			},
 			pistol: function(user, target) {
 				return 1.0;
 			},
@@ -190,6 +193,11 @@ Game = {
 				}
 				targets[i].die();
 			}
+		},
+		instaKill: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].takeDamage(targets[i].maxHP);
+			}
 		}
 	},
 	
@@ -198,7 +206,7 @@ Game = {
 			name: "Sword Slash",
 			category: 'attack',
 			weaponType: 'sword',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
 					announceAs: "Sword Slash",
@@ -214,7 +222,7 @@ Game = {
 					},
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
 							power: 25
@@ -227,9 +235,10 @@ Game = {
 			name: "Quickstrike",
 			category: 'attack',
 			weaponType: 'sword',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Quickstrike",
 					rank: 1,
 					accuracyType: 'sword',
 					baseExperience: {
@@ -239,7 +248,7 @@ Game = {
 					},
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
 							power: 10
@@ -279,7 +288,7 @@ Game = {
 					},
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
 							power: 50
@@ -291,9 +300,10 @@ Game = {
 		necromancy: {
 			name: "Necromancy",
 			category: 'strategy',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Necromancy",
 					rank: 3,
 					effects: [
 						{
@@ -308,14 +318,15 @@ Game = {
 		flare: {
 			name: "Flare",
 			category: 'magic',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Flare",
 					rank: 2,
 					accuracyType: 'magic',
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
 							power: 35,
@@ -328,7 +339,7 @@ Game = {
 		omni: {
 			name: "Omni",
 			category: 'magic',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
 					announceAs: "Omni",
@@ -336,7 +347,7 @@ Game = {
 					accuracyType: 'magic',
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
 							power: 100
@@ -348,14 +359,15 @@ Game = {
 		munch: {
 			name: "Munch",
 			category: 'attack',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Munch",
 					rank: 5,
 					accuracyType: 'devour',
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'devour',
 							successRate: 1.0
 						}
@@ -366,14 +378,15 @@ Game = {
 		fatSlam: {
 			name: "Fat Slam",
 			category: 'attack',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Fat Slam",
 					rank: 3,
 					accuracyType: 'physical',
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'physical',
 							power: 75,
@@ -428,7 +441,7 @@ Game = {
 			strategize: function(me, battle, turnPreview) {
 				enemies = battle.enemiesOf(me);
 				return {
-					type: "technique",
+					type: 'technique',
 					technique: 'chargeSlash',
 					targets: [ enemies[0] ],
 				};

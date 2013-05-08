@@ -3,6 +3,8 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
+RequireScript('lib/persist.js');
+
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_SCENE_DELAYS = true;
@@ -20,8 +22,6 @@ RequireScript("Cutscenes.js"); /*ALPHA*/
 RequireScript("Session.js");
 RequireScript("TitleScreen.js");
 RequireScript("Game.js");
-
-RequireScript("lib/persist.js");
 
 function delegate(o, methodName)
 {
