@@ -3,10 +3,11 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript('BattleSprite.js');
+
 RequireScript('Core/Threads.js');
 RequireScript('lib/kh2Bar.js');
 RequireScript('lib/Scenario.js');
-RequireScript('BattleSprite.js');
 
 // BattleScreen() constructor
 // Creates an object representing a battle screen.
@@ -65,7 +66,7 @@ function BattleScreen()
 	//     name:     The name of the battler the life bar belongs to.
 	//     capacity: The HP capacity of the new life bar.
 	// Returns:
-	//     A reference to a kh2Bar object representing the new life bar.
+	//     A reference to a kh2Bar object that represents the new life bar.
 	this.createLifeBar = function(name, capacity)
 	{
 		var lifeBar = new kh2Bar(capacity);
@@ -95,7 +96,7 @@ function BattleScreen()
 			.fadeTo(CreateColor(255, 255, 255, 0), 0.5)
 			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 			.call(delegate(this, '$startThread'))
-			.fadeTo(CreateColor(0, 0, 0, 0), 1.5)
+			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 			.run();
 	};
 	
