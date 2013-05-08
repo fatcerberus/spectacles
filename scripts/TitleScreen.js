@@ -29,7 +29,7 @@ function TitleScreen(themeTrack)
 				}
 				break;
 			case "finish":
-				return BGM.volume > 0.0;
+				return BGM.isAdjusting();
 		}
 		return true;
 	};
@@ -44,13 +44,13 @@ TitleScreen.prototype.show = function()
 	if (DBG_DISABLE_TITLE_SCREEN) {
 		return new Session();
 	}
-	BGM.track = this.themeTrack;
+	BGM.change(this.themeTrack);
 	this.mode = "fade-in";
 	this.fadeTween = new Tween(this, 2.0, 'linear', { fadeness: 0.0 });
 	this.fadeTween.start();
 	this.choice = null;
 	Threads.waitFor(Threads.createEntityThread(this));
-	BGM.track = null;
-	BGM.volume = 1.0;
+	BGM.change(null);
+	BGM.adjustVolume(1.0);
 	return new Session();
 };

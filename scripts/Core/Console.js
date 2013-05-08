@@ -3,7 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Fader.js");
 RequireScript("Core/Threads.js");
 RequireScript("Core/Tween.js");
 

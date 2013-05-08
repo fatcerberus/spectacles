@@ -16,7 +16,7 @@ RequireScript("Game.js");
 RequireScript("lib/persist.js");
 
 var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 
@@ -30,13 +30,14 @@ function delegate(o, methodName)
 function game()
 {
 	Engine.initialize();
+	BGM.override("ThePromise");
 	persist.init();
 	SetUpdateScript("Threads.updateAll();");
 	SetRenderScript("Threads.renderAll();");
 	Console = new Console(17);
 	
 	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.track = "SpectaclesTheme";
+		BGM.change("SpectaclesTheme");
 		Engine.showLogo("TitleCard", 150);
 	}
 	var session = new TitleScreen("SpectaclesTheme").show();

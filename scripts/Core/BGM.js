@@ -3,26 +3,40 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Fader.js");
 RequireScript("Core/Threads.js");
+RequireScript("Core/Tween.js");
 
-// BGM object
-// Represents the background music (BGM) manager.
-BGM = new (function()
+// $BGM() constructor
+// Creates an object representing a background music manager.
+function $BGM()
 {
-	this.currentTrack = null;
-	this.defaultTrack = null;
-	this.isOverridden = false;
-	this.oldStream = null;
-	this.stream = null;
+	this.$playTrack = function(trackName)
+	{
+		if (this.$stream !== null) {
+			this.$stream.stop();
+		}
+		if (trackName !== null) {
+			this.$stream = LoadSound("BGM/" + trackName + ".ogg", true);
+			this.$stream.setVolume(this.$volume * 255);
+			if (!DBG_DISABLE_BGM) this.$stream.play(true);
+		} else {
+			this.$stream = null;
+		}
+	};
+	
+	this.$currentTrack = null;
+	this.$defaultTrack = null;
+	this.$isOverridden = false;
+	this.$oldStream = null;
+	this.$stream = null;
+	this.$volume = 1.0;
+	this.$volumeTween = null;
 	
 	// .initialize() method
-	// Initializes the BGM manager.
+	// Starts up the BGM manager.
 	this.initialize = function()
 	{
-		this.volumeFader = new Fader();
 		Threads.createEntityThread(this);
-		this.volume = 1.0;
 	};
 	
 	// .adjustVolume() method
@@ -33,125 +47,106 @@ BGM = new (function()
 	//                   Defaults to 60 (1 second).
 	this.adjustVolume = function(newVolume, fadeDuration)
 	{
-		if (fadeDuration === undefined) { fadeDuration = 1.0; }
+		if (fadeDuration === void null) { fadeDuration = 0.25; }
 		
-		newVolume = newVolume < 0.0 ? 0.0 : newVolume;
-		newVolume = newVolume > 1.0 ? 1.0 : newVolume;
-		if (fadeDuration > 0) {
-			this.volumeFader.adjust(newVolume, fadeDuration);
-		} else {
-			if (this.stream != null) {
-				this.stream.setVolume(newVolume * 255);
-			}
-			this.volumeFader.value = newVolume;
+		newVolume = Math.min(Math.max(newVolume, 0.0), 1.0);
+		if (this.$volumeTween != null) {
+			this.$volumeTween.stop();
+			this.$volumeTween = null;
 		}
+		if (fadeDuration > 0.0) {
+			this.$volumeTween = new Tween(this, fadeDuration, 'linear', { $volume: newVolume });
+			this.$volumeTween.start();
+		} else {
+			this.$volume = newVolume;
+			if (this.$stream != null) {
+				this.$stream.setVolume(this.$volume * 255);
+			}
+		}
+	};
+	
+	// .change() method
+	// Changes the current default BGM.
+	// Arguments:
+	//     trackName: The file name of the BGM track to play, minus extension.
+	// Remarks:
+	//     This has no immediate effect if an override is active; however, the change is still acknowledged
+	//     and the specified track will be played when .reset() is called.
+	this.change = function(trackName)
+	{
+		if (!this.$isOverridden) {
+			if (trackName != this.$currentTrack) {
+				this.$defaultTrack = trackName;
+				this.$currentTrack = this.$defaultTrack;
+				this.$playTrack(this.$currentTrack);
+			}
+		} else {
+			this.$defaultTrack = trackName;
+			if (this.$oldStream != null)
+			{
+				this.$oldStream.stop();
+				this.$oldStream = null;
+			}
+		}
+	}
+	
+	// .isAdjusting() method
+	// Determines whether or not the BGM volume level is being adjusted.
+	// Returns:
+	//     true if the volume level is actively being adjusted; false otherwise.
+	this.isAdjusting = function()
+	{
+		return this.$volumeTween != null && !this.$volumeTween.isFinished();
 	};
 	
 	// .override() method
-	// Overrides the BGM with the specified track. The previous BGM can be restored by
+	// Overrides the BGM with the specified track. The default BGM can be restored by
 	// calling .reset().
 	// Arguments:
-	//     trackName: Required. The name of the track to play.
+	//     trackName: The file name of the BGM track to play, minus extension.
 	this.override = function(trackName)
 	{
-		this.isOverridden = true;
-		this.oldStream = this.stream;
-		if (this.oldStream != null) {
-			this.oldStream.pause();
+		this.$isOverridden = true;
+		this.$oldStream = this.$stream;
+		if (this.$oldStream != null) {
+			this.$oldStream.pause();
 		}
-		this.currentTrack = trackName;
-		this.playTrack(this.currentTrack);
-	};
-	
-	// .playTrack() method
-	// Loads and plays a BGM track.
-	// Arguments:
-	//     filename: The name of the track to play, or null for silence.
-	this.playTrack = function(trackName)
-	{
-		if (this.stream !== null) {
-			this.stream.stop();
-		}
-		if (trackName !== null) {
-			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
-			this.stream.setVolume(this.volumeFader.value * 255);
-			if (!DBG_DISABLE_BGM) this.stream.play(true);
-		} else {
-			this.stream = null;
-		}
+		this.$currentTrack = trackName;
+		this.$playTrack(this.$currentTrack);
 	};
 	
 	// .reset() method
-	// Restores normal BGM manager behavior after an override.
+	// Restarts the default BGM after an override.
 	this.reset = function()
 	{
-		if (!this.isOverridden) {
+		if (!this.$isOverridden) {
 			return;
 		}
-		this.isOverridden = false;
-		this.currentTrack = this.defaultTrack;
-		if (this.oldStream == null) {
-			this.playTrack(this.currentTrack);
+		this.$isOverridden = false;
+		this.$currentTrack = this.$defaultTrack;
+		if (this.$oldStream == null) {
+			this.$playTrack(this.$currentTrack);
 		} else {
-			this.stream.stop();
-			this.oldStream.play();
-			this.stream = this.oldStream;
+			this.$stream.stop();
+			this.$oldStream.play();
+			this.$stream = this.$oldStream;
 		}
 	};
 	
 	// .update() method
-	// Manages volume adjustment operations. This method should be called once per frame.
+	// Advances the BGM manager's internal state by one frame.
 	this.update = function()
 	{
-		if (this.stream != null) {
-			this.stream.setVolume(this.volumeFader.value * 255);
+		if (this.$stream != null) {
+			this.$stream.setVolume(this.$volume * 255);
 		}
-		if (this.oldStream != null) {
-			this.oldStream.setVolume(this.volumeFader.value * 255);
+		if (this.$oldStream != null) {
+			this.$oldStream.setVolume(this.$volume * 255);
 		}
 		return true;
 	};
-	
-	// .track property
-	// Sets or returns the current BGM track.
-	this.track getter = function()
-	{
-		return this.defaultTrack;
-	};
-	
-	this.track setter = function(value)
-	{
-		if (!this.isOverridden) {
-			if (value != this.currentTrack) {
-				this.defaultTrack = value;
-				this.currentTrack = this.defaultTrack;
-				this.playTrack(this.currentTrack);
-			}
-		} else {
-			this.defaultTrack = value;
-			if (this.oldStream != null)
-			{
-				this.oldStream.stop();
-				this.oldStream = null;
-			}
-		}
-	};
-	
-	// .volume property
-	// Gets or sets the current BGM volume level.
-	this.volume getter = function()
-	{
-		return this.volumeFader.value;
-	};
-	
-	this.volume setter = function(value)
-	{
-		this.volumeFader.value = value;
-		if (this.stream != null) {
-			this.stream.setVolume(value * 255);
-		}
-		if (this.oldStream != null) {
-			this.oldStream.setVolume(value * 255);
-		}
-	};
-})();
+}
+
+// BGM singleton
+// Represents the Specs Engine BGM manager.
+BGM = new $BGM();

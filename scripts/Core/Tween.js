@@ -6,7 +6,7 @@
 RequireScript("Core/Threads.js");
 
 // Tween() constructor
-// Creates an object representing a tween.
+// Creates an object representing a tweening operation.
 // Remarks:
 //     The easing functions used here were adapted from the jQuery Easing Plugin project, available
 //     on GitHub here: <https://github.com/danro/jquery-easing>
@@ -156,7 +156,7 @@ function Tween(o, duration, easingType, endValues)
 	this.$easingType = easingType;
 	
 	// .isFinished() method
-	// Determines whether the tweening operation is still active.
+	// Determines whether the tweening operation has completed.
 	// Returns:
 	//     true if the tween has run its course; false otherwise.
 	this.isFinished = function()
@@ -165,10 +165,27 @@ function Tween(o, duration, easingType, endValues)
 	};
 	
 	// .start() method
-	// Starts the tweening operation.
+	// Starts or resumes the tween.
+	// Remarks:
+	//     This method has no effect is the tween has already finished.
 	this.start = function()
 	{
-		Threads.createEntityThread(this);
+		if (this.isFinished()) {
+			return;
+		}
+		this.$thread = Threads.createEntityThread(this);
+	}
+	
+	// .stop() method
+	// Stops a tweening operation in progress.
+	// Remarks:
+	//     After calling .stop() to stop the tween, you may call .start() later to resume the
+	//     operation from the point it was stopped.
+	this.stop = function()
+	{
+		if (this.$thread != null) {
+			Threads.kill(this.$thread);
+		}
 	}
 	
 	// .update() method

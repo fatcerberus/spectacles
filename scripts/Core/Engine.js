@@ -3,14 +3,12 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Fader.js");
-
 // Engine object
 // Represents the game engine.
 Engine = new function()
 {
 	// .initialize() method
-	// Initializes the game engine.
+	// Initializes the Specs Engine.
 	this.initialize = function(frameRate)
 	{
 		if (frameRate === undefined) { frameRate = 60; }

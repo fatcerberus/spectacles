@@ -18,12 +18,10 @@ Scenario.defineCommand("battle", {
 
 Scenario.defineCommand("fadeBGM", {
 	start: function(sceneState, state, volume, duration) {
-		state.volume = volume;
-		state.duration = duration;
-		state.thread = BGM.adjustVolume(state.volume, state.duration);
+		BGM.adjustVolume(volume, duration);
 	},
 	update: function(sceneState, state) {
-		return Threads.isRunning(state.thread);
+		return BGM.isAdjusting();
 	}
 });
 
