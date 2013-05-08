@@ -1,7 +1,15 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2013 Power-Command
 ***/
+
+var DBG_DISABLE_BATTLES = false;
+var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_SCENE_DELAYS = true;
+var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TITLE_CARD = true;
+var DBG_DISABLE_TITLE_SCREEN = true;
+var DBG_DISABLE_TRANSITIONS = true;
 
 RequireScript("Core/Engine.js");
 RequireScript("Core/BGM.js");
@@ -14,11 +22,6 @@ RequireScript("TitleScreen.js");
 RequireScript("Game.js");
 
 RequireScript("lib/persist.js");
-
-var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TITLE_CARD = true;
-var DBG_DISABLE_TITLE_SCREEN = true;
 
 function delegate(o, methodName)
 {

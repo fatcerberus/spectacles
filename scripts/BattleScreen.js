@@ -94,6 +94,10 @@ function BattleScreen()
 	// Presents the BattleScreen to the player.
 	this.go = function()
 	{
+		if (DBG_DISABLE_TRANSITIONS) {
+			this.$startThread();
+			return;
+		}
 		new Scenario()
 			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 			.fadeTo(CreateColor(255, 255, 255, 0), 0.5)

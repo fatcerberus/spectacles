@@ -10,12 +10,18 @@ RequireScript("lib/Scenario.js");
 
 var textBoxFont = GetSystemFont();
 
+if (DBG_DISABLE_SCENE_DELAYS) {
+	delete Scenario.prototype.pause; // <-- BAD! I should be ashamed of myself! :o)
+	Scenario.defineCommand("pause", {
+		start: function(sceneState, state, duration) {}
+	});
+}
+
 Scenario.defineCommand("battle", {
 	start: function(sceneState, state, setup) {
 		new Battle(null, setup).run();
 	}
 });
-
 Scenario.defineCommand("fadeBGM", {
 	start: function(sceneState, state, volume, duration) {
 		BGM.adjustVolume(volume, duration);
@@ -24,19 +30,16 @@ Scenario.defineCommand("fadeBGM", {
 		return BGM.isAdjusting();
 	}
 });
-
 Scenario.defineCommand("overrideBGM", {
 	start: function(sceneState, state, song) {
 		BGM.override(song);
 	}
 });
-
 Scenario.defineCommand("resetBGM", {
 	start: function(sceneState, state) {
 		BGM.reset();
 	}
 });
-
 Scenario.defineCommand("talk", {
 	start: function(sceneState, state, speaker, textSpeed /*...pages*/) {
 		state.speakerName = speaker;
@@ -209,7 +212,6 @@ Scenario.defineCommand("talk", {
 		}
 	}
 });
-
 Scenario.defineCommand("teleport", {
 	start: function(sceneState, state, map, x, y) {
 		ChangeMap(map + ".rmp");

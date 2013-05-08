@@ -3,9 +3,9 @@
 	{
 		var battleResult = new Battle(world.session, 'robert2').go();
 		if (battleResult == BattleResult.enemyWon) {
-			Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay?");
+			Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");
 		} else if (battleResult == BattleResult.partyWon) {
-			Abort("Yay! You win!\n\nWait a minute... you didn't cheat by having maggie eat Robert, did you...? I'm on to you!");
+			Abort("Yay! You win!\n\nWait a minute... you didn't cheat, did you...? I'm on to you!");
 		} else if (battleResult == BattleResult.partyRetreated) {
 			Abort("You coward! You suck!");
 		} else {

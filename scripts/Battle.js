@@ -22,7 +22,8 @@ BattleResult =
 //     battleID: The ID of the battle definition to use to set up the fight.
 function Battle(session, battleID)
 {
-	this.tick = function() {
+	this.$tick = function()
+	{
 		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
@@ -50,13 +51,8 @@ function Battle(session, battleID)
 		}
 	};
 	
-	this.update = function() {
-		this.tick();
-		return this.result == null;
-	};
-	
 	if (!(battleID in Game.battles)) {
-		Abort("Battle(): Battle definition '" + battleClass + "' doesn't exist.");
+		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist.");
 	}
 	this.session = session;
 	this.battleID = battleID;
@@ -68,6 +64,13 @@ function Battle(session, battleID)
 	this.conditions = [];
 	Console.writeLine("Battle session prepared");
 	Console.append("battle def: " + this.battleID);
+	
+	// .update() method
+	// Advances the Battle's internal state by one frame.
+	this.update = function() {
+		this.$tick();
+		return this.result == null;
+	};
 }
 
 // .battleLevel property
@@ -94,6 +97,9 @@ Battle.prototype.enemiesOf = function(unit)
 // Starts the battle.
 Battle.prototype.go = function()
 {
+	if (DBG_DISABLE_BATTLES) {
+		return BattleResult.playerWon;
+	}
 	Console.writeLine("Starting battle '" + this.battleID + "'");
 	this.battleScreen = new BattleScreen();
 	this.playerUnits = [];
