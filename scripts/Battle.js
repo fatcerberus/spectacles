@@ -122,7 +122,7 @@ Battle.prototype.go = function()
 	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
-	this.battleScreen.go();
+	this.battleScreen.go('title' in this.parameters ? this.parameters.title : null);
 	for (var i = 0; i < this.enemyUnits.length; ++i) {
 		this.enemyUnits[i].enter();
 	}

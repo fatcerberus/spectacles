@@ -13,11 +13,14 @@ RequireScript('lib/Scenario.js');
 // Creates an object representing a battle screen.
 function BattleScreen()
 {
-	this.$startThread = function() {
+	this.$startThread = function()
+	{
 		this.thread = Threads.createEntityThread(this);
 	};
-	this.$lifeBars = [];
+	
 	this.$sprites = [];
+	this.$lifeBars = [];
+	this.$turnQueue = [];
 	
 	// .dispose() method
 	// Frees all outstanding resources associated with the BattleScreen.
@@ -36,7 +39,9 @@ function BattleScreen()
 	//     bannerColor: The background color to use for the announcement banner.
 	this.announceAction = function(actionName, alignment, bannerColor)
 	{
+		var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(32, 32, 128, 192);
 		var announcement = {
+			screen: this,
 			text: actionName,
 			alignment: alignment,
 			color: bannerColor,
@@ -49,8 +54,9 @@ function BattleScreen()
 				var height = this.font.getHeight() + 10;
 				var x = this.alignment == 'enemy' ? xCenterLeft - width / 2 : xCenterRight - width / 2;
 				var y = 96;
-				Rectangle(x, y, width, height, this.color);
-				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64));
+				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255));
+				Rectangle(x + 1, y + 1, width - 2, height - 2, this.color);
+				//this.screen.$drawHighlightBox(x, y, width, height, this.color);
 				this.font.setColorMask(CreateColor(0, 0, 0, 255));
 				this.font.drawText(x + 11, y + 6, this.text);
 				this.font.setColorMask(CreateColor(255, 255, 255, 255));
@@ -72,7 +78,7 @@ function BattleScreen()
 	//     A reference to a kh2Bar object that represents the new life bar.
 	this.createLifeBar = function(name, capacity)
 	{
-		var lifeBar = new kh2Bar(capacity, CreateColor(255, 255, 255, 255));
+		var lifeBar = new kh2Bar(capacity);
 		this.$lifeBars.push(lifeBar);
 		return lifeBar;
 	};
@@ -83,8 +89,9 @@ function BattleScreen()
 	//     name: The name of the battler represented by the new sprite.
 	// Returns:
 	//     A reference to a BattleSprite object representing the new sprite.
-	this.createSprite = function(name, position, row, isMirrored, alreadyThere)
+	this.createSprite = function(name, position, row, alignment, alreadyThere)
 	{
+		var isMirrored = alignment == 'party';
 		var sprite = new BattleSprite(name, position, row, isMirrored, alreadyThere);
 		this.$sprites.push(sprite);
 		return sprite;
@@ -92,18 +99,27 @@ function BattleScreen()
 	
 	// .go() method
 	// Presents the BattleScreen to the player.
-	this.go = function()
+	// Arguments:
+	//     title: Optional. A title to display during the battle transiton.
+	this.go = function(title)
 	{
 		if (DBG_DISABLE_TRANSITIONS) {
 			this.$startThread();
 			return;
 		}
-		new Scenario()
+		var transition = new Scenario()
+		if (title !== void null && title !== null) {
+			transition
+				.beginFork()
+					.marquee(title)
+				.endFork();
+		}
+		transition
 			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			.fadeTo(CreateColor(255, 255, 255, 0), 0.5)
+			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 			.call(delegate(this, '$startThread'))
-			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+			.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
 			.run();
 	};
 	
@@ -118,9 +134,9 @@ function BattleScreen()
 			this.$sprites[i].render();
 		}
 		for (var i = 0; i < this.$lifeBars.length; ++i) {
-			var x = 5;
-			var y = 5;
-			this.$lifeBars[i].render(x, y);
+			var x = 0;
+			var y = i * 20;
+			//this.$lifeBars[i].render(x, y);
 		}
 	};
 	

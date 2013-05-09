@@ -11,7 +11,7 @@ RequireScript("lib/Scenario.js");
 var textBoxFont = GetSystemFont();
 
 if (DBG_DISABLE_SCENE_DELAYS) {
-	delete Scenario.prototype.pause; // <-- BAD! I should be ashamed of myself! :o)
+	delete Scenario.prototype.pause;
 	Scenario.defineCommand("pause", {
 		start: function(sceneState, state, duration) {}
 	});
@@ -28,6 +28,50 @@ Scenario.defineCommand("fadeBGM", {
 	},
 	update: function(sceneState, state) {
 		return BGM.isAdjusting();
+	}
+});
+Scenario.defineCommand("marquee", {
+	start: function(sceneState, state, text) {
+		state.text = text;
+		state.font = GetSystemFont();
+		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
+		state.height = state.font.getHeight() + 10;
+		state.textHeight = state.font.getHeight();
+		state.fadeness = 0.0;
+		state.scroll = 0.0;
+		state.tweens = [
+			new Tween(state, 0.25, 'linear', { fadeness: 1.0 }),
+			new Tween(state, 1.0, 'easeOutExpo', { scroll: 0.5 }),
+			new Tween(state, 1.0, 'easeInExpo', { scroll: 1.0 }),
+			new Tween(state, 0.25, 'linear', { fadeness: 0.0 })
+		];
+		state.nextTweenID = 0;
+		state.currentTween = null;
+	},
+	render: function(sceneState, state) {
+		var boxHeight = state.height * state.fadeness;
+		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
+		var textX = GetScreenWidth() - state.scroll * state.windowSize;
+		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * state.fadeness));
+		state.font.setColorMask(CreateColor(0, 0, 0, 255));
+		state.font.drawText(textX + 1, textY + 1, state.text);
+		state.font.setColorMask(CreateColor(255, 255, 255, 255));
+		state.font.drawText(textX, textY, state.text);
+	},
+	update: function(sceneState, state) {
+		if (state.currentTween == null || state.currentTween.isFinished()) {
+			if (state.nextTweenID < state.tweens.length) {
+				state.currentTween = state.tweens[state.nextTweenID];
+				state.currentTween.start();
+				++state.nextTweenID;
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
 	}
 });
 Scenario.defineCommand("overrideBGM", {
@@ -72,12 +116,11 @@ Scenario.defineCommand("talk", {
 	},
 	render: function(sceneState, state) {
 		var lineHeight = textBoxFont.getHeight();
-		var boxHeight = lineHeight * 3 + 11;
-		var boxY = GetScreenHeight() - (boxHeight * state.boxVisibility);
-		//Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.boxVisibility));
-		var topColor = CreateColor(0, 0, 0, 192 * state.boxVisibility);
-		var bottomColor = CreateColor(0, 0, 0, 160 * state.boxVisibility);
-		GradientRectangle(0, boxY, GetScreenWidth(), boxHeight, topColor, topColor, bottomColor, bottomColor);
+		var boxHeight = (lineHeight * 3 + 11) * state.boxVisibility;
+		var boxY = GetScreenHeight() / 3 - boxHeight / 2;
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * state.boxVisibility));
+		/*Line(0, boxY - 1, GetScreenWidth(), boxY - 1, CreateColor(0, 0, 0, 160 * state.boxVisibility));
+		Line(0, boxY + boxHeight, GetScreenWidth(), boxY + boxHeight, CreateColor(0, 0, 0, 160 * state.boxVisibility));*/
 		state.textSurface.setBlendMode(REPLACE);
 		state.textSurface.rectangle(0, 0, state.textSurface.width, state.textSurface.height, CreateColor(0, 0, 0, 0));
 		state.textSurface.setBlendMode(BLEND);

@@ -451,6 +451,7 @@ Game = {
 	
 	battles: {
 		robert2: {
+			title: "Robert Spellbinder",
 			bgm: 'ThePromise',
 			battleLevel: 50,
 			enemies: [
@@ -459,15 +460,15 @@ Game = {
 			onStart: function() {
 				new Scenario()
 					.pause(1.0)
-					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
+					.talk("Robert", 1.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
 						+ "brazen as to face me alone?")
-					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
+					.talk("Scott", 1.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.beginFork()
 						.fadeBGM(0.0, 2.0)
 					.endFork()
-					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
+					.talk("Robert", 1.0, "What makes you so sure you have a choice?")
 					.overrideBGM('MyDreamsButADropOfFuel')
 					.fadeBGM(1.0, 0.0)
 					.run();

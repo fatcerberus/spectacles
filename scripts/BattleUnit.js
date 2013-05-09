@@ -13,7 +13,8 @@ RequireScript("StatusEffect.js");
 
 // BattleRow enumeration
 // Specifies a BattleUnit's relative distance from its opponents.
-var BattleRow = {
+var BattleRow =
+{
 	front: -1,
 	middle: 0,
 	rear: 1
@@ -28,13 +29,16 @@ var BattleRow = {
 //     startingRow: The row the unit starts in.
 function BattleUnit(battle, basis, position, startingRow)
 {
-	this.invokeAllStatuses = function(eventName, event) {
+	this.$invokeStatuses = function(eventName, event)
+	{
 		if (event === undefined) { event = null; }
 		for (var i = 0; i < this.statuses.length; ++i) {
 			this.statuses[i].invoke(eventName, event);
 		}
 	};
-	this.resetCounter = function(rank) {
+	
+	this.$resetCounter = function(rank)
+	{
 		this.counter = Game.math.timeUntilNextTurn(this, rank);
 		Console.writeLine(this.name + "'s CV reset to " + this.counter);
 		Console.append("rank: " + rank);
@@ -84,14 +88,14 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.sprite = this.battleScreen.createSprite(this.name, position, this.row, this.isPartyMember);
+	this.sprite = this.battleScreen.createSprite(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
 	if (!this.isPartyMember) {
 		this.sprite.enter(true);
 	}
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
-	this.resetCounter(Game.defaultMoveRank);
+	this.$resetCounter(Game.defaultMoveRank);
 }
 
 // .health property
@@ -210,7 +214,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		isPriority: isPriority,
 		cancel: false
 	};
-	this.invokeAllStatuses('healed', healEvent);
+	this.$invokeStatuses('healed', healEvent);
 	if (healEvent.cancel) {
 		return;
 	}
@@ -293,7 +297,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		amount: amount,
 		cancel: false
 	};
-	this.invokeAllStatuses('damaged', damageEvent);
+	this.$invokeStatuses('damaged', damageEvent);
 	if (damageEvent.cancel) {
 		return;
 	}
@@ -324,7 +328,7 @@ BattleUnit.prototype.tick = function()
 		this.battle.suspend();
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
-		this.invokeAllStatuses('beginTurn');
+		this.$invokeStatuses('beginTurn');
 		var action = null;
 		if (this.actionQueue.length > 0) {
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
@@ -372,7 +376,7 @@ BattleUnit.prototype.tick = function()
 			}
 		}
 		this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
-		this.resetCounter(action.rank);
+		this.$resetCounter(action.rank);
 		this.battle.resume();
 		return true;
 	} else {
