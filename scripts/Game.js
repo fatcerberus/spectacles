@@ -421,6 +421,31 @@ Game = {
 	},
 	
 	enemies: {
+		headlessHorse: {
+			name: "Headless Horse",
+			hasLifeBar: true,
+			baseStats: {
+				vit: 50,
+				str: 10,
+				def: 55,
+				foc: 65,
+				mag: 30,
+				agi: 70
+			},
+			immunities: [],
+			munchGrowth: {
+				technique: 'Dragonflame',
+				experience: 25
+			},
+			strategize: function(me, battle, turnPreview) {
+				enemies = battle.enemiesOf(me);
+				return {
+					type: 'technique',
+					technique: 'flare',
+					targets: [ enemies[0] ]
+				};
+			}
+		},
 		robert2: {
 			name: "Robert",
 			hasLifeBar: true,
@@ -443,13 +468,27 @@ Game = {
 				return {
 					type: 'technique',
 					technique: 'chargeSlash',
-					targets: [ enemies[0] ],
+					targets: [ enemies[0] ]
 				};
 			}
 		}
 	},
 	
 	battles: {
+		headlessHorse: {
+			title: "Headless Horse",
+			bgm: 'ManorBoss',
+			battleLevel: 8,
+			enemies: [
+				'headlessHorse'
+			],
+			onStart: function() {
+				new Scenario()
+					.talk("maggie", 2.0, "I'd suggest you keep your wits about you when fighting this thing if you don't want to be barbequed. "
+						+ "It won't hesitate to roast you--and then I'd have to eat you!")
+					.run();
+			}
+		},
 		robert2: {
 			title: "Robert Spellbinder",
 			bgm: 'ThePromise',

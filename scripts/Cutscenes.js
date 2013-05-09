@@ -30,54 +30,6 @@ Scenario.defineCommand("fadeBGM", {
 		return BGM.isAdjusting();
 	}
 });
-Scenario.defineCommand("marquee", {
-	start: function(sceneState, state, text, color) {
-		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
-		
-		state.text = text;
-		state.color = color;
-		state.font = GetSystemFont();
-		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
-		state.height = state.font.getHeight() + 10;
-		state.textHeight = state.font.getHeight();
-		state.fadeness = 0.0;
-		state.scroll = 0.0;
-		state.tweens = [
-			new Tween(state, 0.25, 'linear', { fadeness: 1.0 }),
-			new Tween(state, 1.0, 'easeOutExpo', { scroll: 0.5 }),
-			new Tween(state, 1.0, 'easeInExpo', { scroll: 1.0 }),
-			new Tween(state, 0.25, 'linear', { fadeness: 0.0 })
-		];
-		state.nextTweenID = 0;
-		state.currentTween = null;
-	},
-	render: function(sceneState, state) {
-		var boxHeight = state.height * state.fadeness;
-		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
-		var textX = GetScreenWidth() - state.scroll * state.windowSize;
-		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
-		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 224 * state.fadeness));
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.fadeness));
-		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
-		state.font.drawText(textX + 1, textY + 1, state.text);
-		state.font.setColorMask(state.color);
-		state.font.drawText(textX, textY, state.text);
-	},
-	update: function(sceneState, state) {
-		if (state.currentTween == null || state.currentTween.isFinished()) {
-			if (state.nextTweenID < state.tweens.length) {
-				state.currentTween = state.tweens[state.nextTweenID];
-				state.currentTween.start();
-				++state.nextTweenID;
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-});
 Scenario.defineCommand("overrideBGM", {
 	start: function(sceneState, state, song) {
 		BGM.override(song);
