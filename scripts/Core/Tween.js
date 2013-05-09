@@ -145,12 +145,7 @@ function Tween(o, duration, easingType, endValues)
 		Abort("Tween() - Invalid easing type '" + ease + "'.");
 	}
 	this.$object = o;
-	this.$start = {};
-	this.$difference = {};
-	for (var p in endValues) {
-		this.$start[p] = this.$object[p];
-		this.$difference[p] = endValues[p] - this.$start[p];
-	}
+	this.$endValues = endValues;
 	this.$duration = duration;
 	this.$elapsed = 0.0;
 	this.$easingType = easingType;
@@ -172,6 +167,14 @@ function Tween(o, duration, easingType, endValues)
 	{
 		if (this.isFinished()) {
 			return;
+		}
+		if (this.$elapsed <= 0.0) {
+			this.$start = {};
+			this.$difference = {};
+			for (var p in this.$endValues) {
+				this.$start[p] = this.$object[p];
+				this.$difference[p] = this.$endValues[p] - this.$start[p];
+			}
 		}
 		this.$thread = Threads.createEntityThread(this);
 	}
