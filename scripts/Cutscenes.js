@@ -31,8 +31,11 @@ Scenario.defineCommand("fadeBGM", {
 	}
 });
 Scenario.defineCommand("marquee", {
-	start: function(sceneState, state, text) {
+	start: function(sceneState, state, text, color) {
+		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
+		
 		state.text = text;
+		state.color = color;
 		state.font = GetSystemFont();
 		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
 		state.height = state.font.getHeight() + 10;
@@ -53,10 +56,11 @@ Scenario.defineCommand("marquee", {
 		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
 		var textX = GetScreenWidth() - state.scroll * state.windowSize;
 		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * state.fadeness));
-		state.font.setColorMask(CreateColor(0, 0, 0, 255));
+		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 224 * state.fadeness));
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.fadeness));
+		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
 		state.font.drawText(textX + 1, textY + 1, state.text);
-		state.font.setColorMask(CreateColor(255, 255, 255, 255));
+		state.font.setColorMask(state.color);
 		state.font.drawText(textX, textY, state.text);
 	},
 	update: function(sceneState, state) {
@@ -91,7 +95,7 @@ Scenario.defineCommand("talk", {
 		state.textSpeed = textSpeed;
 		state.text = [];
 		var speakerTextWidth = textBoxFont.getStringWidth(state.speakerText);
-		var textAreaWidth = GetScreenWidth() - 10;
+		var textAreaWidth = GetScreenWidth() - 16;
 		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = textBoxFont.wordWrapString(arguments[i], lineWidth);
@@ -118,9 +122,8 @@ Scenario.defineCommand("talk", {
 		var lineHeight = textBoxFont.getHeight();
 		var boxHeight = (lineHeight * 3 + 11) * state.boxVisibility;
 		var boxY = GetScreenHeight() / 3 - boxHeight / 2;
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * state.boxVisibility));
-		/*Line(0, boxY - 1, GetScreenWidth(), boxY - 1, CreateColor(0, 0, 0, 160 * state.boxVisibility));
-		Line(0, boxY + boxHeight, GetScreenWidth(), boxY + boxHeight, CreateColor(0, 0, 0, 160 * state.boxVisibility));*/
+		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 224 * state.boxVisibility));
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.boxVisibility));
 		state.textSurface.setBlendMode(REPLACE);
 		state.textSurface.rectangle(0, 0, state.textSurface.width, state.textSurface.height, CreateColor(0, 0, 0, 0));
 		state.textSurface.setBlendMode(BLEND);

@@ -70,6 +70,7 @@ function BattleSprite(name, position, row, isMirrored)
 	this.render = function()
 	{
 		var direction;
+		OutlinedRectangle(this.$x, this.$y, 16, 32, CreateColor(0, 0, 0, 255));
 		Rectangle(this.$x + 1, this.$y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 		this.$idFont.setColorMask(CreateColor(128, 128, 128, 255));
 		this.$idFont.drawText(this.$x + 5, this.$y + 17, this.name[0]);

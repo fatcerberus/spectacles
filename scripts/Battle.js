@@ -132,6 +132,7 @@ Battle.prototype.go = function()
 	if ('onStart' in this.parameters) {
 		this.parameters.onStart.call(this);
 	}
+	this.battleScreen.showTitle();
 	this.resume();
 	Threads.waitFor(battleThread);
 	this.battleScreen.dispose();

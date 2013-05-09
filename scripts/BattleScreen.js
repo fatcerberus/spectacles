@@ -39,7 +39,7 @@ function BattleScreen()
 	//     bannerColor: The background color to use for the announcement banner.
 	this.announceAction = function(actionName, alignment, bannerColor)
 	{
-		var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(32, 32, 128, 192);
+		var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(64, 64, 192, 192);
 		var announcement = {
 			screen: this,
 			text: actionName,
@@ -48,19 +48,18 @@ function BattleScreen()
 			font: GetSystemFont(),
 			endTime: 1000 + GetTime(),
 			render: function() {
-				var xCenterLeft = Math.round(GetScreenWidth() * 0.25);
-				var xCenterRight = Math.round(GetScreenWidth() * 0.75);
-				var width = this.font.getStringWidth(this.text) + 20;
+				var width = this.font.getStringWidth(this.text) + 50;
 				var height = this.font.getHeight() + 10;
-				var x = this.alignment == 'enemy' ? xCenterLeft - width / 2 : xCenterRight - width / 2;
+				var x = GetScreenWidth() / 2 - width / 2;
 				var y = 96;
-				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255));
+				var textX = x + width / 2 - this.font.getStringWidth(this.text) / 2;
+				var textY = y + height / 2 - this.font.getHeight() / 2;
 				Rectangle(x + 1, y + 1, width - 2, height - 2, this.color);
-				//this.screen.$drawHighlightBox(x, y, width, height, this.color);
+				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255));
 				this.font.setColorMask(CreateColor(0, 0, 0, 255));
-				this.font.drawText(x + 11, y + 6, this.text);
+				this.font.drawText(textX + 1, textY + 1, this.text);
 				this.font.setColorMask(CreateColor(255, 255, 255, 255));
-				this.font.drawText(x + 10, y + 5, this.text);
+				this.font.drawText(textX, textY, this.text);
 			},
 			update: function() {
 				return GetTime() < this.endTime;
@@ -98,29 +97,32 @@ function BattleScreen()
 	};
 	
 	// .go() method
-	// Presents the BattleScreen to the player.
+	// Transitions into the BattleScreen.
 	// Arguments:
 	//     title: Optional. A title to display during the battle transiton.
 	this.go = function(title)
 	{
+		if (title === void null) { title = null; }
+		
+		this.$title = title;
 		if (DBG_DISABLE_TRANSITIONS) {
 			this.$startThread();
 			return;
 		}
-		var transition = new Scenario()
-		if (title !== void null && title !== null) {
-			transition
-				.beginFork()
-					.marquee(title)
-				.endFork();
+		var transition = new Scenario();
+		with (transition) {
+			if (this.$title !== null) {
+				beginFork()
+					marquee("Boss Battle")
+				endFork();
+			}
+			fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+			fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			call(delegate(this, '$startThread'))
+			fadeTo(CreateColor(0, 0, 0, 0), 2.0)
 		}
-		transition
-			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
-			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			.call(delegate(this, '$startThread'))
-			.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
-			.run();
+		transition.run();
 	};
 	
 	// .render() method
@@ -138,6 +140,18 @@ function BattleScreen()
 			var y = i * 20;
 			//this.$lifeBars[i].render(x, y);
 		}
+	};
+	
+	// .showTitle() method
+	// Displays the title of the battle, if one is defined.
+	this.showTitle = function()
+	{
+		if (this.$title === null) {
+			return;
+		}
+		new Scenario()
+			.marquee(this.$title)
+			.run();
 	};
 	
 	// .update() method
