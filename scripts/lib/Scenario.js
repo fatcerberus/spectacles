@@ -1,5 +1,5 @@
 /**
- * Scenario 3.2 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.5 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -444,11 +444,13 @@ Scenario.defineCommand("killPerson", {
 });
 
 Scenario.defineCommand("marquee", {
-	start: function(sceneState, state, text, color) {
+	start: function(sceneState, state, text, backgroundColor, color) {
+		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
 		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
 		
 		state.text = text;
 		state.color = color;
+		state.background = backgroundColor;
 		state.font = GetSystemFont();
 		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
 		state.height = state.font.getHeight() + 10;
@@ -469,8 +471,7 @@ Scenario.defineCommand("marquee", {
 		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
 		var textX = GetScreenWidth() - state.scroll * state.windowSize;
 		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
-		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 224 * state.fadeness));
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 192 * state.fadeness));
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, state.background);
 		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
 		state.font.drawText(textX + 1, textY + 1, state.text);
 		state.font.setColorMask(state.color);

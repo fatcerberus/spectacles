@@ -3,9 +3,8 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Stat.js");
-RequireScript("Skill.js");
-RequireScript("Game.js");
+RequireScript('Stat.js');
+RequireScript('Skill.js');
 
 // PartyMember() constructor
 // Creates an object representing an active member of a Party.

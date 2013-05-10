@@ -51,7 +51,7 @@ function BattleScreen()
 				var width = this.font.getStringWidth(this.text) + 50;
 				var height = this.font.getHeight() + 10;
 				var x = GetScreenWidth() / 2 - width / 2;
-				var y = 96;
+				var y = GetScreenHeight() / 2 - height / 2;
 				var textX = x + width / 2 - this.font.getStringWidth(this.text) / 2;
 				var textY = y + height / 2 - this.font.getHeight() / 2;
 				Rectangle(x + 1, y + 1, width - 2, height - 2, this.color);
@@ -65,7 +65,7 @@ function BattleScreen()
 				return GetTime() < this.endTime;
 			}
 		};
-		Threads.createEntityThread(announcement, 10);
+		Threads.waitFor(Threads.createEntityThread(announcement, 10));
 	};
 	
 	// .createLifeBar() method
@@ -109,20 +109,13 @@ function BattleScreen()
 			this.$startThread();
 			return;
 		}
-		var transition = new Scenario();
-		with (transition) {
-			if (this.$title !== null) {
-				beginFork()
-					marquee("Boss Battle")
-				endFork();
-			}
-			fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			fadeTo(CreateColor(0, 0, 0, 0), 0.5)
-			fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			call(delegate(this, '$startThread'))
-			fadeTo(CreateColor(0, 0, 0, 0), 2.0)
-		}
-		transition.run();
+		new Scenario()
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.call(delegate(this, '$startThread'))
+			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+			.run();
 	};
 	
 	// .render() method
@@ -150,7 +143,7 @@ function BattleScreen()
 			return;
 		}
 		new Scenario()
-			.marquee(this.$title)
+			.marquee("Boss Battle: " + this.$title, CreateColor(0, 0, 0, 128))
 			.run();
 	};
 	

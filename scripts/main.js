@@ -3,7 +3,17 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
+RequireScript('lib/kh2Bar.js');
+RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
+RequireScript('lib/Scenario.js');
+RequireScript('lib/SpriteImage.js');
+RequireScript('Core/Engine.js');
+RequireScript('Core/BGM.js');
+RequireScript('Core/Console.js');
+RequireScript('Core/Threads.js');
+RequireScript('Core/Tween.js');
+RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
@@ -13,15 +23,10 @@ var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 
-RequireScript("Core/Engine.js");
-RequireScript("Core/BGM.js");
-RequireScript("Core/Console.js");
-RequireScript("Core/Threads.js");
-RequireScript("Battle.js"); /*ALPHA*/
-RequireScript("Cutscenes.js"); /*ALPHA*/
-RequireScript("Session.js");
-RequireScript("TitleScreen.js");
-RequireScript("Game.js");
+RequireScript('Battle.js');
+RequireScript('Cutscenes.js');
+RequireScript('Session.js');
+RequireScript('TitleScreen.js');
 
 function delegate(o, methodName)
 {

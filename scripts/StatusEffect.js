@@ -3,8 +3,6 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript("Game.js");
-
 // StatusEffect() constructor
 // Creates an object representing a status effect.
 // Arguments:

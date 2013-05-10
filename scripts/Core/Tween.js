@@ -159,14 +159,27 @@ function Tween(o, duration, easingType, endValues)
 		return this.$elapsed >= this.$duration;
 	};
 	
-	// .start() method
-	// Starts or resumes the tween.
+	// .pause() method
+	// Suspends a tweening operation in progress.
 	// Remarks:
-	//     This method has no effect is the tween has already finished.
+	//     After calling .pause() to suspend the tween, you may call .run again to resume the
+	//     operation from where it left off.
+	this.pause = function()
+	{
+		if (this.$thread != null) {
+			Threads.kill(this.$thread);
+		}
+	}
+	
+	// .start() method
+	// Begins the tweening operation. Has no effect if the tween is already running.
 	this.start = function()
 	{
-		if (this.isFinished()) {
+		if (Threads.isRunning(this.$thread)) {
 			return;
+		}
+		if (this.isFinished()) {
+			this.$elapsed = 0.0;
 		}
 		if (this.$elapsed <= 0.0) {
 			this.$start = {};
@@ -177,18 +190,6 @@ function Tween(o, duration, easingType, endValues)
 			}
 		}
 		this.$thread = Threads.createEntityThread(this);
-	}
-	
-	// .stop() method
-	// Stops a tweening operation in progress.
-	// Remarks:
-	//     After calling .stop() to stop the tween, you may call .start() later to resume the
-	//     operation from the point it was stopped.
-	this.stop = function()
-	{
-		if (this.$thread != null) {
-			Threads.kill(this.$thread);
-		}
 	}
 	
 	// .update() method

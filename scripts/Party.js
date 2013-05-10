@@ -3,7 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("PartyMember.js");
+RequireScript('PartyMember.js');
 
 // Party() constructor
 // Creates an object representing a travelling party.

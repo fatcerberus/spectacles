@@ -3,9 +3,6 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript("Core/Threads.js");
-RequireScript("Core/Tween.js");
-
 // MenuStrip() constructor
 // Creates an object representing a menu strip.
 // Arguments:

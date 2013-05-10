@@ -3,8 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Party.js");
-RequireScript("Game.js");
+RequireScript('Party.js');
 
 // Session() constructor
 // Creates an object representing a game session.

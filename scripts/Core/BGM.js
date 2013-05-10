@@ -3,8 +3,8 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Threads.js");
-RequireScript("Core/Tween.js");
+RequireScript('Core/Threads.js');
+RequireScript('Core/Tween.js');
 
 // $BGM() constructor
 // Creates an object representing a background music manager.
@@ -42,16 +42,16 @@ function $BGM()
 	// .adjustVolume() method
 	// Smoothly adjusts the volume of the BGM.
 	// Arguments:
-	//     newVolume:    The new volume level, between 0.0 and 1.0 inclusive.
-	//     fadeDuration: Optional. The number of frames over which to perform the adjustment.
-	//                   Defaults to 60 (1 second).
+	//     newVolume:  The new volume level, between 0.0 and 1.0 inclusive.
+	//     fadeLength: Optional. The amount of time, in seconds, over which to perform the adjustment.
+	//                 Defaults to 1 second (1.0).
 	this.adjustVolume = function(newVolume, fadeDuration)
 	{
 		if (fadeDuration === void null) { fadeDuration = 0.25; }
 		
 		newVolume = Math.min(Math.max(newVolume, 0.0), 1.0);
 		if (this.$volumeTween != null) {
-			this.$volumeTween.stop();
+			this.$volumeTween.pause();
 			this.$volumeTween = null;
 		}
 		if (fadeDuration > 0.0) {
