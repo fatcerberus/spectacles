@@ -3,12 +3,38 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("lib/MultiDelegate.js");
+RequireScript('lib/MultiDelegate.js');
 
-// Threads object
-// Represents the thread manager.
+// Threads singleton
+// Represents the Specs Engine thread manager.
 Threads = new (function()
 {
+	this.$doFrame = function()
+	{
+		if (IsMapEngineRunning()) {
+			RenderMap();
+		} else {
+			this.renderAll();
+		}
+		FlipScreen();
+		if (IsMapEngineRunning()) {
+			UpdateMapEngine();
+		} else {
+			this.updateAll();
+		}
+	};
+	
+	this.$nextThreadID = 1;
+	this.$threads = [];
+	
+	// .initialize() method
+	// Initializes the thread manager.
+	this.initialize = function()
+	{
+		SetRenderScript('Threads.renderAll();');
+		SetUpdateScript('Threads.updateAll();');
+	}
+	
 	// .create() method
 	// Creates a thread and begins running it.
 	// Arguments:
@@ -36,16 +62,16 @@ Threads = new (function()
 			getInputDelegate.add(o, inputHandler);
 		}
 		var newThread = {
-			id: this.nextThreadID,
+			id: this.$nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
 			inputHandler: getInputDelegate,
 			priority: priority,
 			isUpdating: false
 		};
-		this.threads.push(newThread);
-		this.threads.sort(function(a, b) { return a.priority - b.priority; });
-		++this.nextThreadID;
+		this.$threads.push(newThread);
+		this.$threads.sort(function(a, b) { return a.priority - b.priority; });
+		++this.$nextThreadID;
 		return newThread.id;
 	};
 	
@@ -69,16 +95,13 @@ Threads = new (function()
 	};
 	
 	// .doWith() method
-	// Creates an impromptu thread and runs it to completion.
+	// Creates an improvised thread running in the context of a specified object.
 	// Arguments:
 	//     o:        The object to pass as 'this' to the updater/renderer.
 	//     updater:  The update function for the new thread.
 	//     renderer: Optional. The render function for the new thread.
 	//     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
-	//               later in a frame than lower-priority ones.
-	//               (Defaults to 0. Ignored if no renderer is provided.)
-	// Remarks:
-	//     .doWith() will not return as long as the thread it creates remains running.
+	//               later in a frame ("closer to the screen") than lower-priority ones. (Default: 0)
 	this.doWith = function(o, updater, renderer, priority)
 	{
 		if (renderer === void null) { renderer = null; }
@@ -92,17 +115,16 @@ Threads = new (function()
 		}
 		var getInputDelegate = new MultiDelegate();
 		var newThread = {
-			id: this.nextThreadID,
+			id: this.$nextThreadID,
 			updater: updateDelegate,
 			renderer: renderDelegate,
 			inputHandler: getInputDelegate,
 			priority: priority,
 			isUpdating: false
 		};
-		this.threads.push(newThread);
-		this.threads.sort(function(a, b) { return a.priority - b.priority; });
-		++this.nextThreadID;
-		this.waitFor(newThread.id);
+		this.$threads.push(newThread);
+		this.$threads.sort(function(a, b) { return a.priority - b.priority; });
+		++this.$nextThreadID;
 	};
 	
 	// .isRunning() method
@@ -114,8 +136,8 @@ Threads = new (function()
 		if (threadID === 0) {
 			return false;
 		}
-		for (var i = 0; i < this.threads.length; ++i) {
-			if (this.threads[i].id == threadID) {
+		for (var i = 0; i < this.$threads.length; ++i) {
+			if (this.$threads[i].id == threadID) {
 				return true;
 			}
 		}
@@ -128,9 +150,9 @@ Threads = new (function()
 	//     threadID: The ID of the thread to terminate.
 	this.kill = function(threadID)
 	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			if (threadID == this.threads[i].id) {
-				this.threads.splice(i,1);
+		for (var i = 0; i < this.$threads.length; ++i) {
+			if (threadID == this.$threads[i].id) {
+				this.$threads.splice(i,1);
 				--i;
 				continue;
 			}
@@ -141,17 +163,33 @@ Threads = new (function()
 	// Renders the current frame by calling all active threads' renderers.
 	this.renderAll = function()
 	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			this.threads[i].renderer.invoke();
+		for (var i = 0; i < this.$threads.length; ++i) {
+			this.$threads[i].renderer.invoke();
 		}
+	};
+	
+	// .synchronize() method
+	// Waits for multiple threads to finish.
+	// Arguments:
+	//     threadIDs: An array of thread IDs specifying the threads to wait for.
+	this.synchronize = function(threadIDs)
+	{
+		var isFinished;
+		do {
+			this.$doFrame();
+			isFinished = true;
+			for (var i = 0; i < threadIDs.length; ++i) {
+				isFinished = isFinished && !this.isRunning(threadIDs[i]);
+			}
+		} while (!isFinished);
 	};
 	
 	// .updateAll() method
 	// Calls all active threads' updaters to prepare for the next frame.
 	this.updateAll = function()
 	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			var thread = this.threads[i];
+		for (var i = 0; i < this.$threads.length; ++i) {
+			var thread = this.$threads[i];
 			thread.inputHandler.invoke();
 			var stillRunning = true;
 			if (!thread.isUpdating) {
@@ -160,7 +198,7 @@ Threads = new (function()
 				thread.isUpdating = false;
 			}
 			if (!stillRunning) {
-				this.threads.splice(i, 1);
+				this.$threads.splice(i, 1);
 				--i;
 				continue;
 			}
@@ -174,12 +212,7 @@ Threads = new (function()
 	this.waitFor = function(threadID)
 	{
 		while (this.isRunning(threadID)) {
-			this.renderAll();
-			FlipScreen();
-			this.updateAll();
+			this.$doFrame();
 		}
 	};
-	
-	this.nextThreadID = 1;
-	this.threads = [];
 })();

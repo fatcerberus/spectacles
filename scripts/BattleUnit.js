@@ -183,10 +183,12 @@ BattleUnit.prototype.die = function()
 };
 
 // .enter() method
-// Causes the unit to enter the battlefield.
+// Instructs the BattleUnit to enter the battlefield.
+// Returns:
+//    The thread ID for the entrance animation, if any.
 BattleUnit.prototype.enter = function()
 {
-	this.sprite.enter();
+	return this.sprite.enter();
 };
 
 // .evade() method

@@ -123,15 +123,19 @@ Battle.prototype.go = function()
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
 	this.battleScreen.go('title' in this.parameters ? this.parameters.title : null);
+	var walkInThreads = [];
 	for (var i = 0; i < this.enemyUnits.length; ++i) {
-		this.enemyUnits[i].enter();
+		var thread = this.enemyUnits[i].enter();
+		walkInThreads.push(thread);
 	}
 	for (var i = 0; i < this.playerUnits.length; ++i) {
-		this.playerUnits[i].enter();
+		var thread = this.playerUnits[i].enter();
+		walkInThreads.push(thread);
 	}
 	if ('onStart' in this.parameters) {
 		this.parameters.onStart.call(this);
 	}
+	Threads.synchronize(walkInThreads);
 	this.battleScreen.showTitle();
 	this.resume();
 	Threads.waitFor(battleThread);

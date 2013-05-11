@@ -42,9 +42,11 @@ function BattleSprite(name, position, row, isMirrored)
 	this.name = name;
 	
 	// .enter() method
-	// Causes the battle sprite to enter the battlefield from offscreen.
+	// Instructs the BattleSprite to enter the battlefield from offscreen.
 	// Arguments:
-	//     isImmediate: If true, the sprite is displayed in its final location immediately instead of walking in.
+	//     isImmediate: If true, the sprite jumps to its final position immediately.
+	// Returns:
+	//     The thread ID for the entrance animation, or null of no thread was created.
 	this.enter = function(isImmediate)
 	{
 		if (isImmediate === void null) { isImmediate = false; }
@@ -53,16 +55,18 @@ function BattleSprite(name, position, row, isMirrored)
 			return;
 		}
 		var newX = this.$isMirrored ? 256 + this.$row * 16 : 48 - this.$row * 16;
+		var threadID = null;
 		if (!isImmediate) {
 			var enterTween = new Tween(this, 1.0, 'linear', { $x: newX });
 			enterTween.start();
-			Threads.doWith(enterTween, function() {
+			threadID = Threads.doWith(enterTween, function() {
 				return !this.isFinished();
 			});
 		} else {
 			this.$x = newX;
 		}
 		this.$hasEntered = true;
+		return threadID;
 	};
 	
 	// .render() method

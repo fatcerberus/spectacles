@@ -25,6 +25,7 @@ var DBG_DISABLE_TRANSITIONS = false;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
+RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
@@ -38,9 +39,9 @@ function delegate(o, methodName)
 function game()
 {
 	Engine.initialize();
+	BGM.initialize();
+	Threads.initialize();
 	persist.init();
-	SetUpdateScript("Threads.updateAll();");
-	SetRenderScript("Threads.renderAll();");
 	Console = new Console(17);
 	
 	if (!DBG_DISABLE_TITLE_CARD) {

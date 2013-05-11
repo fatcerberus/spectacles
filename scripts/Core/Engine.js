@@ -4,8 +4,8 @@
 ***/
 
 // Engine object
-// Represents the game engine.
-Engine = new function()
+// Represents the Specs Engine game engine.
+Engine = new (function()
 {
 	// .initialize() method
 	// Initializes the Specs Engine.
@@ -13,7 +13,6 @@ Engine = new function()
 	{
 		if (frameRate === undefined) { frameRate = 60; }
 		SetFrameRate(frameRate);
-		BGM.initialize();
 	}
 	
 	// .frameRate property
@@ -55,4 +54,4 @@ Engine = new function()
 			fadeLevel = Math.min(fadeLevel + 1.0 / this.frameRate, 1.0);
 		}
 	};
-}();
+})();
