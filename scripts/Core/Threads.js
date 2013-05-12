@@ -17,11 +17,7 @@ Threads = new (function()
 			this.renderAll();
 		}
 		FlipScreen();
-		if (IsMapEngineRunning()) {
-			UpdateMapEngine();
-		} else {
-			this.updateAll();
-		}
+		this.updateAll();
 	};
 	
 	this.$nextThreadID = 1;
