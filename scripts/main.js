@@ -16,18 +16,31 @@ RequireScript('Core/Tween.js');
 RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_SCENE_DELAYS = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_SCENE_DELAYS = true;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = false;
+var DBG_DISABLE_TRANSITIONS = true;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
+
+function clone(o)
+{
+	if (typeof o === 'object' && o !== null) {
+		var newObject = {};
+		for (var p in o) {
+			newObject[p] = clone(o[p]);
+		}
+	} else {
+		newObject = o;
+	}
+	return newObject;
+};
 
 function delegate(o, methodName)
 {

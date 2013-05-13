@@ -517,7 +517,6 @@ Game = {
 	},
 	
 	initialPartyMembers: [
-		'scott',
-		'maggie'
+		'scott'
 	]
 };

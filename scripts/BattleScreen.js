@@ -15,31 +15,60 @@ function BattleScreen()
 {
 	this.$drawHUD = function()
 	{
-		var rowYSize = 16;
-		var hudYSize = (3 + this.$lifeBars.length) * rowYSize;
-		var y = -hudYSize * (1.0 - this.$hudFadeness);
-		var xSize = 160 - 3 * rowYSize;
+		var y = -((3 + this.$lifeBars.length) * 20) * (1.0 - this.$hudFadeness);
+		OutlinedRectangle(260, y, 60, 60, CreateColor(0, 0, 0, 144));
+		Rectangle(261, y + 1, 58, 58, CreateColor(0, 0, 0, 128));
 		for (var i = 0; i < 3; ++i) {
-			OutlinedRectangle(160, y, xSize, rowYSize, CreateColor(0, 0, 0, 144));
-			Rectangle(161, y + 1, xSize - 2, rowYSize - 2, CreateColor(0, 0, 0, 128));
+			var itemX = 160;
+			var itemY = y + i * 20;
+			OutlinedRectangle(itemX, itemY, 100, 20, CreateColor(0, 0, 0, 144));
+			Rectangle(itemX + 1, itemY + 1, 98, 18, CreateColor(0, 0, 0, 128));
 			if (i < this.$hudSprites.length) {
 				var unit = this.$hudSprites[i].unit;
-				var hpTextX = 316 - 3 * rowYSize - this.$hudFont.getStringWidth(unit.hp);
-				this.$drawShadowText(this.$hudFont, 164, y + 2, 1, CreateColor(255, 255, 255, 255), unit.name);
-				this.$drawShadowText(this.$hudFont, hpTextX, y + 2, 1, CreateColor(255, 255, 255, 255), unit.hp);
+				this.$drawText(this.$hudFont, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), unit.name);
+				this.$drawHUDItem(itemX + 58, itemY + 4, 37, unit.hp, "HP");
 			}
-			y += rowYSize;
 		}
 		for (var i = 0; i < this.$lifeBars.length; ++i) {
-			OutlinedRectangle(160, y, 160, rowYSize, CreateColor(0, 0, 0, 144));
-			Rectangle(161, y + 1, 158, rowYSize - 2, CreateColor(0, 0, 0, 128));
-			this.$lifeBars[i].render(200, y + 2);
-			y += rowYSize;
+			var itemX = 160;
+			var itemY = y + (i + 3) * 20;
+			OutlinedRectangle(itemX, itemY, 160, 20, CreateColor(0, 0, 0, 144));
+			Rectangle(itemX + 1, itemY + 1, 158, 18, CreateColor(0, 0, 0, 128));
+			this.$lifeBars[i].render(itemX + 5, itemY + 5, 150, 10);
 		}
 	};
 	
-	this.$drawShadowText = function(font, x, y, shadowDistance, color, text)
+	this.$drawHUDItem = function(x, y, width, text, title)
 	{
+		if (title === void null) { title = ""; }
+		
+		var titleWidth = this.$hudFont.getStringWidth(title);
+		var textX = x + titleWidth + width - titleWidth;
+		this.$drawText(this.$hudFont, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
+		this.$drawText(this.$hudFont, textX, y, 1, CreateColor(255, 255, 255, 255), text, 'right');
+	};
+	
+	this.$drawLED = function(x, y, radius, color)
+	{
+		var edgeColor = BlendColorsWeighted(color, CreateColor(0, 0, 0, 255), 0.75, 0.25);
+		GradientCircle(x, y, radius - 1, color, edgeColor, false);
+		GradientCircle(x, y, radius, CreateColor(0, 0, 0, color.alpha), false);
+	}
+	
+	this.$drawText = function(font, x, y, shadowDistance, color, text, alignment)
+	{
+		var alignments = {
+			left: function(font, x, text) { return x; },
+			center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
+			right: function(font, x, text) { return x - font.getStringWidth(text); }
+		};
+		
+		if (alignment === void null) { alignment = 'left'; }
+		
+		if (!(alignment in alignments)) {
+			Abort("Battle.$drawText(): Invalid text alignment '" + alignment + "'.");
+		}
+		x = alignments[alignment](font, x, text);
 		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 		font.drawText(x + shadowDistance, y + shadowDistance, text);
 		font.setColorMask(color);
@@ -120,7 +149,7 @@ function BattleScreen()
 	//     A reference to a kh2Bar object that represents the new life bar.
 	this.createLifeBar = function(name, capacity)
 	{
-		var lifeBar = new kh2Bar(capacity);
+		var lifeBar = new kh2Bar(capacity, 250);
 		this.$lifeBars.push(lifeBar);
 		return lifeBar;
 	};

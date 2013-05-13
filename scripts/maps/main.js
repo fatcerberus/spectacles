@@ -1,7 +1,7 @@
 ({
 	enter: function(map, world)
 	{
-		var battleResult = new Battle(world.session, 'headlessHorse').go();
+		var battleResult = new Battle(world.session, 'robert2').go();
 		if (battleResult == BattleResult.enemyWon) {
 			Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");
 		} else if (battleResult == BattleResult.partyWon) {
