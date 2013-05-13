@@ -15,13 +15,15 @@ if (DBG_DISABLE_SCENE_DELAYS) {
 	});
 }
 
-Scenario.defineCommand('battle', {
+Scenario.defineCommand('battle',
+{
 	start: function(sceneState, state, setup) {
 		new Battle(null, setup).run();
 	}
 });
 
-Scenario.defineCommand('fadeBGM', {
+Scenario.defineCommand('fadeBGM',
+{
 	start: function(sceneState, state, volume, duration) {
 		BGM.adjustVolume(volume, duration);
 	},

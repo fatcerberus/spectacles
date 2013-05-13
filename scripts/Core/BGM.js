@@ -6,9 +6,9 @@
 RequireScript('Core/Threads.js');
 RequireScript('Core/Tween.js');
 
-// $BGM() constructor
-// Creates an object representing a background music manager.
-function $BGM()
+// BGM object
+// Represents the background music manager.
+BGM = new (function()
 {
 	this.$playTrack = function(trackName)
 	{
@@ -145,8 +145,4 @@ function $BGM()
 		}
 		return true;
 	};
-}
-
-// BGM singleton
-// Represents the Specs Engine BGM manager.
-BGM = new $BGM();
+})();

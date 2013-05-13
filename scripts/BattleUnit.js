@@ -88,7 +88,7 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.sprite = this.battleScreen.createSprite(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
+	this.sprite = this.battleScreen.createSprite(this, position, this.row, this.isPartyMember ? 'party' : 'enemy');
 	if (!this.isPartyMember) {
 		this.sprite.enter(true);
 	}
@@ -337,7 +337,7 @@ BattleUnit.prototype.tick = function()
 			action = this.actionQueue.shift();
 		} else {
 			if (this.isPartyMember) {
-				//var move = this.moveMenu.show();
+				//this.$skillUsed = this.moveMenu.open();
 				
 				/*ALPHA*/
 				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
@@ -345,15 +345,15 @@ BattleUnit.prototype.tick = function()
 				for (var i = 0; i < this.skills.length; ++i) {
 					moveMenu.addItem(this.skills[i].name, this.skills[i]);
 				}
-				this.skillUsed = moveMenu.open();
-				var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
-				var experience = Game.math.experience.skill(this, this.skillUsed.technique);
-				this.skillUsed.experience += experience;
-				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
-				Console.append("level: " + this.skillUsed.level);
+				this.$skillUsed = moveMenu.open();
+				var growthRate = 'growthRate' in this.$skillUsed.technique ? this.$skillUsed.technique.growthRate : 1.0;
+				var experience = Game.math.experience.skill(this, this.$skillUsed.technique);
+				this.$skillUsed.experience += experience;
+				Console.writeLine(this.name + " got " + experience + " EXP for " + this.$skillUsed.name);
+				Console.append("level: " + this.$skillUsed.level);
 				var move = {
 					type: 'technique',
-					technique: this.skillUsed.technique,
+					technique: this.$skillUsed.technique,
 					targets: [
 						this.battle.enemiesOf(this)[0]
 					]
@@ -361,8 +361,8 @@ BattleUnit.prototype.tick = function()
 				
 			} else {
 				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
-				this.skillUsed = new Skill(move.technique, 100);
-				move.technique = this.skillUsed.technique;
+				this.$skillUsed = new Skill(move.technique, 100);
+				move.technique = this.$skillUsed.technique;
 			}
 			Console.writeLine(this.name + " is using " + move.technique.name);
 			if (this.weapon != null && move.technique.weaponType != null) {
@@ -377,7 +377,7 @@ BattleUnit.prototype.tick = function()
 				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 			}
 		}
-		this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
+		this.battle.runAction(this, this.moveTargets, this.$skillUsed, action);
 		this.$resetCounter(action.rank);
 		this.battle.resume();
 		return true;

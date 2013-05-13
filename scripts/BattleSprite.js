@@ -10,11 +10,11 @@ RequireScript("lib/SpriteImage.js");
 // BattleSprite() constructor
 // Creates an object representing a battler sprite.
 // Arguments:
-//     name:         The name of the battler this sprite represents.
+//     unit:         The BattleUnit represented by this sprite.
 //     position:     The position of the unit in the party order.
 //     row:          The row (front, middle, rear) that the battler is in.
 //     isMirrored:   If true, the sprite enters from the right. Otherwise, it enters from the left.
-function BattleSprite(name, position, row, isMirrored)
+function BattleSprite(unit, position, row, isMirrored)
 {
 	this.$messageStyles = {
 		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
@@ -37,9 +37,9 @@ function BattleSprite(name, position, row, isMirrored)
 	}
 	this.$hasEntered = false;
 	
-	// .name property
-	// The name of the battler represented by this BattleSprite.
-	this.name = name;
+	// .unit property
+	// The BattleUnit represented by this BattleSprite.
+	this.unit = unit;
 	
 	// .enter() method
 	// Instructs the BattleSprite to enter the battlefield from offscreen.
@@ -77,7 +77,7 @@ function BattleSprite(name, position, row, isMirrored)
 		OutlinedRectangle(this.$x, this.$y, 16, 32, CreateColor(0, 0, 0, 255));
 		Rectangle(this.$x + 1, this.$y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 		this.$idFont.setColorMask(CreateColor(128, 128, 128, 255));
-		this.$idFont.drawText(this.$x + 5, this.$y + 17, this.name[0]);
+		this.$idFont.drawText(this.$x + 5, this.$y + 17, this.unit.name[0]);
 		for (var i = 0; i < this.$messages.length; ++i) {
 			var message = this.$messages[i];
 			var x = this.$x + 8 - this.$idFont.getStringWidth(message.text) / 2;
@@ -106,7 +106,7 @@ function BattleSprite(name, position, row, isMirrored)
 			text: text,
 			color: style.color,
 			height: style.yStart,
-			endTime: (style.duration + style.delay) * 1000 + GetTime()
+			framesLeft: (style.duration + style.delay) * Engine.frameRate
 		};
 		this.$messages.push(message);
 		new Tween(message, style.duration, style.easing, { height: style.yEnd }).start();
@@ -117,7 +117,8 @@ function BattleSprite(name, position, row, isMirrored)
 	this.update = function()
 	{
 		for (var i = 0; i < this.$messages.length; ++i) {
-			if (GetTime() >= this.$messages[i].endTime) {
+			--this.$messages[i].framesLeft;
+			if (this.$messages[i].framesLeft <= 0) {
 				this.$messages.splice(i, 1);
 			}
 		}

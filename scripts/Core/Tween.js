@@ -6,7 +6,7 @@
 RequireScript("Core/Threads.js");
 
 // Tween() constructor
-// Creates an object representing a tweening operation.
+// Creates an object representing a tweening instruction.
 // Remarks:
 //     The easing functions used here were adapted from the jQuery Easing Plugin project, available
 //     on GitHub here: <https://github.com/danro/jquery-easing>
