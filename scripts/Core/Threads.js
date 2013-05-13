@@ -5,7 +5,7 @@
 
 RequireScript('lib/MultiDelegate.js');
 
-// Threads singleton
+// Threads object
 // Represents the Specs Engine thread manager.
 Threads = new (function()
 {
@@ -17,9 +17,18 @@ Threads = new (function()
 			this.renderAll();
 		}
 		FlipScreen();
-		this.updateAll();
+		if (IsMapEngineRunning()) {
+			this.$hasUpdated = false;
+			UpdateMapEngine();
+			if (!this.$hasUpdated) {
+				this.updateAll();
+			}
+		} else {
+			this.updateAll();
+		}
 	};
 	
+	this.$hasUpdated = false;
 	this.$nextThreadID = 1;
 	this.$threads = [];
 	
@@ -199,6 +208,7 @@ Threads = new (function()
 				continue;
 			}
 		}
+		this.$hasUpdated = true;
 	};
 	
 	// .waitFor() method
