@@ -67,7 +67,8 @@ var persist = (function () {
     /* Write an error message to the assigned log, or the default. */
     function logError(message)
     {
-        if (!log)
+        Abort(message);
+		if (!log)
             log = OpenLog("persist.js.log");
         log.write("Error: " + message);
     }

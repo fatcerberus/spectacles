@@ -4,6 +4,7 @@
 ***/
 
 RequireScript('lib/kh2Bar.js');
+RequireScript('lib/json2.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
 RequireScript('lib/Scenario.js');
@@ -29,17 +30,34 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
+Array.contains = function(array, o)
+{
+	for (var i = 0; i < array.length; ++i) {
+		if (array[i] === o) {
+			return true;
+		}
+	}
+	return false;
+};
+
 function clone(o)
 {
+	var clones = arguments.length >= 2 ? arguments[1] : [];
 	if (typeof o === 'object' && o !== null) {
-		var newObject = {};
-		for (var p in o) {
-			newObject[p] = clone(o[p]);
+		for (var i = 0; i < clones.length; ++i) {
+			if (o === clones[i].original) {
+				return clones[i].dolly;
+			}
 		}
+		var dolly = {};
+		clones.push({ original: o, dolly: dolly });
+		for (var p in o) {
+			dolly[p] = clone(o[p], clones);
+		}
+		return dolly;
 	} else {
-		newObject = o;
+		return o;
 	}
-	return newObject;
 };
 
 function delegate(o, methodName)

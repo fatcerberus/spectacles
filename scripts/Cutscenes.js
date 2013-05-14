@@ -13,6 +13,10 @@ if (DBG_DISABLE_SCENE_DELAYS) {
 	Scenario.defineCommand("pause", {
 		start: function(sceneState, state, duration) {}
 	});
+	delete Scenario.prototype.synchronize;
+	Scenario.defineCommand("synchronize", {
+		start: function(sceneState, state) {}
+	});
 }
 
 Scenario.defineCommand('battle',
@@ -226,5 +230,16 @@ Scenario.defineCommand('teleport',
 	start: function(sceneState, state, map, x, y) {
 		ChangeMap(map + ".rmp");
 		SetPersonXYFloat("*0", x, y);
+	}
+});
+
+Scenario.defineCommand('tween',
+{
+	start: function(sceneState, state, o, duration, easingType, endValues) {
+		state.tween = new Tween(o, duration, easingType, endValues);
+		state.tween.start();
+	},
+	update: function(sceneState, state) {
+		return !state.tween.isFinished();
 	}
 });

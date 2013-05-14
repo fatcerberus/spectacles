@@ -10,6 +10,7 @@ Game = {
 	
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
+	useItemMoveRank: 1,
 	
 	namedStats: {
 		vit: "Vitality",
@@ -34,6 +35,12 @@ Game = {
 		pistol: "Pistol",
 		rifle: "Rifle",
 		sword: "Sword"
+	},
+	
+	moveCategories: {
+		sword: "Sword",
+		strategy: "Strat",
+		magic: "Magic"
 	},
 	
 	math: {
@@ -204,7 +211,7 @@ Game = {
 	techniques: {
 		swordSlash: {
 			name: "Sword Slash",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -233,7 +240,7 @@ Game = {
 		},
 		quickstrike: {
 			name: "Quickstrike",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -259,7 +266,7 @@ Game = {
 		},
 		chargeSlash: {
 			name: "Charge Slash",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: "single",
 			actions: [

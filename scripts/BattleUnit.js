@@ -337,15 +337,15 @@ BattleUnit.prototype.tick = function()
 			action = this.actionQueue.shift();
 		} else {
 			if (this.isPartyMember) {
-				//this.$skillUsed = this.moveMenu.open();
+				this.$skillUsed = this.moveMenu.open();
 				
 				/*ALPHA*/
-				var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
+				/*var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
 				var moveMenu = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false);
 				for (var i = 0; i < this.skills.length; ++i) {
 					moveMenu.addItem(this.skills[i].name, this.skills[i]);
 				}
-				this.$skillUsed = moveMenu.open();
+				this.$skillUsed = moveMenu.open();*/
 				var growthRate = 'growthRate' in this.$skillUsed.technique ? this.$skillUsed.technique.growthRate : 1.0;
 				var experience = Game.math.experience.skill(this, this.$skillUsed.technique);
 				this.$skillUsed.experience += experience;

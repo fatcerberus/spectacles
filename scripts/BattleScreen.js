@@ -16,36 +16,52 @@ function BattleScreen()
 	this.$drawHUD = function()
 	{
 		var y = -((3 + this.$lifeBars.length) * 20) * (1.0 - this.$hudFadeness);
-		OutlinedRectangle(260, y, 60, 60, CreateColor(0, 0, 0, 144));
-		Rectangle(261, y + 1, 58, 58, CreateColor(0, 0, 0, 128));
+		this.$drawHUDBox(0, y, 160, 16, 192);
+		this.$drawHUDBox(260, y, 60, 60, 192);
 		for (var i = 0; i < 3; ++i) {
 			var itemX = 160;
 			var itemY = y + i * 20;
-			OutlinedRectangle(itemX, itemY, 100, 20, CreateColor(0, 0, 0, 144));
-			Rectangle(itemX + 1, itemY + 1, 98, 18, CreateColor(0, 0, 0, 128));
+			this.$drawHUDBox(itemX, itemY, 100, 20, 192, i == 0);
 			if (i < this.$hudSprites.length) {
 				var unit = this.$hudSprites[i].unit;
 				this.$drawText(this.$hudFont, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), unit.name);
-				this.$drawHUDItem(itemX + 58, itemY + 4, 37, unit.hp, "HP");
+				this.$drawInfoText(itemX + 60, itemY + 4, 35, unit.hp, "HP");
 			}
 		}
 		for (var i = 0; i < this.$lifeBars.length; ++i) {
 			var itemX = 160;
-			var itemY = y + (i + 3) * 20;
-			OutlinedRectangle(itemX, itemY, 160, 20, CreateColor(0, 0, 0, 144));
-			Rectangle(itemX + 1, itemY + 1, 158, 18, CreateColor(0, 0, 0, 128));
-			this.$lifeBars[i].render(itemX + 5, itemY + 5, 150, 10);
+			var itemY = y + 60 + i * 20;
+			this.$drawHUDBox(itemX, itemY, 160, 20, 192);
+			this.$lifeBars[i].draw(itemX + 5, itemY + 5, 150, 10);
+		}
+		var itemY = y + 60 + this.$lifeBars.length * 20;
+	};
+	
+	this.$drawHUDBox = function(x, y, width, height, alpha, isLitUp)
+	{
+		isLitUp = (isLitUp !== void null) ? isLitUp : false;
+		
+		if (!isLitUp) {
+			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, alpha + 16));
+			Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, alpha));
+		} else {
+			var halfHeight = Math.round(height / 2);
+			var fromColor = CreateColor(0, 72, 144, 255);
+			var toColor = BlendColors(fromColor, CreateColor(0, 0, 0, 255));
+			GradientRectangle(x, y, width, halfHeight, fromColor, fromColor, toColor, toColor);
+			GradientRectangle(x, y + halfHeight, width, height - halfHeight, toColor, toColor, fromColor, fromColor);
+			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255));
 		}
 	};
 	
-	this.$drawHUDItem = function(x, y, width, text, title)
+	this.$drawInfoText = function(x, y, width, text, title)
 	{
 		if (title === void null) { title = ""; }
 		
 		var titleWidth = this.$hudFont.getStringWidth(title);
 		var textX = x + titleWidth + width - titleWidth;
 		this.$drawText(this.$hudFont, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
-		this.$drawText(this.$hudFont, textX, y, 1, CreateColor(255, 255, 255, 255), text, 'right');
+		this.$drawText(this.$hudFont, textX, y, 1, CreateColor(192, 192, 192, 255), text, 'right');
 	};
 	
 	this.$drawLED = function(x, y, radius, color)
@@ -149,7 +165,7 @@ function BattleScreen()
 	//     A reference to a kh2Bar object that represents the new life bar.
 	this.createLifeBar = function(name, capacity)
 	{
-		var lifeBar = new kh2Bar(capacity, 250);
+		var lifeBar = new kh2Bar(capacity, 400, CreateColor(255, 255, 255, 255));
 		this.$lifeBars.push(lifeBar);
 		return lifeBar;
 	};
@@ -215,8 +231,10 @@ function BattleScreen()
 		if (this.$title === null) {
 			return;
 		}
-		new Tween(this, 0.5, 'easeOutBack', { $hudFadeness: 1.0 }).start();
 		new Scenario()
+			.beginFork()
+				.tween(this, 0.5, 'easeOutBack', { $hudFadeness: 1.0 })
+			.endFork()
 			.marquee("Boss Battle: " + this.$title, CreateColor(0, 0, 0, 128))
 			.run();
 	};

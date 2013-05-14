@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.5.1 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 1.6 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -22,8 +22,8 @@ function kh2Bar(capacity, sectorSize, color)
 		GradientRectangle(x, yHalf, width, halfHeight, color, color, dimColor, dimColor);
 	};
 	
-	if (sectorSize === void null) { sectorSize = 100; }
-	if (color === void null) { color = CreateColor(0, 255, 0, 255); }
+	sectorSize = (sectorSize !== void null) ? sectorSize : 100;
+	color = (color !== void null) ? color : CreateColor(0, 255, 0, 255);
 	
 	this.$capacity = capacity;
 	this.$sectorSize = sectorSize;
@@ -56,12 +56,15 @@ function kh2Bar(capacity, sectorSize, color)
 		}
 	};
 	
-	// .render() method
-	// Renders the kh2Bar.
+	// .draw() method
+	// Renders the kh2Bar to the screen.
 	// Arguments:
-	//     x: The X coordinate, in pixels, of the top left corner of the gauge.
-	//     y: The Y coordinate, in pixels, of the top left corner of the gauge.
-	this.render = function(x, y, width, height)
+	//     x:       The X coordinate of the top left corner of the gauge, in pixels.
+	//     y:       The Y coordinate of the top left corner of the gauge, in pixels.
+	//     width:   The width of the gauge, in pixels.
+	//     height:  The height of the gauge, in pixels.
+	//     opacity: Optional. The opacity of the gauge from 0.0 to 1.0. (default: 1.0)
+	this.draw = function(x, y, width, height)
 	{
 		var numReserves = Math.ceil(this.$capacity / this.$sectorSize - 1);
 		var numReservesFilled = Math.ceil(this.$value / this.$sectorSize - 1);
@@ -80,10 +83,10 @@ function kh2Bar(capacity, sectorSize, color)
 		var barDamaged = Math.min(this.$damage, this.$sectorSize - barFilled);
 		var usageColor = BlendColorsWeighted(this.$bgColor, this.$damageColor, this.$damageFadeness, 1.0 - this.$damageFadeness);
 		var barHeight = Math.ceil(height * 0.5 + 0.5);
-		var widthInUse = Math.ceil((width - 2) * barInUse / this.$sectorSize);
-		var fillWidth = Math.ceil((width - 2) * barFilled / this.$sectorSize);
-		var damageWidth = Math.min(Math.ceil((width - 2) * barDamaged / this.$sectorSize), widthInUse - fillWidth);
-		var emptyWidth = Math.max(widthInUse - (fillWidth + damageWidth), 0);
+		var widthInUse = Math.round((width - 2) * barInUse / this.$sectorSize);
+		var fillWidth = Math.round(widthInUse * barFilled / barInUse);
+		var damageWidth = Math.round(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
+		var emptyWidth = widthInUse - (fillWidth + damageWidth);
 		if (numReserves > 0) {
 			OutlinedRectangle(x, y, width, barHeight, BlendColors(this.$borderColor, CreateColor(0, 0, 0, 0)));
 			this.$drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColors(this.$hpColor, CreateColor(0, 0, 0, 0)));
@@ -94,7 +97,7 @@ function kh2Bar(capacity, sectorSize, color)
 		this.$drawSegment(barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 		this.$drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, this.$bgColor);
 		var slotYSize = height - barHeight + 1;
-		var slotXSize = slotYSize;
+		var slotXSize = slotYSize + 1;
 		var slotX;
 		var slotY = y + height - slotYSize;
 		for (i = 0; i < numReserves; ++i) {
