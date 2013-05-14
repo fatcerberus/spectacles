@@ -30,16 +30,6 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
-Array.contains = function(array, o)
-{
-	for (var i = 0; i < array.length; ++i) {
-		if (array[i] === o) {
-			return true;
-		}
-	}
-	return false;
-};
-
 function clone(o)
 {
 	var clones = arguments.length >= 2 ? arguments[1] : [];
@@ -73,6 +63,11 @@ function game()
 	BGM.initialize();
 	Threads.initialize();
 	persist.init();
+	Scenario.initialize();
+	Threads.doWith(Scenario,
+		function() { this.update(); return true; },
+		function() { this.render(); }
+	);
 	Console = new Console(17);
 	
 	if (!DBG_DISABLE_TITLE_CARD) {

@@ -7,9 +7,9 @@
 var Scenario = Scenario || {};
 
 // .defineCommand() function
-// Registers a new cutscene command with Scenario.
+// Registers a new Scenario command.
 // Arguments:
-//     name: The name of the command. This should be a valid JavaScript identifier (alphanumeric, no spaces)
+//     name: The name of the command. This should be a valid JavaScript identifier (alphanumeric, no spaces).
 //     code: An object defining the command's callback functions:
 //           .start(scene, state, ...): Called when the command begins executing to initialize the state, or for
 //                                      instantaneous commands, perform the necessary action.
@@ -39,10 +39,47 @@ Scenario.defineCommand = function(name, code)
 	};
 };
 
+// .initialize() function
+// Initializes the Scenario cutscene engine.
+Scenario.initialize = function()
+{
+	this.activeScenes = [];
+};
+
+// .render() function
+// Renders all active scenarios.
+Scenario.render = function()
+{
+	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
+		this.activeScenes[i].renderScene();
+	}
+};
+
+// .update() function
+// Advances all active scenarios by one frame.
+Scenario.update = function()
+{
+	for (var i = 0; i < this.activeScenes.length; ++i) {
+		var scene = this.activeScenes[i];
+		scene.updateScene();
+		if (!scene.isRunning()) {
+			scene.cleanUp();
+			this.activeScenes.splice(i, 1);
+			--i; continue;
+		}
+	}
+};
+
 // Scenario() constructor
 // Creates an object representing a scenario (cutscene definition)
 function Scenario()
 {
+	this.cleanUp = function()
+	{
+		if (this.oldPC != null) AttachInput(this.oldPC);
+		this.killThread(this.fadeThread);
+	};
+	
 	this.createDelegate = function(o, method)
 	{
 		if (method == null) {
@@ -185,7 +222,6 @@ function Scenario()
 	this.forkThreadLists = [];
 	this.currentForkThreadList = [];
 	this.fadeMask = CreateColor(0, 0, 0, 0);
-	this.isRunning = false;
 }
 
 // .beginFork() method
@@ -225,21 +261,13 @@ Scenario.prototype.endFork = function()
 	return this;
 };
 
-// .synchronize() method
-// Suspends the current timeline until all its forks have finished executing.
-Scenario.prototype.synchronize = function()
+// .isRunning() method
+// Determines whether a scenario is still running.
+// Returns:
+//     true if the scenario is still executing commands; false otherwise.
+Scenario.prototype.isRunning = function()
 {
-	var command = {};
-	command.state = {};
-	command.arguments = [ this.currentForkThreadList ];
-	command.start = function(scene, state, subthreads) {
-		state.subthreads = subthreads;
-	};
-	command.update = function(scene, state) {
-		return state.subthreads.length != 0;
-	};
-	this.enqueue(command);
-	return this;
+	return this.isThreadRunning(this.mainThread);
 };
 
 // .run() method
@@ -249,7 +277,7 @@ Scenario.prototype.run = function()
 	if (!IsMapEngineRunning()) {
 		Abort("Scenario.execute():\nCannot execute a scenario without an active map engine.");
 	}
-	if (this.isRunning) {
+	if (this.isRunning()) {
 		return;
 	}
 	this.synchronize();
@@ -268,12 +296,8 @@ Scenario.prototype.run = function()
 	this.beginFork();
 		this.fadeTo(CreateColor(0, 0, 0, 0));
 	this.endFork();
-	this.frameRate = GetMapEngineFrameRate();
-	var oldPC = IsInputAttached() ? GetInputPerson() : null;
+	this.oldPC = IsInputAttached() ? GetInputPerson() : null;
 	DetachInput();
-	var oldFrameRate = GetFrameRate();
-	SetFrameRate(this.frameRate);
-	this.isRunning = true;
 	var fadeRenderer = function(scene, state) {
 		ApplyColorMask(scene.fadeMask);
 	}
@@ -283,18 +307,26 @@ Scenario.prototype.run = function()
 		commandQueue:         this.currentQueue,
 		forkThreads:          this.currentForkThreadList
 	};
-	var mainThread = this.createForkThread(state);
-	while (this.isThreadRunning(mainThread)) {
-		RenderMap();
-		this.renderScene();
-		FlipScreen();
-		UpdateMapEngine();
-		this.updateScene();
-	}
-	SetFrameRate(oldFrameRate);
-	if (oldPC != null) AttachInput(oldPC);
-	this.killThread(fadeThread);
-	this.isRunning = false;
+	this.frameRate = GetMapEngineFrameRate();
+	this.mainThread = this.createForkThread(state);
+	Scenario.activeScenes.push(this);
+};
+
+// .synchronize() method
+// Suspends the current timeline until all its forks have finished executing.
+Scenario.prototype.synchronize = function()
+{
+	var command = {};
+	command.state = {};
+	command.arguments = [ this.currentForkThreadList ];
+	command.start = function(scene, state, subthreads) {
+		state.subthreads = subthreads;
+	};
+	command.update = function(scene, state) {
+		return state.subthreads.length != 0;
+	};
+	this.enqueue(command);
+	return this;
 };
 
 // Register predefined commands
