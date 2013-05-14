@@ -130,6 +130,7 @@ Threads = new (function()
 		this.$threads.push(newThread);
 		this.$threads.sort(function(a, b) { return a.priority - b.priority; });
 		++this.$nextThreadID;
+		return newThread.id;
 	};
 	
 	// .isRunning() method
