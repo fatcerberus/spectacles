@@ -84,10 +84,12 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.sprite = this.battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
-	this.sprite.hp = this.hp;
+	this.actor = this.battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
+	if (this.isPartyMember) {
+		this.battle.ui.hud.switchOut(position, this.name, this.hp, this.maxHP);
+	}
 	if (!this.isPartyMember) {
-		this.sprite.enter(true);
+		this.actor.enter(true);
 	}
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
@@ -167,7 +169,7 @@ BattleUnit.prototype.addStatus = function(handle)
 {
 	var statusEffect = new StatusEffect(this, handle)
 	this.statuses.push(statusEffect);
-	this.sprite.showMessage("+", 'afflict');
+	this.actor.showMessage("+", 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
 };
 
@@ -185,7 +187,7 @@ BattleUnit.prototype.die = function()
 //    The thread ID for the entrance animation, if any.
 BattleUnit.prototype.enter = function()
 {
-	return this.sprite.enter();
+	return this.actor.enter();
 };
 
 // .evade() method
@@ -194,7 +196,7 @@ BattleUnit.prototype.enter = function()
 //     attacker: The BattleUnit whose attack was evaded.
 BattleUnit.prototype.evade = function(attacker)
 {
-	this.sprite.showMessage("miss", 'evade');
+	this.actor.showMessage("miss", 'evade');
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
@@ -219,7 +221,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 	}
 	if (healEvent.amount >= 0) {
 		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
-		this.sprite.showMessage(healEvent.amount, 'heal');
+		this.actor.showMessage(healEvent.amount, 'heal');
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
@@ -258,7 +260,7 @@ BattleUnit.prototype.liftStatus = function(handle)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
 		if (handle == this.statuses[i].handle) {
-			this.sprite.showMessage("+", 'dispel');
+			this.actor.showMessage("+", 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;
@@ -306,7 +308,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		if (this.lifeBar != null) {
 			this.lifeBar.setReading(this.hpValue);
 		}
-		this.sprite.showMessage(damageEvent.amount, 'damage');
+		this.actor.showMessage(damageEvent.amount, 'damage');
 		if (this.hpValue <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}
@@ -319,7 +321,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 // Decrements the battler's CTB counter.
 BattleUnit.prototype.tick = function()
 {
-	this.sprite.hp = this.hp;
+	this.battle.ui.hud.setHP(this.name, this.hp);
 	if (!this.isAlive) {
 		return false;
 	}

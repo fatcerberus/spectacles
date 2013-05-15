@@ -15,7 +15,7 @@ function BattleHUD()
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
 	
-	this.drawHUDBox = function(x, y, width, height, alpha, isHighlighted) {
+	this.drawElementBox = function(x, y, width, height, alpha, isHighlighted) {
 		isHighlighted = (isHighlighted !== void null) ? isHighlighted : false;
 		
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, alpha + 16));
@@ -115,28 +115,43 @@ BattleHUD.prototype.highlight = function(actorName)
 BattleHUD.prototype.render = function()
 {
 	var y = -((3 + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-	this.drawHUDBox(0, y, 160, 16, 192);
-	this.drawHUDBox(260, y, 60, 60, 192);
+	this.drawElementBox(0, y, 160, 16, 192);
+	this.drawElementBox(260, y, 60, 60, 192);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
 		if (this.partyInfo[i] != null) {
 			var memberInfo = this.partyInfo[i];
-			this.drawHUDBox(itemX, itemY, 100, 20, 192, this.highlightedActor == memberInfo.name);
+			this.drawElementBox(itemX, itemY, 100, 20, 192, this.highlightedActor == memberInfo.name);
 			this.drawText(this.font, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), memberInfo.name);
 			this.drawInfoText(itemX + 60, itemY + 4, 35, memberInfo.hp, "HP");
 		} else {
-			this.drawHUDBox(itemX, itemY, 100, 20, 192);
+			this.drawElementBox(itemX, itemY, 100, 20, 192);
 		}
 	}
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
 		var itemY = y + 60 + i * 20;
-		this.drawHUDBox(itemX, itemY, 160, 20, 192, this.highlightedActor == gaugeInfo.owner);
+		this.drawElementBox(itemX, itemY, 160, 20, 192, this.highlightedActor == gaugeInfo.owner);
 		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 150, 10);
 	}
 	var itemY = y + 60 + this.hpGaugesInfo.length * 20;
+};
+
+// .setHP() method
+// Changes the displayed HP for an character shown on the HUD.
+// Arguments:
+//     name: The name of the character whose HP is being changed.
+//     hp:   The number of hit points to change the display to.
+BattleHUD.prototype.setHP = function(name, hp)
+{
+	for (var i = 0; i < this.partyInfo.length; ++i) {
+		var character = this.partyInfo[i];
+		if (character != null && character.name == name) {
+			character.hp = hp;
+		}
+	}
 };
 
 // .show() method
