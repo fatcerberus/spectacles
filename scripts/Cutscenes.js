@@ -3,7 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript('Core/Threads.js');
 RequireScript('Battle.js');
 
 RequireScript('lib/Scenario.js');
@@ -29,57 +28,6 @@ Scenario.defineCommand('fadeBGM',
 	},
 	update: function(sceneState, state) {
 		return BGM.isAdjusting();
-	}
-});
-
-Scenario.defineCommand('marquee',
-{
-	start: function(sceneState, state, text, backgroundColor, color) {
-		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
-		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
-		
-		state.text = text;
-		state.color = color;
-		state.background = backgroundColor;
-		state.font = GetSystemFont();
-		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
-		state.height = state.font.getHeight() + 10;
-		state.textHeight = state.font.getHeight();
-		state.fadeness = 0.0;
-		state.scroll = 0.0;
-		state.tweens = [
-			new Tween(state, 0.25, 'linear', { fadeness: 1.0 }),
-			new Tween(state, 1.0, 'easeOutExpo', { scroll: 0.5 }),
-			new Tween(state, 1.0, 'easeInExpo', { scroll: 1.0 }),
-			new Tween(state, 0.25, 'linear', { fadeness: 0.0 })
-		];
-		state.nextTweenID = 0;
-		state.currentTween = null;
-	},
-	render: function(sceneState, state) {
-		var boxHeight = state.height * state.fadeness;
-		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
-		var textX = GetScreenWidth() - state.scroll * state.windowSize;
-		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, state.background);
-		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
-		state.font.drawText(textX + 1, textY + 1, state.text);
-		state.font.setColorMask(state.color);
-		state.font.drawText(textX, textY, state.text);
-	},
-	update: function(sceneState, state) {
-		if (state.currentTween == null || state.currentTween.isFinished()) {
-			if (state.nextTweenID < state.tweens.length) {
-				state.currentTween = state.tweens[state.nextTweenID];
-				state.currentTween.start();
-				++state.nextTweenID;
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
 	}
 });
 
@@ -277,16 +225,5 @@ Scenario.defineCommand('teleport',
 	start: function(sceneState, state, map, x, y) {
 		ChangeMap(map + ".rmp");
 		SetPersonXYFloat("*0", x, y);
-	}
-});
-
-Scenario.defineCommand('tween',
-{
-	start: function(sceneState, state, o, duration, easingType, endValues) {
-		state.tween = new Tween(o, duration, easingType, endValues);
-		state.tween.start();
-	},
-	update: function(sceneState, state) {
-		return !state.tween.isFinished();
 	}
 });

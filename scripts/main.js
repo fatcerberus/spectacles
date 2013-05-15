@@ -30,6 +30,29 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
+function game()
+{
+	Engine.initialize();
+	Console.initialize(17);
+	BGM.initialize();
+	Threads.initialize();
+	persist.init();
+	Scenario.initialize();
+	Threads.doWith(Scenario,
+		function() { this.update(); return true; },
+		function() { this.render(); }, 99
+	);
+	
+	if (!DBG_DISABLE_TITLE_CARD) {
+		BGM.change("SpectaclesTheme");
+		Engine.showLogo("TitleCard", 150);
+	}
+	var session = new TitleScreen("SpectaclesTheme").show();
+	var world = persist.getWorldState();
+	world.session = session;
+	MapEngine("main.rmp", Engine.frameRate);
+}
+
 function clone(o)
 {
 	var clones = arguments.length >= 2 ? arguments[1] : [];
@@ -55,28 +78,4 @@ function delegate(o, method)
 	return function(/*...*/) {
 		method.apply(o, arguments);
 	};
-}
-
-function game()
-{
-	Engine.initialize();
-	BGM.initialize();
-	Threads.initialize();
-	persist.init();
-	Scenario.initialize();
-	Threads.doWith(Scenario,
-		function() { this.update(); return true; },
-		function() { this.render(); }, 99
-	);
-	Console = new Console(17);
-	Console.show();
-	
-	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.change("SpectaclesTheme");
-		Engine.showLogo("TitleCard", 150);
-	}
-	var session = new TitleScreen("SpectaclesTheme").show();
-	var world = persist.getWorldState();
-	world.session = session;
-	MapEngine("main.rmp", Engine.frameRate);
 }

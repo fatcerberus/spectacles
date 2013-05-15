@@ -1,5 +1,5 @@
 /**
- * Scenario 3.5.1 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.5.2 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -24,7 +24,7 @@ var Scenario = Scenario || {};
 Scenario.defineCommand = function(name, code)
 {
 	if (Scenario.prototype[name] != null) {
-		Abort("Scenario.defineCommand():\nThe instruction name '" + name + "' is already in use.");
+		Abort("Scenario.defineCommand(): The instruction name '" + name + "' is already in use!");
 	}
 	Scenario.prototype[name] = function() {
 		var command = {};
@@ -331,13 +331,14 @@ Scenario.prototype.synchronize = function()
 };
 
 // Register predefined commands
-Scenario.defineCommand("call", {
+Scenario.defineCommand('call', {
 	start: function(scene, state, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 3));
 	}
 });
 
-Scenario.defineCommand("facePerson", {
+Scenario.defineCommand('facePerson',
+{
 	start: function(scene, state, person, direction) {
 		var faceCommand;
 		switch (direction.toLowerCase()) {
@@ -372,7 +373,8 @@ Scenario.defineCommand("facePerson", {
 	}
 });
 
-Scenario.defineCommand("fadeTo", {
+Scenario.defineCommand('fadeTo',
+{
 	start: function(scene, state, color, duration) {
 		if (duration === undefined) { duration = 0.25; }
 		state.color = color;
@@ -407,7 +409,8 @@ Scenario.defineCommand("fadeTo", {
 	}
 });
 
-Scenario.defineCommand("focusOnPerson", {
+Scenario.defineCommand('focusOnPerson',
+{
 	start: function(scene, state, person, duration) {
 		if (duration === undefined) { duration = 0.25; }
 		DetachCamera();
@@ -433,7 +436,8 @@ Scenario.defineCommand("focusOnPerson", {
 	}
 });
 
-Scenario.defineCommand("followPerson", {
+Scenario.defineCommand('followPerson',
+{
 	start: function(scene, state, person) {
 		state.person = person;
 		state.targetXY = [ GetPersonX(state.person), GetPersonY(state.person) ];
@@ -463,20 +467,61 @@ Scenario.defineCommand("followPerson", {
 	}
 });
 
-Scenario.defineCommand("hidePerson", {
+Scenario.defineCommand('hidePerson',
+{
 	start: function(scene, state, person) {
 		SetPersonVisible(person, false);
 		IgnorePersonObstructions(person, true);
 	}
 });
 
-Scenario.defineCommand("killPerson", {
+Scenario.defineCommand('killPerson',
+{
 	start: function(scene, state, person) {
 		DestroyPerson(person);
 	}
 });
 
-Scenario.defineCommand("movePerson", {
+Scenario.defineCommand('marquee',
+{
+	start: function(sceneState, state, text, backgroundColor, color) {
+		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
+		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
+		
+		state.text = text;
+		state.color = color;
+		state.background = backgroundColor;
+		state.font = GetSystemFont();
+		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
+		state.height = state.font.getHeight() + 10;
+		state.textHeight = state.font.getHeight();
+		state.fadeness = 0.0;
+		state.scroll = 0.0;
+		state.animator = new Scenario()
+			.tween(state, 0.25, 'linear', { fadeness: 1.0 })
+			.tween(state, 1.0, 'easeOutExpo', { scroll: 0.5 })
+			.tween(state, 1.0, 'easeInExpo', { scroll: 1.0 })
+			.tween(state, 0.25, 'linear', { fadeness: 0.0 })
+			.run();
+	},
+	render: function(sceneState, state) {
+		var boxHeight = state.height * state.fadeness;
+		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
+		var textX = GetScreenWidth() - state.scroll * state.windowSize;
+		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, state.background);
+		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
+		state.font.drawText(textX + 1, textY + 1, state.text);
+		state.font.setColorMask(state.color);
+		state.font.drawText(textX, textY, state.text);
+	},
+	update: function(sceneState, state) {
+		return state.animator.isRunning();
+	}
+});
+
+Scenario.defineCommand('movePerson',
+{
 	start: function(scene, state, person, direction, distance, speed, faceFirst) {
 		if (faceFirst === undefined) { faceFirst = true };
 		if (!isNaN(speed)) {
@@ -545,7 +590,8 @@ Scenario.defineCommand("movePerson", {
 	}
 });
 
-Scenario.defineCommand("panTo", {
+Scenario.defineCommand('panTo',
+{
 	start: function(scene, state, x, y, duration) {
 		if (duration === undefined) { duration = 0.25; }
 		state.targetXY = [ x, y ];
@@ -573,7 +619,8 @@ Scenario.defineCommand("panTo", {
 	}
 });
 
-Scenario.defineCommand("pause", {
+Scenario.defineCommand('pause',
+{
 	start: function(scene, state, duration) {
 		state.endTime = GetTime() + duration * 1000;
 	},
@@ -582,7 +629,8 @@ Scenario.defineCommand("pause", {
 	}
 });
 
-Scenario.defineCommand("playSound", {
+Scenario.defineCommand('playSound',
+{
 	start: function(scene, state, file) {
 		state.sound = LoadSound(file);
 		state.sound.play(false);
@@ -593,9 +641,167 @@ Scenario.defineCommand("playSound", {
 	}
 });
 
-Scenario.defineCommand("showPerson", {
+Scenario.defineCommand('showPerson',
+{
 	start: function(scene, state, person) {
 		SetPersonVisible(person, true);
 		IgnorePersonObstructions(person, false);
 	}
+});
+
+Scenario.defineCommand('tween',
+{
+	start: function(scene, state, o, duration, easingType, endValues) {
+		state.easers = {
+			linear: function(t, b, c, d) {
+				return c * t / d + b;
+			},
+			easeInQuad: function(t, b, c, d) {
+				return c*(t/=d)*t + b;
+			},
+			easeOutQuad: function(t, b, c, d) {
+				return -c *(t/=d)*(t-2) + b;
+			},
+			easeInOutQuad: function(t, b, c, d) {
+				if ((t/=d/2) < 1) return c/2*t*t + b;
+				return -c/2 * ((--t)*(t-2) - 1) + b;
+			},
+			easeInCubic: function(t, b, c, d) {
+				return c*(t/=d)*t*t + b;
+			},
+			easeOutCubic: function(t, b, c, d) {
+				return c*((t=t/d-1)*t*t + 1) + b;
+			},
+			easeInOutCubic: function(t, b, c, d) {
+				if ((t/=d/2) < 1) return c/2*t*t*t + b;
+				return c/2*((t-=2)*t*t + 2) + b;
+			},
+			easeInQuart: function(t, b, c, d) {
+				return c*(t/=d)*t*t*t + b;
+			},
+			easeOutQuart: function(t, b, c, d) {
+				return -c * ((t=t/d-1)*t*t*t - 1) + b;
+			},
+			easeInOutQuart: function(t, b, c, d) {
+				if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+				return -c/2 * ((t-=2)*t*t*t - 2) + b;
+			},
+			easeInQuint: function(t, b, c, d) {
+				return c*(t/=d)*t*t*t*t + b;
+			},
+			easeOutQuint: function(t, b, c, d) {
+				return c*((t=t/d-1)*t*t*t*t + 1) + b;
+			},
+			easeInOutQuint: function(t, b, c, d) {
+				if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+				return c/2*((t-=2)*t*t*t*t + 2) + b;
+			},
+			easeInSine: function(t, b, c, d) {
+				return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+			},
+			easeOutSine: function(t, b, c, d) {
+				return c * Math.sin(t/d * (Math.PI/2)) + b;
+			},
+			easeInOutSine: function(t, b, c, d) {
+				return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+			},
+			easeInExpo: function(t, b, c, d) {
+				return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
+			},
+			easeOutExpo: function(t, b, c, d) {
+				return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+			},
+			easeInOutExpo: function(t, b, c, d) {
+				if (t==0) return b;
+				if (t==d) return b+c;
+				if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+				return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+			},
+			easeInCirc: function(t, b, c, d) {
+				return -c * (Math.sqrt(1 - (t/=d)*t) - 1) + b;
+			},
+			easeOutCirc: function(t, b, c, d) {
+				return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+			},
+			easeInOutCirc: function(t, b, c, d) {
+				if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
+				return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+			},
+			easeInElastic: function(t, b, c, d) {
+				var s=1.70158;var p=0;var a=c;
+				if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+				if (a < Math.abs(c)) { a=c; var s=p/4; }
+				else var s = p/(2*Math.PI) * Math.asin (c/a);
+				return -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+			},
+			easeOutElastic: function(t, b, c, d) {
+				var s=1.70158;var p=0;var a=c;
+				if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+				if (a < Math.abs(c)) { a=c; var s=p/4; }
+				else var s = p/(2*Math.PI) * Math.asin (c/a);
+				return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
+			},
+			easeInOutElastic: function(t, b, c, d) {
+				var s=1.70158;var p=0;var a=c;
+				if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if (!p) p=d*(.3*1.5);
+				if (a < Math.abs(c)) { a=c; var s=p/4; }
+				else var s = p/(2*Math.PI) * Math.asin (c/a);
+				if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+				return a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
+			},
+			easeInBack: function(t, b, c, d, s) {
+				if (s == undefined) s = 1.70158;
+				return c*(t/=d)*t*((s+1)*t - s) + b;
+			},
+			easeOutBack: function(t, b, c, d, s) {
+				if (s == undefined) s = 1.70158;
+				return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+			},
+			easeInOutBack: function(t, b, c, d, s) {
+				if (s == undefined) s = 1.70158; 
+				if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b;
+				return c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
+			},
+			easeInBounce: function(t, b, c, d) {
+				return c - this.easeOutBounce(d-t, 0, c, d) + b;
+			},
+			easeOutBounce: function(t, b, c, d) {
+				if ((t/=d) < (1/2.75)) {
+					return c*(7.5625*t*t) + b;
+				} else if (t < (2/2.75)) {
+					return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+				} else if (t < (2.5/2.75)) {
+					return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+				} else {
+					return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+				}
+			},
+			easeInOutBounce: function(t, b, c, d) {
+				if (t < d/2) return this.easeInBounce(t*2, 0, c, d) * .5 + b;
+				return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
+			}
+		};
+		
+		state.change = {};
+		state.duration = duration;
+		state.elapsed = 0.0;
+		state.object = o;
+		state.startValues = {};
+		state.type = easingType in state.easers ? easingType : 'linear';
+		for (var p in endValues) {
+			state.change[p] = endValues[p] - o[p];
+			state.startValues[p] = o[p];
+		}
+	},
+	update: function(scene, state) {
+		state.elapsed += 1.0 / scene.frameRate;
+		for (var p in state.change) {
+			if (state.elapsed < state.duration) {
+				state.object[p] = state.easers[state.type](state.elapsed, state.startValues[p], state.change[p], state.duration);
+			} else {
+				state.object[p] = state.startValues[p] + state.change[p];
+			}
+		}
+		return state.elapsed < state.duration;
+	},
 });

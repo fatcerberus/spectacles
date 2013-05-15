@@ -6,9 +6,9 @@
 RequireScript("Core/Threads.js");
 RequireScript("Core/Tween.js");
 
-// Console() constructor
-// Creates an object representing an output-only text console.
-function Console(numLines)
+// Console object
+// Represents the Specs Engine text console.
+Console = new (function()
 {
 	this.showStyle = { easing: 'easeOutBack', duration: 1.0 };
 	this.hideStyle = { easing: 'easeInBack', duration: 1.0 };
@@ -17,27 +17,27 @@ function Console(numLines)
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.nextLine = 0;
+	this.numLines = 0;
+	this.thread = null;
+})();
+
+// .initialize() method
+// Initializes the console.
+Console.initialize = function(numLines)
+{
 	this.numLines = numLines;
 	this.thread = Threads.createEntityThread(this, 100);
-	
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2013 Power-Command");
 	this.writeLine("");
 	this.writeLine("Initialized console");
-}
-
-// .dispose() method
-// Destroys the console, freeing any resources associated with it.
-Console.prototype.dispose = function()
-{
-	Threads.kill(this.thread);
 };
 
 // .append() method
 // Appends additional output text to the last line in the console.
 // Arguments:
 //     text: The text to append.
-Console.prototype.append = function(text)
+Console.append = function(text)
 {
 	if (this.nextLine == 0) {
 		Console.writeLine(text);
@@ -49,14 +49,14 @@ Console.prototype.append = function(text)
 
 // .hide() method
 // Hides the console window.
-Console.prototype.hide = function()
+Console.hide = function()
 {
 	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { fadeness: 0.0 }).start();
 }
 
 // .render() method
 // Renders the console in its current state.
-Console.prototype.render = function() {
+Console.render = function() {
 	if (this.fadeness <= 0.0) {
 		return;
 	}
@@ -78,20 +78,20 @@ Console.prototype.render = function() {
 
 // .show() method
 // Shows the console window.
-Console.prototype.show = function()
+Console.show = function()
 {
 	new Tween(this, this.showStyle.duration, this.showStyle.easing, { fadeness: 1.0 }).start();
 }
 
 // .update() method
 // Updates the console's internal state for the next frame.
-Console.prototype.update = function() {
+Console.update = function() {
 	return true;
 };
 
 // .writeLine() method
 // Writes a line of text to the console.
-Console.prototype.writeLine = function(text)
+Console.writeLine = function(text)
 {
 	var lineInBuffer = this.nextLine % this.numLines;
 	this.buffer[lineInBuffer] = ">" + text;
