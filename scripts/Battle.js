@@ -22,8 +22,22 @@ BattleResult =
 //     battleID: The ID of the battle definition to use to set up the fight.
 function Battle(session, battleID)
 {
-	this.$tick = function()
-	{
+	if (!(battleID in Game.battles)) {
+		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
+	}
+	
+	this.battleID = battleID;
+	this.conditions = [];
+	this.enemyUnits = [];
+	this.parameters = Game.battles[battleID];
+	this.playerUnits = [];
+	this.result = null;
+	this.session = session;
+	this.suspendCount = 0;
+	Console.writeLine("Battle session prepared");
+	Console.append("battle def: " + this.battleID);
+	
+	this.tick = function() {
 		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
@@ -50,32 +64,11 @@ function Battle(session, battleID)
 			}
 		}
 	};
-	
-	if (!(battleID in Game.battles)) {
-		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist.");
-	}
-	this.session = session;
-	this.battleID = battleID;
-	this.parameters = Game.battles[this.battleID];
-	this.result = null;
-	this.playerUnits = [];
-	this.enemyUnits = [];
-	this.suspendCount = 0;
-	this.conditions = [];
-	Console.writeLine("Battle session prepared");
-	Console.append("battle def: " + this.battleID);
-	
-	// .update() method
-	// Advances the Battle's internal state by one frame.
-	this.update = function() {
-		this.$tick();
-		return this.result == null;
-	};
 }
 
-// .battleLevel property
+// .level property
 // Gets the enemy battle level for the battle.
-Battle.prototype.battleLevel getter = function()
+Battle.prototype.level getter = function()
 {
 	return this.parameters.battleLevel;
 };
@@ -125,11 +118,11 @@ Battle.prototype.go = function()
 	this.ui.go('title' in this.parameters ? this.parameters.title : null);
 	var walkInThreads = [];
 	for (var i = 0; i < this.enemyUnits.length; ++i) {
-		var thread = this.enemyUnits[i].enter();
+		var thread = this.enemyUnits[i].actor.enter();
 		walkInThreads.push(thread);
 	}
 	for (var i = 0; i < this.playerUnits.length; ++i) {
-		var thread = this.playerUnits[i].enter();
+		var thread = this.playerUnits[i].actor.enter();
 		walkInThreads.push(thread);
 	}
 	if ('onStart' in this.parameters) {
@@ -266,4 +259,11 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 Battle.prototype.suspend = function()
 {
 	++this.suspendCount;
+};
+
+// .update() method
+// Updates the Battle's state for the next frame.
+Battle.prototype.update = function() {
+	this.tick();
+	return this.result == null;
 };

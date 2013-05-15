@@ -70,17 +70,14 @@ BattleHUD.prototype.dispose = function()
 };
 
 // .createEnemyHPGauge() method
-// Creates an enemy HP gauge to be displayed on this BattleScreen.
+// Creates an enemy HP gauge to be displayed on the HUD.
 // Arguments:
-//     name:     The name of the actor that the life bar belongs to.
-//     capacity: The HP capacity of the new life bar.
-// Returns:
-//     A reference to a kh2Bar object that represents the new HP gauge.
+//     name:     The name of the character that the gauge belongs to.
+//     capacity: The HP capacity of the gauge.
 BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
 	var gauge = new kh2Bar(capacity, 400, CreateColor(255, 255, 255, 255));
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
-	return gauge;
 };
 
 // .hide() method
@@ -114,9 +111,9 @@ BattleHUD.prototype.highlight = function(actorName)
 // Renders the HUD.
 BattleHUD.prototype.render = function()
 {
-	var y = -((3 + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
+	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	this.drawElementBox(0, y, 160, 16, 192);
-	this.drawElementBox(260, y, 60, 60, 192);
+	this.drawElementBox(260, y, 60, this.partyInfo.length * 20, 192);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
@@ -132,7 +129,7 @@ BattleHUD.prototype.render = function()
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
-		var itemY = y + 60 + i * 20;
+		var itemY = y + (this.partyInfo.length * 20) + i * 20;
 		this.drawElementBox(itemX, itemY, 160, 20, 192, this.highlightedActor == gaugeInfo.owner);
 		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 150, 10);
 	}
@@ -140,18 +137,39 @@ BattleHUD.prototype.render = function()
 };
 
 // .setHP() method
-// Changes the displayed HP for an character shown on the HUD.
+// Changes the displayed HP for an character represented on the HUD.
 // Arguments:
 //     name: The name of the character whose HP is being changed.
 //     hp:   The number of hit points to change the display to.
 BattleHUD.prototype.setHP = function(name, hp)
 {
 	for (var i = 0; i < this.partyInfo.length; ++i) {
-		var character = this.partyInfo[i];
-		if (character != null && character.name == name) {
-			character.hp = hp;
+		var characterInfo = this.partyInfo[i];
+		if (characterInfo != null && characterInfo.name == name) {
+			characterInfo.hp = hp;
 		}
 	}
+	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
+		var gaugeInfo = this.hpGaugesInfo[i];
+		if (gaugeInfo.owner == name) {
+			gaugeInfo.gauge.set(hp);
+		}
+	}
+};
+
+// .setPartyMember() method
+// Changes the character displayed in one of the party slots.
+// Arguments:
+//     slot:  The slot index (0-2 inclusive) of the party slot to be changed.
+//     name:  The name of the character being switched in.
+//     hp:    The amount of remaining hit points to displayed for the character.
+//     maxHP: The character's maximum HP.
+BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
+{
+	if (slot < 0 || slot >= this.partyInfo.length) {
+		Abort("BattleHUD switchOut(): Invalid party slot index '" + slot + "'!");
+	}
+	this.partyInfo[slot] = { name: name, hp: hp, maxHP: maxHP };
 };
 
 // .show() method
@@ -159,25 +177,10 @@ BattleHUD.prototype.setHP = function(name, hp)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
-		this.thread = Threads.createEntityThread(this, 100);
+		this.thread = Threads.createEntityThread(this, 20);
 	}
 	var tween = new Tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 });
 	tween.start();
-};
-
-// .switchOut() method
-// Switches out one actor for another in the party display.
-// Arguments:
-//     slot:  The slot index (0-2 inclusive) of the party slot to be switched.
-//     name:  The name of the actor being switched in.
-//     hp:    The amount of remaining hit points the switched-in actor has.
-//     maxHP: The maximum HP of the actor being switched in.
-BattleHUD.prototype.switchOut = function(slot, name, hp, maxHP)
-{
-	if (slot < 0 || slot >= this.partyInfo.length) {
-		Abort("BattleHUD switchOut(): Invalid party slot index '" + slot + "'!");
-	}
-	this.partyInfo[slot] = { name: name, hp: hp, maxHP: maxHP };
 };
 
 // .update() method

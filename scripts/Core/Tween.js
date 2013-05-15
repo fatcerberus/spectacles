@@ -10,9 +10,9 @@ RequireScript("Core/Threads.js");
 // Remarks:
 //     The easing functions used here were adapted from the jQuery Easing Plugin project, available
 //     on GitHub here: <https://github.com/danro/jquery-easing>
-function Tween(o, duration, easingType, endValues)
+function Tween(o, duration, easingType, endState)
 {
-	this.$easings = {
+	this.easings = {
 		linear: function(t, b, c, d) {
 			return c * t / d + b;
 		},
@@ -141,69 +141,72 @@ function Tween(o, duration, easingType, endValues)
 			return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
 		}
 	}
-	if (!(easingType in this.$easings)) {
-		Abort("Tween() - Invalid easing type '" + ease + "'.");
-	}
-	this.$object = o;
-	this.$endValues = endValues;
-	this.$duration = duration;
-	this.$elapsed = 0.0;
-	this.$easingType = easingType;
 	
-	// .isFinished() method
-	// Determines whether the tweening operation has completed.
-	// Returns:
-	//     true if the tween has run its course; false otherwise.
-	this.isFinished = function()
-	{
-		return this.$elapsed >= this.$duration;
-	};
-	
-	// .pause() method
-	// Suspends a tweening operation in progress.
-	// Remarks:
-	//     After calling .pause() to suspend the tween, you may call .run again to resume the
-	//     operation from where it left off.
-	this.pause = function()
-	{
-		if (this.$thread != null) {
-			Threads.kill(this.$thread);
-		}
+	if (!(easingType in this.easings)) {
+		Abort("Tween() - Invalid easing type '" + easingType + "'.");
 	}
 	
-	// .start() method
-	// Begins the tweening operation. Has no effect if the tween is already running.
-	this.start = function()
-	{
-		if (Threads.isRunning(this.$thread)) {
-			return;
-		}
-		if (this.isFinished()) {
-			this.$elapsed = 0.0;
-		}
-		if (this.$elapsed <= 0.0) {
-			this.$start = {};
-			this.$difference = {};
-			for (var p in this.$endValues) {
-				this.$start[p] = this.$object[p];
-				this.$difference[p] = this.$endValues[p] - this.$start[p];
-			}
-		}
-		this.$thread = Threads.createEntityThread(this);
+	this.duration = duration;
+	this.elapsed = 0.0;
+	this.endState = endState;
+	this.easingType = easingType;
+	this.object = o;
+	this.startState = null;
+};
+
+// .isFinished() method
+// Determines whether the tweening operation has completed.
+// Returns:
+//     true if the tween has run its course; false otherwise.
+Tween.prototype.isFinished = function()
+{
+	return this.elapsed >= this.duration;
+};
+
+// .pause() method
+// Suspends a tweening operation in progress.
+// Remarks:
+//     After calling .pause() to suspend the tween, you may call .run again to resume the
+//     operation from where it left off.
+Tween.prototype.pause = function()
+{
+	if (this.thread != null) {
+		Threads.kill(this.thread);
 	}
-	
-	// .update() method
-	// Advances the Tween by one frame.
-	this.update = function()
-	{
-		this.$elapsed += 1.0 / Engine.frameRate;
-		for (var p in this.$difference) {
-			if (this.$elapsed < this.$duration) {
-				this.$object[p] = this.$easings[this.$easingType](this.$elapsed, this.$start[p], this.$difference[p], this.$duration);
-			} else {
-				this.$object[p] = this.$start[p] + this.$difference[p];
-			}
+}
+
+// .start() method
+// Begins the tweening operation. Has no effect if the tween is already running.
+Tween.prototype.start = function()
+{
+	if (Threads.isRunning(this.thread)) {
+		return;
+	}
+	if (this.isFinished()) {
+		this.elapsed = 0.0;
+	}
+	if (this.elapsed <= 0.0) {
+		this.startState = {};
+		this.change = {};
+		for (var p in this.endState) {
+			this.startState[p] = this.object[p];
+			this.change[p] = this.endState[p] - this.startState[p];
 		}
-		return this.$elapsed < this.$duration;
-	};
+	}
+	this.thread = Threads.createEntityThread(this);
+}
+
+// .update() method
+// Advances the Tween by one frame.
+Tween.prototype.update = function()
+{
+	this.elapsed += 1.0 / Engine.frameRate;
+	for (var p in this.change) {
+		if (this.elapsed < this.duration) {
+			this.object[p] = this.easings[this.easingType](this.elapsed, this.startState[p], this.change[p], this.duration);
+		} else {
+			this.object[p] = this.startState[p] + this.change[p];
+		}
+	}
+	return this.elapsed < this.duration;
 };

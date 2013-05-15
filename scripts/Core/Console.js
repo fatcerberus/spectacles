@@ -7,41 +7,19 @@ RequireScript("Core/Threads.js");
 RequireScript("Core/Tween.js");
 
 // Console() constructor
-// Creates an object representing a text-based console.
+// Creates an object representing an output-only text console.
 function Console(numLines)
 {
 	this.showStyle = { easing: 'easeOutBack', duration: 1.0 };
 	this.hideStyle = { easing: 'easeInBack', duration: 1.0 };
 	
-	this.render = function() {
-		if (this.openness <= 0.0) {
-			return;
-		}
-		var boxHeight = this.numLines * this.font.getHeight() + 10;
-		var boxY = -boxHeight * (1.0 - this.openness);
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.openness * 128));
-		for (var i = 0; i < this.numLines; ++i) {
-			var lineToDraw = (this.nextLine - this.numLines) + i;
-			if (lineToDraw >= 0) {
-				var lineInBuffer = lineToDraw % this.numLines;
-				var y = boxY + 5 + i * this.font.getHeight();
-				this.font.setColorMask(CreateColor(0, 0, 0, 128));
-				this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-				this.font.setColorMask(CreateColor(255, 255, 255, this.openness * 128));
-				this.font.drawText(5, y, this.buffer[lineInBuffer]);
-			}
-		}
-	};
-	this.update = function() {
-		return true;
-	};
-	
-	this.numLines = numLines;
 	this.buffer = [];
-	this.nextLine = 0;
+	this.fadeness = 0.0;
 	this.font = GetSystemFont();
-	this.openness = 0.0;
+	this.nextLine = 0;
+	this.numLines = numLines;
 	this.thread = Threads.createEntityThread(this, 100);
+	
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2013 Power-Command");
 	this.writeLine("");
@@ -73,18 +51,46 @@ Console.prototype.append = function(text)
 // Hides the console window.
 Console.prototype.hide = function()
 {
-	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 }).start();
+	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { fadeness: 0.0 }).start();
 }
+
+// .render() method
+// Renders the console in its current state.
+Console.prototype.render = function() {
+	if (this.fadeness <= 0.0) {
+		return;
+	}
+	var boxHeight = this.numLines * this.font.getHeight() + 10;
+	var boxY = -boxHeight * (1.0 - this.fadeness);
+	Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.fadeness * 128));
+	for (var i = 0; i < this.numLines; ++i) {
+		var lineToDraw = (this.nextLine - this.numLines) + i;
+		if (lineToDraw >= 0) {
+			var lineInBuffer = lineToDraw % this.numLines;
+			var y = boxY + 5 + i * this.font.getHeight();
+			this.font.setColorMask(CreateColor(0, 0, 0, 128));
+			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
+			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 255));
+			this.font.drawText(5, y, this.buffer[lineInBuffer]);
+		}
+	}
+};
 
 // .show() method
 // Shows the console window.
 Console.prototype.show = function()
 {
-	new Tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 }).start();
+	new Tween(this, this.showStyle.duration, this.showStyle.easing, { fadeness: 1.0 }).start();
 }
 
+// .update() method
+// Updates the console's internal state for the next frame.
+Console.prototype.update = function() {
+	return true;
+};
+
 // .writeLine() method
-// Outputs a line of text to the console.
+// Writes a line of text to the console.
 Console.prototype.writeLine = function(text)
 {
 	var lineInBuffer = this.nextLine % this.numLines;

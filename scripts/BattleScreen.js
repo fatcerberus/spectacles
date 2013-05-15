@@ -90,18 +90,6 @@ BattleScreen.prototype.createActor = function(name, position, row, alignment, al
 	return sprite;
 };
 
-// .createEnemyHPGauge() method
-// Creates an enemy HP gauge to be displayed on this battle screen's HUD.
-// Arguments:
-//     name:     The name of the actor that the gauge belongs to.
-//     capacity: The HP capacity of the gauge.
-// Returns:
-//     A reference to a kh2Bar object that represents the new HP gauge.
-BattleScreen.prototype.createEnemyHPGauge = function(name, capacity)
-{
-	return this.hud.createEnemyHPGauge(name, capacity);
-};
-
 // .go() method
 // Transitions into the BattleScreen.
 // Arguments:
@@ -146,7 +134,6 @@ BattleScreen.prototype.render = function()
 			this.actors[type][i].render();
 		}
 	}
-	//this.drawHUD();
 };
 
 // .showTitle() method

@@ -100,8 +100,8 @@ Game = {
 				return base * proficiency * growthRate;
 			},
 		},
-		enemyHP: function(enemyUnit) {
-			return enemyUnit.stats.vit.value * 100;
+		enemyHP: function(enemy, level) {
+			return enemy.baseStats.vit * level;
 		},
 		partyMemberHP: function(partyMember) {
 			return partyMember.stats.vit.value * 10;

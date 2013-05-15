@@ -26,75 +26,71 @@ var BattleRow =
 //     startingRow: The row the unit starts in.
 function BattleUnit(battle, basis, position, startingRow)
 {
-	this.$invokeStatuses = function(eventName, event)
-	{
+	this.actionQueue = [];
+	this.actor = null;
+	this.aiData = { turnsTaken: 0 };
+	this.battle = battle;
+	this.counter = 0;
+	this.hp = 0;
+	this.moveMenu = new MoveMenu(battle, this);
+	this.moveTargets = null;
+	this.newSkills = [];
+	this.partyMember = null;
+	this.row = startingRow;
+	this.skills = [];
+	this.stats = {};
+	this.statuses = [];
+	this.weapon = null;
+	
+	if (basis instanceof PartyMember) {
+		this.character = basis.character;
+		this.maxHP = Game.math.partyMemberHP(basis);
+		this.hp = this.maxHP;
+		this.name = basis.name;
+		this.partyMember = basis;
+		for (var i = 0; i < basis.skills.length; ++i) {
+			this.skills.push(basis.skills[i]);
+		}
+		for (var name in Game.namedStats) {
+			this.stats[name] = basis.stats[name];
+		}
+		this.weapon = basis.weapon;
+	} else {
+		this.enemyInfo = basis;
+		this.name = basis.name;
+		for (var name in Game.namedStats) {
+			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.level, false);
+		}
+		this.maxHP = Game.math.enemyHP(basis, battle.level);
+		this.hp = this.maxHP;
+		this.weapon = Game.weapons[this.enemyInfo.weapon];
+		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
+			this.battle.ui.hud.createEnemyHPGauge(this, this.maxHP);
+		}
+	}
+	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
+	if (this.isPartyMember) {
+		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
+	}
+	if (!this.isPartyMember) {
+		this.actor.enter(true);
+	}
+	this.counter = Game.math.timeUntilNextTurn(this, Game.defaultMoveRank);
+	var unitType = this.partyMember != null ? "party" : "AI";
+	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
+	Console.append("maxHP: " + this.maxHP);
+
+	this.invokeStatuses = function(eventName, event) {
 		if (event === undefined) { event = null; }
 		for (var i = 0; i < this.statuses.length; ++i) {
 			this.statuses[i].invoke(eventName, event);
 		}
 	};
-	
-	this.$resetCounter = function(rank)
-	{
+	this.resetCounter = function(rank) {
 		this.counter = Game.math.timeUntilNextTurn(this, rank);
 		Console.writeLine(this.name + "'s CV reset to " + this.counter);
 		Console.append("rank: " + rank);
 	};
-	
-	this.battle = battle;
-	this.rowValue = startingRow;
-	this.partyMember = null;
-	this.stats = {};
-	this.weapon = null;
-	if (basis instanceof PartyMember) {
-		this.partyMember = basis;
-		this.character = this.partyMember.character;
-		this.name = this.partyMember.name;
-		for (var name in Game.namedStats) {
-			this.stats[name] = this.partyMember.stats[name];
-		}
-		this.maxHPValue = Game.math.partyMemberHP(this.partyMember);
-		this.weapon = this.partyMember.weapon;
-		this.skills = [];
-		for (var i = 0; i < this.partyMember.skills.length; ++i) {
-			this.skills.push(this.partyMember.skills[i]);
-		}
-		this.lifeBar = null;
-	} else {
-		this.enemyInfo = basis;
-		this.name = this.enemyInfo.name;
-		for (var name in Game.namedStats) {
-			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.battleLevel, false);
-		}
-		this.maxHPValue = Game.math.enemyHP(this);
-		this.weapon = Game.weapons[this.enemyInfo.weapon];
-		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
-			this.lifeBar = this.battle.ui.createEnemyHPGauge(this, this.maxHPValue);
-		} else {
-			this.lifeBar = null;
-		}
-	}
-	this.newSkills = [];
-	this.hpValue = this.maxHP;
-	this.statuses = [];
-	this.counter = 0;
-	this.actionQueue = [];
-	this.moveTargets = null;
-	this.moveMenu = new MoveMenu(this.battle, this);
-	this.aiState = {
-		turnsTaken: 0,
-	};
-	this.actor = this.battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
-	if (this.isPartyMember) {
-		this.battle.ui.hud.switchOut(position, this.name, this.hp, this.maxHP);
-	}
-	if (!this.isPartyMember) {
-		this.actor.enter(true);
-	}
-	var unitType = this.partyMember != null ? "party" : "AI";
-	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
-	Console.append("maxHP: " + this.maxHP);
-	this.$resetCounter(Game.defaultMoveRank);
 }
 
 // .health property
@@ -102,13 +98,6 @@ function BattleUnit(battle, basis, position, startingRow)
 BattleUnit.prototype.health getter = function()
 {
 	return Math.floor(100 * this.hp / this.maxHP);
-};
-
-// .hp property
-// Gets the unit's remaining hit points.
-BattleUnit.prototype.hp getter = function()
-{
-	return this.hpValue;
 };
 
 // .isAlive property
@@ -132,26 +121,8 @@ BattleUnit.prototype.level getter = function()
 	if (this.partyMember != null) {
 		return this.partyMember.level;
 	} else {
-		return this.battle.battleLevel;
+		return this.battle.level;
 	}
-};
-
-// .maxHP property
-// Gets the maximum amount of HP the unit can have at a time.
-BattleUnit.prototype.maxHP getter = function()
-{
-	return this.maxHPValue;
-}
-
-// .row property
-// Gets or sets the unit's current row.
-BattleUnit.prototype.row getter = function()
-{
-	return this.rowValue;
-}
-BattleUnit.prototype.row setter = function(value)
-{
-	this.rowValue = value;
 };
 
 // .timeUntilNextTurn property
@@ -181,15 +152,6 @@ BattleUnit.prototype.die = function()
 	this.hpValue = 0;
 };
 
-// .enter() method
-// Instructs the BattleUnit to enter the battlefield.
-// Returns:
-//    The thread ID for the entrance animation, if any.
-BattleUnit.prototype.enter = function()
-{
-	return this.actor.enter();
-};
-
 // .evade() method
 // Applies evasion bonuses when an attack misses.
 // Arguments:
@@ -215,7 +177,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		isPriority: isPriority,
 		cancel: false
 	};
-	this.$invokeStatuses('healed', healEvent);
+	this.invokeStatuses('healed', healEvent);
 	if (healEvent.cancel) {
 		return;
 	}
@@ -298,7 +260,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		amount: amount,
 		cancel: false
 	};
-	this.$invokeStatuses('damaged', damageEvent);
+	this.invokeStatuses('damaged', damageEvent);
 	if (damageEvent.cancel) {
 		return;
 	}
@@ -330,31 +292,31 @@ BattleUnit.prototype.tick = function()
 		this.battle.suspend();
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
-		this.$invokeStatuses('beginTurn');
+		this.invokeStatuses('beginTurn');
 		var action = null;
 		if (this.actionQueue.length > 0) {
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
 			if (this.isPartyMember) {
-				this.$skillUsed = this.moveMenu.open();
-				var growthRate = 'growthRate' in this.$skillUsed.technique ? this.$skillUsed.technique.growthRate : 1.0;
-				var experience = Game.math.experience.skill(this, this.$skillUsed.technique);
-				this.$skillUsed.experience += experience;
-				Console.writeLine(this.name + " got " + experience + " EXP for " + this.$skillUsed.name);
-				Console.append("level: " + this.$skillUsed.level);
+				this.skillUsed = this.moveMenu.open();
+				var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
+				var experience = Game.math.experience.skill(this, this.skillUsed.technique);
+				this.skillUsed.experience += experience;
+				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
+				Console.append("level: " + this.skillUsed.level);
 				var move = {
 					type: 'technique',
-					technique: this.$skillUsed.technique,
+					technique: this.skillUsed.technique,
 					targets: [
 						this.battle.enemiesOf(this)[0]
 					]
 				}
 				
 			} else {
-				var move = this.enemyInfo.strategize.call(this.aiState, this, this.battle, this.battle.predictTurns(this, null));
-				this.$skillUsed = new Skill(move.technique, 100);
-				move.technique = this.$skillUsed.technique;
+				var move = this.enemyInfo.strategize.call(this.aiData, this, this.battle, this.battle.predictTurns(this, null));
+				this.skillUsed = new Skill(move.technique, 100);
+				move.technique = this.skillUsed.technique;
 			}
 			Console.writeLine(this.name + " is using " + move.technique.name);
 			if (this.weapon != null && move.technique.weaponType != null) {
@@ -369,8 +331,8 @@ BattleUnit.prototype.tick = function()
 				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 			}
 		}
-		this.battle.runAction(this, this.moveTargets, this.$skillUsed, action);
-		this.$resetCounter(action.rank);
+		this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
+		this.resetCounter(action.rank);
 		this.battle.resume();
 		return true;
 	} else {
