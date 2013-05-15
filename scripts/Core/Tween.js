@@ -198,13 +198,12 @@ function Tween(o, duration, easingType, endValues)
 	{
 		this.$elapsed += 1.0 / Engine.frameRate;
 		for (var p in this.$difference) {
-			this.$object[p] = this.$easings[this.$easingType](this.$elapsed, this.$start[p], this.$difference[p], this.$duration);
+			if (this.$elapsed < this.$duration) {
+				this.$object[p] = this.$easings[this.$easingType](this.$elapsed, this.$start[p], this.$difference[p], this.$duration);
+			} else {
+				this.$object[p] = this.$start[p] + this.$difference[p];
+			}
 		}
-		if (this.$elapsed >= this.$duration) {
-			this.$object[p] = this.$start[p] + this.$difference[p];
-			return false;
-		} else {
-			return true;
-		}
+		return this.$elapsed < this.$duration;
 	};
 };
