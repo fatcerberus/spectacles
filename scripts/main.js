@@ -17,12 +17,12 @@ RequireScript('Core/Tween.js');
 RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_SCENE_DELAYS = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_SCENE_DELAYS = false;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = true;
+var DBG_DISABLE_TRANSITIONS = false;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
@@ -50,10 +50,10 @@ function clone(o)
 	}
 };
 
-function delegate(o, methodName)
+function delegate(o, method)
 {
 	return function(/*...*/) {
-		o[methodName].apply(o, arguments)
+		method.apply(o, arguments);
 	};
 }
 
@@ -66,7 +66,7 @@ function game()
 	Scenario.initialize();
 	Threads.doWith(Scenario,
 		function() { this.update(); return true; },
-		function() { this.render(); }
+		function() { this.render(); }, 1000
 	);
 	Console = new Console(17);
 	

@@ -3,13 +3,10 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Console.js");
-RequireScript("MoveMenu.js");
-RequireScript("MenuStrip.js"); /*ALPHA*/
-RequireScript("PartyMember.js");
-RequireScript("Skill.js");
-RequireScript("Stat.js");
-RequireScript("StatusEffect.js");
+RequireScript('MoveMenu.js');
+RequireScript('Skill.js');
+RequireScript('Stat.js');
+RequireScript('StatusEffect.js');
 
 // BattleRow enumeration
 // Specifies a BattleUnit's relative distance from its opponents.
@@ -45,7 +42,6 @@ function BattleUnit(battle, basis, position, startingRow)
 	};
 	
 	this.battle = battle;
-	this.battleScreen = this.battle.battleScreen;
 	this.rowValue = startingRow;
 	this.partyMember = null;
 	this.stats = {};
@@ -73,7 +69,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		this.maxHPValue = Game.math.enemyHP(this);
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
-			this.lifeBar = this.battleScreen.createLifeBar(this.name, this.maxHPValue);
+			this.lifeBar = this.battle.ui.createEnemyHPGauge(this, this.maxHPValue);
 		} else {
 			this.lifeBar = null;
 		}
@@ -88,7 +84,8 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.aiState = {
 		turnsTaken: 0,
 	};
-	this.sprite = this.battleScreen.createSprite(this, position, this.row, this.isPartyMember ? 'party' : 'enemy');
+	this.sprite = this.battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
+	this.sprite.hp = this.hp;
 	if (!this.isPartyMember) {
 		this.sprite.enter(true);
 	}
@@ -322,6 +319,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 // Decrements the battler's CTB counter.
 BattleUnit.prototype.tick = function()
 {
+	this.sprite.hp = this.hp;
 	if (!this.isAlive) {
 		return false;
 	}
@@ -338,14 +336,6 @@ BattleUnit.prototype.tick = function()
 		} else {
 			if (this.isPartyMember) {
 				this.$skillUsed = this.moveMenu.open();
-				
-				/*ALPHA*/
-				/*var weaponName = this.weapon != null ? this.weapon.name : "unarmed";
-				var moveMenu = new MenuStrip(this.name + " " + this.hp + " HP " + weaponName, false);
-				for (var i = 0; i < this.skills.length; ++i) {
-					moveMenu.addItem(this.skills[i].name, this.skills[i]);
-				}
-				this.$skillUsed = moveMenu.open();*/
 				var growthRate = 'growthRate' in this.$skillUsed.technique ? this.$skillUsed.technique.growthRate : 1.0;
 				var experience = Game.math.experience.skill(this, this.$skillUsed.technique);
 				this.$skillUsed.experience += experience;

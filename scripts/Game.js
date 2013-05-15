@@ -490,10 +490,13 @@ Game = {
 				'headlessHorse'
 			],
 			onStart: function() {
-				new Scenario()
+				var scene = new Scenario()
 					.talk("maggie", 2.0, "I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. "
 						+ "It won't hesitate to roast you--and then I'd have to eat you!")
 					.run();
+				Threads.waitFor(Threads.doWith(scene,
+					function() { return this.isRunning(); }
+				));
 			}
 		},
 		robert2: {
@@ -504,7 +507,7 @@ Game = {
 				'robert2'
 			],
 			onStart: function() {
-				new Scenario()
+				var scene = new Scenario()
 					.pause(1.0)
 					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
@@ -519,6 +522,9 @@ Game = {
 					.overrideBGM('MyDreamsButADropOfFuel')
 					.fadeBGM(1.0, 0.0)
 					.run();
+				Threads.waitFor(Threads.doWith(scene,
+					function() { return this.isRunning(); }
+				));
 			}
 		}
 	},

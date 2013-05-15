@@ -7,8 +7,8 @@
 // Creates an object representing a move-choosing menu.
 // Arguments:
 //     battle: The Battle during which the menu will be shown.
-//     actor:  The BattleUnit the menu belongs to.
-function MoveMenu(battle, actor)
+//     unit:   The BattleUnit this menu belongs to.
+function MoveMenu(battle, unit)
 {
 	this.$drawInfoText = function(x, y, width, text, title)
 	{
@@ -69,7 +69,7 @@ function MoveMenu(battle, actor)
 	];
 	
 	this.$battle = battle;
-	this.$actor = actor;
+	this.$unit = unit;
 	this.$fadeness = 0.0;
 	this.$fadeTween = null;
 	this.$font = null;
@@ -78,7 +78,7 @@ function MoveMenu(battle, actor)
 	this.$skillID = null;
 	
 	this.render = function() {
-		var y = -17 + 33 * this.$fadeness;
+		var y = -(16 + 17 * 5) * (1.0 - this.$fadeness) + 16;
 		var itemWidth = 160 / this.$drawers.length;
 		for (var i = 0; i < this.$drawers.length; ++i) {
 			var x = Math.floor(i * itemWidth);
@@ -93,7 +93,7 @@ function MoveMenu(battle, actor)
 			OutlinedRectangle(4, itemY + 2, 13, 13, CreateColor(0, 0, 0, 128));
 			this.$drawText(this.$font, 7, itemY + 2, 1, CreateColor(255, 255, 255), "2");
 			this.$drawText(this.$font, 21, itemY + 2, 1, CreateColor(255, 255, 255), "Charge Slash");
-			this.$drawInfoText(119, itemY + 2, 37, "10%", "G");
+			this.$drawInfoText(119, itemY + 2, 37, "100%", "G");
 		}
 	};
 	this.update = function() {
@@ -112,10 +112,12 @@ function MoveMenu(battle, actor)
 MoveMenu.prototype.open = function()
 {
 	this.$battle.suspend();
+	this.$battle.ui.highlightActor(this.$unit.name);
 	this.$font = GetSystemFont();
-	this.$fadeTween = new Tween(this, 0.5, 'easeOutBack', { $fadeness: 1.0 });
+	this.$fadeTween = new Tween(this, 0.5, 'easeOutBounce', { $fadeness: 1.0 });
 	this.$fadeTween.start();
 	Threads.waitFor(Threads.createEntityThread(this, 20));
+	this.$battle.ui.highlightActor(null);
 	this.$battle.resume();
 	return this.$skill;
 };

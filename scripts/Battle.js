@@ -3,8 +3,8 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("BattleScreen.js");
-RequireScript("BattleUnit.js");
+RequireScript('BattleScreen.js');
+RequireScript('BattleUnit.js');
 
 // BattleResult enumeration
 // Specifies the outcome of a battle.
@@ -101,7 +101,7 @@ Battle.prototype.go = function()
 		return BattleResult.playerWon;
 	}
 	Console.writeLine("Starting battle '" + this.battleID + "'");
-	this.battleScreen = new BattleScreen();
+	this.ui = new BattleScreen();
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
@@ -122,7 +122,7 @@ Battle.prototype.go = function()
 	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
-	this.battleScreen.go('title' in this.parameters ? this.parameters.title : null);
+	this.ui.go('title' in this.parameters ? this.parameters.title : null);
 	var walkInThreads = [];
 	for (var i = 0; i < this.enemyUnits.length; ++i) {
 		var thread = this.enemyUnits[i].enter();
@@ -136,10 +136,10 @@ Battle.prototype.go = function()
 		this.parameters.onStart.call(this);
 	}
 	Threads.synchronize(walkInThreads);
-	this.battleScreen.showTitle();
+	this.ui.showTitle();
 	this.resume();
 	Threads.waitFor(battleThread);
-	this.battleScreen.dispose();
+	this.ui.dispose();
 	return this.result;
 };
 
@@ -190,7 +190,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
-		this.battleScreen.announceAction(action.announceAs, actingUnit.isPartyMember ? 'party' : 'enemy', bannerColor);
+		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember ? 'party' : 'enemy', bannerColor);
 	}
 	var targetsHit = [];
 	if ('accuracyType' in action) {

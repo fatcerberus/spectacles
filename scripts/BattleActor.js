@@ -3,18 +3,14 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Threads.js");
-RequireScript("Core/Tween.js");
-RequireScript("lib/SpriteImage.js");
-
-// BattleSprite() constructor
-// Creates an object representing a battler sprite.
+// BattleActor() constructor
+// Creates an object representing a battle screen actor.
 // Arguments:
-//     unit:         The BattleUnit represented by this sprite.
-//     position:     The position of the unit in the party order.
+//     name:         The actor's name.
+//     position:     The position of the battler in the party order.
 //     row:          The row (front, middle, rear) that the battler is in.
-//     isMirrored:   If true, the sprite enters from the right. Otherwise, it enters from the left.
-function BattleSprite(unit, position, row, isMirrored)
+//     isMirrored:   If true, the actor enters from the right. Otherwise, it enters from the left.
+function BattleActor(name, position, row, isMirrored)
 {
 	this.$messageStyles = {
 		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
@@ -37,9 +33,9 @@ function BattleSprite(unit, position, row, isMirrored)
 	}
 	this.$hasEntered = false;
 	
-	// .unit property
-	// The BattleUnit represented by this BattleSprite.
-	this.unit = unit;
+	// .name property
+	// The name of the actor.
+	this.name = name;
 	
 	// .enter() method
 	// Instructs the BattleSprite to enter the battlefield from offscreen.
@@ -77,7 +73,7 @@ function BattleSprite(unit, position, row, isMirrored)
 		OutlinedRectangle(this.$x, this.$y, 16, 32, CreateColor(0, 0, 0, 255));
 		Rectangle(this.$x + 1, this.$y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 		this.$idFont.setColorMask(CreateColor(128, 128, 128, 255));
-		this.$idFont.drawText(this.$x + 5, this.$y + 17, this.unit.name[0]);
+		this.$idFont.drawText(this.$x + 5, this.$y + 17, this.name[0]);
 		for (var i = 0; i < this.$messages.length; ++i) {
 			var message = this.$messages[i];
 			var x = this.$x + 8 - this.$idFont.getStringWidth(message.text) / 2;
