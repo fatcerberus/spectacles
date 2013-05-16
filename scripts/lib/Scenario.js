@@ -1,5 +1,5 @@
 /**
- * Scenario 3.5.5 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.6 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -53,6 +53,7 @@ Scenario.render = function()
 	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
 		this.activeScenes[i].renderScene();
 	}
+	ApplyColorMask(Scenario.screenMask);
 };
 
 // .update() function
@@ -68,22 +69,28 @@ Scenario.update = function()
 			--i; continue;
 		}
 	}
+	Scenario.hasUpdated = true;
 };
+
+Scenario.hasUpdated = false;
+Scenario.screenMask = CreateColor(0, 0, 0, 0);
 
 // Scenario() constructor
 // Creates an object representing a scenario (cutscene definition)
 function Scenario()
 {
+	this.currentForkThreadList = [];
+	this.currentQueue = [];
+	this.focusThreadStack = [];
+	this.focusThread = 0;
+	this.forkThreadLists = [];
+	this.nextThreadID = 1;
+	this.queues = [];
+	this.threads = [];
+	
 	this.cleanUp = function()
 	{
 		this.killThread(this.fadeThread);
-		this.finalizer
-			.beginFork()
-				.fadeTo(this.fadeMask, 0.0)
-				.fadeTo(CreateColor(0, 0, 0, 0))
-			.endFork()
-			.run();
-		this.finalizer.run();
 	};
 	
 	this.createDelegate = function(o, method)
@@ -218,16 +225,6 @@ function Scenario()
 			}
 		}
 	};
-	
-	this.currentQueue = [];
-	this.queues = [];
-	this.threads = [];
-	this.nextThreadID = 1;
-	this.focusThreadStack = [];
-	this.focusThread = 0;
-	this.forkThreadLists = [];
-	this.currentForkThreadList = [];
-	this.fadeMask = CreateColor(0, 0, 0, 0);
 }
 
 // .beginFork() method
@@ -278,34 +275,22 @@ Scenario.prototype.isRunning = function()
 
 // .run() method
 // Runs the scenario.
-Scenario.prototype.run = function()
+// Arguments:
+//     waitUntilDone: Optional. If true, prevents .run() from returning until the scenario has finished executing.
+//                    Otherwise, .run() returns immediately. (default: false)
+// Remarks:
+//     waitUntilDone should be used with care. If .run() is called during a map engine update with waitUntilDone set to true,
+//     the update script will be blocked from running until the scenario is finished. While Scenario itself won't deadlock,
+//     anything else called by your update script won't run until the scenario has finished. For this reason, it is strongly
+//     recommended to implement your own wait logic.
+Scenario.prototype.run = function(waitUntilDone)
 {
+	waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
+	
 	if (this.isRunning()) {
 		return;
 	}
 	this.synchronize();
-	this.finalizer = new Scenario();
-	if (IsMapEngineRunning()) {
-		if (!IsCameraAttached()) {
-			var oldCameraX = GetCameraX();
-			var oldCameraY = GetCameraY();
-			this.finalizer
-				.beginFork()
-					.panTo(oldCameraX, oldCameraY)
-				.endFork()
-		} else {
-			var oldCameraTarget = GetCameraPerson();
-			this.finalizer
-				.beginFork()
-					.followPerson(oldCameraTarget)
-				.endFork();
-		}
-	}
-	this.synchronize();
-	var fadeRenderer = function(scene, state) {
-		ApplyColorMask(scene.fadeMask);
-	}
-	var fadeThread = this.createThread(null, null, fadeRenderer, -1);
 	var state = {
 		currentCommandThread: 0,
 		commandQueue:         this.currentQueue,
@@ -314,6 +299,28 @@ Scenario.prototype.run = function()
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
 	this.mainThread = this.createForkThread(state);
 	Scenario.activeScenes.push(this);
+	if (waitUntilDone) {
+		var currentFPS = GetFrameRate();
+		if (IsMapEngineRunning()) {
+			SetFrameRate(GetMapEngineFrameRate());
+		}
+		while (this.isRunning()) {
+			if (IsMapEngineRunning()) {
+				RenderMap();
+				FlipScreen();
+				Scenario.hasUpdated = false;
+				UpdateMapEngine();
+				if (!Scenario.hasUpdated) {
+					Scenario.update();
+				}
+			} else {
+				Scenario.render();
+				FlipScreen();
+				Scenario.update();
+			}
+		}
+		SetFrameRate(currentFPS);
+	}
 	return this;
 };
 
@@ -387,96 +394,46 @@ Scenario.defineCommand('facePerson',
 Scenario.defineCommand('fadeTo',
 {
 	start: function(scene, state, color, duration) {
-		if (duration === undefined) { duration = 0.25; }
-		state.color = color;
-		state.duration = duration;
-		if (state.duration <= 0) {
-			scene.fadeMask = color;
-		}
-		var multiplier = state.duration > 0 ? 1.0 / state.duration : 0;
-		var fadeFromRGBA = [ scene.fadeMask.red, scene.fadeMask.green, scene.fadeMask.blue, scene.fadeMask.alpha ];
-		var fadeToRGBA = [ state.color.red, state.color.green, state.color.blue, state.color.alpha ];
-		state.interval = [];
-		for (var i = 0; i < fadeToRGBA.length; ++i) {
-			state.interval[i] = multiplier * (fadeToRGBA[i] - fadeFromRGBA[i]) / scene.frameRate;
-		}
+		duration = duration !== void null ? duration : 0.25;
+		
+		var colorInfo = { red: color.red, green: color.green, blue: color.blue, alpha: color.alpha };
+		state.fader = new Scenario()
+			.tween(Scenario.screenMask, duration, 'linear', colorInfo)
+			.run();
 	},
 	update: function(scene, state) {
-		var currentRGBA = [ scene.fadeMask.red, scene.fadeMask.green, scene.fadeMask.blue, scene.fadeMask.alpha ];
-		var fadeToRGBA = [ state.color.red, state.color.green, state.color.blue, state.color.alpha ];
-		var newMaskRGBA = [];
-		for (var i = 0; i < fadeToRGBA.length; ++i) {
-			var newValue = currentRGBA[i] + state.interval[i];
-			if (newValue > fadeToRGBA[i] && state.interval[i] > 0.0) {
-				newValue = fadeToRGBA[i];
-			} else if (newValue < fadeToRGBA[i] && state.interval[i] < 0.0) {
-				newValue = fadeToRGBA[i];
-			}
-			newMaskRGBA[i] = newValue;
-		}
-		scene.fadeMask = CreateColor(newMaskRGBA[0], newMaskRGBA[1], newMaskRGBA[2], newMaskRGBA[3]);
-		return state.color.red != scene.fadeMask.red
-			|| state.color.green != scene.fadeMask.green
-			|| state.color.blue != scene.fadeMask.blue
-			|| state.color.alpha != scene.fadeMask.alpha;
+		return state.fader.isRunning();
 	}
 });
 
 Scenario.defineCommand('focusOnPerson',
 {
 	start: function(scene, state, person, duration) {
-		if (duration === undefined) { duration = 0.25; }
-		DetachCamera();
-		state.targetXY = [ GetPersonX(person), GetPersonY(person) ];
-		state.currentXY = duration > 0 ? [ GetCameraX(), GetCameraY() ] : state.targetXY;
-		var multiplier = duration > 0 ? 1.0 / duration : 0.0;
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.intervalXY[i] = multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
-		}
+		duration = duration !== void null ? duration : 0.25;
+		
+		this.panner = new Scenario()
+			.panTo(GetPersonX(person), GetPersonY(person), duration)
+			.run();
 	},
 	update: function(scene, state) {
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.currentXY[i] += state.intervalXY[i];
-			if (state.currentXY[i] > state.targetXY[i] && state.intervalXY[i] > 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			} else if (state.currentXY[i] < state.targetXY[i] && state.intervalXY[i] < 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			}
-		}
-		SetCameraX(state.currentXY[0]);
-		SetCameraY(state.currentXY[1]);
-		return state.currentXY[0] != state.targetXY[0] || state.currentXY[1] != state.targetXY[1];
+		return state.panner.isRunning();
 	}
 });
 
 Scenario.defineCommand('followPerson',
 {
 	start: function(scene, state, person) {
-		state.person = person;
-		state.targetXY = [ GetPersonX(state.person), GetPersonY(state.person) ];
-		state.currentXY = [ GetCameraX(), GetCameraY() ];
-		var panDuration = 0.25;
-		var multiplier = 1.0 / panDuration;
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.intervalXY[i] =  multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
-		}
+		state.pan = new Scenario()
+			.focusOnPerson(person)
+			.run();
 	},
 	update: function(scene, state) {
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.currentXY[i] += state.intervalXY[i];
-			if (state.currentXY[i] > state.targetXY[i] && state.intervalXY[i] > 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			} else if (state.currentXY[i] < state.targetXY[i] && state.intervalXY[i] < 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			}
-		}
-		SetCameraX(state.currentXY[0]);
-		SetCameraY(state.currentXY[1]);
-		if (state.currentXY[0] == state.targetXY[0] && state.currentXY[1] == state.targetXY[1]) {
+		if (!state.pan.isRunning()) {
 			AttachCamera(state.person);
 			return false;
+		} else {
+			return true;
 		}
-		return true;
 	}
 });
 
@@ -497,7 +454,7 @@ Scenario.defineCommand('killPerson',
 
 Scenario.defineCommand('marquee',
 {
-	start: function(sceneState, state, text, backgroundColor, color) {
+	start: function(scene, state, text, backgroundColor, color) {
 		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
 		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
 		
@@ -517,7 +474,7 @@ Scenario.defineCommand('marquee',
 			.tween(state, 0.25, 'linear', { fadeness: 0.0 })
 			.run();
 	},
-	render: function(sceneState, state) {
+	render: function(scene, state) {
 		var boxHeight = state.height * state.fadeness;
 		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
 		var textX = GetScreenWidth() - state.scroll * state.windowSize;
@@ -528,7 +485,7 @@ Scenario.defineCommand('marquee',
 		state.font.setColorMask(state.color);
 		state.font.drawText(textX, textY, state.text);
 	},
-	update: function(sceneState, state) {
+	update: function(scene, state) {
 		return state.animator.isRunning();
 	}
 });
@@ -606,29 +563,23 @@ Scenario.defineCommand('movePerson',
 Scenario.defineCommand('panTo',
 {
 	start: function(scene, state, x, y, duration) {
-		if (duration === undefined) { duration = 0.25; }
-		state.targetXY = [ x, y ];
+		duration = duration !== void null ? duration : 0.25;
+		
 		DetachCamera();
-		state.currentXY = duration != 0 ? [ GetCameraX(), GetCameraY() ] : state.targetXY;
-		var multiplier = 1.0 / duration;
-		state.intervalXY = [];
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.intervalXY[i] = multiplier * (state.targetXY[i] - state.currentXY[i]) / scene.frameRate;
-		}
-		return true;
+		var targetXY = {
+			cameraX: x,
+			cameraY: y
+		};
+		this.cameraX = GetCameraX();
+		this.cameraY = GetCameraY();
+		this.panner = new Scenario()
+			.tween(this, duration, 'easeOutQuad', targetXY)
+			.run();
 	},
 	update: function(scene, state) {
-		for (var i = 0; i < state.targetXY.length; ++i) {
-			state.currentXY[i] += state.intervalXY[i];
-			if (state.currentXY[i] > state.targetXY[i] && state.intervalXY[i] > 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			} else if (state.currentXY[i] < state.targetXY[i] && state.intervalXY[i] < 0.0) {
-				state.currentXY[i] = state.targetXY[i];
-			}
-		}
-		SetCameraX(state.currentXY[0]);
-		SetCameraY(state.currentXY[1]);
-		return state.currentXY[0] != state.targetXY[0] || state.currentXY[1] != state.targetXY[1];
+		SetCameraX(state.cameraX);
+		SetCameraY(state.cameraY);
+		return state.panner.isRunning();
 	}
 });
 
@@ -800,9 +751,14 @@ Scenario.defineCommand('tween',
 		state.object = o;
 		state.startValues = {};
 		state.type = easingType in state.easers ? easingType : 'linear';
+		var isChanged = false;
 		for (var p in endValues) {
 			state.change[p] = endValues[p] - o[p];
 			state.startValues[p] = o[p];
+			isChanged = isChanged || state.change[p] != 0;
+		}
+		if (!isChanged) {
+			state.elapsed = state.duration;
 		}
 	},
 	update: function(scene, state) {
