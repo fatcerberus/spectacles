@@ -38,8 +38,8 @@ function game()
 	persist.init();
 	Scenario.initialize();
 	Threads.doWith(Scenario,
-		function() { this.update(); return true; },
-		function() { this.render(); }, 99
+		function() { this.updateAll(); return true; },
+		function() { this.renderAll(); }, 99
 	);
 	
 	var battleResult = new Battle(new Session(), 'robert2').go();

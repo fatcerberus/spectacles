@@ -46,25 +46,27 @@ Scenario.initialize = function()
 	this.activeScenes = [];
 };
 
-// .render() function
+// .renderAll() function
 // Renders all active scenarios.
-Scenario.render = function()
+Scenario.renderAll = function()
 {
 	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
-		this.activeScenes[i].renderScene();
+		this.activeScenes[i].render();
 	}
 	ApplyColorMask(Scenario.screenMask);
 };
 
-// .update() function
-// Advances all active scenarios by one frame.
-Scenario.update = function()
+// .updateAll() function
+// Updates all active scenarios for the next frame.
+Scenario.updateAll = function()
 {
 	for (var i = 0; i < this.activeScenes.length; ++i) {
 		var scene = this.activeScenes[i];
-		scene.updateScene();
+		scene.update();
 		if (!scene.isRunning()) {
-			scene.cleanUp();
+			if (scene.isLooping) {
+				scene.run(false);
+			}
 			this.activeScenes.splice(i, 1);
 			--i; continue;
 		}
@@ -77,21 +79,21 @@ Scenario.screenMask = CreateColor(0, 0, 0, 0);
 
 // Scenario() constructor
 // Creates an object representing a scenario (cutscene definition)
-function Scenario()
+// Arguments:
+//     isLooping: If true, the scenario loops endlessly until .stop() is called. (default: false)
+function Scenario(isLooping)
 {
+	isLooping = isLooping !== void null ? isLooping : false;
+	
 	this.currentForkThreadList = [];
 	this.currentQueue = [];
 	this.focusThreadStack = [];
 	this.focusThread = 0;
 	this.forkThreadLists = [];
+	this.isLooping = isLooping;
 	this.nextThreadID = 1;
 	this.queues = [];
 	this.threads = [];
-	
-	this.cleanUp = function()
-	{
-		this.killThread(this.fadeThread);
-	};
 	
 	this.createDelegate = function(o, method)
 	{
@@ -195,7 +197,7 @@ function Scenario()
 		this.currentQueue.push(command);
 	};
 	
-	this.renderScene = function()
+	this.render = function()
 	{
 		for (var iThread = 0; iThread < this.threads.length; ++iThread) {
 			var renderer = this.threads[iThread].renderer;
@@ -205,7 +207,7 @@ function Scenario()
 		}
 	};
 	
-	this.updateScene = function()
+	this.update = function()
 	{
 		for (var iThread = 0; iThread < this.threads.length; ++iThread) {
 			var id = this.threads[iThread].id;
@@ -311,12 +313,12 @@ Scenario.prototype.run = function(waitUntilDone)
 				Scenario.hasUpdated = false;
 				UpdateMapEngine();
 				if (!Scenario.hasUpdated) {
-					Scenario.update();
+					Scenario.updateAll();
 				}
 			} else {
-				Scenario.render();
+				Scenario.renderAll();
 				FlipScreen();
-				Scenario.update();
+				Scenario.updateAll();
 			}
 		}
 		SetFrameRate(currentFPS);
@@ -328,7 +330,7 @@ Scenario.prototype.run = function(waitUntilDone)
 // Immediately stops executing the scenario.
 Scenario.prototype.stop = function()
 {
-	this.cleanUp();
+	this.killThread(this.mainThread);
 };
 
 // .synchronize() method
