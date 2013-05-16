@@ -157,10 +157,9 @@ BattleHUD.prototype.setHP = function(name, hp)
 			new Scenario()
 				.beginFork()
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColorInfo)
-					.pause(0.75)
-					.tween(characterInfo.lightColor, 0.5, 'easeOutQuad', { red: 0, green: 0, blue: 0, alpha: 0 })
+					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', { red: 0, green: 0, blue: 0, alpha: 0 })
 				.endFork()
-				.tween(characterInfo, 1.0, 'easeInOutQuad', { hp: hp })
+				.tween(characterInfo, 0.25, 'easeInOutQuad', { hp: hp })
 				.run();
 		}
 	}

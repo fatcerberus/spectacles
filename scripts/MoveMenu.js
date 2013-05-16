@@ -23,30 +23,31 @@ function MoveMenu(battle, unit)
 	this.fadeness = 0.0;
 	this.font = null;
 	this.skillID = null;
+	this.subCursorColor = CreateColor(0, 0, 0, 0);
 	this.transition = null;
 	this.unit = unit;
 	
-	this.drawCursor = function(x, y, width, height, isLockedIn) {
-		var color = this.cursorColor;
+	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn) {
+		var color = cursorColor;
 		var color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 		var halfHeight = Math.round(height / 2);
 		GradientRectangle(x, y, width, halfHeight, color2, color2, color, color);
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
 	};
-	this.drawInfoText = function(x, y, width, text, title) {
+	this.drawInfoText = function(x, y, width, alpha, text, title) {
 		if (title === void null) { title = ""; }
 		
 		var titleWidth = this.font.getStringWidth(title);
 		var textX = x + titleWidth + width - titleWidth;
-		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
-		this.drawText(this.font, textX, y, 1, CreateColor(192, 192, 192, 255), text, 'right');
+		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, alpha), title);
+		this.drawText(this.font, textX, y, 1, CreateColor(192, 192, 192, alpha), text, 'right');
 	};
-	this.drawItemBox = function(x, y, width, height, lockedIn, isSelected) {
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 144));
-		Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, 128));
+	this.drawItemBox = function(x, y, width, height, alpha, lockedIn, isSelected, cursorColor) {
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, Math.min(alpha + 16, 255)));
+		Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, alpha));
 		if (isSelected) {
-			this.drawCursor(x, y, width, height, lockedIn);
+			this.drawCursor(x, y, width, height, cursorColor, lockedIn);
 		}
 	};
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
@@ -108,19 +109,19 @@ MoveMenu.prototype.render = function()
 	for (var i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
-		this.drawItemBox(x, y, width, 18, false, i == this.drawerID);
-		var textColor = CreateColor(255, 255, 255, i === this.drawerID ? 255 : 128);
+		this.drawItemBox(x, y, width, 18, 160, false, i == this.drawerID, this.cursorColor);
+		var textColor = CreateColor(255, 255, 255, i === this.drawerID ? 128 + 127 * this.cursorColor.alpha / 255 : 128);
 		this.drawText(this.font, x + itemWidth / 2, y + 3, 1, textColor, this.drawers[i].name, 'center');
 	}
-	return;
 	for (var i = 0; i < 4; ++i) {
-		var itemY = y + 18 + Math.floor(i * 17);
-		this.drawItemBox(0, itemY, 160, 18, false, i == 0);
+		var itemY = y + 18 + Math.floor(i * 18);
+		this.drawItemBox(0, itemY, 160, 18, 128, false, i == 0, this.subCursorColor);
 		Rectangle(4, itemY + 2, 13, 13, CreateColor(128, 128, 128, 255));
 		OutlinedRectangle(4, itemY + 2, 13, 13, CreateColor(0, 0, 0, 128));
-		this.drawText(this.font, 7, itemY + 2, 1, CreateColor(255, 255, 255), "2");
-		this.drawText(this.font, 20, itemY + 3, 1, CreateColor(255, 255, 255), "Charge Slash");
-		this.drawInfoText(119, itemY + 3, 37, "100%", "G");
+		var textColor = CreateColor(255, 255, 255, i === 0 ? 128 + 127 * this.subCursorColor.alpha / 255 : 128);
+		this.drawText(this.font, 7, itemY + 2, 1, textColor, "2");
+		this.drawText(this.font, 20, itemY + 3, 1, textColor, "Charge Slash");
+		this.drawInfoText(119, itemY + 3, 37, textColor.alpha, "100%", "G");
 	}
 };
 
