@@ -16,12 +16,12 @@ RequireScript('Core/Threads.js');
 RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_SCENE_DELAYS = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = false;
 var DBG_DISABLE_TITLE_SCREEN = false;
-var DBG_DISABLE_TRANSITIONS = false;
+var DBG_DISABLE_TRANSITIONS = true;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
@@ -42,8 +42,7 @@ function game()
 		function() { this.render(); }, 99
 	);
 	
-	Console.show();
-	var battleResult = new Battle(new Session(), 'headlessHorse').go();
+	var battleResult = new Battle(new Session(), 'robert2').go();
 	if (battleResult == BattleResult.enemyWon) {
 		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");
 	} else if (battleResult == BattleResult.partyWon) {

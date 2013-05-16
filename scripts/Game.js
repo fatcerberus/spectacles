@@ -8,7 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 8,
+	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	useItemMoveRank: 1,
@@ -531,7 +531,6 @@ Game = {
 	},
 	
 	initialPartyMembers: [
-		'scott',
-		'maggie'
+		'scott'
 	]
 };

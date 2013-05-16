@@ -153,7 +153,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 		if (characterInfo != null && characterInfo.name == name && hp != characterInfo.hp) {
 			var flashColorInfo = hp > characterInfo.hp ?
 				{ red: 0, green: 192, blue: 0, alpha: 255 } :
-				{ red: 192, green: 0, blue: 0, alpha: 0 };
+				{ red: 192, green: 0, blue: 0, alpha: 255 };
 			new Scenario()
 				.beginFork()
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColorInfo)
@@ -188,7 +188,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 		name: name,
 		hp: hp,
 		maxHP: maxHP,
-		lightColor: CreateColor(0, 0, 0, 0)
+		lightColor: CreateColor(255, 0, 0, 0)
 	};
 };
 
