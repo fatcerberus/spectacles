@@ -4,7 +4,6 @@
 ***/
 
 RequireScript("Core/Threads.js");
-RequireScript("Core/Tween.js");
 
 // Console object
 // Represents the Specs Engine text console.
@@ -51,7 +50,9 @@ Console.append = function(text)
 // Hides the console window.
 Console.hide = function()
 {
-	new Tween(this, this.hideStyle.duration, this.hideStyle.easing, { fadeness: 0.0 }).start();
+	new Scenario()
+		.tween(this, this.hideStyle.duration, this.hideStyle.easing, { fadeness: 0.0 })
+		.run();
 }
 
 // .render() method
@@ -80,7 +81,9 @@ Console.render = function() {
 // Shows the console window.
 Console.show = function()
 {
-	new Tween(this, this.showStyle.duration, this.showStyle.easing, { fadeness: 1.0 }).start();
+	new Scenario()
+		.tween(this, this.showStyle.duration, this.showStyle.easing, { fadeness: 1.0 })
+		.run();
 }
 
 // .update() method

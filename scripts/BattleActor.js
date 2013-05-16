@@ -52,10 +52,11 @@ BattleActor.prototype.enter = function(isImmediate)
 	var newX = this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16;
 	var threadID = null;
 	if (!isImmediate) {
-		var enterTween = new Tween(this, 1.0, 'linear', { x: newX });
-		enterTween.start();
-		threadID = Threads.doWith(enterTween, function() {
-			return !this.isFinished();
+		var entrance = new Scenario()
+			.tween(this, 1.0, 'linear', { x: newX })
+			.run();
+		threadID = Threads.doWith(entrance, function() {
+			return this.isRunning();
 		});
 	} else {
 		this.x = newX;
@@ -103,7 +104,9 @@ BattleActor.prototype.showMessage = function(text, styleName)
 		framesLeft: (style.duration + style.delay) * Engine.frameRate
 	};
 	this.messages.push(message);
-	new Tween(message, style.duration, style.easing, { height: style.yEnd }).start();
+	new Scenario()
+		.tween(message, style.duration, style.easing, { height: style.yEnd })
+		.run();
 };
 
 // .update() method

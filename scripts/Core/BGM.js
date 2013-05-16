@@ -4,7 +4,6 @@
 ***/
 
 RequireScript('Core/Threads.js');
-RequireScript('Core/Tween.js');
 
 // BGM object
 // Represents the background music manager.
@@ -49,13 +48,13 @@ BGM = new (function()
 		if (fadeDuration === void null) { fadeDuration = 0.25; }
 		
 		newVolume = Math.min(Math.max(newVolume, 0.0), 1.0);
-		if (this.volumeTween != null) {
-			this.volumeTween.pause();
-			this.volumeTween = null;
+		if (this.adjuster != null && this.adjuster.isRunning()) {
+			this.adjuster.stop();
 		}
 		if (fadeDuration > 0.0) {
-			this.volumeTween = new Tween(this, fadeDuration, 'linear', { volume: newVolume });
-			this.volumeTween.start();
+			this.adjuster = new Scenario()
+				.tween(this, fadeDuration, 'linear', { volume: newVolume })
+				.run();
 		} else {
 			this.volume = newVolume;
 			if (this.stream != null) {

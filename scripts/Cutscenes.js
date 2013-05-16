@@ -21,6 +21,13 @@ Scenario.defineCommand('battle',
 	}
 });
 
+Scenario.defineCommand('changeBGM',
+{
+	start: function(scene, state, trackName) {
+		BGM.change(trackName);
+	}
+});
+
 Scenario.defineCommand('fadeBGM',
 {
 	start: function(sceneState, state, volume, duration) {
@@ -33,8 +40,8 @@ Scenario.defineCommand('fadeBGM',
 
 Scenario.defineCommand('overrideBGM',
 {
-	start: function(sceneState, state, song) {
-		BGM.override(song);
+	start: function(sceneState, state, trackName) {
+		BGM.override(trackName);
 	}
 });
 
@@ -72,10 +79,10 @@ Scenario.defineCommand('talk',
 		state.numLinesToDraw = 0;
 		state.topLine = 0;
 		state.lineToReveal = 0;
-		state.fadeInTween = new Tween(state, 0.75 / textSpeed, 'easeOutBack', { boxVisibility: 1.0 });
-		state.fadeOutTween = new Tween(state, 0.75 / textSpeed, 'easeInBack', { boxVisibility: 0.0 });
 		state.textSurface = CreateSurface(textAreaWidth, state.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
-		state.fadeInTween.start();
+		state.transition = new Scenario()
+			.tween(state, 0.75 / state.textSpeed, 'easeOutBack', { boxVisibility: 1.0 })
+			.run();
 		state.mode = "fadein";
 		if (DBG_DISABLE_TEXTBOXES) state.mode = "finish";
 		return true;
@@ -129,7 +136,7 @@ Scenario.defineCommand('talk',
 	update: function(sceneState, state) {
 		switch (state.mode) {
 			case "fadein":
-				if (state.fadeInTween.isFinished()) {
+				if (!state.transition.isRunning()) {
 					state.mode = "write";
 				}
 				break;
@@ -188,12 +195,14 @@ Scenario.defineCommand('talk',
 			case "hidetext":
 				state.textVisibility = Math.max(state.textVisibility - (4.0 * state.textSpeed) / Engine.frameRate, 0.0);
 				if (state.textVisibility <= 0.0) {
-					state.fadeOutTween.start();
+					state.transition = new Scenario()
+						.tween(state, 0.75 / state.textSpeed, 'easeInBack', { boxVisibility: 0.0 })
+						.run();
 					state.mode = "fadeout";
 				}
 				break;
 			case "fadeout":
-				if (state.fadeOutTween.isFinished()) {
+				if (!state.transition.isRunning()) {
 					state.mode = "finish";
 				}
 				break;

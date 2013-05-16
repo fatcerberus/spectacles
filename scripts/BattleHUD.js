@@ -87,8 +87,9 @@ BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 // Hides the HUD.
 BattleHUD.prototype.hide = function()
 {
-	var tween = new Tween(this, 0.5, 'easeInExpo', { fadeness: 0.0 });
-	tween.start();
+	new Scenario()
+		.tween(this, 0.5, 'easeInExpo', { fadeness: 0.0 })
+		.run();
 };
 
 // .highlight() method
@@ -198,8 +199,9 @@ BattleHUD.prototype.show = function()
 	if (this.thread === null) {
 		this.thread = Threads.createEntityThread(this, 20);
 	}
-	var tween = new Tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 });
-	tween.start();
+	new Scenario()
+		.tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 })
+		.run();
 };
 
 // .update() method

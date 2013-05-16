@@ -1,5 +1,5 @@
 /**
- * Scenario 3.5.3 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.5.5 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -77,6 +77,13 @@ function Scenario()
 	this.cleanUp = function()
 	{
 		this.killThread(this.fadeThread);
+		this.finalizer
+			.beginFork()
+				.fadeTo(this.fadeMask, 0.0)
+				.fadeTo(CreateColor(0, 0, 0, 0))
+			.endFork()
+			.run();
+		this.finalizer.run();
 	};
 	
 	this.createDelegate = function(o, method)
@@ -273,28 +280,28 @@ Scenario.prototype.isRunning = function()
 // Runs the scenario.
 Scenario.prototype.run = function()
 {
-	if (!IsMapEngineRunning()) {
-		Abort("Scenario.execute():\nCannot execute a scenario without an active map engine.");
-	}
 	if (this.isRunning()) {
 		return;
 	}
 	this.synchronize();
-	if (!IsCameraAttached()) {
-		var oldCameraX = GetCameraX();
-		var oldCameraY = GetCameraY();
-		this.beginFork();
-			this.panTo(oldCameraX, oldCameraY);
-		this.endFork();
-	} else {
-		var oldCameraTarget = GetCameraPerson();
-		this.beginFork();
-			this.followPerson(oldCameraTarget);
-		this.endFork();
+	this.finalizer = new Scenario();
+	if (IsMapEngineRunning()) {
+		if (!IsCameraAttached()) {
+			var oldCameraX = GetCameraX();
+			var oldCameraY = GetCameraY();
+			this.finalizer
+				.beginFork()
+					.panTo(oldCameraX, oldCameraY)
+				.endFork()
+		} else {
+			var oldCameraTarget = GetCameraPerson();
+			this.finalizer
+				.beginFork()
+					.followPerson(oldCameraTarget)
+				.endFork();
+		}
 	}
-	this.beginFork();
-		this.fadeTo(CreateColor(0, 0, 0, 0));
-	this.endFork();
+	this.synchronize();
 	var fadeRenderer = function(scene, state) {
 		ApplyColorMask(scene.fadeMask);
 	}
@@ -304,10 +311,17 @@ Scenario.prototype.run = function()
 		commandQueue:         this.currentQueue,
 		forkThreads:          this.currentForkThreadList
 	};
-	this.frameRate = GetMapEngineFrameRate();
+	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
 	this.mainThread = this.createForkThread(state);
 	Scenario.activeScenes.push(this);
 	return this;
+};
+
+// .stop() method
+// Immediately stops executing the scenario.
+Scenario.prototype.stop = function()
+{
+	this.cleanUp();
 };
 
 // .synchronize() method
@@ -376,7 +390,9 @@ Scenario.defineCommand('fadeTo',
 		if (duration === undefined) { duration = 0.25; }
 		state.color = color;
 		state.duration = duration;
-		if (state.duration <= 0) scene.fadeMask = color;
+		if (state.duration <= 0) {
+			scene.fadeMask = color;
+		}
 		var multiplier = state.duration > 0 ? 1.0 / state.duration : 0;
 		var fadeFromRGBA = [ scene.fadeMask.red, scene.fadeMask.green, scene.fadeMask.blue, scene.fadeMask.alpha ];
 		var fadeToRGBA = [ state.color.red, state.color.green, state.color.blue, state.color.alpha ];
