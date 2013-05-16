@@ -115,13 +115,6 @@ BattleScreen.prototype.go = function(title)
 	));
 };
 
-// .highlightActor() method
-// Highlights a specified actor on the HUD.
-BattleScreen.prototype.highlightActor = function(name)
-{
-	this.hud.highlight(name);
-};
-
 // .render() method
 // Renders the BattleScreen.
 BattleScreen.prototype.render = function()

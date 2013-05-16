@@ -10,7 +10,7 @@ function BattleHUD()
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.highlightColor = CreateColor(0, 0, 0, 0);
-	this.highlightedActor = null;
+	this.highlightedName = null;
 	this.hpGaugesInfo = [];
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
@@ -21,13 +21,16 @@ function BattleHUD()
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, alpha + 16));
 		Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, alpha));
 		if (isHighlighted) {
-			var halfHeight = Math.round(height / 2);
-			var outerColor = this.highlightColor;
-			var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, outerColor.alpha));
-			GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
-			GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, outerColor.alpha));
+			this.drawHighlight(x, y, width, height, this.highlightColor);
 		}
+	};
+	this.drawHighlight = function(x, y, width, height, color) {
+		var halfHeight = Math.round(height / 2);
+		var outerColor = color;
+		var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
+		GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
+		GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
 	};
 	this.drawInfoText = function(x, y, width, text, title) {
 		if (title === void null) { title = ""; }
@@ -89,13 +92,13 @@ BattleHUD.prototype.hide = function()
 };
 
 // .highlight() method
-// Highlights an actor on the HUD.
+// Highlights a character on the HUD.
 // Arguments:
-//     actorName: The name of the actor to highlight.
-BattleHUD.prototype.highlight = function(actorName)
+//     name: The name of the character to highlight.
+BattleHUD.prototype.highlight = function(name)
 {
-	if (actorName !== null) {
-		this.highlightedActor = actorName;
+	if (name !== null) {
+		this.highlightedName = name;
 		new Scenario()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', { red: 255, green: 255, blue: 255, alpha: 255 })
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', { red: 0, green: 72, blue: 144, alpha: 255 })
@@ -119,9 +122,10 @@ BattleHUD.prototype.render = function()
 		var itemY = y + i * 20;
 		if (this.partyInfo[i] != null) {
 			var memberInfo = this.partyInfo[i];
-			this.drawElementBox(itemX, itemY, 100, 20, 192, this.highlightedActor == memberInfo.name);
+			this.drawElementBox(itemX, itemY, 100, 20, 192, this.highlightedName == memberInfo.name);
+			this.drawHighlight(itemX, itemY, 100, 20, memberInfo.lightColor);
 			this.drawText(this.font, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), memberInfo.name);
-			this.drawInfoText(itemX + 60, itemY + 4, 35, memberInfo.hp, "HP");
+			this.drawInfoText(itemX + 60, itemY + 4, 35, Math.ceil(memberInfo.hp), "HP");
 		} else {
 			this.drawElementBox(itemX, itemY, 100, 20, 192);
 		}
@@ -130,14 +134,14 @@ BattleHUD.prototype.render = function()
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
 		var itemY = y + (this.partyInfo.length * 20) + i * 20;
-		this.drawElementBox(itemX, itemY, 160, 20, 192, this.highlightedActor == gaugeInfo.owner);
+		this.drawElementBox(itemX, itemY, 160, 20, 192, this.highlightedName == gaugeInfo.owner);
 		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 150, 10);
 	}
 	var itemY = y + 60 + this.hpGaugesInfo.length * 20;
 };
 
 // .setHP() method
-// Changes the displayed HP for an character represented on the HUD.
+// Changes the displayed HP for a character on the HUD.
 // Arguments:
 //     name: The name of the character whose HP is being changed.
 //     hp:   The number of hit points to change the display to.
@@ -145,8 +149,18 @@ BattleHUD.prototype.setHP = function(name, hp)
 {
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
-		if (characterInfo != null && characterInfo.name == name) {
-			characterInfo.hp = hp;
+		if (characterInfo != null && characterInfo.name == name && hp != characterInfo.hp) {
+			var flashColorInfo = hp > characterInfo.hp ?
+				{ red: 0, green: 192, blue: 0, alpha: 255 } :
+				{ red: 192, green: 0, blue: 0, alpha: 0 };
+			new Scenario()
+				.beginFork()
+					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColorInfo)
+					.pause(0.75)
+					.tween(characterInfo.lightColor, 0.5, 'easeOutQuad', { red: 0, green: 0, blue: 0, alpha: 0 })
+				.endFork()
+				.tween(characterInfo, 1.0, 'easeInOutQuad', { hp: hp })
+				.run();
 		}
 	}
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
@@ -169,7 +183,12 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	this.partyInfo[slot] = { name: name, hp: hp, maxHP: maxHP };
+	this.partyInfo[slot] = {
+		name: name,
+		hp: hp,
+		maxHP: maxHP,
+		lightColor: CreateColor(0, 0, 0, 0)
+	};
 };
 
 // .show() method

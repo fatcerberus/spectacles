@@ -8,6 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
+	basePartyLevel: 8,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	useItemMoveRank: 1,
@@ -474,7 +475,7 @@ Game = {
 				enemies = battle.enemiesOf(me);
 				return {
 					type: 'technique',
-					technique: 'chargeSlash',
+					technique: 'swordSlash',
 					targets: [ enemies[0] ]
 				};
 			}
@@ -530,6 +531,7 @@ Game = {
 	},
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'maggie'
 	]
 };

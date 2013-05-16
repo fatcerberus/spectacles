@@ -1,5 +1,5 @@
 /**
- * Scenario 3.5.2 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.5.3 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
  * timelines and cooperative threading.
 **/
@@ -76,7 +76,6 @@ function Scenario()
 {
 	this.cleanUp = function()
 	{
-		if (this.oldPC != null) AttachInput(this.oldPC);
 		this.killThread(this.fadeThread);
 	};
 	
@@ -296,8 +295,6 @@ Scenario.prototype.run = function()
 	this.beginFork();
 		this.fadeTo(CreateColor(0, 0, 0, 0));
 	this.endFork();
-	this.oldPC = IsInputAttached() ? GetInputPerson() : null;
-	DetachInput();
 	var fadeRenderer = function(scene, state) {
 		ApplyColorMask(scene.fadeMask);
 	}
@@ -781,7 +778,6 @@ Scenario.defineCommand('tween',
 				return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
 			}
 		};
-		
 		state.change = {};
 		state.duration = duration;
 		state.elapsed = 0.0;

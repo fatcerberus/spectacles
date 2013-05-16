@@ -149,7 +149,8 @@ BattleUnit.prototype.addStatus = function(handle)
 BattleUnit.prototype.die = function()
 {
 	Console.writeLine(this.name + " afflicted with instant death");
-	this.hpValue = 0;
+	this.hp = 0;
+	this.battle.ui.hud.setHP(this.name, this.hp);
 };
 
 // .evade() method
@@ -182,8 +183,9 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		return;
 	}
 	if (healEvent.amount >= 0) {
-		this.hpValue = Math.min(this.hpValue + healEvent.amount, this.maxHP);
+		this.hp = Math.min(this.hp + healEvent.amount, this.maxHP);
 		this.actor.showMessage(healEvent.amount, 'heal');
+		this.battle.ui.hud.setHP(this.name, this.hp);
 		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
 	} else {
 		this.takeDamage(healEvent.amount, true);
@@ -230,18 +232,6 @@ BattleUnit.prototype.liftStatus = function(handle)
 	}
 };
 
-// .revive() method
-// Revives the battler from KO and restores HP.
-// Arguments:
-//     health: The percentage of the battler's HP to restore. Must be greater than zero.
-//             Defaults to 100.
-BattleUnit.prototype.revive = function(health)
-{
-	if (health === undefined) { health = 100; }
-	
-	this.hpValue = Math.min(Math.floor(this.maxHP * health / 100), this.maxHP);
-};
-
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
@@ -265,13 +255,14 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		return;
 	}
 	if (damageEvent.amount >= 0) {
-		this.hpValue = Math.max(this.hpValue - damageEvent.amount, 0);
-		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hpValue);
+		this.hp = Math.max(this.hp - damageEvent.amount, 0);
+		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hp);
 		if (this.lifeBar != null) {
-			this.lifeBar.setReading(this.hpValue);
+			this.lifeBar.setReading(this.hp);
 		}
 		this.actor.showMessage(damageEvent.amount, 'damage');
-		if (this.hpValue <= 0) {
+		this.battle.ui.hud.setHP(this.name, this.hp);
+		if (this.hp <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 		}
 	} else {
@@ -283,7 +274,6 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 // Decrements the battler's CTB counter.
 BattleUnit.prototype.tick = function()
 {
-	this.battle.ui.hud.setHP(this.name, this.hp);
 	if (!this.isAlive) {
 		return false;
 	}
