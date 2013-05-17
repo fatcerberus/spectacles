@@ -10,56 +10,91 @@
 //     unit:   The BattleUnit this menu belongs to.
 function MoveMenu(battle, unit)
 {
-	this.defaultCursorColor = { red: 128, green: 128, blue: 128, alpha: 255 };
+	this.defaultCursorColor = { red: 160, green: 40, blue: 40, alpha: 255 };
 	this.drawers = [
 		{ name: "Attack", topItem: 0 },
 		{ name: "Item", topItem: 0 },
 		{ name: "Defend", topItem: 0 }
 	];
-	this.lockedCursorColor = { red: 64, green: 64, blue: 64, alpha: 255 };
+	this.litCursorColor = { red: 255, green: 0, blue: 0, alpha: 255 };
+	this.lockedCursorColor = { red: 80, green: 20, blue: 20, alpha: 255 };
+	this.showStyle = { easing: 'easeOutBounce', length: 0.5 };
 	
 	this.animator = null;
 	this.battle = battle;
 	this.cursorColor = CreateColor(0, 0, 0, 0);
 	this.drawer = null;
-	this.drawerID = 0;
 	this.dropFadeness = 0.0;
 	this.fadeness = 0.0;
 	this.font = null;
 	this.isDropped = false;
-	this.skillID = null;
+	this.moveCursor = 0;
+	this.selection = null;
 	this.subCursorColor = CreateColor(0, 0, 0, 0);
+	this.topCursor = 0;
 	this.unit = unit;
+	
+	this.chooseMoveAnimation = new Scenario()
+		.beginFork()
+			.tween(this, 0.25, 'easeInBack', { dropFadeness: 0.0 })
+		.endFork()
+		.tween(this, 0.25, 'easeInBack', { fadeness: 0.0 });
+	this.hideMoveList = new Scenario()
+		.beginFork()
+			.tween(this.subCursorColor, 0.05, 'linear', { red: 0, green: 0, blue: 0, alpha: 0 })
+		.endFork()
+		.beginFork()
+			.tween(this.cursorColor, 0.05, 'linear', this.defaultCursorColor)
+		.endFork()
+		.tween(this, 0.25, 'easeInBack', { dropFadeness: 0.0 });
+	this.showMenu = new Scenario()
+		.beginFork()	
+			.tween(this.cursorColor, 0.25, 'easeOutQuad', this.litCursorColor)
+			.tween(this.cursorColor, 0.25, 'easeOutQuad', this.defaultCursorColor)
+		.endFork()
+		.tween(this, 0.5, 'easeOutBounce', { fadeness: 1.0 });
+	this.showMoveList = new Scenario()
+		.beginFork()
+			.tween(this.cursorColor, 0.25, 'easeInOutSine', this.lockedCursorColor)
+		.endFork()
+		.beginFork()
+			.tween(this.subCursorColor, 0.25, 'linear', this.defaultCursorColor)
+		.endFork()
+		.tween(this, 0.25, 'easeOutExpo', { dropFadeness: 1.0 });
 	
 	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn) {
 		var color;
 		var color2;
+		color = cursorColor;
+		color2 = BlendColorsWeighted(color, CreateColor(0, 0, 0, color.alpha), 0.5, 0.5);
 		if (isLockedIn) {
-			color2 = cursorColor;
-			color = BlendColors(color2, CreateColor(0, 0, 0, color2.alpha));
-		} else {
-			color = cursorColor;
-			color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
+			var mainColor = color;
+			color = color2;
+			color2 = mainColor;
 		}
 		var halfHeight = Math.round(height / 2);
 		GradientRectangle(x, y, width, halfHeight, color2, color2, color, color);
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
 	};
-	this.drawInfoText = function(x, y, width, alpha, text, title) {
-		if (title === void null) { title = ""; }
-		
-		var titleWidth = this.font.getStringWidth(title);
-		var textX = x + titleWidth + width - titleWidth;
-		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, alpha), title);
-		this.drawText(this.font, textX, y, 1, CreateColor(192, 192, 192, alpha), text, 'right');
-	};
-	this.drawItemBox = function(x, y, width, height, alpha, lockedIn, isSelected, cursorColor) {
+	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor) {
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, Math.min(alpha + 16, 255)));
 		Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, alpha));
 		if (isSelected) {
-			this.drawCursor(x, y, width, height, cursorColor, lockedIn);
+			this.drawCursor(x, y, width, height, cursorColor, isLockedIn);
 		}
+	};
+	this.drawSkillItem = function(x, y, skill, isSelected, isLockedIn) {
+		var technique = skill.techniqueID
+		this.drawItemBox(x, y, 160, 18, 128, isSelected, isLockedIn, this.subCursorColor);
+		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, 255));
+		OutlinedRectangle(x + 4, y + 2, 13, 13, CreateColor(0, 0, 0, 128));
+		var titleColor = isSelected ? CreateColor(255, 192, 0, 255) : CreateColor(160, 120, 0, 255)
+		var textColor = isSelected ? CreateColor(255, 255, 255, 255) : CreateColor(160, 160, 160, 255);
+		this.drawText(this.font, x + 7, y + 2, 1, textColor, skill.technique.actions[0].rank);
+		this.drawText(this.font, x + 20, y + 3, 1, textColor, skill.name);
+		this.drawText(this.font, x + 142, y + 3, 1, titleColor, "R");
+		this.drawText(this.font, x + 156, y + 1, 1, textColor, skill.technique.actions[0].rank, 'right');
 	};
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var aligners = {
@@ -85,41 +120,29 @@ function MoveMenu(battle, unit)
 // Checks for player input and updates the state accordingly.
 MoveMenu.prototype.getInput = function()
 {
-	if (this.animator !== null && this.animator.isRunning()) {
-		while (AreKeysLeft()) { GetKey(); }
-		return;
-	}
 	var key = AreKeysLeft() ? GetKey() : null;
-	if (!this.isDropped) {
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
+	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
+		if (!this.isDropped) {
 			this.isDropped = true;
-			this.animator = new Scenario()
-				.beginFork()
-					.tween(this.cursorColor, 0.25, 'linear', this.lockedCursorColor)
-				.endFork()
-				.beginFork()
-					.tween(this.subCursorColor, 0.25, 'linear', this.defaultCursorColor)
-				.endFork()
-				.tween(this, 0.1, 'easeOutBack', { dropFadeness: 1.0 })
-				.run();
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
-			this.drawerID = (this.drawerID - 1) < 0 ? this.drawers.length - 1 : this.drawerID - 1;
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
-			this.drawerID = (this.drawerID + 1) % this.drawers.length;
+			this.hideMoveList.stop();
+			this.showMoveList.run();
+		} else {
+			this.selection = this.unit.skills[this.moveCursor];
+			this.showMoveList.stop();
+			this.chooseMoveAnimation.run();
 		}
-	} else {
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) {
-			this.isDropped = false;
-			this.animator = new Scenario()
-				.beginFork()
-					.tween(this.subCursorColor, 0.25, 'linear', { red: 0, green: 0, blue: 0, alpha: 0 })
-				.endFork()
-				.beginFork()
-					.tween(this.cursorColor, 0.25, 'linear', this.defaultCursorColor)
-				.endFork()
-				.tween(this, 0.1, 'easeInBack', { dropFadeness: 0.0 })
-				.run();
-		}
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) {
+		this.isDropped = false;
+		this.showMoveList.stop();
+		this.hideMoveList.run();
+	} else if (!this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
+		this.topCursor = this.topCursor - 1 < 0 ? this.drawers.length - 1 : this.topCursor - 1;
+	} else if (!this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
+		this.topCursor = (this.topCursor + 1) % this.drawers.length;
+	} else if (this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
+		this.moveCursor = this.moveCursor - 1 < 0 ? this.unit.skills.length - 1 : this.moveCursor - 1;
+	} else if (this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
+		this.moveCursor = (this.moveCursor + 1) % this.unit.skills.length;
 	}
 };
 
@@ -127,50 +150,40 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
+	this.isDropped = false;
+	this.selection = null;
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	this.font = GetSystemFont();
-	this.animator = new Scenario()
-		.beginFork()	
-			.tween(this.cursorColor, 0.25, 'easeOutQuad', { red: 255, green: 255, blue: 255, alpha: 255 })
-			.tween(this.cursorColor, 0.25, 'easeOutQuad', this.defaultCursorColor)
-		.endFork()
-		.tween(this, 1.0, 'easeOutBounce', { fadeness: 1.0 })
-		.run();
+	this.showMenu.run();
 	Threads.waitFor(Threads.createEntityThread(this, 10));
 	this.battle.ui.hud.highlight(null);
 	this.battle.resume();
-	return null;
+	return this.selection;
 };
 
 // .render() method
 // Renders the menu in its current state.
 MoveMenu.prototype.render = function()
 {
-	var itemWidth = 160 / this.drawers.length;
-	var litTextColor = CreateColor(255, 255, 255, 255);
-	var dimTextColor = CreateColor(128, 128, 128, 255);
 	if (this.dropFadeness > 0.0) {
-		var menuHeight = 4 * 18;
-		var y = -(menuHeight + 34) * (1.0 - this.dropFadeness) + 34;
-		Rectangle(0, y - (y - 34), 160, y - 34, CreateColor(0, 0, 0, 128));
-		for (var i = 0; i < 4; ++i) {
+		var menuHeight = this.unit.skills.length * 18;
+		var y = -(34 + menuHeight) * (1.0 - this.dropFadeness) + 34;
+		Rectangle(0, y - (y - 34), 160, y - 34, CreateColor(0, 0, 0, 128)); 
+		for (var i = 0; i < this.unit.skills.length; ++i) {
 			var itemY = y + i * 18;
-			this.drawItemBox(0, itemY, 160, 18, 128, false, i == 0, this.subCursorColor);
-			Rectangle(4, itemY + 2, 13, 13, CreateColor(128, 128, 128, 255));
-			OutlinedRectangle(4, itemY + 2, 13, 13, CreateColor(0, 0, 0, 128));
-			var textColor = i != 0 ? dimTextColor : BlendColorsWeighted(litTextColor, dimTextColor, this.subCursorColor.alpha, 1.0 - this.subCursorColor.alpha);
-			this.drawText(this.font, 7, itemY + 2, 1, textColor, "2");
-			this.drawText(this.font, 20, itemY + 3, 1, textColor, "Charge Slash");
-			this.drawInfoText(119, itemY + 3, 37, textColor.alpha, "100%", "G");
+			this.drawSkillItem(0, itemY, this.unit.skills[i], i == this.moveCursor, false);
 		}
 	}
+	var itemWidth = 160 / this.drawers.length;
+	var litTextColor = CreateColor(255, 255, 255, 255);
+	var dimTextColor = CreateColor(192, 192, 192, 255);
 	var y = -(18 + 16) * (1.0 - this.fadeness) + 16;
 	for (var i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
-		this.drawItemBox(x, y, width, 18, 160, this.isDropped, i == this.drawerID, this.cursorColor);
-		var textColor = i != this.drawerID ? dimTextColor : BlendColorsWeighted(litTextColor, dimTextColor, this.cursorColor.alpha, 1.0 - this.cursorColor.alpha);
+		this.drawItemBox(x, y, width, 18, 160, i == this.topCursor, this.isDropped, this.cursorColor);
+		var textColor = i == this.topCursor ? CreateColor(255, 255, 255, 255) : CreateColor(192, 192, 192, 255);
 		this.drawText(this.font, x + itemWidth / 2, y + 3, 1, textColor, this.drawers[i].name, 'center');
 	}
 };
@@ -179,5 +192,5 @@ MoveMenu.prototype.render = function()
 // Updates the entity's state for the next frame.
 MoveMenu.prototype.update = function()
 {
-	return this.skillID === null;
+	return this.selection === null || this.chooseMoveAnimation.isRunning();
 };

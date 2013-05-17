@@ -32,15 +32,15 @@ RequireScript('TitleScreen.js');
 function game()
 {
 	Engine.initialize();
-	Console.initialize(17);
-	BGM.initialize();
 	Threads.initialize();
-	persist.init();
+	BGM.initialize();
 	Scenario.initialize();
 	Threads.doWith(Scenario,
 		function() { this.updateAll(); return true; },
 		function() { this.renderAll(); }, 99
 	);
+	Console.initialize(17);
+	persist.init();
 	
 	var battleResult = new Battle(new Session(), 'robert2').go();
 	if (battleResult == BattleResult.enemyWon) {

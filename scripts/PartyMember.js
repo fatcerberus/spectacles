@@ -9,14 +9,12 @@ RequireScript('Skill.js');
 // PartyMember() constructor
 // Creates an object representing an active member of a Party.
 // Arguments:
-//     characterID: The handle of the character represented by this party member.
-//     battleLevel: Optional. The party member's initial battle level.
-//                  Defaults to 1.
-function PartyMember(characterID, battleLevel)
+//     characterID: The ID of the character represented by this party member.
+//     level:       Optional. The party member's initial level. (default: 1)
+function PartyMember(characterID, level)
 {
-	this.refreshSkills = function()
-	{
-		var heldWeaponType = this.heldWeapon != null ? this.heldWeapon.type : null;
+	this.refreshSkills = function() {
+		var heldWeaponType = this.weaponID !== null ? Game.weapons[this.weaponID].type : null;
 		this.usableSkills = [];
 		for (var i = 0; i < this.skillList.length; ++i) {
 			var technique = this.skillList[i].technique;
@@ -27,32 +25,28 @@ function PartyMember(characterID, battleLevel)
 		}
 	}
 	
-	if (battleLevel === undefined) { battleLevel = 1; }
+	level = level !== void null ? level : 1;
 	
 	this.characterID = characterID;
-	this.nameString = this.character.name;
-	this.fullName = this.character.fullName;
-	this.stats = {};
-	for (var name in Game.namedStats) {
-		this.stats[name] = new Stat(this.character.baseStats[name], battleLevel, true, 1.0);
-	}
+	this.fullName = Game.characters[characterID].fullName;
+	this.name = Game.characters[characterID].name;
 	this.skillList = [];
-	for (var i = 0; i < this.character.skills.length; ++i) {
-		this.learnSkill(this.character.skills[i]);
+	this.stats = {};
+	this.usableSkills = null;
+	
+	var character = Game.characters[this.characterID];
+	this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
+	for (var name in Game.namedStats) {
+		this.stats[name] = new Stat(character.baseStats[name], level, true, 1.0);
 	}
-	this.weapon = 'startingWeapon' in this.character ? Game.weapons[this.character.startingWeapon] : null;
+	for (var i = 0; i < character.skills.length; ++i) {
+		this.learnSkill(character.skills[i]);
+	}
 }
 
-// .character property
-// Gets the character definition for the character this party member represents.
-PartyMember.prototype.character getter = function()
-{
-	return Game.characters[this.characterID];
-};
-
-// .level property
-// Gets the party member's current battle level.
-PartyMember.prototype.level getter = function()
+// .getLevel() property
+// Gets the party member's current overall level.
+PartyMember.prototype.getLevel = function()
 {
 	var sum = 0;
 	var count = 0;
@@ -63,46 +57,31 @@ PartyMember.prototype.level getter = function()
 	return Math.floor(sum / count);
 };
 
-// .name property
-// Gets or sets the name of the party member.
-PartyMember.prototype.name getter = function()
-{
-	return this.nameString;
-};
-PartyMember.prototype.name setter = function(value)
-{
-	this.nameString = value;
-};
-
-// .skills property
-// Gets a list of the skills the party member can currently use.
-PartyMember.prototype.skills getter = function()
+// .getUsableSkills() method
+// Gets a list of all skills that the party member can currently use.
+PartyMember.prototype.getUsableSkills = function()
 {
 	return this.usableSkills;
-};
-
-// .weapon property
-// Gets or sets the party member's currently held weapon.
-PartyMember.prototype.weapon getter = function()
-{
-	return this.heldWeapon;
-};
-PartyMember.prototype.weapon setter = function(value)
-{
-	this.heldWeapon = value;
-	this.refreshSkills();
 };
 
 // .learnSkill() method
 // Grants the party member the ability to use a technique.
 // Arguments:
-//     handle: The handle of the technique to learn.
+//     techniqueID: The ID of the technique to learn.
 // Returns:
-//     The newly learned skill.
-PartyMember.prototype.learnSkill = function(handle)
+//     A reference to an object representing the newly learned skill.
+PartyMember.prototype.learnSkill = function(techniqueID)
 {
-	var skill = new Skill(handle, 100);
+	var skill = new Skill(techniqueID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
 	return skill;
+};
+
+// .setWeapon() method
+// Sets the weapon that the party member uses in battle.
+PartyMember.prototype.setWeapon = function(weaponID)
+{
+	this.weaponID = weaponID;
+	this.refreshSkills();
 };

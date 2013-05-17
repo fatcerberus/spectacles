@@ -1,6 +1,6 @@
 /**
  * Scenario 3.6 for Sphere - (c) 2008-2013 Bruce Pascoe
- * An advanced cutscene engine that allows you to coordinate complex cutscenes using multiple
+ * An advanced cutscene engine that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
 
@@ -95,16 +95,13 @@ function Scenario(isLooping)
 	this.queues = [];
 	this.threads = [];
 	
-	this.createDelegate = function(o, method)
-	{
+	this.createDelegate = function(o, method) {
 		if (method == null) {
 			return null;
 		}
 		return function() { return method.apply(o, arguments); };
 	};
-	
-	this.createThread = function(state, updater, renderer, priority, inputHandler)
-	{
+	this.createThread = function(state, updater, renderer, priority, inputHandler) {
 		if (renderer === undefined) { renderer = null; }
 		if (priority === undefined) { priority = 0; }
 		if (inputHandler === undefined) { inputHandler = null; }
@@ -124,23 +121,17 @@ function Scenario(isLooping)
 		}
 		++this.nextThreadID;
 		return threadObject.id;
-	}
-	
-	this.createCommandThread = function(command)
-	{
+	};
+	this.createCommandThread = function(command) {
 		var updater = this.createDelegate(this, command.update);
 		var renderer = this.createDelegate(this, command.render);
 		var inputHandler = this.createDelegate(this, command.getInput);
 		return this.createThread(command.state, updater, renderer, 0, inputHandler);
 	};
-	
-	this.createForkThread = function(state)
-	{
+	this.createForkThread = function(state) {
 		return this.createThread(state, this.createDelegate(this, this.updateFork));
 	};
-	
-	this.isThreadRunning = function(id)
-	{
+	this.isThreadRunning = function(id) {
 		if (id == 0) {
 			return false;
 		}
@@ -151,9 +142,7 @@ function Scenario(isLooping)
 		}
 		return false;
 	};
-	
-	this.killThread = function(id)
-	{
+	this.killThread = function(id) {
 		for (var i = 0; i < this.threads.length; ++i) {
 			if (id == this.threads[i].id) {
 				this.threads.splice(i, 1);
@@ -161,19 +150,25 @@ function Scenario(isLooping)
 			}
 		}
 	};
-	
-	this.updateFork = function(scene, state)
-	{
-		for (var iFork = 0; iFork < state.forkThreads.length; ++iFork) {
-			if (!scene.isThreadRunning(state.forkThreads[iFork])) {
-				state.forkThreads.splice(iFork, 1);
-				--iFork; continue;
+	this.throwError = function(component, name, message) {
+		Abort(component + " - error: " + name + "\n" + message);
+	};
+	this.updateFork = function(scene, state) {
+		for (var i = 0; i < state.forkThreads.length; ++i) {
+			if (!scene.isThreadRunning(state.forkThreads[i])) {
+				state.forkThreads.splice(i, 1);
+				--i; continue;
 			}
 		}
-		if (scene.isThreadRunning(state.currentCommandThread)) return true;
-		if (state.commandQueue.length == 0 && state.forkThreads.length == 0) return false;
-		if (state.commandQueue.length > 0) {
-			var command = state.commandQueue.shift();
+		if (scene.isThreadRunning(state.currentCommandThread)) {
+			return true;
+		}
+		if (state.counter >= state.commandQueue.length && state.forkThreads.length == 0) {
+			return false;
+		}
+		if (state.counter < state.commandQueue.length) {
+			var command = state.commandQueue[state.counter];
+			++state.counter;
 			if (command.start != null) {
 				var parameters = [];
 				parameters.push(scene);
@@ -185,42 +180,34 @@ function Scenario(isLooping)
 			}
 			if (command.update != null) {
 				state.currentCommandThread = scene.createCommandThread(command);
-			} else {
-				return true;
 			}
 		}
 		return true;
 	};
-	
-	this.enqueue = function(command)
-	{
+	this.enqueue = function(command) {
 		this.currentQueue.push(command);
 	};
-	
-	this.render = function()
-	{
-		for (var iThread = 0; iThread < this.threads.length; ++iThread) {
-			var renderer = this.threads[iThread].renderer;
+	this.render = function() {
+		for (var i = 0; i < this.threads.length; ++i) {
+			var renderer = this.threads[i].renderer;
 			if (renderer != null) {
-				renderer(this, this.threads[iThread].state);
+				renderer(this, this.threads[i].state);
 			}
 		}
 	};
-	
-	this.update = function()
-	{
-		for (var iThread = 0; iThread < this.threads.length; ++iThread) {
-			var id = this.threads[iThread].id;
-			var updater = this.threads[iThread].updater;
-			var inputHandler = this.threads[iThread].inputHandler;
-			var state = this.threads[iThread].state;
+	this.update = function() {
+		for (var i = 0; i < this.threads.length; ++i) {
+			var id = this.threads[i].id;
+			var updater = this.threads[i].updater;
+			var inputHandler = this.threads[i].inputHandler;
+			var state = this.threads[i].state;
 			if (updater == null) continue;
 			if (!updater(this, state)) {
 				if (this.focusThread == id) {
 					this.focusThread = this.focusThreadStack.pop();
 				}
-				this.threads.splice(iThread, 1);
-				--iThread; continue;
+				this.threads.splice(i, 1);
+				--i; continue;
 			}
 			if (this.focusThread == id) {
 				inputHandler(this, state);
@@ -255,7 +242,8 @@ Scenario.prototype.endFork = function()
 				scene:                scene,
 				commandQueue:         queue,
 				currentCommandThread: 0,
-				forkThreads:          subthreads
+				forkThreads:          subthreads,
+				counter:              0
 			};
 			var thread = scene.createForkThread(forkThreadState);
 			threads.push(thread);
@@ -289,17 +277,22 @@ Scenario.prototype.run = function(waitUntilDone)
 {
 	waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
 	
+	if (this.isLooping && waitUntilDone) {
+		this.throwError("Scenario.run()", "Invalid argument", "Caller attempted to wait for a looping scenario. This would have created an infinite loop and has been prevented.");
+	}
+	
 	if (this.isRunning()) {
 		return;
 	}
 	this.synchronize();
-	var state = {
+	var mainThreadState = {
 		currentCommandThread: 0,
 		commandQueue:         this.currentQueue,
-		forkThreads:          this.currentForkThreadList
+		forkThreads:          this.currentForkThreadList,
+		counter:              0
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.mainThread = this.createForkThread(state);
+	this.mainThread = this.createForkThread(mainThreadState);
 	Scenario.activeScenes.push(this);
 	if (waitUntilDone) {
 		var currentFPS = GetFrameRate();

@@ -8,18 +8,19 @@ RequireScript("Stat.js");
 // Skill() constructor
 // Creates an object representing a battler skill.
 // Arguments:
-//     handle:       The handle of the technique embodied by the skill.
-//     initialLevel: The initial growth level of the skill. If not specified, defaults to 1.
-function Skill(handle, initialLevel)
+//     techniqueID: The ID of the technique this skill is based on.
+//     level:       Optional. The starting level for the skill. (default: 1)
+function Skill(techniqueID, level)
 {
-	if (initialLevel === undefined) { initialLevel = 1; }
+	level = level !== void null ? level : 1;
 	
-	if (!(handle in Game.techniques)) {
-		Abort("Skill() - Technique '" + handle + "' doesn't exist.");
+	if (!(techniqueID in Game.techniques)) {
+		Abort("Skill() - Technique '" + handle + "' doesn't exist!");
 	}
-	this.handle = handle;
-	this.techniqueClass = Game.techniques[this.handle];
-	this.levelStat = new Stat(100, initialLevel);
+	this.technique = Game.techniques[techniqueID];
+	this.name = this.technique.name;
+	this.handle = techniqueID;
+	this.levelStat = new Stat(100, level);
 }
 
 // .experience property
@@ -38,18 +39,4 @@ Skill.prototype.experience setter = function(value)
 Skill.prototype.level getter = function()
 {
 	return this.levelStat.value;
-};
-
-// .name property
-// Gets the name of the skill.
-Skill.prototype.name getter = function()
-{
-	return this.techniqueClass.name;
-};
-
-// .technique property
-// Gets the technique embodied by the skill.
-Skill.prototype.technique getter = function()
-{
-	return this.techniqueClass;
 };

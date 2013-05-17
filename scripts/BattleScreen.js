@@ -44,7 +44,7 @@ BattleScreen.prototype.dispose = function()
 //     bannerColor: The background color to use for the announcement banner.
 BattleScreen.prototype.announceAction = function(actionName, alignment, bannerColor)
 {
-	var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(64, 64, 192, 192);
+	var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 255) : CreateColor(64, 64, 192, 255);
 	var announcement = {
 		screen: this,
 		text: actionName,
@@ -59,8 +59,8 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			var y = GetScreenHeight() / 2 - height / 2;
 			var textX = x + width / 2 - this.font.getStringWidth(this.text) / 2;
 			var textY = y + height / 2 - this.font.getHeight() / 2;
-			Rectangle(x + 1, y + 1, width - 2, height - 2, this.color);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255));
+			Rectangle(x, y, width, height, this.color);
+			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 128));
 			this.font.setColorMask(CreateColor(0, 0, 0, 255));
 			this.font.drawText(textX + 1, textY + 1, this.text);
 			this.font.setColorMask(CreateColor(255, 255, 255, 255));
@@ -91,7 +91,7 @@ BattleScreen.prototype.createActor = function(name, position, row, alignment, al
 };
 
 // .go() method
-// Transitions into the BattleScreen.
+// Transitions to the battle screen.
 // Arguments:
 //     title: Optional. A title to display during the battle transiton.
 BattleScreen.prototype.go = function(title)

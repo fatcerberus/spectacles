@@ -116,7 +116,8 @@ BattleHUD.prototype.highlight = function(name)
 BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-	this.drawElementBox(0, y, 160, 16, 192);
+	Rectangle(0, y, 160, 16, CreateColor(0, 0, 0, 255));
+	//this.drawElementBox(0, y, 160, 16, 192);
 	this.drawElementBox(260, y, 60, this.partyInfo.length * 20, 192);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
@@ -159,7 +160,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColorInfo)
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', { red: 0, green: 0, blue: 0, alpha: 0 })
 				.endFork()
-				.tween(characterInfo, 0.25, 'easeInOutQuad', { hp: hp })
+				.tween(characterInfo, 0.25, 'easeInOutSine', { hp: hp })
 				.run();
 		}
 	}

@@ -12,16 +12,26 @@ function Party()
 	this.members = {};
 }
 
-// .level property
-// Retrieves the average level of all party members.
-Party.prototype.level getter = function()
+// .add() method
+// Adds a character to the party.
+// Arguments:
+//     character: The ID of the character to be added.
+Party.prototype.add = function(characterID)
+{
+	var newMember = new PartyMember(characterID, this.getLevel());
+	this.members[characterID] = newMember;
+};
+
+// .getLevel() method
+// Gets the average level of all party members.
+Party.prototype.getLevel = function()
 {
 	if (this.members.length > 0) {
 		var total = 0;
 		var memberCount = 0;
 		for (var i in this.members) {
 			++memberCount;
-			total += this.members[i].level;
+			total += this.members[i].getLevel();
 			
 		}
 		return Math.floor(total / memberCount);
@@ -29,16 +39,6 @@ Party.prototype.level getter = function()
 		return Game.basePartyLevel;
 	}
 }
-
-// .add() method
-// Adds a character to the party.
-// Arguments:
-//     character: The ID of the character to be added.
-Party.prototype.add = function(characterID)
-{
-	var newMember = new PartyMember(characterID, this.level);
-	this.members[characterID] = newMember;
-};
 
 // .hasMember() method
 // Determines whether a character is currently in the party.

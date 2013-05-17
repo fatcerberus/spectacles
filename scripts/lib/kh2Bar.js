@@ -21,7 +21,7 @@ function kh2Bar(capacity, sectorSize, color)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
-	this.damageHideDelay = 0.0;
+	this.damageFadeDelay = 0.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.hpColor = color;
 	this.reading = this.capacity;
@@ -102,7 +102,7 @@ kh2Bar.prototype.set = function(value)
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
 	if (value != this.reading) {
 		this.damage += this.reading - value;
-		this.damageHideDelay = 0.5;
+		this.damageFadeDelay = 0.0;
 		this.damageFadeness = 0.0;
 		this.reading = value;
 	}
@@ -113,13 +113,13 @@ kh2Bar.prototype.set = function(value)
 kh2Bar.prototype.update = function()
 {
 	var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.damageHideDelay -= 1.0 / frameRate;
-	if (this.damageHideDelay <= 0.0) {
-		this.damageHideDelay = 0.0;
+	this.damageFadeDelay -= 1.0 / frameRate;
+	if (this.damageFadeDelay <= 0.0) {
+		this.damageFadeDelay = 0.0;
 		this.damageFadeness += 2.0 / frameRate;
 		if (this.damageFadeness >= 1.0) {
 			this.damage = 0;
-			this.damageHideDelay = 0.0;
+			this.damageFadeDelay = 0.0;
 			this.damageFadeness = 1.0;
 		}
 	}
