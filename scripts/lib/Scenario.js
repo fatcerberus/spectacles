@@ -1,6 +1,6 @@
 /**
  * Scenario 3.6 for Sphere - (c) 2008-2013 Bruce Pascoe
- * An advanced cutscene engine that allows you to coordinate complex sequences using multiple
+ * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
 
@@ -92,6 +92,7 @@ function Scenario(isLooping)
 	this.forkThreadLists = [];
 	this.isLooping = isLooping;
 	this.nextThreadID = 1;
+	this.openBlocks = [];
 	this.queues = [];
 	this.threads = [];
 	
@@ -216,41 +217,50 @@ function Scenario(isLooping)
 	};
 }
 
-// .beginFork() method
+// .fork() method
 // Forks the timeline.
-Scenario.prototype.beginFork = function()
+Scenario.prototype.fork = function()
 {
 	this.forkThreadLists.push(this.currentForkThreadList);
 	this.currentForkThreadList = [];
 	this.queues.push(this.currentQueue);
 	this.currentQueue = [];
+	this.openBlocks.push('fork');
 	return this;
 };
 
-// .endFork() method
-// Marks the end of a forked timeline.
-Scenario.prototype.endFork = function()
+// .end() method
+// Ends an block of commands.
+Scenario.prototype.end = function()
 {
-	var threadList = this.currentForkThreadList;
-	this.currentForkThreadList = this.forkThreadLists.pop();
-	var parentThreadList = this.currentForkThreadList;
-	var command = {
-		state: {},
-		arguments: [ parentThreadList, threadList, this.currentQueue ],
-		start: function(scene, state, threads, subthreads, queue) {
-			var forkThreadState = {
-				scene:                scene,
-				commandQueue:         queue,
-				currentCommandThread: 0,
-				forkThreads:          subthreads,
-				counter:              0
-			};
-			var thread = scene.createForkThread(forkThreadState);
-			threads.push(thread);
-		}
-	};
-	this.currentQueue = this.queues.pop();
-	this.enqueue(command);
+	if (this.openBlocks.length == 0) {
+		this.throwError("Scenario.end()", "Malformed scene", "There are no blocks currently open.");
+	}
+	var openBlockType = this.openBlocks.pop();
+	if (openBlockType == 'fork') {
+		var threadList = this.currentForkThreadList;
+		this.currentForkThreadList = this.forkThreadLists.pop();
+		var parentThreadList = this.currentForkThreadList;
+		var command = {
+			state: {},
+			arguments: [ parentThreadList, threadList, this.currentQueue ],
+			start: function(scene, state, threads, subthreads, queue) {
+				var forkThreadState = {
+					scene:                scene,
+					commandQueue:         queue,
+					currentCommandThread: 0,
+					forkThreads:          subthreads,
+					counter:              0
+				};
+				var thread = scene.createForkThread(forkThreadState);
+				threads.push(thread);
+			}
+		};
+		this.currentQueue = this.queues.pop();
+		this.enqueue(command);
+	} else {
+		this.throwError("Scenario.end()", "Internal error", "The type of the block is unknown.");
+	}
 	return this;
 };
 
@@ -277,6 +287,9 @@ Scenario.prototype.run = function(waitUntilDone)
 {
 	waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
 	
+	if (this.openBlocks.length > 0) {
+		this.throwError("Scenario.run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
+	}
 	if (this.isLooping && waitUntilDone) {
 		this.throwError("Scenario.run()", "Invalid argument", "Caller attempted to wait for a looping scenario. This would have created an infinite loop and has been prevented.");
 	}
@@ -391,7 +404,7 @@ Scenario.defineCommand('fadeTo',
 	start: function(scene, state, color, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
-		var colorInfo = { red: color.red, green: color.green, blue: color.blue, alpha: color.alpha };
+		var colorInfo = { red:color.red, green:color.green, blue:color.blue, alpha:color.alpha };
 		state.fader = new Scenario()
 			.tween(Scenario.screenMask, duration, 'linear', colorInfo)
 			.run();

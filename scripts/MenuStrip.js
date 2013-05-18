@@ -62,10 +62,10 @@ MenuStrip.prototype.getInput = function() {
 	if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 		this.chosenItem = this.selectedItem;
 		this.animation = new Scenario()
-			.beginFork()
+			.fork()
 				.tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 1.0 })
 				.tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 0.0 })
-			.endFork()
+			.end()
 			.tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 })
 			.run();
 		this.mode = 'close';

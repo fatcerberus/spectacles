@@ -20,9 +20,9 @@ function TitleScreen(themeTrack)
 					this.mode = 'idle';
 					this.choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
 					this.transition = new Scenario()
-						.beginFork()
+						.fork()
 							.fadeBGM(0.0, 2.0)
-						.endFork()
+						.end()
 						.tween(this, 2.0, 'linear', { fadeness: 1.0 })
 						.run();
 					this.mode = 'transitionOut';

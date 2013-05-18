@@ -515,9 +515,9 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.beginFork()
+					.fork()
 						.fadeBGM(0.0, 2.0)
-					.endFork()
+					.end()
 					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
 					.synchronize()
 					.overrideBGM('MyDreamsButADropOfFuel')
