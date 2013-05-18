@@ -3,7 +3,6 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('lib/kh2Bar.js');
 RequireScript('lib/json2.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
@@ -16,18 +15,45 @@ RequireScript('Core/Threads.js');
 RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_SCENE_DELAYS = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = false;
+var DBG_DISABLE_TRANSITIONS = true;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
+
+function clone(o)
+{
+	var clones = arguments.length >= 2 ? arguments[1] : [];
+	if (typeof o === 'object' && o !== null) {
+		for (var i = 0; i < clones.length; ++i) {
+			if (o === clones[i].original) {
+				return clones[i].dolly;
+			}
+		}
+		var dolly = {};
+		clones.push({ original: o, dolly: dolly });
+		for (var p in o) {
+			dolly[p] = clone(o[p], clones);
+		}
+		return dolly;
+	} else {
+		return o;
+	}
+};
+
+function delegate(o, method)
+{
+	return function(/*...*/) {
+		method.apply(o, arguments);
+	};
+}
 
 function game()
 {
@@ -63,31 +89,4 @@ function game()
 	}
 	
 	MapEngine("main.rmp", Engine.frameRate);
-}
-
-function clone(o)
-{
-	var clones = arguments.length >= 2 ? arguments[1] : [];
-	if (typeof o === 'object' && o !== null) {
-		for (var i = 0; i < clones.length; ++i) {
-			if (o === clones[i].original) {
-				return clones[i].dolly;
-			}
-		}
-		var dolly = {};
-		clones.push({ original: o, dolly: dolly });
-		for (var p in o) {
-			dolly[p] = clone(o[p], clones);
-		}
-		return dolly;
-	} else {
-		return o;
-	}
-};
-
-function delegate(o, method)
-{
-	return function(/*...*/) {
-		method.apply(o, arguments);
-	};
 }

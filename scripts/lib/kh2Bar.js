@@ -23,17 +23,24 @@ function kh2Bar(capacity, sectorSize, color)
 	this.damageFadeness = 1.0;
 	this.damageFadeDelay = 0.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
+	this.fadeSpeed = 0.0;
+	this.fadeness = 1.0;
 	this.hpColor = color;
+	this.isVisible = true;
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
 	
 	this.drawSegment = function(x, y, width, height, color) {
 		var halfHeight = Math.ceil(height / 2);
-		var dimColor = BlendColors(color, CreateColor(0, 0, 0, 255));
+		var dimColor = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 		var yHalf = y + Math.floor(height / 2);
 		GradientRectangle(x, y, width, halfHeight, dimColor, dimColor, color, color);
 		GradientRectangle(x, yHalf, width, halfHeight, color, color, dimColor, dimColor);
 	};
+	this.fadeColor = function(color, fadeness)
+	{
+		return CreateColor(color.red, color.green, color.blue, color.alpha * (1.0 - fadeness));
+	}
 }
 
 // .draw() method
@@ -46,6 +53,9 @@ function kh2Bar(capacity, sectorSize, color)
 //     opacity: Optional. The opacity of the gauge from 0.0 to 1.0. (default: 1.0)
 kh2Bar.prototype.draw = function(x, y, width, height)
 {
+	if (this.fadeness >= 1.0) {
+		return;
+	}
 	var numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
 	var numReservesFilled = Math.ceil(this.reading / this.sectorSize - 1);
 	var numReservesDamaged = Math.ceil((this.damage + this.reading) / this.sectorSize - 1);
@@ -61,21 +71,24 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 		barFilled = barInUse;
 	}
 	var barDamaged = Math.min(this.damage, this.sectorSize - barFilled);
-	var usageColor = BlendColorsWeighted(this.emptyColor, this.damageColor, this.damageFadeness, 1.0 - this.damageFadeness);
 	var barHeight = Math.ceil(height * 0.5 + 0.5);
 	var widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
 	var fillWidth = Math.round(widthInUse * barFilled / barInUse);
 	var damageWidth = Math.round(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
 	var emptyWidth = widthInUse - (fillWidth + damageWidth);
+	var borderColor = this.fadeColor(this.borderColor, this.fadeness);
+	var fillColor = this.fadeColor(this.hpColor, this.fadeness);
+	var emptyColor = this.fadeColor(this.emptyColor, this.fadeness);
+	var usageColor = BlendColorsWeighted(emptyColor, this.fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
 	if (numReserves > 0) {
-		OutlinedRectangle(x, y, width, barHeight, BlendColors(this.borderColor, CreateColor(0, 0, 0, 0)));
-		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColors(this.hpColor, CreateColor(0, 0, 0, 0)));
+		OutlinedRectangle(x, y, width, barHeight, BlendColors(borderColor, CreateColor(0, 0, 0, 0)));
+		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColors(fillColor, CreateColor(0, 0, 0, 0)));
 	}
 	var barEdgeX = x + width - 1;
-	OutlinedRectangle(barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, this.borderColor);
-	this.drawSegment(barEdgeX - fillWidth, y + 1, fillWidth, barHeight - 2, this.hpColor);
+	OutlinedRectangle(barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, borderColor);
+	this.drawSegment(barEdgeX - fillWidth, y + 1, fillWidth, barHeight - 2, fillColor);
 	this.drawSegment(barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
-	this.drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, this.emptyColor);
+	this.drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 	var slotYSize = height - barHeight + 1;
 	var slotXSize = slotYSize + 1;
 	var slotX;
@@ -83,15 +96,29 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	for (i = 0; i < numReserves; ++i) {
 		var color;
 		if (i < numReservesFilled) {
-			color = this.hpColor;
+			color = fillColor;
 		} else if (i < numReservesDamaged) {
 			color = usageColor;
 		} else {
-			color = this.emptyColor;
+			color = emptyColor;
 		}
 		slotX = x + (width - slotXSize) - i * (slotXSize - 1);
 		OutlinedRectangle(slotX, slotY, slotXSize, slotYSize, this.borderColor);
 		this.drawSegment(slotX + 1, slotY + 1, slotXSize - 2, slotYSize - 2, color);
+	}
+};
+
+// .hide() method
+// Hides the gauge.
+// Arguments:
+//     duration: The duration of the hide animation, in seconds.
+kh2Bar.prototype.hide = function(duration)
+{
+	if (duration > 0.0) {
+		this.fadeSpeed = 1.0 / duration * (1.0 - this.fadeness);
+	} else {
+		this.fadeSpeed = 0.0;
+		this.fadeness = 1.0;
 	}
 };
 
@@ -108,11 +135,26 @@ kh2Bar.prototype.set = function(value)
 	}
 };
 
+// .show() method
+// Makes the gauge visible after hiding it.
+// Arguments:
+//     duration: The duration of the show animation, in seconds.
+kh2Bar.prototype.show = function(duration)
+{
+	if (duration > 0.0) {
+		this.fadeSpeed = 1.0 / duration * (0.0 - this.fadeness);
+	} else {
+		this.fadeSpeed = 0.0;
+		this.fadeness = 0.0;
+	}
+};
+
 // .update() method
 // Advances internal state by one frame.
 kh2Bar.prototype.update = function()
 {
 	var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
+	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
 	this.damageFadeDelay -= 1.0 / frameRate;
 	if (this.damageFadeDelay <= 0.0) {
 		this.damageFadeDelay = 0.0;

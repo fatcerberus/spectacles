@@ -133,6 +133,7 @@ Battle.prototype.go = function()
 	this.resume();
 	Threads.waitFor(battleThread);
 	this.ui.dispose();
+	BGM.reset();
 	return this.result;
 };
 

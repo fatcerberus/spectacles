@@ -31,6 +31,7 @@ function BattleScreen()
 // Frees all outstanding resources associated with the BattleScreen.
 BattleScreen.prototype.dispose = function()
 {
+	this.hud.dispose();
 	Threads.kill(this.thread);
 };
 

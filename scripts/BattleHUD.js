@@ -3,6 +3,8 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript('lib/kh2Bar.js');
+
 // BattleHUD() constructor
 // Creates an object representing the battle screen heads-up display (HUD).
 function BattleHUD()
@@ -81,6 +83,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
 	var gauge = new kh2Bar(capacity, 400, CreateColor(255, 255, 255, 255));
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
+	gauge.show(0.0);
 };
 
 // .hide() method

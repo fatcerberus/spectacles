@@ -80,7 +80,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return Math.max(Math.floor(actor.level * power * (actor.stats.mag.value * 2 + actor.stats.foc.value / 3) * (100 - target.stats.foc.value * 0.95) / 60000), 1);
+				return Math.max(Math.floor(actor.level * power * (actor.stats.mag.value * 2 + actor.stats.foc.value) / 3 * (100 - target.stats.foc.value * 0.95) / 60000), 1);
 			},
 			physical: function(actor, target, power) {
 				return 1;
