@@ -19,8 +19,8 @@ var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_SCENE_DELAYS = false;
 var DBG_DISABLE_TEXTBOXES = true;
-var DBG_DISABLE_TITLE_CARD = false;
-var DBG_DISABLE_TITLE_SCREEN = false;
+var DBG_DISABLE_TITLE_CARD = true;
+var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = true;
 
 RequireScript('Battle.js');
@@ -42,7 +42,16 @@ function game()
 	Console.initialize(17);
 	persist.init();
 	
-	var battleResult = new Battle(new Session(), 'robert2').go();
+	if (!DBG_DISABLE_TITLE_CARD) {
+		BGM.change("SpectaclesTheme");
+		Engine.showLogo("TitleCard", 150);
+	}
+	var session = new TitleScreen("SpectaclesTheme").show();
+	var world = persist.getWorldState();
+	world.currentSession = session;
+	
+	/*ALPHA*/
+	var battleResult = new Battle(world.currentSession, 'robert2').go();
 	if (battleResult == BattleResult.enemyWon) {
 		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");
 	} else if (battleResult == BattleResult.partyWon) {
@@ -53,13 +62,6 @@ function game()
 		Abort("Um... what's going on here? That was a really strange battle...");
 	}
 	
-	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.change("SpectaclesTheme");
-		Engine.showLogo("TitleCard", 150);
-	}
-	var session = new TitleScreen("SpectaclesTheme").show();
-	var world = persist.getWorldState();
-	world.session = session;
 	MapEngine("main.rmp", Engine.frameRate);
 }
 

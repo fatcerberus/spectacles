@@ -116,8 +116,7 @@ BattleHUD.prototype.highlight = function(name)
 BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-	Rectangle(0, y, 160, 16, CreateColor(0, 0, 0, 255));
-	//this.drawElementBox(0, y, 160, 16, 192);
+	this.drawElementBox(0, y, 160, 16, 192);
 	this.drawElementBox(260, y, 60, this.partyInfo.length * 20, 192);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;

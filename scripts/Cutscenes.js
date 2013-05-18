@@ -14,10 +14,32 @@ if (DBG_DISABLE_SCENE_DELAYS) {
 	});
 }
 
+// patch - Scenario.run() method
+// Scenario's built-in wait loop locks up the Specs threader under most circumstances;
+// this patches it so it plays along.
+(function() {
+	var old_Scenario_run = Scenario.prototype.run;
+	Scenario.prototype.run = function(waitUntilDone)
+	{
+		var scene = old_Scenario_run.call(this, false);
+		if (waitUntilDone) {
+			Threads.waitFor(Threads.doWith(scene, function() {
+				return this.isRunning();
+			}));
+		}
+		return scene;
+	}
+})();
+	
+// .battle() command
+// Starts a battle.
+// Arguments:
+//     battleID: The ID of the battle definition to use to initialize the fight.
 Scenario.defineCommand('battle',
 {
-	start: function(sceneState, state, setup) {
-		new Battle(null, setup).run();
+	start: function(sceneState, state, battleID) {
+		var world = persist.getWorldState();
+		new Battle(world.currentSession, battleID).run();
 	}
 });
 

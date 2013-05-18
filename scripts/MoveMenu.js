@@ -22,7 +22,7 @@ function MoveMenu(battle, unit)
 	this.drawer = null;
 	this.dropFadeness = 0.0;
 	this.fadeness = 0.0;
-	this.font = null;
+	this.font = GetSystemFont();
 	this.isDropped = false;
 	this.moveCursor = 0;
 	this.selection = null;
@@ -85,7 +85,7 @@ function MoveMenu(battle, unit)
 	};
 	this.drawSkillItem = function(x, y, skill, isSelected, isLockedIn) {
 		var technique = skill.techniqueID
-		var alpha = 255 * this.dropFadeness;
+		var alpha = 255 * this.fadeness * this.dropFadeness;
 		this.drawItemBox(x, y, 160, 18, alpha * 0.5, isSelected, isLockedIn, this.subCursorColor);
 		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, alpha));
 		OutlinedRectangle(x + 4, y + 2, 13, 13, CreateColor(0, 0, 0, alpha * 0.5));
@@ -121,6 +121,10 @@ function MoveMenu(battle, unit)
 MoveMenu.prototype.getInput = function()
 {
 	var key = AreKeysLeft() ? GetKey() : null;
+	while (AreKeysLeft()) { GetKey(); }
+	if (this.showMenu.isRunning()) {
+		return;
+	}
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		if (!this.isDropped) {
 			this.isDropped = true;
@@ -150,11 +154,11 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
-	this.isDropped = false;
-	this.selection = null;
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
-	this.font = GetSystemFont();
+	this.isDropped = false;
+	this.dropFadeness = 0.0;
+	this.selection = null;
 	this.showMenu.run();
 	Threads.waitFor(Threads.createEntityThread(this, 10));
 	this.battle.ui.hud.highlight(null);
@@ -166,26 +170,28 @@ MoveMenu.prototype.open = function()
 // Renders the menu in its current state.
 MoveMenu.prototype.render = function()
 {
+	var yOrigin = -(18 + 16) * (1.0 - this.fadeness) + 16;
+	var itemWidth = 160 / this.drawers.length;
+	var litTextColor = CreateColor(255, 255, 255, 255);
+	var dimTextColor = CreateColor(192, 192, 192, 255);
+	Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 128));
+	for (var i = 0; i < this.drawers.length; ++i) {
+		var x = Math.floor(i * itemWidth);
+		var width = Math.floor((i + 1) * itemWidth) - x;
+		this.drawItemBox(x, yOrigin, width, 18, 160 * this.fadeness, i == this.topCursor, this.isDropped, this.cursorColor);
+		var textColor = i == this.topCursor ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(192, 192, 192, 255 * this.fadeness);
+		this.drawText(this.font, x + itemWidth / 2, yOrigin + 3, 1, textColor, this.drawers[i].name, 'center');
+	}
 	if (this.dropFadeness > 0.0) {
-		var menuHeight = this.unit.skills.length * 18;
-		var y = 34 - menuHeight * (1.0 - this.dropFadeness);
+		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
+		var height = this.unit.skills.length * 18;
+		var y = yOrigin + 18 - height * (1.0 - this.dropFadeness);
 		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.fadeness)); 
 		for (var i = 0; i < this.unit.skills.length; ++i) {
 			var itemY = y + i * 18;
 			this.drawSkillItem(0, itemY, this.unit.skills[i], i == this.moveCursor, this.chooseMoveAnimation.isRunning());
 		}
-	}
-	var itemWidth = 160 / this.drawers.length;
-	var litTextColor = CreateColor(255, 255, 255, 255);
-	var dimTextColor = CreateColor(192, 192, 192, 255);
-	var y = -(18 + 16) * (1.0 - this.fadeness) + 16;
-	Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128));
-	for (var i = 0; i < this.drawers.length; ++i) {
-		var x = Math.floor(i * itemWidth);
-		var width = Math.floor((i + 1) * itemWidth) - x;
-		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, i == this.topCursor, this.isDropped, this.cursorColor);
-		var textColor = i == this.topCursor ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(192, 192, 192, 255 * this.fadeness);
-		this.drawText(this.font, x + itemWidth / 2, y + 3, 1, textColor, this.drawers[i].name, 'center');
+		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
 	}
 };
 
