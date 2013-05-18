@@ -13,6 +13,10 @@ Game = {
 	defaultMoveRank: 2,
 	useItemMoveRank: 1,
 	
+	initialPartyMembers: [
+		'scott'
+	],
+	
 	namedStats: {
 		vit: "Vitality",
 		str: "Strength",
@@ -131,7 +135,8 @@ Game = {
 			skills: [
 				'swordSlash',
 				'quickstrike',
-				'necromancy',
+				'chargeSlash',
+				//'necromancy',
 				'omni'
 			]
 		},
@@ -506,7 +511,6 @@ Game = {
 			],
 			onStart: function() {
 				new Scenario()
-					.pause(1.0)
 					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
 						+ "brazen as to face me alone?")
@@ -522,9 +526,5 @@ Game = {
 					.run(true);
 			}
 		}
-	},
-	
-	initialPartyMembers: [
-		'scott'
-	]
+	}
 };

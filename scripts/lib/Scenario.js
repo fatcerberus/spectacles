@@ -1,5 +1,5 @@
 /**
- * Scenario 3.6 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 4.0 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -53,7 +53,9 @@ Scenario.renderAll = function()
 	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
 		this.activeScenes[i].render();
 	}
-	ApplyColorMask(Scenario.screenMask);
+	if (Scenario.screenMask.alpha > 0) {
+		ApplyColorMask(Scenario.screenMask);
+	}
 };
 
 // .updateAll() function
@@ -85,16 +87,19 @@ function Scenario(isLooping)
 {
 	isLooping = isLooping !== void null ? isLooping : false;
 	
+	this.activeThread = null;
 	this.currentForkThreadList = [];
 	this.currentQueue = [];
 	this.focusThreadStack = [];
 	this.focusThread = 0;
 	this.forkThreadLists = [];
 	this.isLooping = isLooping;
+	this.jumpsToSet = [];
 	this.nextThreadID = 1;
 	this.openBlocks = [];
 	this.queues = [];
 	this.threads = [];
+	this.variables = {};
 	
 	this.createDelegate = function(o, method) {
 		if (method == null) {
@@ -132,6 +137,10 @@ function Scenario(isLooping)
 	this.createForkThread = function(state) {
 		return this.createThread(state, this.createDelegate(this, this.updateFork));
 	};
+	this.goTo = function(commandID)
+	{
+		this.activeThread.state.counter = commandID;
+	};
 	this.isThreadRunning = function(id) {
 		if (id == 0) {
 			return false;
@@ -151,6 +160,18 @@ function Scenario(isLooping)
 			}
 		}
 	};
+	this.testIf = function(variableName, op, value)
+	{
+		var operators = {
+			equal: function(a, b) { return a == b; },
+			notEqual: function(a, b) { return a != b; },
+			greaterThan: function(a, b) { return a > b; },
+			greaterThanOrEqual: function(a, b) { return a >= b; },
+			lessThan: function(a, b) { return a < b; },
+			lessThanOrEqual: function(a, b) { return a <= b; }
+		};
+		return operators[op](this.variables[variableName], value);
+	}
 	this.throwError = function(component, name, message) {
 		Abort(component + " - error: " + name + "\n" + message);
 	};
@@ -198,6 +219,7 @@ function Scenario(isLooping)
 	};
 	this.update = function() {
 		for (var i = 0; i < this.threads.length; ++i) {
+			this.activeThread = this.threads[i];
 			var id = this.threads[i].id;
 			var updater = this.threads[i].updater;
 			var inputHandler = this.threads[i].inputHandler;
@@ -214,6 +236,7 @@ function Scenario(isLooping)
 				inputHandler(this, state);
 			}
 		}
+		this.activeThread = null;
 	};
 }
 
@@ -258,6 +281,17 @@ Scenario.prototype.end = function()
 		};
 		this.currentQueue = this.queues.pop();
 		this.enqueue(command);
+	} else if (openBlockType = 'loop') {
+		var jump = this.jumpsToSet.pop();
+		jump.ifDone = this.currentQueue.length + 1;
+		var command = {
+			state: {},
+			arguments: [],
+			start: function(scene, state) {
+				scene.goTo(jump.loopStart);
+			}
+		};
+		this.enqueue(command);
 	} else {
 		this.throwError("Scenario.end()", "Internal error", "The type of the block is unknown.");
 	}
@@ -271,6 +305,31 @@ Scenario.prototype.end = function()
 Scenario.prototype.isRunning = function()
 {
 	return this.isThreadRunning(this.mainThread);
+};
+
+// .doUntil() method
+// Repeats a block of commands in a loop until a specified condition is met.
+// Arguments:
+//     variableName: The name of the variable to be tested.
+//     op:           A string specifying the conditional operator. Can be one of the following:
+//                   'equal', 'notEqual', 'greaterThan', 'lessThan', 'greaterThanOrEqual', 'lessThanOrEqual'
+//     value:        The value to test against.
+Scenario.prototype.doUntil = function(variableName, op, value)
+{
+	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
+	this.jumpsToSet.push(jump);
+	var command = {
+		state: {},
+		arguments: [ jump ],
+		start: function(scene, state, jump) {
+			if (scene.testIf(variableName, op, value)) {
+				scene.goTo(jump.ifDone);
+			}
+		}
+	};
+	this.enqueue(command);
+	this.openBlocks.push('loop');
+	return this;
 };
 
 // .run() method
@@ -453,6 +512,13 @@ Scenario.defineCommand('hidePerson',
 	}
 });
 
+Scenario.defineCommand('increment',
+{
+	start: function(scene, state, variable) {
+		++scene.variables[variable];
+	}
+});
+
 Scenario.defineCommand('killPerson',
 {
 	start: function(scene, state, person) {
@@ -610,6 +676,13 @@ Scenario.defineCommand('playSound',
 	},
 	update: function(scene, state) {
 		return state.sound.isPlaying();
+	}
+});
+
+Scenario.defineCommand('set',
+{
+	start: function(scene, state, variable, value) {
+		scene.variables[variable] = value;
 	}
 });
 
