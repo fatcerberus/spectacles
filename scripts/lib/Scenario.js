@@ -80,7 +80,7 @@ Scenario.hasUpdated = false;
 Scenario.screenMask = CreateColor(0, 0, 0, 0);
 
 // Scenario() constructor
-// Creates an object representing a scenario (cutscene definition)
+// Creates an object representing a scenario (scene definition)
 // Arguments:
 //     isLooping: If true, the scenario loops endlessly until .stop() is called. (default: false)
 function Scenario(isLooping)
@@ -94,7 +94,7 @@ function Scenario(isLooping)
 	this.focusThread = 0;
 	this.forkThreadLists = [];
 	this.isLooping = isLooping;
-	this.jumpsToSet = [];
+	this.jumpsToFix = [];
 	this.nextThreadID = 1;
 	this.openBlocks = [];
 	this.queues = [];
@@ -241,7 +241,7 @@ function Scenario(isLooping)
 }
 
 // .fork() method
-// Forks the timeline.
+// During scene execution, forks the timeline.
 Scenario.prototype.fork = function()
 {
 	this.forkThreadLists.push(this.currentForkThreadList);
@@ -253,7 +253,7 @@ Scenario.prototype.fork = function()
 };
 
 // .end() method
-// Ends an block of commands.
+// Marks the end of a block of commands.
 Scenario.prototype.end = function()
 {
 	if (this.openBlocks.length == 0) {
@@ -281,8 +281,11 @@ Scenario.prototype.end = function()
 		};
 		this.currentQueue = this.queues.pop();
 		this.enqueue(command);
+	} else if (openBlockType = 'branch') {
+		var jump = this.jumpsToFix.pop();
+		jump.ifFalse = this.currentQueue.length;
 	} else if (openBlockType = 'loop') {
-		var jump = this.jumpsToSet.pop();
+		var jump = this.jumpsToFix.pop();
 		jump.ifDone = this.currentQueue.length + 1;
 		var command = {
 			state: {},
@@ -307,8 +310,33 @@ Scenario.prototype.isRunning = function()
 	return this.isThreadRunning(this.mainThread);
 };
 
+// .doIf() method
+// During scene execution, executes a block of commands only if a specified condition is met.
+// Arguments:
+//     variableName: The name of the variable to be tested.
+//     op:           A string specifying the conditional operator. Can be one of the following:
+//                   'equal', 'notEqual', 'greaterThan', 'lessThan', 'greaterThanOrEqual', 'lessThanOrEqual'
+//     value:        The value to test against.
+Scenario.prototype.doIf = function(variableName, op, value)
+{
+	var jump = { ifFalse: 0 };
+	this.jumpsToFix.push(jump);
+	var command = {
+		state: {},
+		arguments: [ jump ],
+		start: function(scene, state, jump) {
+			if (!scene.testIf(variableName, op, value)) {
+				scene.goTo(jump.ifFalse);
+			}
+		}
+	};
+	this.enqueue(command);
+	this.openBlocks.push('branch');
+	return this;
+};
+
 // .doUntil() method
-// Repeats a block of commands in a loop until a specified condition is met.
+// During scene execution, repeats a block of commands until a specified condition is met.
 // Arguments:
 //     variableName: The name of the variable to be tested.
 //     op:           A string specifying the conditional operator. Can be one of the following:
@@ -317,7 +345,7 @@ Scenario.prototype.isRunning = function()
 Scenario.prototype.doUntil = function(variableName, op, value)
 {
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
-	this.jumpsToSet.push(jump);
+	this.jumpsToFix.push(jump);
 	var command = {
 		state: {},
 		arguments: [ jump ],
@@ -339,7 +367,7 @@ Scenario.prototype.doUntil = function(variableName, op, value)
 //                    Otherwise, .run() returns immediately. (default: false)
 // Remarks:
 //     waitUntilDone should be used with care. If .run() is called during a map engine update with waitUntilDone set to true,
-//     the update script will be blocked from running until the scenario is finished. While Scenario itself won't deadlock,
+//     your game's update script will be blocked from running until the scene is finished. While Scenario itself won't deadlock,
 //     anything else called by your update script won't run until the scenario has finished. For this reason, it is strongly
 //     recommended to implement your own wait logic.
 Scenario.prototype.run = function(waitUntilDone)
@@ -399,7 +427,7 @@ Scenario.prototype.stop = function()
 };
 
 // .synchronize() method
-// Suspends the current timeline until all its forks have finished executing.
+// During a scene, suspends the current timeline until all its forks have finished executing.
 Scenario.prototype.synchronize = function()
 {
 	var command = {};
@@ -415,7 +443,7 @@ Scenario.prototype.synchronize = function()
 	return this;
 };
 
-// Register predefined commands
+// Predefined scene commands
 Scenario.defineCommand('call', {
 	start: function(scene, state, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 3));
