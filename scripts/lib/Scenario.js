@@ -160,15 +160,15 @@ function Scenario(isLooping)
 			}
 		}
 	};
-	this.testIf = function(variableName, op, value)
+	this.testIf = function(op, variableName, value)
 	{
 		var operators = {
-			equal: function(a, b) { return a == b; },
-			notEqual: function(a, b) { return a != b; },
-			greaterThan: function(a, b) { return a > b; },
-			greaterThanOrEqual: function(a, b) { return a >= b; },
-			lessThan: function(a, b) { return a < b; },
-			lessThanOrEqual: function(a, b) { return a <= b; }
+			'=': function(a, b) { return a == b; },
+			'!=': function(a, b) { return a != b; },
+			'>': function(a, b) { return a > b; },
+			'>=': function(a, b) { return a >= b; },
+			'<': function(a, b) { return a < b; },
+			'<=': function(a, b) { return a <= b; }
 		};
 		return operators[op](this.variables[variableName], value);
 	}
@@ -313,11 +313,12 @@ Scenario.prototype.isRunning = function()
 // .doIf() method
 // During scene execution, executes a block of commands only if a specified condition is met.
 // Arguments:
+//     op:           A string naming the conditional operator. Can be one of the following:
+//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
+//                   <= (less or equal)
 //     variableName: The name of the variable to be tested.
-//     op:           A string specifying the conditional operator. Can be one of the following:
-//                   'equal', 'notEqual', 'greaterThan', 'lessThan', 'greaterThanOrEqual', 'lessThanOrEqual'
 //     value:        The value to test against.
-Scenario.prototype.doIf = function(variableName, op, value)
+Scenario.prototype.doIf = function(op, variableName, value)
 {
 	var jump = { ifFalse: 0 };
 	this.jumpsToFix.push(jump);
@@ -338,11 +339,12 @@ Scenario.prototype.doIf = function(variableName, op, value)
 // .doUntil() method
 // During scene execution, repeats a block of commands until a specified condition is met.
 // Arguments:
+//     op:           A string naming the conditional operator. Can be one of the following:
+//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
+//                   <= (less or equal)
 //     variableName: The name of the variable to be tested.
-//     op:           A string specifying the conditional operator. Can be one of the following:
-//                   'equal', 'notEqual', 'greaterThan', 'lessThan', 'greaterThanOrEqual', 'lessThanOrEqual'
 //     value:        The value to test against.
-Scenario.prototype.doUntil = function(variableName, op, value)
+Scenario.prototype.doUntil = function(op, variableName, value)
 {
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
 	this.jumpsToFix.push(jump);
@@ -351,6 +353,32 @@ Scenario.prototype.doUntil = function(variableName, op, value)
 		arguments: [ jump ],
 		start: function(scene, state, jump) {
 			if (scene.testIf(variableName, op, value)) {
+				scene.goTo(jump.ifDone);
+			}
+		}
+	};
+	this.enqueue(command);
+	this.openBlocks.push('loop');
+	return this;
+};
+
+// .doWhile() method
+// During scene execution, repeats a block of commands until a specified condition is met.
+// Arguments:
+//     op:           A string naming the conditional operator. Can be one of the following:
+//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
+//                   <= (less or equal)
+//     variableName: The name of the variable to be tested.
+//     value:        The value to test against.
+Scenario.prototype.doWhile = function(op, variableName, value)
+{
+	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
+	this.jumpsToFix.push(jump);
+	var command = {
+		state: {},
+		arguments: [ jump ],
+		start: function(scene, state, jump) {
+			if (!scene.testIf(variableName, op, value)) {
 				scene.goTo(jump.ifDone);
 			}
 		}
