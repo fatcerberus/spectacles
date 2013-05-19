@@ -104,12 +104,14 @@ BGM = new (function()
 	//     trackName: The file name of the BGM track to play, minus extension.
 	this.override = function(trackName)
 	{
-		this.isOverridden = true;
-		this.oldStream = this.stream;
-		if (this.oldStream != null) {
-			this.oldStream.pause();
+		if (!this.isOverriden) {
+			this.isOverridden = true;
+			this.oldStream = this.stream;
+			if (this.oldStream != null) {
+				this.oldStream.pause();
+			}
+			this.currentTrack = trackName;
 		}
-		this.currentTrack = trackName;
 		this.playTrack(this.currentTrack);
 	};
 	

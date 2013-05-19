@@ -50,25 +50,18 @@ Threads.initialize = function()
 //                   (Defaults to 0. Ignored if no renderer is provided.)
 Threads.create = function(o, updater, renderer, inputHandler, priority)
 {
-	if (renderer === undefined) { renderer = null; }
-	if (inputHandler === undefined) { inputHandler = null; }
-	if (priority === undefined) { priority = 0; }
+	renderer = renderer !== void null ? renderer : null;
+	inputHandler = inputHandler !== void null ? inputHandler : null;
+	priority = priority !== void null ? priority : 0;
 	
-	var updateDelegate = new MultiDelegate();
-	updateDelegate.add(o, updater);
-	var renderDelegate = new MultiDelegate();
-	if (renderer !== null) {
-		renderDelegate.add(o, renderer);
-	}
-	var getInputDelegate = new MultiDelegate();
-	if (inputHandler !== null) {
-		getInputDelegate.add(o, inputHandler);
-	}
+	updater = delegate(o, updater);
+	renderer = delegate(o, renderer);
+	inputHandler = delegate(o, inputHandler);
 	var newThread = {
 		id: this.nextThreadID,
-		updater: updateDelegate,
-		renderer: renderDelegate,
-		inputHandler: getInputDelegate,
+		updater: updater,
+		renderer: renderer,
+		inputHandler: inputHandler,
 		priority: priority,
 		isUpdating: false
 	};
@@ -110,18 +103,13 @@ Threads.doWith = function(o, updater, renderer, priority)
 	if (renderer === void null) { renderer = null; }
 	if (priority === void null) { priority = 0; }
 	
-	var updateDelegate = new MultiDelegate();
-	updateDelegate.add(o, updater);
-	var renderDelegate = new MultiDelegate();
-	if (renderer !== null) {
-		renderDelegate.add(o, renderer);
-	}
-	var getInputDelegate = new MultiDelegate();
+	updater = delegate(o, updater);
+	renderer = delegate(o, renderer);
 	var newThread = {
 		id: this.nextThreadID,
-		updater: updateDelegate,
-		renderer: renderDelegate,
-		inputHandler: getInputDelegate,
+		updater: updater,
+		renderer: renderer,
+		inputHandler: null,
 		priority: priority,
 		isUpdating: false
 	};
@@ -168,7 +156,9 @@ Threads.kill = function(threadID)
 Threads.renderAll = function()
 {
 	for (var i = 0; i < this.threads.length; ++i) {
-		this.threads[i].renderer.invoke();
+		if (this.threads[i].renderer !== null) {
+			this.threads[i].renderer();
+		}
 	}
 };
 
@@ -194,11 +184,13 @@ Threads.updateAll = function()
 {
 	for (var i = 0; i < this.threads.length; ++i) {
 		var thread = this.threads[i];
-		thread.inputHandler.invoke();
 		var stillRunning = true;
 		if (!thread.isUpdating) {
 			thread.isUpdating = true;
-			stillRunning = thread.updater.invoke();
+			stillRunning = thread.updater();
+			if (thread.inputHandler !== null && stillRunning) {
+				thread.inputHandler();
+			}
 			thread.isUpdating = false;
 		}
 		if (!stillRunning) {

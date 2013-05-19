@@ -124,9 +124,10 @@ BattleHUD.prototype.render = function()
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
-		if (this.partyInfo[i] != null) {
+		if (this.partyInfo[i] !== null) {
 			var memberInfo = this.partyInfo[i];
 			this.drawElementBox(itemX, itemY, 100, 20, 192, this.highlightedName == memberInfo.name);
+			this.drawHighlight(itemX, itemY, 100, 20, CreateColor(128, 128, 0, 255));
 			this.drawHighlight(itemX, itemY, 100, 20, memberInfo.lightColor);
 			this.drawText(this.font, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), memberInfo.name);
 			this.drawInfoText(itemX + 60, itemY + 4, 35, Math.ceil(memberInfo.hp), "HP");
@@ -153,7 +154,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 {
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
-		if (characterInfo != null && characterInfo.name == name && hp != characterInfo.hp) {
+		if (characterInfo !== null && characterInfo.name == name && hp != characterInfo.hp) {
 			var flashColorInfo = hp > characterInfo.hp ?
 				{ red: 0, green: 192, blue: 0, alpha: 255 } :
 				{ red: 192, green: 0, blue: 0, alpha: 255 };

@@ -15,12 +15,12 @@ RequireScript('Core/Threads.js');
 RequireScript('Game.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_SCENE_DELAYS = false;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = true;
+var DBG_DISABLE_TRANSITIONS = false;
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
@@ -28,6 +28,10 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
+// clone() function
+// Creates a deep copy of an object, preserving circular references.
+// Arguments:
+//     o: The object to clone.
 function clone(o)
 {
 	var clones = arguments.length >= 2 ? arguments[1] : [];
@@ -48,13 +52,46 @@ function clone(o)
 	}
 };
 
+// delegate() function
+// Creates a method delegate from an object and function. When the delegate is called, control is
+// handed over to the function, with the object set as 'this'.
+// Arguments:
+//     o:      The object to pass as 'this' to the method.
+//     method: The function to invoke when the delegate is called.
+// Returns:
+//     A function that, when called, invokes the method with the specified object as 'this'.
+//     Note that if method is null, delegate() also returns null.
 function delegate(o, method)
 {
-	return function(/*...*/) {
-		method.apply(o, arguments);
-	};
+	if (method !== null) {
+		return function(/*...*/) {
+			return method.apply(o, arguments);
+		};
+	} else {
+		return null;
+	}
 }
 
+// PATCH! - Scenario.run() method
+// Scenario's built-in wait loop locks the Specs threader under most circumstances.
+// This patches it so it plays along.
+(function() {
+	var old_Scenario_run = Scenario.prototype.run;
+	
+	Scenario.prototype.run = function(waitUntilDone)
+	{
+		var scene = old_Scenario_run.call(this, false);
+		if (waitUntilDone) {
+			Threads.waitFor(Threads.doWith(scene, function() {
+				return this.isRunning();
+			}));
+		}
+		return scene;
+	}
+})();
+
+// game() function
+// This function is called by Sphere when the game is launched.
 function game()
 {
 	Engine.initialize();

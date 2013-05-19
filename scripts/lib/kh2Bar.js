@@ -50,7 +50,6 @@ function kh2Bar(capacity, sectorSize, color)
 //     y:       The Y coordinate of the top left corner of the gauge, in pixels.
 //     width:   The width of the gauge, in pixels.
 //     height:  The height of the gauge, in pixels.
-//     opacity: Optional. The opacity of the gauge from 0.0 to 1.0. (default: 1.0)
 kh2Bar.prototype.draw = function(x, y, width, height)
 {
 	if (this.fadeness >= 1.0) {
@@ -103,7 +102,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 			color = emptyColor;
 		}
 		slotX = x + (width - slotXSize) - i * (slotXSize - 1);
-		OutlinedRectangle(slotX, slotY, slotXSize, slotYSize, this.borderColor);
+		OutlinedRectangle(slotX, slotY, slotXSize, slotYSize, borderColor);
 		this.drawSegment(slotX + 1, slotY + 1, slotXSize - 2, slotYSize - 2, color);
 	}
 };
@@ -114,6 +113,8 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 //     duration: The duration of the hide animation, in seconds.
 kh2Bar.prototype.hide = function(duration)
 {
+	duration = duration !== void null ? duration : 0.0;
+	
 	if (duration > 0.0) {
 		this.fadeSpeed = 1.0 / duration * (1.0 - this.fadeness);
 	} else {
@@ -129,7 +130,7 @@ kh2Bar.prototype.set = function(value)
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
 	if (value != this.reading) {
 		this.damage += this.reading - value;
-		this.damageFadeDelay = 0.0;
+		this.damageFadeDelay = 0.25;
 		this.damageFadeness = 0.0;
 		this.reading = value;
 	}
@@ -141,6 +142,8 @@ kh2Bar.prototype.set = function(value)
 //     duration: The duration of the show animation, in seconds.
 kh2Bar.prototype.show = function(duration)
 {
+	duration = duration !== void null ? duration : 0.0;
+	
 	if (duration > 0.0) {
 		this.fadeSpeed = 1.0 / duration * (0.0 - this.fadeness);
 	} else {
