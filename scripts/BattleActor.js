@@ -23,6 +23,7 @@ function BattleActor(name, position, row, isMirrored)
 	this.hasEntered = false;
 	this.idFont = GetSystemFont(); /*ALPHA*/
 	this.isMirrored = isMirrored;
+	this.isVisible = true;
 	this.messages = [];
 	this.name = name;
 	this.position = position;
@@ -33,6 +34,17 @@ function BattleActor(name, position, row, isMirrored)
 		case 0: this.y = 160; break;
 		case 1: this.y = 128; break;
 		case 2: this.y = 192; break;
+	}
+};
+
+// .animate() method
+// Instructs the actor to act out a battler action.
+// Arguments:
+//     animationID: The ID of the animation to perform.
+BattleActor.prototype.animate = function(animationID)
+{
+	if (animationID == 'die') {
+		this.isVisible = false;
 	}
 };
 
@@ -69,6 +81,9 @@ BattleActor.prototype.enter = function(isImmediate)
 // Renders the BattleActor in its current state.
 BattleActor.prototype.render = function()
 {
+	if (!this.isVisible) {
+		return;
+	}
 	OutlinedRectangle(this.x, this.y, 16, 32, CreateColor(0, 0, 0, 255));
 	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 	this.idFont.setColorMask(CreateColor(128, 128, 128, 255));

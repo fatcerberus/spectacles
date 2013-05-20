@@ -8,25 +8,43 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
 RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
+
+var DBG_DISABLE_BATTLES = false;
+var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TITLE_CARD = true;
+var DBG_DISABLE_TITLE_SCREEN = true;
+var DBG_DISABLE_TRANSITIONS = true;
+
+EvaluateScript('Game.js');
+
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
 RequireScript('Core/Console.js');
 RequireScript('Core/Threads.js');
-RequireScript('Game.js');
-
-var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_SCENE_DELAYS = false;
-var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TITLE_CARD = true;
-var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = false;
-
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
+
+// PATCH! - Scenario.run() method
+// Scenario's built-in wait loop locks the Specs threader under most circumstances.
+// This patches it so it plays along.
+(function() {
+	var old_Scenario_run = Scenario.prototype.run;
+	
+	Scenario.prototype.run = function(waitUntilDone)
+	{
+		var scene = old_Scenario_run.call(this, false);
+		if (waitUntilDone) {
+			Threads.waitFor(Threads.doWith(scene, function() {
+				return this.isRunning();
+			}));
+		}
+		return scene;
+	}
+})();
 
 // clone() function
 // Creates a deep copy of an object, preserving circular references.
@@ -71,24 +89,6 @@ function delegate(o, method)
 		return null;
 	}
 }
-
-// PATCH! - Scenario.run() method
-// Scenario's built-in wait loop locks the Specs threader under most circumstances.
-// This patches it so it plays along.
-(function() {
-	var old_Scenario_run = Scenario.prototype.run;
-	
-	Scenario.prototype.run = function(waitUntilDone)
-	{
-		var scene = old_Scenario_run.call(this, false);
-		if (waitUntilDone) {
-			Threads.waitFor(Threads.doWith(scene, function() {
-				return this.isRunning();
-			}));
-		}
-		return scene;
-	}
-})();
 
 // game() function
 // This function is called by Sphere when the game is launched.

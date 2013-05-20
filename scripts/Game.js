@@ -14,7 +14,9 @@ Game = {
 	useItemMoveRank: 1,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -76,11 +78,11 @@ Game = {
 			bow: function(actor, target, power) {
 				return 1;
 			},
-			gun: function(actor, target, power) {
-				return 1;
-			},
 			magic: function(actor, target, power) {
 				return Math.max(Math.floor(actor.level * power * (actor.stats.mag.value * 2 + actor.stats.foc.value) / 3 * (100 - target.stats.foc.value * 0.95) / 60000), 1);
+			},
+			pistol: function(actor, target, power) {
+				return 1;
 			},
 			physical: function(actor, target, power) {
 				return 1;
@@ -136,8 +138,24 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				//'necromancy',
+				'necromancy',
 				'omni'
+			]
+		},
+		bruce: {
+			name: "Bruce",
+			fullName: "Bruce Arsen",
+			baseStats: {
+				vit: 65,
+				str: 100,
+				def: 50,
+				foc: 80,
+				mag: 30,
+				agi: 55
+			},
+			startingWeapon: 'arsenRifle',
+			skills: [
+				'sharpshooter'
 			]
 		},
 		maggie: {
@@ -310,6 +328,27 @@ Game = {
 				}
 			]
 		},
+		sharpshooter: {
+			name: "Sharpshooter",
+			category: 'attack',
+			weaponType: 'rifle',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Sharpshooter",
+					rank: 3,
+					accuracyType: 'pistol',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'pistol',
+							power: 40
+						}
+					]
+				}
+			]
+		},
 		necromancy: {
 			name: "Necromancy",
 			category: 'strategy',
@@ -420,6 +459,14 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash'
+			]
+		},
+		arsenRifle: {
+			name: "Arsen's Rifle",
+			type: 'rifle',
+			level: 25,
+			techniques: [
+				'sharpshooter'
 			]
 		},
 		rsbSword: {

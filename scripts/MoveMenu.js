@@ -49,7 +49,7 @@ function MoveMenu(battle, unit)
 	this.showMenu = new Scenario()
 		.fork()	
 			.tween(this.cursorColor, 0.25, 'easeOutQuad', { red:255, green:0, blue:0, alpha:255 })
-			.tween(this.cursorColor, 0.25, 'easeOutQuad', { red:160, green:40, blue:40, alpha:255 })
+			.tween(this.cursorColor, 0.25, 'easeOutQuad', { red:0, green:128, blue:0, alpha:255 })
 		.end()
 		.tween(this, 0.5, 'easeOutBounce', { fadeness: 1.0 });
 	this.showMoveList = new Scenario()
@@ -74,7 +74,7 @@ function MoveMenu(battle, unit)
 		var halfHeight = Math.round(height / 2);
 		GradientRectangle(x, y, width, halfHeight, color2, color2, color, color);
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha / 3));
 	};
 	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor) {
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, Math.min(alpha + 16, 255)));
@@ -86,7 +86,7 @@ function MoveMenu(battle, unit)
 	this.drawSkillItem = function(x, y, skill, isSelected, isLockedIn) {
 		var technique = skill.techniqueID
 		var alpha = 255 * this.fadeness * this.dropFadeness;
-		this.drawItemBox(x, y, 160, 18, alpha * 0.5, isSelected, isLockedIn, this.subCursorColor);
+		this.drawItemBox(x, y, 160, 18, alpha * 160 / 255, isSelected, isLockedIn, this.subCursorColor);
 		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, alpha));
 		OutlinedRectangle(x + 4, y + 2, 13, 13, CreateColor(0, 0, 0, alpha * 0.5));
 		var titleColor = isSelected ? CreateColor(255, 192, 0, alpha) : CreateColor(160, 120, 0, alpha)
@@ -178,7 +178,7 @@ MoveMenu.prototype.render = function()
 	for (var i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
-		this.drawItemBox(x, yOrigin, width, 18, 160 * this.fadeness, i == this.topCursor, this.isDropped, this.cursorColor);
+		this.drawItemBox(x, yOrigin, width, 18, 184 * this.fadeness, i == this.topCursor, this.isDropped, this.cursorColor);
 		var textColor = i == this.topCursor ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(192, 192, 192, 255 * this.fadeness);
 		this.drawText(this.font, x + itemWidth / 2, yOrigin + 3, 1, textColor, this.drawers[i].name, 'center');
 	}

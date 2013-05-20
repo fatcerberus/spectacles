@@ -5,15 +5,6 @@
 
 RequireScript('Battle.js');
 
-RequireScript('lib/Scenario.js');
-
-if (DBG_DISABLE_SCENE_DELAYS) {
-	delete Scenario.prototype.pause;
-	Scenario.defineCommand("pause", {
-		start: function(sceneState, state, duration) {}
-	});
-}
-	
 // .battle() command
 // Starts a battle.
 // Arguments:

@@ -224,7 +224,7 @@ BattleUnit.prototype.growSkill = function(handle, experience)
 BattleUnit.prototype.liftStatus = function(handle)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
-		if (handle == this.statuses[i].handle) {
+		if (handle == this.statuses[i].statusID) {
 			this.actor.showMessage("+", 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
@@ -265,6 +265,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		if (this.hp <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
+			this.actor.animate('die');
 		}
 	} else {
 		this.heal(damageEvent.amount);

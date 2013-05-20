@@ -4,6 +4,7 @@
 ***/
 
 RequireScript("MenuStrip.js");
+RequireScript("Session.js");
 
 function TitleScreen(themeTrack)
 {

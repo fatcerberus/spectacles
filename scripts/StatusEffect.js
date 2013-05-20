@@ -19,18 +19,18 @@ function StatusEffect(subject, handle)
 	this.context = {};
 }
 
-// .handle property
-// Gets the handle of the status class represented by this StatusEffect.
-StatusEffect.prototype.handle getter = function()
-{
-	return this.statusHandle;
-};
-
 // .name property
 // Gets the display name of the status effect
 StatusEffect.prototype.name getter = function()
 {
 	return this.statusClass.name;
+};
+
+// .statusID property
+// Gets the ID of the status manifested by this StatusEffect.
+StatusEffect.prototype.statusID getter = function()
+{
+	return this.statusHandle;
 };
 
 // .invoke() method

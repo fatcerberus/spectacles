@@ -17,14 +17,9 @@ function BattleHUD()
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
 	
-	this.drawElementBox = function(x, y, width, height, alpha, isHighlighted) {
-		isHighlighted = (isHighlighted !== void null) ? isHighlighted : false;
-		
+	this.drawElementBox = function(x, y, width, height, alpha) {
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, alpha + 16));
 		Rectangle(x + 1, y + 1, width - 2, height - 2, CreateColor(0, 0, 0, alpha));
-		if (isHighlighted) {
-			this.drawHighlight(x, y, width, height, this.highlightColor);
-		}
 	};
 	this.drawHighlight = function(x, y, width, height, color) {
 		var halfHeight = Math.round(height / 2);
@@ -32,15 +27,15 @@ function BattleHUD()
 		var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
 		GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha / 3));
 	};
 	this.drawInfoText = function(x, y, width, text, title) {
-		if (title === void null) { title = ""; }
+		title = title !== void null ? title : "";
 		
 		var titleWidth = this.font.getStringWidth(title);
 		var textX = x + titleWidth + width - titleWidth;
 		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
-		this.drawText(this.font, textX, y, 1, CreateColor(192, 192, 192, 255), text, 'right');
+		this.drawText(this.font, textX, y, 1, CreateColor(255, 255, 255, 255), text, 'right');
 	};
 	this.drawLED = function(x, y, radius, color) {
 		var edgeColor = BlendColorsWeighted(color, CreateColor(0, 0, 0, 255), 0.75, 0.25);
@@ -54,10 +49,10 @@ function BattleHUD()
 			right: function(font, x, text) { return x - font.getStringWidth(text); }
 		};
 		
-		if (alignment === void null) { alignment = 'left'; }
+		alignment = alignment !== void null ? alignment : 'left';
 		
 		if (!(alignment in alignments)) {
-			Abort("BattleHUD drawText(): Invalid text alignment '" + alignment + "'.");
+			Abort("BattleHUD.drawText(): Invalid text alignment '" + alignment + "'.");
 		}
 		x = alignments[alignment](font, x, text);
 		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
@@ -105,7 +100,7 @@ BattleHUD.prototype.highlight = function(name)
 		this.highlightedName = name;
 		new Scenario()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', { red: 255, green: 255, blue: 255, alpha: 255 })
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', { red: 0, green: 72, blue: 144, alpha: 255 })
+			.tween(this.highlightColor, 0.25, 'easeOutQuad', { red: 0, green: 80, blue: 160, alpha: 255 })
 			.run();
 	} else {
 		new Scenario()
@@ -120,14 +115,22 @@ BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	this.drawElementBox(0, y, 160, 16, 192);
-	this.drawElementBox(260, y, 60, this.partyInfo.length * 20, 192);
+	OutlinedRectangle(260, y, 60, 60, CreateColor(0, 0, 48, 224));
+	Rectangle(261, y + 1, 58, 58, CreateColor(0, 0, 48, 192));
+	SetClippingRectangle(261, y + 1, 58, 58);
+	GradientCircle(290, y + 30, 45, CreateColor(0, 32, 64, 255), CreateColor(0, 64, 128, 255), true);
+	OutlinedCircle(290, y + 30, 45, CreateColor(0, 0, 0, 84), true);
+	SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
+	this.drawInfoText(280, y + 44, 35, "500", "MP");
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
 		if (this.partyInfo[i] !== null) {
 			var memberInfo = this.partyInfo[i];
-			this.drawElementBox(itemX, itemY, 100, 20, 192, this.highlightedName == memberInfo.name);
-			this.drawHighlight(itemX, itemY, 100, 20, CreateColor(128, 128, 0, 255));
+			this.drawElementBox(itemX, itemY, 100, 20, 192);
+			if (this.highlightedName == memberInfo.name) {
+				this.drawHighlight(itemX, itemY, 100, 20, this.highlightColor);
+			}
 			this.drawHighlight(itemX, itemY, 100, 20, memberInfo.lightColor);
 			this.drawText(this.font, itemX + 5, itemY + 4, 1, CreateColor(255, 255, 255, 255), memberInfo.name);
 			this.drawInfoText(itemX + 60, itemY + 4, 35, Math.ceil(memberInfo.hp), "HP");
@@ -139,7 +142,10 @@ BattleHUD.prototype.render = function()
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
 		var itemY = y + (this.partyInfo.length * 20) + i * 20;
-		this.drawElementBox(itemX, itemY, 160, 20, 192, this.highlightedName == gaugeInfo.owner);
+		this.drawElementBox(itemX, itemY, 160, 20, 192);
+		if (this.highlightedName == gaugeInfo.owner) {
+			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
+		}
 		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 150, 10);
 	}
 	var itemY = y + 60 + this.hpGaugesInfo.length * 20;
@@ -185,7 +191,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 {
 	if (slot < 0 || slot >= this.partyInfo.length) {
-		Abort("BattleHUD switchOut(): Invalid party slot index '" + slot + "'!");
+		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
 	this.partyInfo[slot] = {
 		name: name,
