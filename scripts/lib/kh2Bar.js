@@ -130,7 +130,7 @@ kh2Bar.prototype.set = function(value)
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
 	if (value != this.reading) {
 		this.damage += this.reading - value;
-		this.damageFadeDelay = 0.25;
+		this.damageFadeDelay = 0.0;
 		this.damageFadeness = 0.0;
 		this.reading = value;
 	}

@@ -28,6 +28,18 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
+// FadeColor() function
+// Blends a color's alpha component with the specified value.
+// Arguments:
+//     color: The color whose alpha component is to be blended.
+//     alpha: The alpha value to multiply by.
+// Returns:
+//     A new color object representing the faded color.
+function FadeColor(color, alpha)
+{
+	return CreateColor(color.red, color.green, color.blue, color.alpha * alpha / 255);
+}
+
 // PATCH! - Scenario.run() method
 // Scenario's built-in wait loop locks the Specs threader under most circumstances.
 // This patches it so it plays along.
@@ -91,10 +103,10 @@ function delegate(o, method)
 }
 
 // game() function
-// This function is called by Sphere when the game is launched.
+// This is called by Sphere when the game is launched.
 function game()
 {
-	Engine.initialize();
+	Engine.initialize(60);
 	Threads.initialize();
 	BGM.initialize();
 	Scenario.initialize();

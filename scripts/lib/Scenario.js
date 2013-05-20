@@ -894,6 +894,17 @@ Scenario.defineCommand('tween',
 			state.startValues[p] = o[p];
 			isChanged = isChanged || state.change[p] != 0;
 		}
+		var specialProperties = [
+			'red', 'green', 'blue', 'alpha'
+		];
+		for (var i = 0; i < specialProperties.length; ++i) {
+			var p = specialProperties[i];
+			if (!(p in state.change) && p in endValues) {
+				state.change[p] = endValues[p] - o[p];
+				state.startValues[p] = o[p];
+				isChanged = isChanged || state.change[p] != 0;
+			}
+		}
 		if (!isChanged) {
 			state.elapsed = state.duration;
 		}
