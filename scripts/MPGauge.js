@@ -5,7 +5,7 @@
 
 function MPGauge(capacity)
 {
-	this.color = CreateColor(120, 60, 120, 255);
+	this.color = CreateColor(0, 60, 120, 255);
 	
 	this.capacity = capacity;
 	this.font = GetSystemFont();
@@ -39,7 +39,7 @@ MPGauge.prototype.draw = function(x, y, size)
 	SetClippingRectangle(x, y, size, size);
 	if (this.capacity > 0) {
 		var innerFillColor = this.color;
-		var outerFillColor = BlendColors(innerFillColor, CreateColor(0, 0, 0, 255));
+		var outerFillColor = BlendColors(this.color, CreateColor(0, 0, 0, 255));
 		var outerUsageColor = this.usageColor;
 		var innerUsageColor = BlendColors(outerUsageColor, CreateColor(0, 0, 0, 255));
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);

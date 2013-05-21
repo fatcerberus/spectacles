@@ -7,7 +7,6 @@ RequireScript('lib/json2.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
 RequireScript('lib/Scenario.js');
-RequireScript('lib/SpriteImage.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = true;

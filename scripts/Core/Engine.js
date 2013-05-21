@@ -13,14 +13,8 @@ Engine = new (function()
 	{
 		if (frameRate === undefined) { frameRate = 60; }
 		SetFrameRate(frameRate);
+		this.frameRate = frameRate;
 	}
-	
-	// .frameRate property
-	// Gets the current frame rate.
-	this.frameRate getter = function()
-	{
-		return GetFrameRate();
-	};
 	
 	// .showLogo() method
 	// Momentarily displays a full-screen logo.

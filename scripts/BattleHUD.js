@@ -117,7 +117,7 @@ BattleHUD.prototype.highlight = function(name)
 		this.highlightedName = name;
 		new Scenario()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(255, 64, 64, 255))
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(20, 80, 20, 255))
+			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(64, 64, 64, 255))
 			.run();
 	} else {
 		new Scenario()

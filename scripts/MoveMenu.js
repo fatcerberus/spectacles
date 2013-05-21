@@ -97,7 +97,7 @@ function MoveMenu(battle, unit)
 			BlendColorsWeighted(CreateColor(255, 192, 0, alpha), CreateColor(192, 144, 0, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
 			CreateColor(192, 144, 0, alpha);
 		var textColor = isSelected ?
-			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(192, 192, 192, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
+			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
 			CreateColor(192, 192, 192, alpha);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor);
 		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, alpha));

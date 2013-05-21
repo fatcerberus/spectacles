@@ -50,8 +50,8 @@ PartyMember.prototype.getLevel = function()
 {
 	var sum = 0;
 	var count = 0;
-	for (var name in this.stats) {
-		sum += this.stats[name].level;
+	for (var stat in this.stats) {
+		sum += this.stats[stat].getLevel();
 		++count;
 	}
 	return Math.floor(sum / count);

@@ -15,28 +15,26 @@ function Skill(techniqueID, level)
 	level = level !== void null ? level : 1;
 	
 	if (!(techniqueID in Game.techniques)) {
-		Abort("Skill() - Technique '" + handle + "' doesn't exist!");
+		Abort("Skill(): The technique '" + handle + "' doesn't exist!");
 	}
-	this.technique = Game.techniques[techniqueID];
-	this.name = this.technique.name;
-	this.handle = techniqueID;
+	
 	this.levelStat = new Stat(100, level);
+	this.technique = Game.techniques[techniqueID];
+
+	this.name = this.technique.name;
+	this.techniqueID = techniqueID;
 }
 
-// .experience property
-// Gets or sets the skill's experience point count.
-Skill.prototype.experience getter = function()
+// .getLevel() method
+// Returns the skill's current growth level.
+Skill.prototype.getLevel = function()
 {
-	return this.levelStat.experience;
-};
-Skill.prototype.experience setter = function(value)
-{
-	this.levelStat.experience = value;
+	return this.levelStat.getValue();
 };
 
-// .level property
-// Gets the skill's current growth level.
-Skill.prototype.level getter = function()
+// .grow() method
+// Adds experience to the skill, potentially raising its level.
+Skill.prototype.grow = function(experience)
 {
-	return this.levelStat.value;
+	this.levelStat.grow(experience);
 };

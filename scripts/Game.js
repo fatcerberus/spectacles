@@ -77,7 +77,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return Math.max(Math.floor(actor.level * power * (actor.stats.mag.value * 2 + actor.stats.foc.value) / 3 * (100 - target.stats.foc.value * 0.95) / 60000), 1);
+				return Math.max(Math.floor(actor.getLevel() * power * (actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3 * (100 - target.stats.foc.getValue() * 0.95) / 60000), 1);
 			},
 			pistol: function(actor, target, power) {
 				return 1;
@@ -86,7 +86,7 @@ Game = {
 				return 1;
 			},
 			sword: function(actor, target, power) {
-				return Math.max(Math.floor(actor.weapon.level * actor.stats.str.value * power * (100 - target.stats.def.value * 0.95) / 50000), 1);
+				return Math.max(Math.floor(actor.weapon.level * actor.stats.str.getValue() * power * (100 - target.stats.def.getValue() * 0.95) / 50000), 1);
 			}
 		},
 		experience: {
@@ -123,7 +123,7 @@ Game = {
 			return 1.0;
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return rank * (101 - unit.stats.agi.value);
+			return rank * (101 - unit.stats.agi.getValue());
 		}
 	},
 	

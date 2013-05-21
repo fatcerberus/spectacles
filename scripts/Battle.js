@@ -48,7 +48,7 @@ function Battle(session, battleID)
 				for (var i = 0; i < unitLists[iList].length; ++i) {
 					var unit = unitLists[iList][i];
 					actionTaken = unit.tick() || actionTaken;
-					if (!unit.isAlive) {
+					if (!unit.isAlive()) {
 						unitLists[iList].splice(i, 1);
 						--i; continue;
 					}
@@ -66,9 +66,9 @@ function Battle(session, battleID)
 	};
 }
 
-// .level property
+// .getLevel() method
 // Gets the enemy battle level for the battle.
-Battle.prototype.level getter = function()
+Battle.prototype.getLevel = function()
 {
 	return this.parameters.battleLevel;
 };
@@ -79,7 +79,7 @@ Battle.prototype.level getter = function()
 //     unit: The BattleUnit for which to find enemies.
 Battle.prototype.enemiesOf = function(unit)
 {
-	if (unit.isPartyMember) {
+	if (unit.isPartyMember()) {
 		return this.enemyUnits;
 	} else {
 		return this.playerUnits;
@@ -102,7 +102,7 @@ Battle.prototype.go = function()
 		}
 		memberInfo.stats = {};
 		for (var stat in Game.namedStats) {
-			memberInfo.stats[stat] = member.stats[stat].value;
+			memberInfo.stats[stat] = member.stats[stat].getValue();
 		}
 		partyInfo.push(memberInfo);
 	}
@@ -196,8 +196,8 @@ Battle.prototype.resume = function()
 Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 {
 	if ('announceAs' in action && action.announceAs != null) {
-		var bannerColor = actingUnit.isPartyMember ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
-		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember ? 'party' : 'enemy', bannerColor);
+		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
+		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
 	var targetsHit = [];
 	if ('accuracyType' in action) {
@@ -219,14 +219,14 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 	if (targetsHit.length == 0) {
 		return;
 	}
-	var proficiency = Math.floor(skill.level * actingUnit.level / 100);
-	if (actingUnit.isPartyMember) {
+	var proficiency = Math.floor(skill.getLevel() * actingUnit.getLevel() / 100);
+	if (actingUnit.isPartyMember()) {
 		for (var stat in Game.namedStats) {
 			var experience = Math.max(Game.math.experience.userStat(actingUnit, stat, action, proficiency), 0);
 			if (experience > 0) {
-				actingUnit.stats[stat].experience += experience;
+				actingUnit.stats[stat].grow(experience);
 				Console.writeLine(actingUnit.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-				Console.append("statVal: " + actingUnit.stats[stat].value);
+				Console.append("statVal: " + actingUnit.stats[stat].getValue());
 			}
 		}
 	}
@@ -237,9 +237,9 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 		for (var stat in Game.namedStats) {
 			var experience = Math.max(Game.math.experience.targetStat(targetsHit[i], stat, action, proficiency), 0);
 			if (experience > 0) {
-				targetsHit[i].stats[stat].experience += experience;
+				targetsHit[i].stats[stat].grow(experience);
 				Console.writeLine(targetsHit[i].name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-				Console.append("statVal: " + targetsHit[i].stats[stat].value);
+				Console.append("statVal: " + targetsHit[i].stats[stat].getValue());
 			}
 		}
 	}

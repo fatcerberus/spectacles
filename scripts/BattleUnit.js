@@ -50,7 +50,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		};
 		memberInfo.stats = {};
 		for (var stat in Game.namedStats) {
-			memberInfo.stats[stat] = this.partyMember.stats[stat].value;
+			memberInfo.stats[stat] = this.partyMember.stats[stat].getValue();
 		}
 		this.maxHP = Math.min(Math.max(Game.math.partyMemberHP(memberInfo), 1), 9999);
 		this.hp = this.maxHP;
@@ -59,28 +59,28 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);
 		}
-		for (var name in Game.namedStats) {
-			this.stats[name] = basis.stats[name];
+		for (var stat in Game.namedStats) {
+			this.stats[stat] = basis.stats[stat];
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
 	} else {
 		this.enemyInfo = basis;
 		this.name = this.enemyInfo.name;
-		for (var name in Game.namedStats) {
-			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.level, false);
+		for (var stat in Game.namedStats) {
+			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
 		}
-		this.maxHP = Math.max(Game.math.enemyHP(this.enemyInfo, battle.level), 1);
+		this.maxHP = Math.max(Game.math.enemyHP(this.enemyInfo, battle.getLevel()), 1);
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
-	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember ? 'party' : 'enemy');
-	if (this.isPartyMember) {
+	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
+	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
 	}
-	if (!this.isPartyMember) {
+	if (!this.isPartyMember()) {
 		this.actor.enter(true);
 	}
 	this.counter = Game.math.timeUntilNextTurn(this, Game.defaultMoveRank);
@@ -88,10 +88,11 @@ function BattleUnit(battle, basis, position, startingRow)
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 
-	this.invokeStatuses = function(eventName, event) {
-		if (event === undefined) { event = null; }
+	this.invokeStatuses = function(eventID, event) {
+		event = event !== void null ? event : null;
+		
 		for (var i = 0; i < this.statuses.length; ++i) {
-			this.statuses[i].invoke(eventName, event);
+			this.statuses[i].invoke(eventID, event);
 		}
 	};
 	this.resetCounter = function(rank) {
@@ -101,41 +102,41 @@ function BattleUnit(battle, basis, position, startingRow)
 	};
 }
 
-// .health property
-// Gets the unit's remaining health as a percentage.
-BattleUnit.prototype.health getter = function()
+// .getHealth() method
+// Calculates the unit's remaining health as a percentage.
+BattleUnit.prototype.getHealth = function()
 {
 	return Math.floor(100 * this.hp / this.maxHP);
 };
 
-// .isAlive property
-// Gets a value indicating whether the unit is still alive.
-BattleUnit.prototype.isAlive getter = function()
+// .isAlive() method
+// Determines whether the unit is still able to battle.
+BattleUnit.prototype.isAlive = function()
 {
 	return this.hp > 0;
 };
 
-// .isPartyMember property
-// Gets a value indicating whether or not the unit represents a party member.
-BattleUnit.prototype.isPartyMember getter = function()
+// .isPartyMember() method
+// Determines whether the unit represents a party member.
+BattleUnit.prototype.isPartyMember = function()
 {
 	return this.partyMember != null;
 };
 
-// .level property
-// Gets the unit's battle level.
-BattleUnit.prototype.level getter = function()
+// .getLevel() method
+// Calculates the unit's overall level.
+BattleUnit.prototype.getLevel = function()
 {
 	if (this.partyMember != null) {
 		return this.partyMember.getLevel();
 	} else {
-		return this.battle.level;
+		return this.battle.getLevel();
 	}
 };
 
-// .timeUntilNextTurn property
-// Gets the number of ticks until the battler can act.
-BattleUnit.prototype.timeUntilNextTurn getter = function()
+// .timeUntilNextTurn() method
+// Returns the number of ticks until the battler can act.
+BattleUnit.prototype.timeUntilNextTurn = function()
 {
 	return this.counter;
 };
@@ -143,13 +144,13 @@ BattleUnit.prototype.timeUntilNextTurn getter = function()
 // .addStatus() method
 // Inflicts a status effect on the battler.
 // Arguments:
-//     handle: The status class handle for the status to inflict.
-BattleUnit.prototype.addStatus = function(handle)
+//     statusID: The ID of the status to inflict.
+BattleUnit.prototype.addStatus = function(statusID)
 {
-	var statusEffect = new StatusEffect(this, handle)
-	this.statuses.push(statusEffect);
+	var effect = new StatusEffect(this, statusID)
+	this.statuses.push(effect);
 	this.actor.showMessage("+", 'afflict');
-	Console.writeLine(this.name + " afflicted with status " + statusEffect.name);
+	Console.writeLine(this.name + " afflicted with status " + effect.name);
 };
 
 // .die() method
@@ -203,21 +204,21 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 // .growSkill() method
 // Adds experience to a party unit's existing skill or teaches it a new one.
 // Arguments:
-//     handle:     The technique handle for the skill to grow. If the unit doesn't already know the technique,
-//                 it will be taught.
-//     experience: The amount of experience to add to an existing skill.
-BattleUnit.prototype.growSkill = function(handle, experience)
+//     techniqueID: The technique ID of the skill to grow. If the unit doesn't already know the technique,
+//                  it will be taught.
+//     experience:  The amount of experience to grow if the skill is already known.
+BattleUnit.prototype.growSkill = function(techniqueID, experience)
 {
 	var hasSkill = false;
 	for (var i = 0; i < this.skills.length; ++i) {
-		if (handle == this.skills[i].handle) {
+		if (techniqueID == this.skills[i].techniqueID) {
 			hasSkill = true;
-			this.skills[i].experience += experience;
+			this.skills[i].grow(experience);
 			Console.writeLine(this.name + "'s skill " + this.skills[i].name + " gained " + experience + " EXP");
 		}
 	}
 	if (!hasSkill) {
-		var skill = this.partyMember.learnSkill(handle);
+		var skill = this.partyMember.learnSkill(techniqueID);
 		this.skills.push(skill);
 		this.newSkills.push(skill);
 		Console.writeLine(this.name + " learned " + skill.name);
@@ -227,11 +228,11 @@ BattleUnit.prototype.growSkill = function(handle, experience)
 // .liftStatus() method
 // Nullifies a status effects's influence on the battler.
 // Arguments:
-//     handle: The status class handle of the status to remove.
-BattleUnit.prototype.liftStatus = function(handle)
+//     statusID: The status ID of the status effect to remove.
+BattleUnit.prototype.liftStatus = function(statusID)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
-		if (handle == this.statuses[i].statusID) {
+		if (statusID == this.statuses[i].statusID) {
 			this.actor.showMessage("+", 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
@@ -283,7 +284,7 @@ BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
 // Decrements the battler's CTB counter.
 BattleUnit.prototype.tick = function()
 {
-	if (!this.isAlive) {
+	if (!this.isAlive()) {
 		return false;
 	}
 	--this.counter;
@@ -297,13 +298,13 @@ BattleUnit.prototype.tick = function()
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
-			if (this.isPartyMember) {
+			if (this.isPartyMember()) {
 				this.skillUsed = this.moveMenu.open();
 				var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
 				var experience = Game.math.experience.skill(this, this.skillUsed.technique);
-				this.skillUsed.experience += experience;
+				this.skillUsed.grow(experience);
 				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
-				Console.append("level: " + this.skillUsed.level);
+				Console.append("level: " + this.skillUsed.getLevel());
 				var move = {
 					type: 'technique',
 					technique: this.skillUsed.technique,
