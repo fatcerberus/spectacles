@@ -29,12 +29,7 @@ function BattleActor(name, position, row, isMirrored)
 	this.position = position;
 	this.row = row;
 	this.x = this.isMirrored ? 320 : -16;
-	this.y = -32;
-	switch (this.position) {
-		case 0: this.y = 160; break;
-		case 1: this.y = 128; break;
-		case 2: this.y = 192; break;
-	}
+	this.y = 128 + this.position * 32;
 };
 
 // .animate() method

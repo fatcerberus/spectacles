@@ -8,23 +8,22 @@ RequireScript('lib/kh2Bar.js');
 
 // BattleHUD() constructor
 // Creates an object representing the battle screen heads-up display (HUD).
-function BattleHUD()
+// Arguments:
+//     partyMaxMP: The party's current MP capacity.
+function BattleHUD(partyMaxMP)
 {
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.highlightColor = CreateColor(0, 0, 0, 0);
 	this.highlightedName = null;
 	this.hpGaugesInfo = [];
-	this.mpGauge = new MPGauge(500);
+	this.mpGauge = new MPGauge(partyMaxMP);
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
 	
-	this.drawElementBox = function(x, y, width, height, color) {
-		color = color !== void null ? color : CreateColor(0, 0, 0, 192);
-		
-		var borderColor = CreateColor(color.red, color.green, color.blue, Math.min(color.alpha * 1.05, 255));
-		OutlinedRectangle(x, y, width, height, borderColor);
-		Rectangle(x + 1, y + 1, width - 2, height - 2, color);
+	this.drawElementBox = function(x, y, width, height) {
+		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 172));
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
 	};
 	this.drawHighlight = function(x, y, width, height, color) {
 		var outerColor = color;
@@ -42,32 +41,23 @@ function BattleHUD()
 		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
 		this.drawText(this.font, textX, y, 1, CreateColor(255, 255, 255, 255), text, 'right');
 	};
-	this.drawLED = function(x, y, radius, color) {
-		var edgeColor = BlendColorsWeighted(color, CreateColor(0, 0, 0, 255), 0.75, 0.25);
-		GradientCircle(x, y, radius - 1, color, edgeColor, false);
-		GradientCircle(x, y, radius, CreateColor(0, 0, 0, color.alpha), false);
-	}
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted) {
-		if (memberInfo !== null) {
-			this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
-			if (isHighlighted) {
-				this.drawHighlight(x, y, 100, 20, this.highlightColor);
-			}
-			this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
-			var textColor = isHighlighted ?
-				BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-				CreateColor(192, 192, 192, 255);
-			var titleColor = isHighlighted ?
-				BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-				CreateColor(192, 144, 0, 255);
-			textColor = CreateColor(255, 255, 255, 255);
-			titleColor = CreateColor(255, 192, 0, 255);
-			this.drawText(this.font, x + 5, y + 4, 1, textColor, memberInfo.name);
-			this.drawText(this.font, x + 59, y + 2, 1, titleColor, "HP");
-			this.drawText(this.font, x + 94, y + 4, 1, textColor, Math.round(memberInfo.hp), 'right');
-		} else {
-			this.drawElementBox(itemX, itemY, 100, 20);
+		this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
+		if (isHighlighted) {
+			this.drawHighlight(x, y, 100, 20, this.highlightColor);
 		}
+		this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
+		var textColor = isHighlighted ?
+			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			CreateColor(192, 192, 192, 255);
+		var titleColor = isHighlighted ?
+			BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			CreateColor(192, 144, 0, 255);
+		textColor = CreateColor(255, 255, 255, 255);
+		titleColor = CreateColor(255, 192, 0, 255);
+		this.drawText(this.font, x + 5, y + 4, 1, textColor, memberInfo.name);
+		this.drawText(this.font, x + 51, y + 2, 1, titleColor, "HP");
+		this.drawText(this.font, x + 94, y + 4, 1, textColor, Math.round(memberInfo.hp), 'right');
 	}
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var alignments = {
@@ -126,8 +116,8 @@ BattleHUD.prototype.highlight = function(name)
 	if (name !== null) {
 		this.highlightedName = name;
 		new Scenario()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(255, 255, 255, 255))
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(0, 128, 0, 255))
+			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(255, 64, 64, 255))
+			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(20, 80, 20, 255))
 			.run();
 	} else {
 		new Scenario()
@@ -143,12 +133,16 @@ BattleHUD.prototype.render = function()
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	this.drawElementBox(0, y, 160, 16);
 	var itemY = y;
-	this.drawElementBox(260, itemY, 60, 60, CreateColor(0, 0, 32, 192));
-	this.mpGauge.draw(261, itemY + 1, 58, 58);
+	this.drawElementBox(260, itemY, 60, 60);
+	this.mpGauge.draw(261, itemY + 1, 58);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
-		this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedName == this.partyInfo[i].name);
+		if (this.partyInfo[i] !== null) {
+			this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedName == this.partyInfo[i].name);
+		} else {
+			this.drawElementBox(itemX, itemY, 100, 20);
+		}
 	}
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
@@ -190,7 +184,6 @@ BattleHUD.prototype.setHP = function(name, hp)
 			gaugeInfo.gauge.set(hp);
 		}
 	}
-	this.mpGauge.set(this.mpGauge.reading - 50);
 };
 
 // .setPartyMember() method

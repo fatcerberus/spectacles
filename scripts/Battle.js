@@ -94,19 +94,32 @@ Battle.prototype.go = function()
 		return BattleResult.playerWon;
 	}
 	Console.writeLine("Starting battle '" + this.battleID + "'");
-	this.ui = new BattleScreen();
+	var partyInfo = [];
+	for (id in this.session.party.members) {
+		var member = this.session.party.members[id];
+		var memberInfo = {
+			characterID: member.characterID
+		}
+		memberInfo.stats = {};
+		for (var stat in Game.namedStats) {
+			memberInfo.stats[stat] = member.stats[stat].value;
+		}
+		partyInfo.push(memberInfo);
+	}
+	var partyMaxMP = Math.round(Game.math.partyMP(partyInfo));
+	this.ui = new BattleScreen(partyMaxMP);
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyInfo = Game.enemies[this.parameters.enemies[i]];
-		var unit = new BattleUnit(this, enemyInfo, i, BattleRow.middle);
+		var unit = new BattleUnit(this, enemyInfo, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
 		this.enemyUnits.push(unit);
 	}
-	var position = 0;
+	var i = 0;
 	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name], position, BattleRow.middle);
+		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
 		this.playerUnits.push(unit);
-		++position;
+		++i;
 	}
 	var battleBGMTrack = this.defaultBattleBGM;
 	if (this.parameters.bgm != null) {

@@ -5,7 +5,7 @@
 
 function MPGauge(capacity)
 {
-	this.color = CreateColor(0, 80, 160, 255);
+	this.color = CreateColor(120, 60, 120, 255);
 	
 	this.capacity = capacity;
 	this.font = GetSystemFont();
@@ -33,19 +33,21 @@ function MPGauge(capacity)
 	};
 }
 
-MPGauge.prototype.draw = function(x, y, width, height)
+MPGauge.prototype.draw = function(x, y, size)
 {
 	var oldClip = GetClippingRectangle();
-	SetClippingRectangle(x, y, width, height);
-	var maxRadius = Math.ceil(width * Math.sqrt(2) / 2);
-	var innerFillColor = this.color;
-	var outerFillColor = BlendColors(innerFillColor, CreateColor(0, 0, 0, 255));
-	var outerUsageColor = this.usageColor;
-	var innerUsageColor = BlendColors(outerUsageColor, CreateColor(0, 0, 0, 255));
-	GradientCircle(x + width / 2, y + height / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
-	GradientCircle(x + width / 2, y + height / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
-	this.drawText(this.font, x + width - 39, y + height - 17, 1, CreateColor(255, 192, 0, 255), "MP");
-	this.drawText(this.font, x + width - 4, y + height - 15, 1, CreateColor(255, 255, 255, 255), this.reading, 'right');
+	SetClippingRectangle(x, y, size, size);
+	if (this.capacity > 0) {
+		var innerFillColor = this.color;
+		var outerFillColor = BlendColors(innerFillColor, CreateColor(0, 0, 0, 255));
+		var outerUsageColor = this.usageColor;
+		var innerUsageColor = BlendColors(outerUsageColor, CreateColor(0, 0, 0, 255));
+		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
+		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
+		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
+		this.drawText(this.font, x + size / 2 - 22, y + size / 2 - 8, 1, CreateColor(255, 192, 0, 255), "MP");
+		this.drawText(this.font, x + size / 2 + 22, y + size / 2 - 6, 1, CreateColor(255, 255, 255, 255), this.reading, 'right');
+	}
 	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
 };
 

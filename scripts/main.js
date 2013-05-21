@@ -28,18 +28,6 @@ RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
-// FadeColor() function
-// Blends a color's alpha component with the specified value.
-// Arguments:
-//     color: The color whose alpha component is to be blended.
-//     alpha: The alpha value to multiply by.
-// Returns:
-//     A new color object representing the faded color.
-function FadeColor(color, alpha)
-{
-	return CreateColor(color.red, color.green, color.blue, color.alpha * alpha / 255);
-}
-
 // PATCH! - Scenario.run() method
 // Scenario's built-in wait loop locks the Specs threader under most circumstances.
 // This patches it so it plays along.
@@ -48,13 +36,13 @@ function FadeColor(color, alpha)
 	
 	Scenario.prototype.run = function(waitUntilDone)
 	{
-		var scene = old_Scenario_run.call(this, false);
+		old_Scenario_run.call(this, false);
 		if (waitUntilDone) {
-			Threads.waitFor(Threads.doWith(scene, function() {
+			Threads.waitFor(Threads.doWith(this, function() {
 				return this.isRunning();
 			}));
 		}
-		return scene;
+		return this;
 	}
 })();
 

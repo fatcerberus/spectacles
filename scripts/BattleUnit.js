@@ -45,7 +45,14 @@ function BattleUnit(battle, basis, position, startingRow)
 	if (basis instanceof PartyMember) {
 		this.partyMember = basis;
 		this.character = Game.characters[this.partyMember.characterID];
-		this.maxHP = Game.math.partyMemberHP(this.partyMember);
+		var memberInfo = {
+			characterID: this.partyMember.characterID
+		};
+		memberInfo.stats = {};
+		for (var stat in Game.namedStats) {
+			memberInfo.stats[stat] = this.partyMember.stats[stat].value;
+		}
+		this.maxHP = Math.min(Math.max(Game.math.partyMemberHP(memberInfo), 1), 9999);
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		var skills = this.partyMember.getUsableSkills();
@@ -62,7 +69,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var name in Game.namedStats) {
 			this.stats[name] = new Stat(this.enemyInfo.baseStats[name], battle.level, false);
 		}
-		this.maxHP = Game.math.enemyHP(this.enemyInfo, battle.level);
+		this.maxHP = Math.max(Game.math.enemyHP(this.enemyInfo, battle.level), 1);
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {

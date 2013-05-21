@@ -8,7 +8,9 @@ RequireScript('BattleHUD.js');
 
 // BattleScreen() constructor
 // Creates an object representing a battle screen.
-function BattleScreen()
+// Arguments:
+//     partyMaxMP: The party's current MP capacity.
+function BattleScreen(partyMaxMP)
 {
 	this.actorTypes = {
 		enemy: { isMirrored: false },
@@ -19,7 +21,7 @@ function BattleScreen()
 	for (var type in this.actorTypes) {
 		this.actors[type] = [];
 	}
-	this.hud = new BattleHUD();
+	this.hud = new BattleHUD(partyMaxMP);
 	
 	this.startThread = function() {
 		this.thread = Threads.createEntityThread(this);

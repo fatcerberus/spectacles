@@ -14,9 +14,7 @@ Game = {
 	useItemMoveRank: 1,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -110,8 +108,16 @@ Game = {
 		enemyHP: function(enemy, level) {
 			return enemy.baseStats.vit * level;
 		},
-		partyMemberHP: function(partyMember) {
-			return partyMember.stats.vit.value * 10;
+		partyMP: function(partyInfo) {
+			var maxMP = 0;
+			for (var i = 0; i < partyInfo.length; ++i) {
+				var member = partyInfo[i];
+				maxMP += member.stats.mag * 15;
+			}
+			return maxMP;
+		},
+		partyMemberHP: function(memberInfo) {
+			return memberInfo.stats.vit * 50;
 		},
 		retreatChance: function(enemyUnits) {
 			return 1.0;

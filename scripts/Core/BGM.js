@@ -80,8 +80,7 @@ BGM = new (function()
 			}
 		} else {
 			this.defaultTrack = trackName;
-			if (this.oldStream != null)
-			{
+			if (this.oldStream != null) {
 				this.oldStream.stop();
 				this.oldStream = null;
 			}
@@ -104,14 +103,14 @@ BGM = new (function()
 	//     trackName: The file name of the BGM track to play, minus extension.
 	this.override = function(trackName)
 	{
-		if (!this.isOverriden) {
+		if (!this.isOverridden) {
 			this.isOverridden = true;
 			this.oldStream = this.stream;
-			if (this.oldStream != null) {
+			if (this.oldStream !== null) {
 				this.oldStream.pause();
 			}
-			this.currentTrack = trackName;
 		}
+		this.currentTrack = trackName;
 		this.playTrack(this.currentTrack);
 	};
 	
@@ -124,7 +123,7 @@ BGM = new (function()
 		}
 		this.isOverridden = false;
 		this.currentTrack = this.defaultTrack;
-		if (this.oldStream == null) {
+		if (this.oldStream === null) {
 			this.playTrack(this.currentTrack);
 		} else {
 			this.stream.stop();
