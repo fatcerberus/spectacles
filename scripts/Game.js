@@ -117,7 +117,7 @@ Game = {
 			return maxMP;
 		},
 		partyMemberHP: function(memberInfo) {
-			return memberInfo.stats.vit * 50;
+			return memberInfo.stats.vit * 10;
 		},
 		retreatChance: function(enemyUnits) {
 			return 1.0;
@@ -194,6 +194,12 @@ Game = {
 				}
 				event.amount = Math.floor(event.amount * 1.5);
 				subject.liftStatus('offGuard');
+			}
+		},
+		spectacles: {
+			name: "The Spectacles",
+			beginTurn: function(subject, event) {
+				subject.heal(subject.stats.mag.getValue());
 			}
 		},
 		zombie: {
@@ -529,12 +535,34 @@ Game = {
 				technique: 'omni',
 				experience: 1000
 			},
-			strategize: function(me, battle, turnPreview) {
-				enemies = battle.enemiesOf(me);
+			strategize: function(me, enemies, allies, nextUp) {
+				if ('maggie' in enemies) {
+					var killMe = function() { me.takeDamage(me.maxHP); };
+					new Scenario()
+						.talk("Robert", 2.0, "Wait a minute... what in Hades' name is SHE doing here?")
+						.talk("maggie", 2.0, "The same thing I'm always doing, Robert, eating you!")
+						.call(killMe)
+						.playSound('Munch.wav')
+						.run(true);
+					return null;
+				}
+				var targets = 'scott' in enemies ? [ enemies.scott ] : [ enemies[0] ];
+				if (this.turnsTaken == 0) {
+					techniqueToUse = 'omni';
+				} else if (this.turnsTaken == 1) {
+					techniqueToUse = 'necromancy';
+				} else {
+					var phase =
+						me.getHealth() > 75 ? 1 :
+						me.getHealth() > 50 ? 2 :
+						me.getHealth() > 33 ? 3 :
+						4;
+					techniqueToUse = 'swordSlash';
+				}
 				return {
 					type: 'technique',
-					technique: 'swordSlash',
-					targets: [ enemies[0] ]
+					technique: techniqueToUse,
+					targets: targets
 				};
 			}
 		}
@@ -563,6 +591,7 @@ Game = {
 				'robert2'
 			],
 			onStart: function() {
+				this.playerUnits[0].addStatus('spectacles');
 				new Scenario()
 					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "

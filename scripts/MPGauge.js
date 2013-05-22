@@ -5,7 +5,7 @@
 
 function MPGauge(capacity)
 {
-	this.color = CreateColor(0, 60, 120, 255);
+	this.color = CreateColor(128, 64, 128, 255);
 	
 	this.capacity = capacity;
 	this.font = GetSystemFont();
@@ -23,7 +23,7 @@ function MPGauge(capacity)
 		alignment = alignment !== void null ? alignment : 'left';
 		
 		if (!(alignment in alignments)) {
-			Abort("BattleHUD.drawText(): Invalid text alignment '" + alignment + "'.");
+			Abort("MPGauge.drawText(): Invalid text alignment '" + alignment + "'.");
 		}
 		x = alignments[alignment](font, x, text);
 		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
@@ -41,7 +41,7 @@ MPGauge.prototype.draw = function(x, y, size)
 		var innerFillColor = this.color;
 		var outerFillColor = BlendColors(this.color, CreateColor(0, 0, 0, 255));
 		var outerUsageColor = this.usageColor;
-		var innerUsageColor = BlendColors(outerUsageColor, CreateColor(0, 0, 0, 255));
+		var innerUsageColor = BlendColors(this.usageColor, CreateColor(0, 0, 0, 255));
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);

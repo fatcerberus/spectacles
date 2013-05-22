@@ -73,8 +73,21 @@ Battle.prototype.getLevel = function()
 	return this.parameters.battleLevel;
 };
 
+// .alliesOf() method
+// Gets a list of all BattleUnits allied with a specified unit.
+// Arguments:
+//     unit: The BattleUnit for which to find allies.
+Battle.prototype.alliesOf = function(unit)
+{
+	if (unit.isPartyMember()) {
+		return this.partyUnits;
+	} else {
+		return this.enemyUnits;
+	}
+};
+
 // .enemiesOf() method
-// Gets a list of all the units opposing a specified unit.
+// Gets a list of all BattleUnits opposing a specified unit.
 // Arguments:
 //     unit: The BattleUnit for which to find enemies.
 Battle.prototype.enemiesOf = function(unit)
@@ -106,13 +119,13 @@ Battle.prototype.go = function()
 		}
 		partyInfo.push(memberInfo);
 	}
-	var partyMaxMP = Math.round(Game.math.partyMP(partyInfo));
+	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.partyMP(partyInfo), 0), 9999));
 	this.ui = new BattleScreen(partyMaxMP);
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
-		var enemyInfo = Game.enemies[this.parameters.enemies[i]];
-		var unit = new BattleUnit(this, enemyInfo, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
+		var enemyID = this.parameters.enemies[i];
+		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
 		this.enemyUnits.push(unit);
 	}
 	var i = 0;

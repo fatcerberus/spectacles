@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.6 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 1.6.1 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -72,8 +72,8 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	var barDamaged = Math.min(this.damage, this.sectorSize - barFilled);
 	var barHeight = Math.ceil(height * 0.5 + 0.5);
 	var widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
-	var fillWidth = Math.round(widthInUse * barFilled / barInUse);
-	var damageWidth = Math.round(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
+	var fillWidth = Math.ceil(widthInUse * barFilled / barInUse);
+	var damageWidth = Math.ceil(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
 	var emptyWidth = widthInUse - (fillWidth + damageWidth);
 	var borderColor = this.fadeColor(this.borderColor, this.fadeness);
 	var fillColor = this.fadeColor(this.hpColor, this.fadeness);

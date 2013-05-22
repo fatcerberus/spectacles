@@ -28,7 +28,9 @@ function BattleUnit(battle, basis, position, startingRow)
 {
 	this.actionQueue = [];
 	this.actor = null;
-	this.aiData = { turnsTaken: 0 };
+	this.aiData = {
+		turnsTaken: 0
+	};
 	this.battle = battle;
 	this.counter = 0;
 	this.hp = 0;
@@ -44,6 +46,7 @@ function BattleUnit(battle, basis, position, startingRow)
 	
 	if (basis instanceof PartyMember) {
 		this.partyMember = basis;
+		this.id = this.partyMember.characterID;
 		this.character = Game.characters[this.partyMember.characterID];
 		var memberInfo = {
 			characterID: this.partyMember.characterID
@@ -52,7 +55,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var stat in Game.namedStats) {
 			memberInfo.stats[stat] = this.partyMember.stats[stat].getValue();
 		}
-		this.maxHP = Math.min(Math.max(Game.math.partyMemberHP(memberInfo), 1), 9999);
+		this.maxHP = Math.round(Math.min(Math.max(Game.math.partyMemberHP(memberInfo), 1), 999));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		var skills = this.partyMember.getUsableSkills();
@@ -64,7 +67,11 @@ function BattleUnit(battle, basis, position, startingRow)
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
 	} else {
-		this.enemyInfo = basis;
+		if (!(basis in Game.enemies)) {
+			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
+		}
+		this.enemyInfo = Game.enemies[basis];
+		this.id = basis;
 		this.name = this.enemyInfo.name;
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
@@ -293,6 +300,9 @@ BattleUnit.prototype.tick = function()
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
 		this.invokeStatuses('beginTurn');
+		if (!this.isAlive()) {
+			return false;
+		}
 		var action = null;
 		if (this.actionQueue.length > 0) {
 			Console.writeLine("Robert still has " + this.actionQueue.length + " action(s) pending");
@@ -314,7 +324,22 @@ BattleUnit.prototype.tick = function()
 				}
 				
 			} else {
-				var move = this.enemyInfo.strategize.call(this.aiData, this, this.battle, this.battle.predictTurns(this, null));
+				var enemyList = this.battle.enemiesOf(this);
+				var enemies = [];
+				for (var i = 0; i < enemyList.length; ++i) {
+					var enemy = enemyList[i];
+					enemies.push(enemy);
+					enemies[enemy.id] = enemy;
+				}
+				var allyList = this.battle.alliesOf(this);
+				var allies = [];
+				for (var i = 0; i < allyList.length; ++i) {
+					var ally = allyList[i];
+					allies.push(ally);
+					allies[ally.id] = ally;
+				}
+				var move = this.enemyInfo.strategize.call(this.aiData, this, enemies, allies, this.battle.predictTurns(this, null));
+				++this.aiData.turnsTaken;
 				this.skillUsed = new Skill(move.technique, 100);
 				move.technique = this.skillUsed.technique;
 			}
@@ -331,8 +356,10 @@ BattleUnit.prototype.tick = function()
 				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 			}
 		}
-		this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
-		this.resetCounter(action.rank);
+		if (this.isAlive()) {
+			this.battle.runAction(this, this.moveTargets, this.skillUsed, action);
+			this.resetCounter(action.rank);
+		}
 		this.battle.resume();
 		return true;
 	} else {

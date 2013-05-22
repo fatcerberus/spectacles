@@ -31,15 +31,7 @@ function BattleHUD(partyMaxMP)
 		var halfHeight = Math.round((height - 2) / 2);
 		GradientRectangle(x + 1, y + 1, width - 2, halfHeight, outerColor, outerColor, innerColor, innerColor);
 		GradientRectangle(x + 1, y + 1 + halfHeight, width - 2, height - 2 - halfHeight, innerColor, innerColor, outerColor, outerColor);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 255 * color.alpha / 255));
-	};
-	this.drawInfoText = function(x, y, width, text, title) {
-		title = title !== void null ? title : "";
-		
-		var titleWidth = this.font.getStringWidth(title);
-		var textX = x + titleWidth + width - titleWidth;
-		this.drawText(this.font, x, y - 2, 1, CreateColor(255, 192, 0, 255), title);
-		this.drawText(this.font, textX, y, 1, CreateColor(255, 255, 255, 255), text, 'right');
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
 	};
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted) {
 		this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
@@ -56,7 +48,7 @@ function BattleHUD(partyMaxMP)
 		textColor = CreateColor(255, 255, 255, 255);
 		titleColor = CreateColor(255, 192, 0, 255);
 		this.drawText(this.font, x + 5, y + 4, 1, textColor, memberInfo.name);
-		this.drawText(this.font, x + 51, y + 2, 1, titleColor, "HP");
+		this.drawText(this.font, x + 58, y + 2, 1, titleColor, "HP");
 		this.drawText(this.font, x + 94, y + 4, 1, textColor, Math.round(memberInfo.hp), 'right');
 	}
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
@@ -116,8 +108,8 @@ BattleHUD.prototype.highlight = function(name)
 	if (name !== null) {
 		this.highlightedName = name;
 		new Scenario()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(255, 64, 64, 255))
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(64, 64, 64, 255))
+			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 128, 255, 255))
+			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(0, 36, 72, 255))
 			.run();
 	} else {
 		new Scenario()
@@ -148,7 +140,7 @@ BattleHUD.prototype.render = function()
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
 		var itemY = y + this.partyInfo.length * 20 + i * 20;
-		this.drawElementBox(itemX, itemY, 160, 20, CreateColor(0, 32, 0, 192));
+		this.drawElementBox(itemX, itemY, 160, 20);
 		if (this.highlightedName == gaugeInfo.owner) {
 			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 		}
@@ -166,13 +158,11 @@ BattleHUD.prototype.setHP = function(name, hp)
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
 		if (characterInfo !== null && characterInfo.name == name && hp != characterInfo.hp) {
-			var flashColorInfo = hp > characterInfo.hp ?
-				{ red: 0, green: 192, blue: 0, alpha: 255 } :
-				{ red: 192, green: 0, blue: 0, alpha: 255 };
+			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new Scenario()
 				.fork()
-					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColorInfo)
-					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', { red: 0, green: 0, blue: 0, alpha: 0 })
+					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColor)
+					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', CreateColor(0, 0, 0, 0))
 				.end()
 				.tween(characterInfo, 0.25, 'easeInOutSine', { hp: hp })
 				.run();
