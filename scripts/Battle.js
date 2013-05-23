@@ -19,7 +19,7 @@ BattleResult =
 // Creates an object representing a battle session.
 // Arguments:
 //     session:  The game session in which the battle is taking place.
-//     battleID: The ID of the battle definition to use to set up the fight.
+//     battleID: The ID of the battle descriptor to use to set up the fight.
 function Battle(session, battleID)
 {
 	if (!(battleID in Game.battles)) {
@@ -202,11 +202,12 @@ Battle.prototype.resume = function()
 // .runAction() method
 // Executes a battler action.
 // Arguments:
-//     actingUnit:  The BattleUnit performing the move.
-//     targetUnits: The list of BattleUnits, if any, targetted by the action.
-//     skill:       The Skill used by the acting unit to intiate the action.
 //     action:      The action to be executed.
-Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
+//     actingUnit:  The BattleUnit performing the action.
+//     targetUnits: The list of BattleUnits, if any, targetted by the action.
+// Returns:
+//     A list of all units affected by the action.
+Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 {
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
@@ -230,37 +231,13 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 		targetsHit = targetUnits;
 	}
 	if (targetsHit.length == 0) {
-		return;
-	}
-	var proficiency = Math.floor(skill.getLevel() * actingUnit.getLevel() / 100);
-	if (actingUnit.isPartyMember()) {
-		for (var stat in Game.namedStats) {
-			var experience = Math.max(Game.math.experience.userStat(actingUnit, stat, action, proficiency), 0);
-			if (experience > 0) {
-				actingUnit.stats[stat].grow(experience);
-				Console.writeLine(actingUnit.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-				Console.append("statVal: " + actingUnit.stats[stat].getValue());
-			}
-		}
-	}
-	for (var i = 0; i < targetsHit.length; ++i) {
-		if (!targetsHit[i].partyMember) {
-			continue;
-		}
-		for (var stat in Game.namedStats) {
-			var experience = Math.max(Game.math.experience.targetStat(targetsHit[i], stat, action, proficiency), 0);
-			if (experience > 0) {
-				targetsHit[i].stats[stat].grow(experience);
-				Console.writeLine(targetsHit[i].name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-				Console.append("statVal: " + targetsHit[i].stats[stat].getValue());
-			}
-		}
+		return [];
 	}
 	for (var i = 0; i < action.effects.length; ++i) {
 		var effectTargets = null;
-		if (action.effects[i].targetHint == "selected") {
+		if (action.effects[i].targetHint == 'selected') {
 			effectTargets = targetsHit;
-		} else if (action.effects[i].targetHint == "user") {
+		} else if (action.effects[i].targetHint == 'user') {
 			effectTargets = [ actingUnit ];
 		}
 		var effect = Game.effects[action.effects[i].type];
@@ -268,6 +245,7 @@ Battle.prototype.runAction = function(actingUnit, targetUnits, skill, action)
 		Console.append("retarget: " + action.effects[i].targetHint);
 		effect(actingUnit, effectTargets, action.effects[i]);
 	}
+	return targetsHit;
 };
 
 // .spawnEnemy() method

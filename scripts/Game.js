@@ -14,7 +14,8 @@ Game = {
 	useItemMoveRank: 1,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -182,6 +183,28 @@ Game = {
 		}
 	},
 	
+	items: {
+		alcohol: {
+			name: "Alcohol",
+			uses: 1,
+			action: {
+				announceAs: "Alcohol",
+				rank: 1,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverAll'
+					},
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'drunk'
+					}
+				]
+			}
+		}
+	},
+	
 	statuses: {
 		offGuard: {
 			name: "Off-Guard",
@@ -196,8 +219,8 @@ Game = {
 				subject.liftStatus('offGuard');
 			}
 		},
-		spectacles: {
-			name: "The Spectacles",
+		reGen: {
+			name: "ReGen",
 			beginTurn: function(subject, event) {
 				subject.heal(subject.stats.mag.getValue());
 			}
@@ -240,6 +263,11 @@ Game = {
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].takeDamage(targets[i].maxHP);
+			}
+		},
+		recoverAll: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].heal(targets[i].maxHP);
 			}
 		}
 	},
@@ -509,7 +537,7 @@ Game = {
 				technique: 'Dragonflame',
 				experience: 25
 			},
-			strategize: function(me, battle, turnPreview) {
+			strategize: function(me, battle) {
 				enemies = battle.enemiesOf(me);
 				return {
 					type: 'technique',
@@ -535,35 +563,33 @@ Game = {
 				technique: 'omni',
 				experience: 1000
 			},
-			strategize: function(me, enemies, allies, nextUp) {
-				if ('maggie' in enemies) {
-					var killMe = function() { me.takeDamage(me.maxHP); };
+			items: [
+				'alcohol'
+			],
+			strategize: function(me, nextUp) {
+				if ('maggie' in this.enemies) {
 					new Scenario()
 						.talk("Robert", 2.0, "Wait a minute... what in Hades' name is SHE doing here?")
-						.talk("maggie", 2.0, "The same thing I'm always doing, Robert, eating you!")
-						.call(killMe)
+						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Namely, you!")
+						.call(function() { me.takeDamage(me.maxHP - 1); })
 						.playSound('Munch.wav')
+						.talk("Robert", 2.0, "HA! You missed! ...hold on, where'd my arm go?")
+						.talk("maggie", 2.0, "Tastes like chicken!", "Speaking of which, have you seen any chickens around here?")
+						.talk("Robert", 2.0, "...")
 						.run(true);
-					return null;
 				}
-				var targets = 'scott' in enemies ? [ enemies.scott ] : [ enemies[0] ];
 				if (this.turnsTaken == 0) {
-					techniqueToUse = 'omni';
-				} else if (this.turnsTaken == 1) {
-					techniqueToUse = 'necromancy';
+					this.queueItem('alcohol');
+					this.queueTechnique('omni');
+					this.queueTechnique('necromancy');
 				} else {
 					var phase =
 						me.getHealth() > 75 ? 1 :
 						me.getHealth() > 50 ? 2 :
 						me.getHealth() > 33 ? 3 :
 						4;
-					techniqueToUse = 'swordSlash';
+					this.queueTechnique('swordSlash');
 				}
-				return {
-					type: 'technique',
-					technique: techniqueToUse,
-					targets: targets
-				};
 			}
 		}
 	},
@@ -591,7 +617,7 @@ Game = {
 				'robert2'
 			],
 			onStart: function() {
-				this.playerUnits[0].addStatus('spectacles');
+				this.playerUnits[0].addStatus('reGen');
 				new Scenario()
 					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
