@@ -20,7 +20,7 @@ function SkillUsable(skillID, level)
 	this.levelStat = new Stat(100, level);
 	this.name = Game.techniques[skillID].name;
 	this.technique = Game.techniques[skillID];
-	this.techniqueID = skillID;
+	this.skillID = skillID;
 }
 
 // .getLevel() method

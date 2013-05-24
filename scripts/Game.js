@@ -106,19 +106,26 @@ Game = {
 				return base * proficiency * growthRate;
 			},
 		},
-		enemyHP: function(enemy, level) {
-			return enemy.baseStats.vit * level;
+		hp: {
+			enemy: function(enemy, level) {
+				return enemy.baseStats.vit * level;
+			},
+			partyMember: function(memberInfo) {
+				return memberInfo.stats.vit * 10;
+			},
 		},
-		partyMP: function(partyInfo) {
-			var maxMP = 0;
-			for (var i = 0; i < partyInfo.length; ++i) {
-				var member = partyInfo[i];
-				maxMP += member.stats.mag * 15;
+		mp: {
+			party: function(partyInfo) {
+				var maxMP = 0;
+				for (var i = 0; i < partyInfo.length; ++i) {
+					var member = partyInfo[i];
+					maxMP += member.stats.mag * 15;
+				}
+				return maxMP;
+			},
+			usage: function(action) {
+				return 0;
 			}
-			return maxMP;
-		},
-		partyMemberHP: function(memberInfo) {
-			return memberInfo.stats.vit * 10;
 		},
 		retreatChance: function(enemyUnits) {
 			return 1.0;

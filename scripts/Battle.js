@@ -119,7 +119,7 @@ Battle.prototype.go = function()
 		}
 		partyInfo.push(memberInfo);
 	}
-	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.partyMP(partyInfo), 0), 9999));
+	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.mp.party(partyInfo), 0), 9999));
 	this.ui = new BattleScreen(partyMaxMP);
 	this.playerUnits = [];
 	this.enemyUnits = [];

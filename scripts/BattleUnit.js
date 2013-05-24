@@ -68,14 +68,14 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var stat in Game.namedStats) {
 			memberInfo.stats[stat] = this.partyMember.stats[stat].getValue();
 		}
-		this.maxHP = Math.round(Math.min(Math.max(Game.math.partyMemberHP(memberInfo), 1), 999));
+		this.maxHP = Math.round(Math.min(Math.max(Game.math.hp.partyMember(memberInfo), 1), 999));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		var skills = this.partyMember.getUsableSkills();
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);
 		}
-		this.items = [ new ItemUsable('alcohol') ]; //this.partyMember.items;
+		this.items = this.partyMember.items;
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = basis.stats[stat];
 		}
@@ -101,7 +101,7 @@ function BattleUnit(battle, basis, position, startingRow)
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.maxHP = Math.max(Game.math.enemyHP(this.enemyInfo, battle.getLevel()), 1);
+		this.maxHP = Math.max(Game.math.hp.enemy(this.enemyInfo, battle.getLevel()), 1);
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
@@ -266,21 +266,26 @@ BattleUnit.prototype.growAsDefender = function(action, skillUsed, user)
 // .growSkill() method
 // Adds experience to a party unit's existing skill or teaches it a new one.
 // Arguments:
-//     techniqueID: The technique ID of the skill to grow. If the unit doesn't already know the technique,
-//                  it will be taught.
-//     experience:  The amount of experience to grow if the skill is already known.
-BattleUnit.prototype.growSkill = function(techniqueID, experience)
+//     skillID:    The ID of the skill to grow.
+//     experience: The amount of experience to add if the skill is already known.
+// Remarks:
+//     If the skill specified isn't already known at the time this method is called,
+//     the unit will learn it.
+BattleUnit.prototype.growSkill = function(skillID, experience)
 {
+	if (!this.isPartyMember()) {
+		return;
+	}
 	var hasSkill = false;
 	for (var i = 0; i < this.skills.length; ++i) {
-		if (techniqueID == this.skills[i].techniqueID) {
+		if (skillID == this.skills[i].skillID) {
 			hasSkill = true;
 			this.skills[i].grow(experience);
-			Console.writeLine(this.name + "'s skill " + this.skills[i].name + " gained " + experience + " EXP");
+			Console.writeLine(this.name + "'s " + this.skills[i].name + " gained " + experience + " EXP");
 		}
 	}
 	if (!hasSkill) {
-		var skill = this.partyMember.learnSkill(techniqueID);
+		var skill = this.partyMember.learnSkill(skillID);
 		this.skills.push(skill);
 		this.newSkills.push(skill);
 		Console.writeLine(this.name + " learned " + skill.name);
@@ -363,7 +368,7 @@ BattleUnit.prototype.tick = function()
 			Console.writeLine(this.name + " still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
-			if (this.isPartyMember()) {
+			if (this.ai == null) {
 				this.moveUsed = this.moveMenu.open();
 				if (this.moveUsed.usable instanceof SkillUsable) {
 					this.skillUsed = this.moveUsed.usable;

@@ -69,9 +69,9 @@ Console.render = function() {
 		if (lineToDraw >= 0) {
 			var lineInBuffer = lineToDraw % this.numLines;
 			var y = boxY + 5 + i * this.font.getHeight();
-			this.font.setColorMask(CreateColor(0, 0, 0, 128));
+			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 128));
 			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-			this.font.setColorMask(CreateColor(192, 192, 192, this.fadeness * 255));
+			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 128));
 			this.font.drawText(5, y, this.buffer[lineInBuffer]);
 		}
 	}
