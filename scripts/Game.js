@@ -1,6 +1,6 @@
 /***
  * Spectacles: Bruce's Story
-  *  Copyright (C) 2013 Power-Command
+  *  Copyright (c) 2013 Power-Command
 ***/
 
 // Game object
@@ -45,7 +45,7 @@ Game = {
 	
 	moveCategories: {
 		sword: "Sword",
-		strategy: "Strat",
+		strategy: "Strategy",
 		magic: "Magic"
 	},
 	
@@ -55,7 +55,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(user, target) {
-				return (user.health - target.health + 1) / 5000;
+				return (user.getHealth() - target.getHealth() + 1) / 5000;
 			},
 			instaKill: function(user, target) {
 				return 1.0;
@@ -91,9 +91,9 @@ Game = {
 			}
 		},
 		experience: {
-			skill: function(actor, technique) {
-				var growthRate = 'growthRate' in technique ? technique.growthRate : 1.0;
-				return actor.level * growthRate;
+			skill: function(actor, skillInfo) {
+				var growthRate = 'growthRate' in skillInfo ? skillInfo.growthRate : 1.0;
+				return actor.getLevel() * growthRate;
 			},
 			targetStat: function(unit, statID, action, proficiency) {
 				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
@@ -206,6 +206,9 @@ Game = {
 	},
 	
 	statuses: {
+		drunk: {
+			name: "Drunk"
+		},
 		offGuard: {
 			name: "Off-Guard",
 			beginTurn: function(subject, event) {
@@ -537,13 +540,8 @@ Game = {
 				technique: 'Dragonflame',
 				experience: 25
 			},
-			strategize: function(me, battle) {
-				enemies = battle.enemiesOf(me);
-				return {
-					type: 'technique',
-					technique: 'flare',
-					targets: [ enemies[0] ]
-				};
+			strategize: function(me, nextUp) {
+				useSkill('flare');
 			}
 		},
 		robert2: {
@@ -570,25 +568,27 @@ Game = {
 				if ('maggie' in this.enemies) {
 					new Scenario()
 						.talk("Robert", 2.0, "Wait a minute... what in Hades' name is SHE doing here?")
-						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Namely, you!")
+						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
 						.call(function() { me.takeDamage(me.maxHP - 1); })
 						.playSound('Munch.wav')
-						.talk("Robert", 2.0, "HA! You missed! ...hold on, where'd my arm go?")
-						.talk("maggie", 2.0, "Tastes like chicken!", "Speaking of which, have you seen any chickens around here?")
+						.talk("Robert", 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
+						.talk("maggie", 2.0,
+							"Tastes like chicken!",
+							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even regular, uncooked, feathery chicken...")
 						.talk("Robert", 2.0, "...")
-						.run(true);
+						//.run(true);
 				}
 				if (this.turnsTaken == 0) {
-					this.queueItem('alcohol');
-					this.queueTechnique('omni');
-					this.queueTechnique('necromancy');
+					this.useItem('alcohol');
+					this.useSkill('omni');
+					this.useSkill('necromancy');
 				} else {
 					var phase =
 						me.getHealth() > 75 ? 1 :
 						me.getHealth() > 50 ? 2 :
 						me.getHealth() > 33 ? 3 :
 						4;
-					this.queueTechnique('swordSlash');
+					this.useSkill('swordSlash');
 				}
 			}
 		}

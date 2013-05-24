@@ -4,21 +4,20 @@
 ***/
 
 // StatusEffect() constructor
-// Creates an object representing a manifestation of a status.
+// Creates an object representing the manifestation of a status.
 // Arguments:
-//     subject: The BattleUnit affected by the status.
-//     handle:  The status ID for the status to be manifested.
+//     subject: The battle unit affected by the status effect.
+//     handle:  The ID of the status as defined in the gamedef.
 function StatusEffect(subject, statusID)
 {
 	if (!(statusID in Game.statuses)) {
 		Abort("StatusEffect(): The status definition '" + statusID + "' doesn't exist!");
 	}
-	this.status = Game.statuses[statusID];
-	this.subject = subject;
 	this.context = {};
-	
-	this.name = this.status.name;
+	this.name = Game.statuses[statusID].name;
+	this.status = Game.statuses[statusID];
 	this.statusID = statusID;
+	this.subject = subject;
 }
 
 // .invoke() method

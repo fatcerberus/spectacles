@@ -103,7 +103,7 @@ function game()
 		function() { this.renderAll(); }, 99
 	);
 	persist.init();
-	Console.initialize(17);
+	Console.initialize(19);
 	
 	if (DBG_SHOW_CONSOLE) {
 		Console.show();

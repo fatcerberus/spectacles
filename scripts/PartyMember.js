@@ -3,8 +3,8 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript('SkillUsable.js');
 RequireScript('Stat.js');
-RequireScript('Skill.js');
 
 // PartyMember() constructor
 // Creates an object representing an active member of a Party.
@@ -72,7 +72,7 @@ PartyMember.prototype.getUsableSkills = function()
 //     A reference to an object representing the newly learned skill.
 PartyMember.prototype.learnSkill = function(techniqueID)
 {
-	var skill = new Skill(techniqueID, 100);
+	var skill = new SkillUsable(techniqueID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
 	return skill;

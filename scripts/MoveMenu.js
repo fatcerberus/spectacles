@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2013 Power-Command
 ***/
 
 RequireScript("TargetMenu.js");
@@ -12,17 +12,11 @@ RequireScript("TargetMenu.js");
 //     unit:   The BattleUnit this menu belongs to.
 function MoveMenu(battle, unit)
 {
-	this.drawers = [
-		{ name: "Skill", topItem: 0 },
-		{ name: "Item", topItem: 0 },
-		{ name: "Defend", topItem: 0 }
-	];
 	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
 	this.normalCursorColor = CreateColor(0, 72, 144, 255);
 	
-	this.animator = null;
 	this.battle = battle;
-	this.topCursorColor = CreateColor(0, 0, 0, 0);
+	this.drawers = null;
 	this.drawer = null;
 	this.dropFadeness = 0.0;
 	this.fadeness = 0.0;
@@ -31,9 +25,10 @@ function MoveMenu(battle, unit)
 	this.isDropped = false;
 	this.moveCursor = 0;
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
+	this.moveList = null;
 	this.selection = null;
-	this.moveCursorColor = CreateColor(0, 0, 0, 0);
 	this.topCursor = 0;
+	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
 	
 	this.chooseMoveAnimation = new Scenario()
@@ -89,22 +84,21 @@ function MoveMenu(battle, unit)
 			this.drawCursor(x, y, width, height, cursorColor, isLockedIn);
 		}
 	};
-	this.drawSkillItem = function(x, y, skill, isSelected, isLockedIn) {
-		var technique = skill.techniqueID
+	this.drawMoveItem = function(x, y, usable, isSelected, isLockedIn) {
 		var alpha = 255 * this.fadeness * this.dropFadeness;
-		var titleColor = isSelected ?
-			BlendColorsWeighted(CreateColor(255, 192, 0, alpha), CreateColor(128, 96, 0, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
-			CreateColor(128, 96, 0, alpha);
 		var textColor = isSelected ?
 			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
 			CreateColor(128, 128, 128, alpha);
+		var titleColor = isSelected ?
+			BlendColorsWeighted(CreateColor(255, 192, 0, alpha), CreateColor(128, 96, 0, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
+			CreateColor(128, 96, 0, alpha);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor);
 		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, alpha));
 		OutlinedRectangle(x + 4, y + 2, 13, 13, CreateColor(0, 0, 0, alpha * 0.5));
-		this.drawText(this.font, x + 7, y + 2, 1, textColor, skill.technique.actions[0].rank);
-		this.drawText(this.font, x + 22, y + 3, 1, textColor, skill.name);
+		//this.drawText(this.font, x + 7, y + 2, 1, textColor, skill.technique.actions[0].rank);
+		this.drawText(this.font, x + 22, y + 3, 1, textColor, usable.name);
 		this.drawText(this.font, x + 142, y + 3, 1, titleColor, "R");
-		this.drawText(this.font, x + 156, y + 1, 1, textColor, skill.technique.actions[0].rank, 'right');
+		//this.drawText(this.font, x + 156, y + 1, 1, textColor, skill.technique.actions[0].rank, 'right');
 	};
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var aligners = {
@@ -137,11 +131,12 @@ MoveMenu.prototype.getInput = function()
 	}
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		if (!this.isDropped) {
+			this.moveList = this.drawers[this.topCursor].contents;
 			this.isDropped = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
 		} else {
-			this.selection = this.unit.skills[this.moveCursor];
+			this.selection = this.moveList[this.moveCursor];
 			this.showMoveList.stop();
 			this.chooseMoveAnimation.run();
 		}
@@ -154,9 +149,9 @@ MoveMenu.prototype.getInput = function()
 	} else if (!this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 		this.topCursor = (this.topCursor + 1) % this.drawers.length;
 	} else if (this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
-		this.moveCursor = this.moveCursor - 1 < 0 ? this.unit.skills.length - 1 : this.moveCursor - 1;
+		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveList.length - 1 : this.moveCursor - 1;
 	} else if (this.isDropped && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
-		this.moveCursor = (this.moveCursor + 1) % this.unit.skills.length;
+		this.moveCursor = (this.moveCursor + 1) % this.moveList.length;
 	}
 };
 
@@ -164,16 +159,24 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
+	this.drawers = [
+		{ name: "Skill", contents: this.unit.skills },
+		{ name: "Item", contents: this.unit.items },
+		{ name: "Defend", contents: this.unit.skills }
+	];
+	this.dropFadeness = 0.0;
+	this.isDropped = false;
+	this.selection = null;
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
-	this.isDropped = false;
-	this.dropFadeness = 0.0;
-	this.selection = null;
 	this.showMenu.run();
 	Threads.waitFor(Threads.createEntityThread(this, 10));
 	this.battle.ui.hud.highlight(null);
 	this.battle.resume();
-	return this.selection;
+	return {
+		usable: this.selection,
+		targets: [ this.battle.enemiesOf(this.unit)[0] ]
+	};
 };
 
 // .render() method
@@ -194,12 +197,12 @@ MoveMenu.prototype.render = function()
 	}
 	if (this.dropFadeness > 0.0) {
 		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
-		var height = this.unit.skills.length * 18;
+		var height = this.moveList.length * 18;
 		var y = yOrigin + 18 - height * (1.0 - this.dropFadeness);
 		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 96 * this.dropFadeness * this.fadeness)); 
-		for (var i = 0; i < this.unit.skills.length; ++i) {
+		for (var i = 0; i < this.moveList.length; ++i) {
 			var itemY = y + i * 18;
-			this.drawSkillItem(0, itemY, this.unit.skills[i], i == this.moveCursor, this.chooseMoveAnimation.isRunning());
+			this.drawMoveItem(0, itemY, this.moveList[i], i == this.moveCursor, this.chooseMoveAnimation.isRunning());
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
 	}

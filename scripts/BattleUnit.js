@@ -1,11 +1,12 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('AIContext.js');
+RequireScript('BattleAI.js');
+RequireScript('ItemUsable.js');
 RequireScript('MoveMenu.js');
-RequireScript('Skill.js');
+RequireScript('SkillUsable.js');
 RequireScript('Stat.js');
 RequireScript('StatusEffect.js');
 
@@ -27,6 +28,19 @@ var BattleRow =
 //     startingRow: The row the unit starts in.
 function BattleUnit(battle, basis, position, startingRow)
 {
+	this.invokeStatuses = function(eventID, event) {
+		event = event !== void null ? event : null;
+		
+		for (var i = 0; i < this.statuses.length; ++i) {
+			this.statuses[i].invoke(eventID, event);
+		}
+	};
+	this.resetCounter = function(rank) {
+		this.counter = Game.math.timeUntilNextTurn(this, rank);
+		Console.writeLine(this.name + "'s CV reset to " + this.counter);
+		Console.append("rank: " + rank);
+	};
+	
 	this.actionQueue = [];
 	this.actor = null;
 	this.ai = null;
@@ -61,6 +75,7 @@ function BattleUnit(battle, basis, position, startingRow)
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);
 		}
+		this.items = [ new ItemUsable('alcohol') ]; //this.partyMember.items;
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = basis.stats[stat];
 		}
@@ -70,11 +85,21 @@ function BattleUnit(battle, basis, position, startingRow)
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
 		}
 		this.enemyInfo = Game.enemies[basis];
-		this.ai = new AIContext(this, battle, this.enemyInfo.strategize);
+		this.ai = new BattleAI(this, battle, this.enemyInfo.strategize);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
+		}
+		/*var skills = this.enemyInfo.skills;
+		for (var i = 0; i < skills.length; ++i) {
+			this.skills.push(new SkillUsable(skills[i], 100));
+		}*/
+		this.items = [];
+		if ('items' in this.enemyInfo) {
+			for (var i = 0; i < this.enemyInfo.items.length; ++i) {
+				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
+			}
 		}
 		this.maxHP = Math.max(Game.math.enemyHP(this.enemyInfo, battle.getLevel()), 1);
 		this.hp = this.maxHP;
@@ -94,19 +119,6 @@ function BattleUnit(battle, basis, position, startingRow)
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
-
-	this.invokeStatuses = function(eventID, event) {
-		event = event !== void null ? event : null;
-		
-		for (var i = 0; i < this.statuses.length; ++i) {
-			this.statuses[i].invoke(eventID, event);
-		}
-	};
-	this.resetCounter = function(rank) {
-		this.counter = Game.math.timeUntilNextTurn(this, rank);
-		Console.writeLine(this.name + "'s CV reset to " + this.counter);
-		Console.append("rank: " + rank);
-	};
 }
 
 // .getHealth() method
@@ -209,10 +221,10 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 };
 
 // .growAsAttacker() method
-// Grants the unit battle experience for successfully performing an action.
+// Grants the unit battle experience for successfully performing an attack.
 // Arguments:
-//     skillUsed: The skill used in performing the action.
 //     action:    The action performed by the unit.
+//     skillUsed: The skill used in performing the action.
 BattleUnit.prototype.growAsAttacker = function(action, skillUsed)
 {
 	if (!this.isPartyMember()) {
@@ -230,7 +242,7 @@ BattleUnit.prototype.growAsAttacker = function(action, skillUsed)
 };
 
 // .growAsDefender() method
-// Grants the unit battle experience for defending against a skill.
+// Grants the unit battle experience for defending against an attack.
 // Arguments:
 //     action:    The action performed by the attacking unit.
 //     skillUsed: The skill used in performing the action.
@@ -352,39 +364,38 @@ BattleUnit.prototype.tick = function()
 			action = this.actionQueue.shift();
 		} else {
 			if (this.isPartyMember()) {
-				this.skillUsed = this.moveMenu.open();
-				var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
-				var experience = Game.math.experience.skill(this, this.skillUsed.technique);
-				this.skillUsed.grow(experience);
-				Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
-				Console.append("level: " + this.skillUsed.getLevel());
-				var move = {
-					type: 'technique',
-					technique: this.skillUsed.technique,
-					targets: [
-						this.battle.enemiesOf(this)[0]
-					]
-				}
-				Console.writeLine(this.name + " is using " + move.technique.name);
-				if (this.weapon != null && move.technique.weaponType != null) {
-					Console.append("weaponLv: " + this.weapon.level);
-				}
-				this.moveTargets = move.targets;
-				var action = move.technique.actions[0];
-				for (var i = 1; i < move.technique.actions.length; ++i) {
-					this.actionQueue.push(move.technique.actions[i]);
-				}
-				if (this.actionQueue.length > 0) {
-					Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
+				this.moveUsed = this.moveMenu.open();
+				if (this.moveUsed.usable instanceof SkillUsable) {
+					this.skillUsed = this.moveUsed.usable;
+					var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
+					var experience = Game.math.experience.skill(this, this.skillUsed.technique);
+					this.skillUsed.grow(experience);
+					Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
+					Console.append("level: " + this.skillUsed.getLevel());
+				} else {
+					this.skillUsed = null;
 				}
 			} else {
-				var action = this.ai.getNextAction();
-				this.moveTargets = [ this.battle.enemiesOf(this)[0] ];
-				this.skillUsed = null;
+				this.moveUsed = this.ai.getNextMove();
+				this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
+			}
+			Console.writeLine(this.name + " is using " + this.moveUsed.usable.name);
+			if (this.moveUsed.usable instanceof SkillUsable) {
+				if (this.weapon != null && this.moveUsed.usable.technique.weaponType != null) {
+					Console.append("weaponLv: " + this.weapon.level);
+				}
+			}
+			var nextActions = this.moveUsed.usable.use();
+			var action = nextActions[0];
+			for (var i = 1; i < nextActions.length; ++i) {
+				this.actionQueue.push(nextActions[i]);
+			}
+			if (this.actionQueue.length > 0) {
+				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
 			}
 		}
 		if (this.isAlive()) {
-			var unitsHit = this.battle.runAction(action, this, this.moveTargets);
+			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
 				this.growAsAttacker(action, this.skillUsed);
 				for (var i = 0; i < unitsHit.length; ++i) {
@@ -424,3 +435,13 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	}
 	return timeLeft;
 }
+
+// .useItem() method
+// Retrieves and uses item from the battler's inventory.
+// Arguments:
+//     itemID: The item descriptor ID of the item to be used.
+// Returns:
+//     The action descriptor for the action triggered by using the item.
+BattleUnit.prototype.useItem = function(itemID)
+{
+};
