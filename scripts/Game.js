@@ -1,6 +1,6 @@
 /***
- * Spectacles: Bruce's Story
-  *  Copyright (c) 2013 Power-Command
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2013 Power-Command
 ***/
 
 // Game object
@@ -11,7 +11,7 @@ Game = {
 	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
-	useItemMoveRank: 1,
+	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
 		'scott',
@@ -104,7 +104,7 @@ Game = {
 				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
 				var base = 'baseExperience' in action && 'user' in action.baseExperience && statID in action.baseExperience.user ? action.baseExperience.user[statID] : 0;
 				return base * proficiency * growthRate;
-			},
+			}
 		},
 		hp: {
 			enemy: function(enemy, level) {
@@ -112,19 +112,23 @@ Game = {
 			},
 			partyMember: function(memberInfo) {
 				return memberInfo.stats.vit * 10;
-			},
+			}
 		},
 		mp: {
+			enemy: function(enemyInfo, level) {
+				return enemyInfo.baseStats.mag * level / 100 * 15;
+			},
 			party: function(partyInfo) {
 				var maxMP = 0;
 				for (var i = 0; i < partyInfo.length; ++i) {
-					var member = partyInfo[i];
-					maxMP += member.stats.mag * 15;
+					var memberInfo = partyInfo[i];
+					maxMP += memberInfo.stats.mag * 15;
 				}
 				return maxMP;
 			},
-			usage: function(action) {
-				return 0;
+			usage: function(skillInfo, level, userInfo) {
+				var baseCost = 'baseMPCost' in skillInfo ? skillInfo.baseMPCost : 0;
+				return baseCost * level * userInfo.stats.foc / 10000;
 			}
 		},
 		retreatChance: function(enemyUnits) {
@@ -268,6 +272,9 @@ Game = {
 					actor.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
 				}
 				targets[i].die();
+				new Scenario()
+					.playSound("Munch.wav")
+					.run();
 			}
 		},
 		instaKill: function(actor, targets, effect) {
@@ -403,6 +410,7 @@ Game = {
 			name: "Necromancy",
 			category: 'strategy',
 			targetType: 'single',
+			baseMPCost: 200,
 			actions: [
 				{
 					announceAs: "Necromancy",
@@ -421,6 +429,7 @@ Game = {
 			name: "Flare",
 			category: 'magic',
 			targetType: 'single',
+			baseMPCost: 50,
 			actions: [
 				{
 					announceAs: "Flare",
@@ -442,6 +451,7 @@ Game = {
 			name: "Omni",
 			category: 'magic',
 			targetType: 'single',
+			baseMPCost: 500,
 			actions: [
 				{
 					announceAs: "Omni",
@@ -572,7 +582,7 @@ Game = {
 				'alcohol'
 			],
 			strategize: function(me, nextUp) {
-				if ('maggie' in this.enemies) {
+				if ('maggie' in this.enemies && this.turnsTaken == 0) {
 					new Scenario()
 						.talk("Robert", 2.0, "Wait a minute... what in Hades' name is SHE doing here?")
 						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")

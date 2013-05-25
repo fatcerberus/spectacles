@@ -48,7 +48,7 @@ function BattleHUD(partyMaxMP)
 		textColor = CreateColor(255, 255, 255, 255);
 		titleColor = CreateColor(255, 192, 0, 255);
 		this.drawText(this.font, x + 5, y + 4, 1, textColor, memberInfo.name);
-		this.drawText(this.font, x + 58, y + 2, 1, titleColor, "HP");
+		this.drawText(this.font, x + 58, y + 4, 1, titleColor, "HP");
 		this.drawText(this.font, x + 94, y + 4, 1, textColor, Math.round(memberInfo.hp), 'right');
 	}
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {

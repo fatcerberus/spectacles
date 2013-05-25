@@ -17,8 +17,8 @@ function PartyMember(characterID, level)
 		var heldWeaponType = this.weaponID !== null ? Game.weapons[this.weaponID].type : null;
 		this.usableSkills = [];
 		for (var i = 0; i < this.skillList.length; ++i) {
-			var technique = this.skillList[i].technique;
-			if (technique.weaponType != null && heldWeaponType != technique.weaponType) {
+			var skillInfo = this.skillList[i].skillInfo;
+			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType) {
 				continue;
 			}
 			this.usableSkills.push(this.skillList[i]);
@@ -66,14 +66,14 @@ PartyMember.prototype.getUsableSkills = function()
 };
 
 // .learnSkill() method
-// Grants the party member the ability to use a technique.
+// Grants the party member the ability to use a skill.
 // Arguments:
-//     techniqueID: The ID of the technique to learn.
+//     skillID: The ID of the skill to learn, as defined in the gamedef.
 // Returns:
-//     A reference to an object representing the newly learned skill.
-PartyMember.prototype.learnSkill = function(techniqueID)
+//     A reference to a SkillUsable object representing the newly learned skill.
+PartyMember.prototype.learnSkill = function(skillID)
 {
-	var skill = new SkillUsable(techniqueID, 100);
+	var skill = new SkillUsable(skillID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
 	return skill;

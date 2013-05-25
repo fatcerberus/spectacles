@@ -79,7 +79,7 @@ BattleAI.prototype.useItem = function(itemID)
 	var itemToUse = null;
 	for (var i = 0; i < this.unit.items.length; ++i) {
 		var item = this.unit.items[i];
-		if (item.itemID == itemID && item.isUsable()) {
+		if (item.itemID == itemID && item.isUsable(this.unit)) {
 			itemToUse = item;
 			break;
 		}

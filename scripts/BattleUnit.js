@@ -6,6 +6,7 @@
 RequireScript('BattleAI.js');
 RequireScript('ItemUsable.js');
 RequireScript('MoveMenu.js');
+RequireScript('MPPool.js');
 RequireScript('SkillUsable.js');
 RequireScript('Stat.js');
 RequireScript('StatusEffect.js');
@@ -26,7 +27,9 @@ var BattleRow =
 //     basis:       The party member or enemy class to use as a basis for the unit.
 //     position:    The position of the unit in the party order.
 //     startingRow: The row the unit starts in.
-function BattleUnit(battle, basis, position, startingRow)
+//     mpPool:      Optional. The MP pool the battler should draw from. If not provided, a designated
+//                  MP pool will be created for the unit.
+function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
 	this.invokeStatuses = function(eventID, event) {
 		event = event !== void null ? event : null;
@@ -49,6 +52,7 @@ function BattleUnit(battle, basis, position, startingRow)
 	this.hp = 0;
 	this.moveMenu = new MoveMenu(battle, this);
 	this.moveTargets = null;
+	this.mpPool = null;
 	this.newSkills = [];
 	this.partyMember = null;
 	this.row = startingRow;
@@ -108,6 +112,8 @@ function BattleUnit(battle, basis, position, startingRow)
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
+	this.mpPool = mpPool !== void null ? mpPool :
+		new MPPool(Math.round(Math.min(Math.max(Game.math.mp.enemy(this.enemyInfo, this.getLevel()), 1), 999)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -120,45 +126,6 @@ function BattleUnit(battle, basis, position, startingRow)
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 }
-
-// .getHealth() method
-// Calculates the unit's remaining health as a percentage.
-BattleUnit.prototype.getHealth = function()
-{
-	return Math.floor(100 * this.hp / this.maxHP);
-};
-
-// .isAlive() method
-// Determines whether the unit is still able to battle.
-BattleUnit.prototype.isAlive = function()
-{
-	return this.hp > 0;
-};
-
-// .isPartyMember() method
-// Determines whether the unit represents a party member.
-BattleUnit.prototype.isPartyMember = function()
-{
-	return this.partyMember != null;
-};
-
-// .getLevel() method
-// Calculates the unit's overall level.
-BattleUnit.prototype.getLevel = function()
-{
-	if (this.partyMember != null) {
-		return this.partyMember.getLevel();
-	} else {
-		return this.battle.getLevel();
-	}
-};
-
-// .timeUntilNextTurn() method
-// Returns the number of ticks until the battler can act.
-BattleUnit.prototype.timeUntilNextTurn = function()
-{
-	return this.counter;
-};
 
 // .addStatus() method
 // Inflicts a status effect on the battler.
@@ -191,32 +158,37 @@ BattleUnit.prototype.evade = function(attacker)
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
-// .heal() method
-// Restores a specified amount of the battler's HP.
-// Arguments:
-//     amount:     The number of hit points to restore.
-//     isPriority: Optional. If true, specifies a priority healing effect. Certain statuses (e.g. Zombie) use
-//                 this flag to determine how to act on the effect. Defaults to false.
-BattleUnit.prototype.heal = function(amount, isPriority)
+// .getHealth() method
+// Calculates the unit's remaining health as a percentage.
+BattleUnit.prototype.getHealth = function()
 {
-	if (isPriority === undefined) { isPriority = false; }
-	
-	var healEvent = {
-		amount: Math.floor(amount),
-		isPriority: isPriority,
-		cancel: false
-	};
-	this.invokeStatuses('healed', healEvent);
-	if (healEvent.cancel) {
-		return;
+	return Math.ceil(100 * this.hp / this.maxHP);
+};
+
+// .getInfo() method
+// Compiles information about the battler.
+// Returns:
+//     An object containing information about the battler.
+BattleUnit.prototype.getInfo = function()
+{
+	var info = {};
+	info.name = this.name;
+	info.health = Math.ceil(100 * this.hp / this.maxHP);
+	info.stats = {};
+	for (var stat in Game.namedStats) {
+		info.stats[stat] = this.stats[stat].getValue();
 	}
-	if (healEvent.amount >= 0) {
-		this.hp = Math.min(this.hp + healEvent.amount, this.maxHP);
-		this.actor.showMessage(healEvent.amount, 'heal');
-		this.battle.ui.hud.setHP(this.name, this.hp);
-		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
+	return info;
+}
+
+// .getLevel() method
+// Calculates the unit's overall level.
+BattleUnit.prototype.getLevel = function()
+{
+	if (this.partyMember != null) {
+		return this.partyMember.getLevel();
 	} else {
-		this.takeDamage(healEvent.amount, true);
+		return this.battle.getLevel();
 	}
 };
 
@@ -290,6 +262,49 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 		this.newSkills.push(skill);
 		Console.writeLine(this.name + " learned " + skill.name);
 	}
+};
+
+// .heal() method
+// Restores a specified amount of the battler's HP.
+// Arguments:
+//     amount:     The number of hit points to restore.
+//     isPriority: Optional. If true, specifies a priority healing effect. Certain statuses (e.g. Zombie) use
+//                 this flag to determine how to act on the effect. Defaults to false.
+BattleUnit.prototype.heal = function(amount, isPriority)
+{
+	if (isPriority === undefined) { isPriority = false; }
+	
+	var healEvent = {
+		amount: Math.floor(amount),
+		isPriority: isPriority,
+		cancel: false
+	};
+	this.invokeStatuses('healed', healEvent);
+	if (healEvent.cancel) {
+		return;
+	}
+	if (healEvent.amount >= 0) {
+		this.hp = Math.min(this.hp + healEvent.amount, this.maxHP);
+		this.actor.showMessage(healEvent.amount, 'heal');
+		this.battle.ui.hud.setHP(this.name, this.hp);
+		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
+	} else {
+		this.takeDamage(healEvent.amount, true);
+	}
+};
+
+// .isAlive() method
+// Determines whether the unit is still able to battle.
+BattleUnit.prototype.isAlive = function()
+{
+	return this.hp > 0;
+};
+
+// .isPartyMember() method
+// Determines whether the unit represents a party member.
+BattleUnit.prototype.isPartyMember = function()
+{
+	return this.partyMember != null;
 };
 
 // .liftStatus() method
@@ -370,27 +385,11 @@ BattleUnit.prototype.tick = function()
 		} else {
 			if (this.ai == null) {
 				this.moveUsed = this.moveMenu.open();
-				if (this.moveUsed.usable instanceof SkillUsable) {
-					this.skillUsed = this.moveUsed.usable;
-					var growthRate = 'growthRate' in this.skillUsed.technique ? this.skillUsed.technique.growthRate : 1.0;
-					var experience = Game.math.experience.skill(this, this.skillUsed.technique);
-					this.skillUsed.grow(experience);
-					Console.writeLine(this.name + " got " + experience + " EXP for " + this.skillUsed.name);
-					Console.append("level: " + this.skillUsed.getLevel());
-				} else {
-					this.skillUsed = null;
-				}
 			} else {
 				this.moveUsed = this.ai.getNextMove();
-				this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
 			}
-			Console.writeLine(this.name + " is using " + this.moveUsed.usable.name);
-			if (this.moveUsed.usable instanceof SkillUsable) {
-				if (this.weapon != null && this.moveUsed.usable.technique.weaponType != null) {
-					Console.append("weaponLv: " + this.weapon.level);
-				}
-			}
-			var nextActions = this.moveUsed.usable.use();
+			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
+			var nextActions = this.moveUsed.usable.use(this);
 			var action = nextActions[0];
 			for (var i = 1; i < nextActions.length; ++i) {
 				this.actionQueue.push(nextActions[i]);
@@ -416,6 +415,13 @@ BattleUnit.prototype.tick = function()
 	}
 };
 
+// .timeUntilNextTurn() method
+// Gets the number of ticks until the battler can act.
+BattleUnit.prototype.timeUntilNextTurn = function()
+{
+	return this.counter;
+};
+
 // .timeUntilTurn() method
 // Estimates the time remaining until a future turn.
 // Arguments:
@@ -427,8 +433,8 @@ BattleUnit.prototype.tick = function()
 //     The estimated number of ticks until the specified turn.
 BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextActions)
 {
-	if (assumedRank === undefined) { assumedRank = Game.defaultMoveRank; }
-	if (nextActions === undefined) { nextActions = null; }
+	assumedRank = assumedRank !== void null ? assumedRank : Game.defaultMoveRank;
+	nextActions = nextActions !== void null ? nextActions : null;
 	
 	var timeLeft = this.counter;
 	for (var i = 1; i <= turnIndex; ++i) {
@@ -440,13 +446,3 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	}
 	return timeLeft;
 }
-
-// .useItem() method
-// Retrieves and uses item from the battler's inventory.
-// Arguments:
-//     itemID: The item descriptor ID of the item to be used.
-// Returns:
-//     The action descriptor for the action triggered by using the item.
-BattleUnit.prototype.useItem = function(itemID)
-{
-};

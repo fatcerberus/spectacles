@@ -18,23 +18,41 @@ function ItemUsable(itemID)
 	this.usesLeft = Game.items[itemID].uses;
 }
 
+// .getRank() method
+// Calculates the move rank of using the item.
+ItemUsable.prototype.getRank = function()
+{
+	return Game.useItemMoveRank;
+};
+
 // .isUsable() method
-// Determines whether the item can be used.
+// Determines whether the item can be used by a specified battler.
+// Arguments:
+//     unit: The battle unit for which to check for usability.
 // Returns:
-//     true if the item is currently usable; false otherwise.
-ItemUsable.prototype.isUsable = function()
+//     true if the item can be used; false otherwise.
+ItemUsable.prototype.isUsable = function(user)
 {
 	return this.isUnlimited || this.usesLeft > 0;
 };
 
+// .mpCost() method
+// Calculates the MP cost of using the item.
+ItemUsable.prototype.mpCost = function(user)
+{
+	return 0;
+};
+
 // .use() method
 // Utilizes the item, consuming one of its uses.
+// Arguments:
+//     unit: The battle unit using the item.
 // Returns:
-//     A list of battle actions to be executed by the item user.
-ItemUsable.prototype.use = function()
+//     A list of battle actions to be executed.
+ItemUsable.prototype.use = function(unit)
 {
-	if (!this.isUsable()) {
-		return null;
+	if (!this.isUsable(unit)) {
+		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
 	--this.usesLeft;
 	return [ Game.items[this.itemID].action ];

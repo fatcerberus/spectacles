@@ -66,7 +66,7 @@ function MoveMenu(battle, unit)
 		
 		var color;
 		var color2;
-		color = isEnabled ? cursorColor : CreateColor(64, 64, 64, cursorColor.alpha);
+		color = isEnabled ? cursorColor : CreateColor(48, 48, 48, cursorColor.alpha);
 		color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 		if (isLockedIn) {
 			var mainColor = color;
@@ -89,29 +89,23 @@ function MoveMenu(battle, unit)
 	};
 	this.drawMoveItem = function(x, y, item, isSelected, isLockedIn) {
 		var alpha = 255 * this.fadeness * this.expansion;
-		var isEnabled = item.isUsable();
+		var isEnabled = item.isUsable(this.unit);
 		var textColor = isSelected ?
 			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
 			CreateColor(128, 128, 128, alpha);
-		textColor = isEnabled ? textColor : BlendColorsWeighted(textColor, CreateColor(0, 0, 0, textColor.alpha), 0.25, 0.75);
-		var titleColor = isSelected ?
+		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
+		var infoTextColor = isSelected ?
 			BlendColorsWeighted(CreateColor(255, 192, 0, alpha), CreateColor(128, 96, 0, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
 			CreateColor(128, 96, 0, alpha);
-		titleColor = isEnabled ? titleColor : BlendColorsWeighted(titleColor, CreateColor(0, 0, 0, titleColor.alpha), 0.25, 0.75);
+		infoTextColor = isEnabled ? infoTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		Rectangle(x + 4, y + 2, 13, 13, CreateColor(128, 128, 128, alpha));
-		OutlinedRectangle(x + 4, y + 2, 13, 13, CreateColor(0, 0, 0, alpha * 0.5));
-		//this.drawText(this.font, x + 7, y + 2, 1, textColor, skill.technique.actions[0].rank);
-		this.drawText(this.font, x + 22, y + 3, 1, textColor, item.name);
-		this.drawText(this.font, x + 142, y + 3, 1, titleColor, "R");
-		//this.drawText(this.font, x + 156, y + 1, 1, textColor, skill.technique.actions[0].rank, 'right');
-	};
-	this.drawTopItem = function(x, y, width, item, isSelected) {
-		var isEnabled = item.contents.length > 0;
-		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
-		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
-		textColor = isEnabled ? textColor : BlendColorsWeighted(textColor, CreateColor(0, 0, 0, textColor.alpha), 0.25, 0.75);
-		this.drawText(this.font, x + width / 2, y + 3, 1, textColor, item.name, 'center');
+		Rectangle(x + 142, y + 3, 13, 12, CreateColor(96, 96, 96, alpha));
+		OutlinedRectangle(x + 142, y + 3, 13, 12, CreateColor(0, 0, 0, alpha * 0.5));
+		this.drawText(this.font, x + 147, y + 3, 0, textColor, item.getRank());
+		this.drawText(this.font, x + 5, y + 3, isEnabled, textColor, item.name);
+		if (item.mpCost(this.unit) > 0) {
+			this.drawText(this.font, x + 137, y + 3, isEnabled, infoTextColor, item.mpCost(this.unit), 'right');
+		}
 	};
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var aligners = {
@@ -131,6 +125,13 @@ function MoveMenu(battle, unit)
 		font.setColorMask(color);
 		font.drawText(x, y, text);
 	};
+	this.drawTopItem = function(x, y, width, item, isSelected) {
+		var isEnabled = item.contents.length > 0;
+		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
+		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
+		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
+		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name, 'center');
+	};
 }
 
 // .getInput() method
@@ -148,7 +149,7 @@ MoveMenu.prototype.getInput = function()
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
-		} else if (this.isExpanded && this.moveList[this.moveCursor].isUsable()) {
+		} else if (this.isExpanded && this.moveList[this.moveCursor].isUsable(this.unit)) {
 			this.selection = this.moveList[this.moveCursor];
 			this.showMoveList.stop();
 			this.chooseMove.run();

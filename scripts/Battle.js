@@ -5,6 +5,7 @@
 
 RequireScript('BattleScreen.js');
 RequireScript('BattleUnit.js');
+RequireScript('MPPool.js');
 
 // BattleResult enumeration
 // Specifies the outcome of a battle.
@@ -30,6 +31,7 @@ function Battle(session, battleID)
 	this.conditions = [];
 	this.enemyUnits = [];
 	this.parameters = Game.battles[battleID];
+	this.partyMPPool = null;
 	this.playerUnits = [];
 	this.result = null;
 	this.session = session;
@@ -120,6 +122,10 @@ Battle.prototype.go = function()
 		partyInfo.push(memberInfo);
 	}
 	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.mp.party(partyInfo), 0), 9999));
+	var partyMPPool = new MPPool(partyMaxMP);
+	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
+		this.ui.hud.mpGauge.set(availableMP);
+	});
 	this.ui = new BattleScreen(partyMaxMP);
 	this.playerUnits = [];
 	this.enemyUnits = [];
@@ -130,7 +136,7 @@ Battle.prototype.go = function()
 	}
 	var i = 0;
 	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
+		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle, partyMPPool);
 		this.playerUnits.push(unit);
 		++i;
 	}
