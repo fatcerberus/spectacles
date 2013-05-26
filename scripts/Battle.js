@@ -26,7 +26,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	
+	this.accentColor = 'accentColor' in Game.battles[battleID] ? Game.battles[battleID].accentColor : CreateColor(128, 128, 128, 255);
 	this.battleID = battleID;
 	this.conditions = [];
 	this.enemyUnits = [];
@@ -126,7 +126,7 @@ Battle.prototype.go = function()
 	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
-	this.ui = new BattleScreen(partyMaxMP);
+	this.ui = new BattleScreen(partyMaxMP, this.accentColor);
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {

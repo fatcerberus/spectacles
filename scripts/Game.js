@@ -634,6 +634,7 @@ Game = {
 	battles: {
 		headlessHorse: {
 			title: "Headless Horse",
+			accentColor: CreateColor(255, 192, 0, 255),
 			bgm: 'ManorBoss',
 			battleLevel: 8,
 			enemies: [
@@ -648,6 +649,7 @@ Game = {
 		},
 		robert2: {
 			title: "Robert Spellbinder",
+			//accentColor: CreateColor(0, 255, 0, 255),
 			bgm: 'ThePromise',
 			battleLevel: 50,
 			enemies: [

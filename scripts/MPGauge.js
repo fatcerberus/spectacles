@@ -3,19 +3,21 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-function MPGauge(capacity)
+function MPGauge(capacity, color)
 {
-	this.color = CreateColor(72, 72, 144, 255);
+	color = color !== void null ? color : CreateColor(128, 128, 128, 255);
 	
 	this.animation = null;
 	this.capacity = capacity;
+	this.color = color;
 	this.font = GetSystemFont();
 	this.reading = capacity;
 	this.usage = 0;
 	this.usageColor = CreateColor(0, 0, 0, 0);
 	this.value = capacity;
 	
-	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
+	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
+	{
 		var alignments = {
 			left: function(font, x, text) { return x; },
 			center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
@@ -45,10 +47,10 @@ MPGauge.prototype.draw = function(x, y, size)
 		var outerUsageColor = this.usageColor;
 		var innerUsageColor = BlendColors(this.usageColor, CreateColor(0, 0, 0, this.usageColor.alpha));
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
-		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor, true);
-		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor, true);
-		//this.drawText(this.font, x + size / 2 - 20, y + size / 2 - 12, 1, CreateColor(255, 255, 255, 255), "magic");
-		this.drawText(this.font, x + size / 2, y + size / 2 - 6, 1, CreateColor(255, 255, 255, 255), Math.round(this.reading), 'center');
+		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
+		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
+		this.drawText(this.font, x + size / 2 - 18, y + size / 2 - 12, 0, BlendColors(this.color, CreateColor(0, 0, 0, this.color.alpha)), "MP");
+		this.drawText(this.font, x + size / 2 + 18, y + size / 2, 1, CreateColor(255, 255, 255, 255), Math.round(this.reading), 'right');
 	}
 	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
 };
