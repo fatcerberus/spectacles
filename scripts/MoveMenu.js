@@ -12,8 +12,8 @@ RequireScript("TargetMenu.js");
 //     unit:   The BattleUnit this menu belongs to.
 function MoveMenu(battle, unit)
 {
-	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
-	this.normalCursorColor = CreateColor(0, 72, 144, 255);
+	this.lockedCursorColor = CreateColor(36, 36, 72, 255);
+	this.normalCursorColor = CreateColor(72, 72, 144, 255);
 	
 	this.battle = battle;
 	this.drawers = null;
@@ -73,16 +73,16 @@ function MoveMenu(battle, unit)
 			color = color2;
 			color2 = mainColor;
 		}
-		var halfHeight = Math.round((height - 2) / 2);
-		GradientRectangle(x + 1, y + 1, width - 2, halfHeight, color2, color2, color, color);
-		GradientRectangle(x + 1, y + 1 + halfHeight, width - 2, height - 2 - halfHeight, color, color, color2, color2);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha));
+		var halfHeight = Math.round(height / 2);
+		GradientRectangle(x, y, width , halfHeight, color2, color2, color, color);
+		GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
 	};
 	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor, isEnabled) {
 		isEnabled = isEnabled !== void null ? isEnabled : true;
 		
 		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha));
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 24));
 		if (isSelected) {
 			this.drawCursor(x, y, width, height, cursorColor, isLockedIn, isEnabled);
 		}
@@ -95,16 +95,16 @@ function MoveMenu(battle, unit)
 			CreateColor(128, 128, 128, alpha);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		var infoTextColor = isSelected ?
-			BlendColorsWeighted(CreateColor(255, 192, 0, alpha), CreateColor(128, 96, 0, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
-			CreateColor(128, 96, 0, alpha);
+			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
+			CreateColor(128, 128, 128, alpha);
 		infoTextColor = isEnabled ? infoTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
-		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		Rectangle(x + 142, y + 3, 13, 12, CreateColor(96, 96, 96, alpha));
-		OutlinedRectangle(x + 142, y + 3, 13, 12, CreateColor(0, 0, 0, alpha * 0.5));
-		this.drawText(this.font, x + 147, y + 3, 0, textColor, item.getRank());
-		this.drawText(this.font, x + 5, y + 3, isEnabled, textColor, item.name);
+		this.drawItemBox(x, y, 160, 16, alpha * 192 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
+		Rectangle(x + 142, y + 2, 13, 12, CreateColor(36, 36, 72, alpha));
+		OutlinedRectangle(x + 142, y + 2, 13, 12, CreateColor(0, 0, 0, alpha * 0.5));
+		this.drawText(this.font, x + 147, y + 2, 0, textColor, item.getRank());
+		this.drawText(this.font, x + 5, y + 2, isEnabled, textColor, item.name);
 		if (item.mpCost(this.unit) > 0) {
-			this.drawText(this.font, x + 137, y + 3, isEnabled, infoTextColor, item.mpCost(this.unit), 'right');
+			this.drawText(this.font, x + 137, y + 2, isEnabled, infoTextColor, item.mpCost(this.unit), 'right');
 		}
 	};
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
@@ -127,10 +127,10 @@ function MoveMenu(battle, unit)
 	};
 	this.drawTopItem = function(x, y, width, item, isSelected) {
 		var isEnabled = item.contents.length > 0;
-		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
+		this.drawItemBox(x, y, width, 16, 192 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
-		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name, 'center');
+		this.drawText(this.font, x + width / 2, y + 2, isEnabled, textColor, item.name, 'center');
 	};
 }
 
@@ -146,6 +146,7 @@ MoveMenu.prototype.getInput = function()
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
 			this.moveList = this.drawers[this.topCursor].contents;
+			this.moveCursor = this.drawers[this.topCursor].cursor;
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
@@ -155,6 +156,7 @@ MoveMenu.prototype.getInput = function()
 			this.chooseMove.run();
 		}
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) {
+		this.drawers[this.topCursor].cursor = this.moveCursor;
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
@@ -180,10 +182,15 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.drawers = [
-		{ name: "Skill", contents: this.unit.skills },
-		{ name: "Item", contents: this.unit.items },
-		{ name: "Defend", contents: [] }
+		{ name: "Atk", contents: this.unit.skills },
+		{ name: "Mag", contents: [] },
+		{ name: "Stg", contents: [] },
+		{ name: "Itm", contents: this.unit.items },
+		{ name: "Def", contents: [] }
 	];
+	for (var i = 0; i < this.drawers.length; ++i) {
+		this.drawers[i].cursor = 0;
+	}
 	this.expansion = 0.0;
 	this.isExpanded = false;
 	this.selection = null;
@@ -203,23 +210,23 @@ MoveMenu.prototype.open = function()
 // Renders the menu in its current state.
 MoveMenu.prototype.render = function()
 {
-	var yOrigin = -34 * (1.0 - this.fadeness) + 16;
+	var yOrigin = -32 * (1.0 - this.fadeness) + 16;
 	var itemWidth = 160 / this.drawers.length;
 	var litTextColor = CreateColor(255, 255, 255, 255);
 	var dimTextColor = CreateColor(192, 192, 192, 255);
-	Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 128 * this.fadeness));
+	Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 192 * this.fadeness));
 	for (var i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
 		this.drawTopItem(x, yOrigin, width, this.drawers[i], i == this.topCursor);
 	}
 	if (this.expansion > 0.0) {
-		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
-		var height = this.moveList.length * 18;
-		var y = yOrigin + 18 - height * (1.0 - this.expansion);
-		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 96 * this.expansion * this.fadeness)); 
+		SetClippingRectangle(0, yOrigin + 16, 160, GetScreenHeight() - (yOrigin + 18));
+		var height = this.moveList.length * 16;
+		var y = yOrigin + 16 - height * (1.0 - this.expansion);
+		Rectangle(0, 32, 160, y - 32, CreateColor(0, 0, 0, 192 * this.expansion * this.fadeness)); 
 		for (var i = 0; i < this.moveList.length; ++i) {
-			var itemY = y + i * 18;
+			var itemY = y + i * 16;
 			this.drawMoveItem(0, itemY, this.moveList[i], i == this.moveCursor, this.chooseMove.isRunning());
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())

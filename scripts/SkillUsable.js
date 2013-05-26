@@ -14,12 +14,12 @@ function SkillUsable(skillID, level)
 {
 	level = level !== void null ? level : 1;
 	
-	if (!(skillID in Game.techniques)) {
+	if (!(skillID in Game.skills)) {
 		Abort("SkillUsable(): The skill definition '" + skillID + "' doesn't exist.");
 	}
 	this.levelStat = new Stat(100, level);
-	this.name = Game.techniques[skillID].name;
-	this.skillInfo = Game.techniques[skillID];
+	this.name = Game.skills[skillID].name;
+	this.skillInfo = Game.skills[skillID];
 	this.skillID = skillID;
 }
 

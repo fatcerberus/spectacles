@@ -89,7 +89,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	this.drawSegment(barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 	this.drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 	var slotYSize = height - barHeight + 1;
-	var slotXSize = slotYSize + 1;
+	var slotXSize = slotYSize;
 	var slotX;
 	var slotY = y + height - slotYSize;
 	for (i = 0; i < numReserves; ++i) {

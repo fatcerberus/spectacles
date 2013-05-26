@@ -5,13 +5,15 @@
 
 function MPGauge(capacity)
 {
-	this.color = CreateColor(128, 64, 128, 255);
+	this.color = CreateColor(72, 72, 144, 255);
 	
+	this.animation = null;
 	this.capacity = capacity;
 	this.font = GetSystemFont();
 	this.reading = capacity;
 	this.usage = 0;
 	this.usageColor = CreateColor(0, 0, 0, 0);
+	this.value = capacity;
 	
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var alignments = {
@@ -39,15 +41,14 @@ MPGauge.prototype.draw = function(x, y, size)
 	SetClippingRectangle(x, y, size, size);
 	if (this.capacity > 0) {
 		var innerFillColor = this.color;
-		var outerFillColor = BlendColors(this.color, CreateColor(0, 0, 0, 255));
+		var outerFillColor = BlendColors(this.color, CreateColor(0, 0, 0, this.color.alpha));
 		var outerUsageColor = this.usageColor;
-		var innerUsageColor = BlendColors(this.usageColor, CreateColor(0, 0, 0, 255));
-		Rectangle(x, y, size, size, outerFillColor);
+		var innerUsageColor = BlendColors(this.usageColor, CreateColor(0, 0, 0, this.usageColor.alpha));
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor, true);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor, true);
-		this.drawText(this.font, x + size / 2 - 22, y + size / 2 - 6, 1, CreateColor(255, 192, 0, 255), "MP");
-		this.drawText(this.font, x + size / 2 + 22, y + size / 2 - 6, 1, CreateColor(255, 255, 255, 255), this.reading, 'right');
+		//this.drawText(this.font, x + size / 2 - 20, y + size / 2 - 12, 1, CreateColor(255, 255, 255, 255), "magic");
+		this.drawText(this.font, x + size / 2, y + size / 2 - 6, 1, CreateColor(255, 255, 255, 255), Math.round(this.reading), 'center');
 	}
 	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
 };
@@ -55,16 +56,27 @@ MPGauge.prototype.draw = function(x, y, size)
 MPGauge.prototype.set = function(value)
 {
 	value = Math.min(Math.max(value, 0), this.capacity);
-	if (value < this.reading) {
-		new Scenario()
-			.tween(this.usageColor, 0.1, 'easeInOutSine', CreateColor(0, 96, 192, 255))
+	if (value < this.value) {
+		if (this.animation != null) {
+			this.animation.stop();
+		}
+		this.animation = new Scenario()
+			.fork()
+				.tween(this, 0.25, 'easeInOutSine', { usage: this.reading - value })
+			.end()
+			.fork()
+				.tween(this, 0.25, 'easeInOutSine', { reading: value })
+			.end()
+			.tween(this.usageColor, 0.1, 'easeInOutSine', this.color)
 			.tween(this.usageColor, 0.5, 'easeInOutSine', CreateColor(0, 0, 0, 0))
 			.run();
-		this.usage = this.reading - value;
 	}
-	this.reading = value;
+	this.value = value;
 };
 
 MPGauge.prototype.update = function()
 {
+	if (this.animation != null && !this.animation.isRunning()) {
+		this.usage = 0;
+	}
 };

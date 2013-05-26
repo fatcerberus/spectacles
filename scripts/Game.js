@@ -14,8 +14,7 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -156,8 +155,7 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				'necromancy',
-				'omni'
+				'necromancy'
 			]
 		},
 		bruce: {
@@ -173,7 +171,8 @@ Game = {
 			},
 			startingWeapon: 'arsenRifle',
 			skills: [
-				'sharpshooter'
+				'sharpshooter',
+				'shootout'
 			]
 		},
 		maggie: {
@@ -289,62 +288,7 @@ Game = {
 		}
 	},
 	
-	techniques: {
-		swordSlash: {
-			name: "Sword Slash",
-			category: 'sword',
-			weaponType: 'sword',
-			targetType: 'single',
-			actions: [
-				{
-					announceAs: "Sword Slash",
-					rank: 2,
-					accuracyType: 'sword',
-					baseExperience: {
-						user: {
-							str: 1
-						},
-						target: {
-							def: 1
-						}
-					},
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'damage',
-							damageType: 'sword',
-							power: 25
-						}
-					]
-				}
-			]
-		},
-		quickstrike: {
-			name: "Quickstrike",
-			category: 'sword',
-			weaponType: 'sword',
-			targetType: 'single',
-			actions: [
-				{
-					announceAs: "Quickstrike",
-					rank: 1,
-					accuracyType: 'sword',
-					baseExperience: {
-						user: {
-							str: 1
-						}
-					},
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'damage',
-							damageType: 'sword',
-							power: 10
-						}
-					]
-				}
-			]
-		},
+	skills: {
 		chargeSlash: {
 			name: "Charge Slash",
 			category: 'sword',
@@ -385,43 +329,24 @@ Game = {
 				}
 			]
 		},
-		sharpshooter: {
-			name: "Sharpshooter",
+		fatSlam: {
+			name: "Fat Slam",
 			category: 'attack',
-			weaponType: 'rifle',
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "Sharpshooter",
+					announceAs: "Fat Slam",
 					rank: 3,
-					accuracyType: 'pistol',
+					accuracyType: 'physical',
 					effects: [
 						{
 							targetHint: 'selected',
 							type: 'damage',
-							damageType: 'pistol',
-							power: 40
+							damageType: 'physical',
+							power: 75,
+							element: 'fat'
 						}
-					]
-				}
-			]
-		},
-		necromancy: {
-			name: "Necromancy",
-			category: 'strategy',
-			targetType: 'single',
-			baseMPCost: 200,
-			actions: [
-				{
-					announceAs: "Necromancy",
-					rank: 3,
-					effects: [
-						{
-							targetHint: "selected",
-							type: 'addStatus',
-							status: 'zombie'
-						}
-					]
+					],
 				}
 			]
 		},
@@ -447,6 +372,44 @@ Game = {
 				}
 			]
 		},
+		munch: {
+			name: "Munch",
+			category: 'attack',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Munch",
+					rank: 5,
+					accuracyType: 'devour',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'devour',
+							successRate: 1.0
+						}
+					],
+				}
+			]
+		},
+		necromancy: {
+			name: "Necromancy",
+			category: 'strategy',
+			targetType: 'single',
+			baseMPCost: 200,
+			actions: [
+				{
+					announceAs: "Necromancy",
+					rank: 3,
+					effects: [
+						{
+							targetHint: "selected",
+							type: 'addStatus',
+							status: 'zombie'
+						}
+					]
+				}
+			]
+		},
 		omni: {
 			name: "Omni",
 			category: 'magic',
@@ -468,43 +431,100 @@ Game = {
 				}
 			]
 		},
-		munch: {
-			name: "Munch",
-			category: 'attack',
+		quickstrike: {
+			name: "Quickstrike",
+			category: 'sword',
+			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "Munch",
-					rank: 5,
-					accuracyType: 'devour',
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'devour',
-							successRate: 1.0
+					announceAs: "Quickstrike",
+					rank: 1,
+					accuracyType: 'sword',
+					baseExperience: {
+						user: {
+							str: 1
 						}
-					],
-				}
-			]
-		},
-		fatSlam: {
-			name: "Fat Slam",
-			category: 'attack',
-			targetType: 'single',
-			actions: [
-				{
-					announceAs: "Fat Slam",
-					rank: 3,
-					accuracyType: 'physical',
+					},
 					effects: [
 						{
 							targetHint: 'selected',
 							type: 'damage',
-							damageType: 'physical',
-							power: 75,
-							element: 'fat'
+							damageType: 'sword',
+							power: 10
 						}
-					],
+					]
+				}
+			]
+		},
+		sharpshooter: {
+			name: "Sharpshooter",
+			category: 'attack',
+			weaponType: 'rifle',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Sharpshooter",
+					rank: 3,
+					accuracyType: 'pistol',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'pistol',
+							power: 40
+						}
+					]
+				}
+			]
+		},
+		shootout: {
+			name: "Shootout",
+			category: 'attack',
+			weaponType: 'pistol',
+			targetType: 'multiple',
+			actions: [
+				{
+					announceAs: "Shootout",
+					rank: 3,
+					accuracyType: 'pistol',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'pistol',
+							power: 50
+						}
+					]
+				}
+			]
+		},
+		swordSlash: {
+			name: "Sword Slash",
+			category: 'sword',
+			weaponType: 'sword',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Sword Slash",
+					rank: 2,
+					accuracyType: 'sword',
+					baseExperience: {
+						user: {
+							str: 1
+						},
+						target: {
+							def: 1
+						}
+					},
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'sword',
+							power: 25
+						}
+					]
 				}
 			]
 		}
@@ -593,7 +613,7 @@ Game = {
 							"Tastes like chicken!",
 							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even regular, uncooked, feathery chicken...")
 						.talk("Robert", 2.0, "...")
-						//.run(true);
+						.run(true);
 				}
 				if (this.turnsTaken == 0) {
 					this.useItem('alcohol');

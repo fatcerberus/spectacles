@@ -12,26 +12,17 @@ RequireScript('lib/kh2Bar.js');
 //     partyMaxMP: The party's current MP capacity.
 function BattleHUD(partyMaxMP)
 {
-	this.fadeness = 0.0;
-	this.font = GetSystemFont();
-	this.highlightColor = CreateColor(0, 0, 0, 0);
-	this.highlightedName = null;
-	this.hpGaugesInfo = [];
-	this.mpGauge = new MPGauge(partyMaxMP);
-	this.partyInfo = [ null, null, null ];
-	this.thread = null;
-	
 	this.drawElementBox = function(x, y, width, height) {
-		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 172));
+		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 208));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
 	};
 	this.drawHighlight = function(x, y, width, height, color) {
 		var outerColor = color;
 		var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
-		var halfHeight = Math.round((height - 2) / 2);
-		GradientRectangle(x + 1, y + 1, width - 2, halfHeight, outerColor, outerColor, innerColor, innerColor);
-		GradientRectangle(x + 1, y + 1 + halfHeight, width - 2, height - 2 - halfHeight, innerColor, innerColor, outerColor, outerColor);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha));
+		var halfHeight = Math.round(height / 2);
+		GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
+		GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 128 * color.alpha / 255));
 	};
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted) {
 		this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
@@ -43,13 +34,12 @@ function BattleHUD(partyMaxMP)
 			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 192, 192, 255);
 		var titleColor = isHighlighted ?
-			BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-			CreateColor(192, 144, 0, 255);
-		textColor = CreateColor(255, 255, 255, 255);
-		titleColor = CreateColor(255, 192, 0, 255);
-		this.drawText(this.font, x + 5, y + 4, 1, textColor, memberInfo.name);
-		this.drawText(this.font, x + 58, y + 4, 1, titleColor, "HP");
-		this.drawText(this.font, x + 94, y + 4, 1, textColor, Math.round(memberInfo.hp), 'right');
+			BlendColorsWeighted(CreateColor(192, 192, 192, 255), CreateColor(128, 128, 128, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			CreateColor(128, 128, 128, 255);
+		//textColor = CreateColor(192, 192, 192, 255);
+		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
+		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
+		//this.drawText(this.font, x + 94, y + 4, 1, titleColor, Math.round(memberInfo.hp), 'right');
 	}
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment) {
 		var alignments = {
@@ -69,6 +59,15 @@ function BattleHUD(partyMaxMP)
 		font.setColorMask(color);
 		font.drawText(x, y, text);
 	};
+	
+	this.fadeness = 0.0;
+	this.font = GetSystemFont();
+	this.highlightColor = CreateColor(0, 0, 0, 0);
+	this.highlightedName = null;
+	this.hpGaugesInfo = [];
+	this.mpGauge = new MPGauge(partyMaxMP);
+	this.partyInfo = [ null, null, null ];
+	this.thread = null;
 }
 
 // .dispose() method
@@ -85,7 +84,7 @@ BattleHUD.prototype.dispose = function()
 //     capacity: The HP capacity of the gauge.
 BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
-	var gauge = new kh2Bar(capacity, 400, CreateColor(255, 255, 255, 255));
+	var gauge = new kh2Bar(capacity, 250, CreateColor(72, 72, 144, 255));
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
 	gauge.show(0.0);
 };
@@ -108,8 +107,8 @@ BattleHUD.prototype.highlight = function(name)
 	if (name !== null) {
 		this.highlightedName = name;
 		new Scenario()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 128, 255, 255))
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(0, 36, 72, 255))
+			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(64, 64, 255, 255))
+			.tween(this.highlightColor, 0.25, 'easeOutQuad', CreateColor(36, 36, 72, 255))
 			.run();
 	} else {
 		new Scenario()
@@ -158,6 +157,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
 		if (characterInfo !== null && characterInfo.name == name && hp != characterInfo.hp) {
+			characterInfo.hpGauge.set(hp);
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new Scenario()
 				.fork()
@@ -188,10 +188,13 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
+	var hpGauge = new kh2Bar(maxHP, 200, CreateColor(72, 72, 144, 255));
+	hpGauge.show();
 	this.partyInfo[slot] = {
 		name: name,
 		hp: hp,
 		maxHP: maxHP,
+		hpGauge: hpGauge,
 		lightColor: CreateColor(255, 0, 0, 0)
 	};
 };
@@ -212,6 +215,11 @@ BattleHUD.prototype.show = function()
 // Advances the BattleHUD's internal state by one frame.
 BattleHUD.prototype.update = function()
 {
+	for (var i = 0; i < this.partyInfo.length; ++i) {
+		if (this.partyInfo[i] !== null) {
+			this.partyInfo[i].hpGauge.update();
+		}
+	}
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
 		this.hpGaugesInfo[i].gauge.update();
 	}
