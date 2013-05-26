@@ -13,17 +13,12 @@ RequireScript('BattleHUD.js');
 //     accentColor: Optional. The accent color for the battle. (default: #008000).
 function BattleScreen(partyMaxMP, accentColor)
 {
-	this.startThread = function() {
-		this.thread = Threads.createEntityThread(this);
-		this.hud.show();
-	};
+	accentColor = accentColor !== void null ? accentColor : CreateColor(255, 255, 255, 255);
 	
 	this.actorTypes = {
 		enemy: { isMirrored: false },
 		party: { isMirrored: true }
 	};
-	
-	accentColor = accentColor !== void null ? accentColor : CreateColor(128, 128, 128, 255);
 	
 	this.accentColor = accentColor;
 	this.actors = {};
@@ -31,6 +26,12 @@ function BattleScreen(partyMaxMP, accentColor)
 		this.actors[type] = [];
 	}
 	this.hud = new BattleHUD(partyMaxMP, accentColor);
+	
+	this.startRunning = function()
+	{
+		this.thread = Threads.createEntityThread(this);
+		this.hud.show();
+	};
 }
 	
 // .dispose() method
@@ -107,14 +108,14 @@ BattleScreen.prototype.go = function(title)
 	
 	this.title = title;
 	if (DBG_DISABLE_TRANSITIONS) {
-		this.startThread();
+		this.startRunning();
 		return;
 	}
 	var transition = new Scenario()
 		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-		.call(delegate(this, this.startThread))
+		.call(delegate(this, this.startRunning))
 		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 		.run();
 	Threads.waitFor(Threads.doWith(transition,

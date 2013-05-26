@@ -26,7 +26,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	this.accentColor = 'accentColor' in Game.battles[battleID] ? Game.battles[battleID].accentColor : CreateColor(128, 128, 128, 255);
+	this.accentColor = 'accentColor' in Game.battles[battleID] ? Game.battles[battleID].accentColor : CreateColor(255, 255, 255, 255);
 	this.battleID = battleID;
 	this.conditions = [];
 	this.enemyUnits = [];

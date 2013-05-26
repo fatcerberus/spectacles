@@ -14,11 +14,10 @@ function BattleHUD(partyMaxMP, accentColor)
 {
 	accentColor = accentColor !== void null ? accentColor : CreateColor(128, 128, 128, 255);
 	
-	this.enemyHPColor = BlendColors(accentColor, CreateColor(255, 255, 255, accentColor.alpha));
-	this.partyHPColor = BlendColors(accentColor, CreateColor(255, 255, 255, accentColor.alpha));
-	this.partyHighlightColor = BlendColors(accentColor, CreateColor(0, 0, 0, accentColor.alpha));
-	this.nameColor = BlendColors(accentColor, CreateColor(255, 255, 255, accentColor.alpha));
-	this.partyMPColor = BlendColors(accentColor, CreateColor(255, 128, 255, accentColor.alpha));
+	this.enemyHPGaugeColor = CreateColor(255, 255, 255, 255);
+	this.partyHPGaugeColor = CreateColor(0, 255, 0, 255);
+	this.partyHighlightColor = CreateColor(0, 36, 72, 255);
+	this.partyMPGaugeColor = CreateColor(128, 64, 128, 255);
 	
 	this.accentColor = accentColor;
 	this.fadeness = 0.0;
@@ -26,13 +25,13 @@ function BattleHUD(partyMaxMP, accentColor)
 	this.highlightColor = CreateColor(0, 0, 0, 0);
 	this.highlightedName = null;
 	this.hpGaugesInfo = [];
-	this.mpGauge = new MPGauge(partyMaxMP, accentColor);
+	this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
 	
 	this.drawElementBox = function(x, y, width, height)
 	{
-		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 208));
+		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 192));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
 	};
 	
@@ -59,7 +58,6 @@ function BattleHUD(partyMaxMP, accentColor)
 		var titleColor = isHighlighted ?
 			BlendColorsWeighted(CreateColor(192, 192, 192, 255), CreateColor(128, 128, 128, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(128, 128, 128, 255);
-		textColor = this.nameColor;
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
 		//this.drawText(this.font, x + 94, y + 4, 1, titleColor, Math.round(memberInfo.hp), 'right');
@@ -100,7 +98,7 @@ BattleHUD.prototype.dispose = function()
 //     capacity: The HP capacity of the gauge.
 BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
-	var gauge = new kh2Bar(capacity, 250, this.enemyHPColor);
+	var gauge = new kh2Bar(capacity, 400, this.enemyHPGaugeColor);
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
 	gauge.show(0.0);
 };
@@ -204,7 +202,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	var hpGauge = new kh2Bar(maxHP, 200, this.partyHPColor);
+	var hpGauge = new kh2Bar(maxHP, 100, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
 		name: name,

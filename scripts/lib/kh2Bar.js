@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.6.1 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 1.7 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -11,10 +11,14 @@ kh2Bar = kh2Bar || {};
 //     capacity:   The largest HP value representable by the gauge.
 //     sectorSize: Optional. The amount of HP represented by each full bar of the gauge. (default: 100)
 //     color:      Optional. The color of the gauge. (default: #00FF00 (Green) @ 100%)
-function kh2Bar(capacity, sectorSize, color)
+//     maxSectors: Optional. The maximum number of sectors the gauge can display. If this is not specified or
+//                 is null, the gauge will be rendered as it would be in Kingdom Hearts 2, with the maximum number
+//                 of sectors determined by the width and height of the gauge.
+function kh2Bar(capacity, sectorSize, color, maxSectors)
 {
-	sectorSize = (sectorSize !== void null) ? sectorSize : 100;
-	color = (color !== void null) ? color : CreateColor(0, 255, 0, 255);
+	sectorSize = sectorSize !== void null ? sectorSize : 100;
+	color = color !== void null ? color : CreateColor(0, 255, 0, 255);
+	maxSectors = maxSectors !== void null ? maxSectors : null;
 	
 	this.borderColor = CreateColor(0, 0, 0, color.alpha);
 	this.capacity = capacity;
@@ -25,8 +29,9 @@ function kh2Bar(capacity, sectorSize, color)
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;
-	this.hpColor = color;
+	this.hpColor = BlendColors(color, color);
 	this.isVisible = true;
+	this.maxSectors = maxSectors;
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
 	
@@ -89,7 +94,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	this.drawSegment(barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 	this.drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 	var slotYSize = height - barHeight + 1;
-	var slotXSize = slotYSize;
+	var slotXSize = this.maxSectors !== null ? Math.ceil(width / (this.maxSectors - 1)) : slotYSize + 1;
 	var slotX;
 	var slotY = y + height - slotYSize;
 	for (i = 0; i < numReserves; ++i) {
@@ -105,6 +110,13 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 		OutlinedRectangle(slotX, slotY, slotXSize, slotYSize, borderColor);
 		this.drawSegment(slotX + 1, slotY + 1, slotXSize - 2, slotYSize - 2, color);
 	}
+};
+
+// .fadeTo() method
+// Changes the color and opacity of the gauge.
+kh2Bar.prototype.fadeTo = function(color)
+{
+	// TODO: implement me!
 };
 
 // .hide() method

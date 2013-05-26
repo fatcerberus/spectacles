@@ -12,10 +12,12 @@ RequireScript("TargetMenu.js");
 //     unit:   The BattleUnit this menu belongs to.
 function MoveMenu(battle, unit)
 {
-	this.lockedCursorColor = BlendColorsWeighted(battle.accentColor, CreateColor(0, 0, 0, battle.accentColor.alpha), 0.25, 0.75);
-	this.normalCursorColor = BlendColors(battle.accentColor, CreateColor(0, 0, 0, battle.accentColor.alpha));
-	this.moveRankColor = BlendColorsWeighted(battle.accentColor, CreateColor(0, 0, 0, battle.accentColor.alpha), 0.25, 0.75);
-	this.moveRankBoxColor = BlendColors(battle.accentColor, CreateColor(0, 0, 0, battle.accentColor.alpha));
+	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
+	this.moveRankColor = CreateColor(0, 0, 0, 255);
+	this.moveRankBoxColor = CreateColor(128, 128, 128, 255);
+	this.normalCursorColor = CreateColor(0, 72, 144, 255);
+	this.textColor = CreateColor(255, 255, 255, 255);
+	this.usageTextColor = CreateColor(255, 192, 0, 255);
 	
 	this.battle = battle;
 	this.drawers = null;
@@ -100,21 +102,17 @@ function MoveMenu(battle, unit)
 	{
 		var alpha = 255 * this.fadeness * this.expansion;
 		var isEnabled = item.isUsable(this.unit);
-		var textColor = isSelected ?
-			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
-			CreateColor(128, 128, 128, alpha);
+		var textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
+		var usageTextColor = isSelected ? this.usageTextColor : CreateColor(128, 128, 128, alpha);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
-		var infoTextColor = isSelected ?
-			BlendColorsWeighted(CreateColor(255, 255, 255, alpha), CreateColor(128, 128, 128, alpha), this.moveCursorColor.alpha, 255 - this.moveCursorColor.alpha) :
-			CreateColor(128, 128, 128, alpha);
-		infoTextColor = isEnabled ? infoTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
-		this.drawItemBox(x, y, 160, 18, alpha * 192 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
+		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
+		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
 		Rectangle(x + 142, y + 3, 13, 12, this.moveRankBoxColor);
 		OutlinedRectangle(x + 142, y + 3, 13, 12, CreateColor(0, 0, 0, this.moveRankBoxColor.alpha / 2));
 		this.drawText(this.font, x + 147, y + 3, 0, this.moveRankColor, item.getRank());
-		this.drawText(this.font, x + 5, y + 3, isEnabled, textColor, item.name);
+		this.drawText(this.font, x + 33, y + 3, isEnabled, textColor, item.name);
 		if (item.mpCost(this.unit) > 0) {
-			this.drawText(this.font, x + 137, y + 3, isEnabled, infoTextColor, item.mpCost(this.unit), 'right');
+			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost(this.unit), 'right');
 		}
 	};
 	
@@ -141,7 +139,7 @@ function MoveMenu(battle, unit)
 	this.drawTopItem = function(x, y, width, item, isSelected)
 	{
 		var isEnabled = item.contents.length > 0;
-		this.drawItemBox(x, y, width, 18, 192 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
+		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name, 'center');
