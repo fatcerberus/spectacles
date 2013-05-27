@@ -194,11 +194,9 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.drawers = [
-		{ name: "Atk", contents: this.unit.skills },
-		{ name: "Mag", contents: [] },
-		{ name: "Stg", contents: [] },
-		{ name: "Itm", contents: this.unit.items },
-		{ name: "Def", contents: [] }
+		{ name: "Attack", contents: this.unit.skills },
+		{ name: "Item", contents: this.unit.items },
+		{ name: "Defend", contents: [] }
 	];
 	for (var i = 0; i < this.drawers.length; ++i) {
 		this.drawers[i].cursor = 0;
@@ -214,7 +212,9 @@ MoveMenu.prototype.open = function()
 	this.battle.resume();
 	return {
 		usable: this.selection,
-		targets: [ this.battle.enemiesOf(this.unit)[0] ]
+		targets: this.selection instanceof ItemUsable ?
+			[ this.unit ] :
+			[ this.battle.enemiesOf(this.unit)[0] ]
 	};
 };
 

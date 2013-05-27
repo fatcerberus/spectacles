@@ -15,7 +15,7 @@ function Party()
 // .add() method
 // Adds a character to the party.
 // Arguments:
-//     character: The ID of the character to be added.
+//     characterID: The ID of the character to be added, as defined in the gamedef.
 Party.prototype.add = function(characterID)
 {
 	var newMember = new PartyMember(characterID, this.getLevel());

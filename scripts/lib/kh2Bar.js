@@ -10,12 +10,19 @@ kh2Bar = kh2Bar || {};
 // Arguments:
 //     capacity:   The largest HP value representable by the gauge.
 //     sectorSize: Optional. The amount of HP represented by each full bar of the gauge. (default: 100)
-//     color:      Optional. The color of the gauge. (default: #00FF00 (Green) @ 100%)
+//     color:      Optional. The color of the gauge. (default: #00FF00 @ 100%)
 //     maxSectors: Optional. The maximum number of sectors the gauge can display. If this is not specified or
 //                 is null, the gauge will be rendered as it would be in Kingdom Hearts 2, with the maximum number
 //                 of sectors determined by the width and height of the gauge.
 function kh2Bar(capacity, sectorSize, color, maxSectors)
 {
+	if (arguments.length < 1) {
+		Abort(
+			"kh2Bar() - error: Wrong number of arguments\n" +
+			"At least 1 argument was expected; caller passed " + arguments.length + "."
+		);
+	}
+	
 	sectorSize = sectorSize !== void null ? sectorSize : 100;
 	color = color !== void null ? color : CreateColor(0, 255, 0, 255);
 	maxSectors = maxSectors !== void null ? maxSectors : null;
@@ -35,13 +42,15 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
 	
-	this.drawSegment = function(x, y, width, height, color) {
+	this.drawSegment = function(x, y, width, height, color)
+	{
 		var halfHeight = Math.ceil(height / 2);
 		var dimColor = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 		var yHalf = y + Math.floor(height / 2);
 		GradientRectangle(x, y, width, halfHeight, dimColor, dimColor, color, color);
 		GradientRectangle(x, yHalf, width, halfHeight, color, color, dimColor, dimColor);
 	};
+	
 	this.fadeColor = function(color, fadeness)
 	{
 		return CreateColor(color.red, color.green, color.blue, color.alpha * (1.0 - fadeness));
@@ -57,6 +66,13 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 //     height:  The height of the gauge, in pixels.
 kh2Bar.prototype.draw = function(x, y, width, height)
 {
+	if (arguments.length < 4) {
+		Abort(
+			"kh2Bar.draw() - error: Wrong number of arguments\n" +
+			"4 arguments were expected; caller passed " + arguments.length + "."
+		);
+	}
+	
 	if (this.fadeness >= 1.0) {
 		return;
 	}
@@ -84,7 +100,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	var fillColor = this.fadeColor(this.hpColor, this.fadeness);
 	var emptyColor = this.fadeColor(this.emptyColor, this.fadeness);
 	var usageColor = BlendColorsWeighted(emptyColor, this.fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
-	if (numReserves > 0) {
+	if (barInUse < this.sectorSize && numReserves > 0) {
 		OutlinedRectangle(x, y, width, barHeight, BlendColors(borderColor, CreateColor(0, 0, 0, 0)));
 		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColors(fillColor, CreateColor(0, 0, 0, 0)));
 	}
@@ -122,7 +138,7 @@ kh2Bar.prototype.fadeTo = function(color)
 // .hide() method
 // Hides the gauge.
 // Arguments:
-//     duration: The duration of the hide animation, in seconds.
+//     duration: Optional. The duration of the hide animation, in seconds. (default: 0.0)
 kh2Bar.prototype.hide = function(duration)
 {
 	duration = duration !== void null ? duration : 0.0;
@@ -139,6 +155,13 @@ kh2Bar.prototype.hide = function(duration)
 // Sets the gauge's current HP reading.
 kh2Bar.prototype.set = function(value)
 {
+	if (arguments.length < 1) {
+		Abort(
+			"kh2Bar.set() - error: Wrong number of arguments\n" +
+			"1 argument was expected; caller passed " + arguments.length + "."
+		);
+	}
+	
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
 	if (value != this.reading) {
 		this.damage += this.reading - value;
@@ -149,9 +172,9 @@ kh2Bar.prototype.set = function(value)
 };
 
 // .show() method
-// Makes the gauge visible after hiding it.
+// Displays the gauge.
 // Arguments:
-//     duration: The duration of the show animation, in seconds.
+//     duration: Optional. The duration of the show animation, in seconds. (default: 0.0)
 kh2Bar.prototype.show = function(duration)
 {
 	duration = duration !== void null ? duration : 0.0;
@@ -165,7 +188,7 @@ kh2Bar.prototype.show = function(duration)
 };
 
 // .update() method
-// Advances internal state by one frame.
+// Updates the gauge for the next frame.
 kh2Bar.prototype.update = function()
 {
 	var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();

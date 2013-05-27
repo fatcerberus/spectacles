@@ -66,13 +66,14 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.id = this.partyMember.characterID;
 		this.character = Game.characters[this.partyMember.characterID];
 		var memberInfo = {
-			characterID: this.partyMember.characterID
+			characterID: this.partyMember.characterID,
+			level: this.partyMember.getLevel(),
+			stats: {}
 		};
-		memberInfo.stats = {};
 		for (var stat in Game.namedStats) {
 			memberInfo.stats[stat] = this.partyMember.stats[stat].getValue();
 		}
-		this.maxHP = 1000; //Math.round(Math.min(Math.max(Game.math.hp.partyMember(memberInfo), 1), 1000));
+		this.maxHP = Math.floor(Math.min(Math.max(Game.math.hp.partyMember(memberInfo), 1), 1000));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		var skills = this.partyMember.getUsableSkills();
@@ -95,25 +96,21 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
 		}
-		/*var skills = this.enemyInfo.skills;
-		for (var i = 0; i < skills.length; ++i) {
-			this.skills.push(new SkillUsable(skills[i], 100));
-		}*/
 		this.items = [];
 		if ('items' in this.enemyInfo) {
 			for (var i = 0; i < this.enemyInfo.items.length; ++i) {
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.maxHP = Math.min(Math.max(Game.math.hp.enemy(this.enemyInfo, battle.getLevel()), 1), 10000);
+		this.maxHP = Math.floor(Math.min(Math.max(Game.math.hp.enemy(this.getInfo()), 1), 10000));
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
-	this.mpPool = mpPool !== void null ? mpPool :
-		new MPPool(Math.round(Math.min(Math.max(Game.math.mp.enemy(this.enemyInfo, this.getLevel()), 1), 999)));
+	var maxMPIfEnemy = Math.floor(Math.min(Math.max(Game.math.mp.enemy(this.getInfo()), 1), 1000));
+	this.mpPool = mpPool !== void null ? mpPool : new MPPool(maxMPIfEnemy);
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -174,6 +171,7 @@ BattleUnit.prototype.getInfo = function()
 	var info = {};
 	info.name = this.name;
 	info.health = Math.ceil(100 * this.hp / this.maxHP);
+	info.level = this.getLevel();
 	info.stats = {};
 	for (var stat in Game.namedStats) {
 		info.stats[stat] = this.stats[stat].getValue();

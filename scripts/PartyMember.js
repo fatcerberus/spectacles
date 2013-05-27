@@ -29,7 +29,7 @@ function PartyMember(characterID, level)
 	
 	this.characterID = characterID;
 	this.fullName = Game.characters[characterID].fullName;
-	this.items = [ new ItemUsable('alcohol') ];
+	this.items = [];
 	this.name = Game.characters[characterID].name;
 	this.skillList = [];
 	this.stats = {};

@@ -101,13 +101,16 @@ function Scenario(isLooping)
 	this.threads = [];
 	this.variables = {};
 	
-	this.createDelegate = function(o, method) {
+	this.createDelegate = function(o, method)
+	{
 		if (method == null) {
 			return null;
 		}
 		return function() { return method.apply(o, arguments); };
 	};
-	this.createThread = function(state, updater, renderer, priority, inputHandler) {
+	
+	this.createThread = function(state, updater, renderer, priority, inputHandler)
+	{
 		if (renderer === undefined) { renderer = null; }
 		if (priority === undefined) { priority = 0; }
 		if (inputHandler === undefined) { inputHandler = null; }
@@ -128,20 +131,32 @@ function Scenario(isLooping)
 		++this.nextThreadID;
 		return threadObject.id;
 	};
-	this.createCommandThread = function(command) {
+	
+	this.createCommandThread = function(command)
+	{
 		var updater = this.createDelegate(this, command.update);
 		var renderer = this.createDelegate(this, command.render);
 		var inputHandler = this.createDelegate(this, command.getInput);
 		return this.createThread(command.state, updater, renderer, 0, inputHandler);
 	};
-	this.createForkThread = function(state) {
+	
+	this.createForkThread = function(state)
+	{
 		return this.createThread(state, this.createDelegate(this, this.updateFork));
 	};
+	
+	this.enqueue = function(command)
+	{
+		this.currentQueue.push(command);
+	};
+	
 	this.goTo = function(commandID)
 	{
 		this.activeThread.state.counter = commandID;
 	};
-	this.isThreadRunning = function(id) {
+	
+	this.isThreadRunning = function(id)
+	{
 		if (id == 0) {
 			return false;
 		}
@@ -152,7 +167,9 @@ function Scenario(isLooping)
 		}
 		return false;
 	};
-	this.killThread = function(id) {
+	
+	this.killThread = function(id)
+	{
 		for (var i = 0; i < this.threads.length; ++i) {
 			if (id == this.threads[i].id) {
 				this.threads.splice(i, 1);
@@ -160,6 +177,7 @@ function Scenario(isLooping)
 			}
 		}
 	};
+	
 	this.testIf = function(op, variableName, value)
 	{
 		var operators = {
@@ -171,11 +189,15 @@ function Scenario(isLooping)
 			'<=': function(a, b) { return a <= b; }
 		};
 		return operators[op](this.variables[variableName], value);
-	}
-	this.throwError = function(component, name, message) {
+	};
+	
+	this.throwError = function(component, name, message)
+	{
 		Abort(component + " - error: " + name + "\n" + message);
 	};
-	this.updateFork = function(scene, state) {
+	
+	this.updateFork = function(scene, state)
+	{
 		for (var i = 0; i < state.forkThreads.length; ++i) {
 			if (!scene.isThreadRunning(state.forkThreads[i])) {
 				state.forkThreads.splice(i, 1);
@@ -206,10 +228,9 @@ function Scenario(isLooping)
 		}
 		return true;
 	};
-	this.enqueue = function(command) {
-		this.currentQueue.push(command);
-	};
-	this.render = function() {
+	
+	this.render = function()
+	{
 		for (var i = 0; i < this.threads.length; ++i) {
 			var renderer = this.threads[i].renderer;
 			if (renderer != null) {
@@ -217,7 +238,9 @@ function Scenario(isLooping)
 			}
 		}
 	};
-	this.update = function() {
+	
+	this.update = function()
+	{
 		for (var i = 0; i < this.threads.length; ++i) {
 			this.activeThread = this.threads[i];
 			var id = this.threads[i].id;

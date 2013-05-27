@@ -117,6 +117,9 @@ function game()
 	world.currentSession = session;
 	
 	/*ALPHA*/
+	session.party.members.scott.items.push(new ItemUsable('alcohol'));
+	session.party.members.scott.items.push(new ItemUsable('tonic'));
+	session.party.members.scott.items.push(new ItemUsable('holyWater'));
 	var battleResult = new Battle(world.currentSession, 'robert2').go();
 	if (battleResult == BattleResult.enemyWon) {
 		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");

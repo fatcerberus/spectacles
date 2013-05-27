@@ -15,7 +15,7 @@ function BattleHUD(partyMaxMP, accentColor)
 	accentColor = accentColor !== void null ? accentColor : CreateColor(128, 128, 128, 255);
 	
 	this.enemyHPGaugeColor = CreateColor(255, 255, 255, 255);
-	this.partyHPGaugeColor = CreateColor(0, 255, 0, 255);
+	this.partyHPGaugeColor = CreateColor(0, 192, 0, 255);
 	this.partyHighlightColor = CreateColor(0, 36, 72, 255);
 	this.partyMPGaugeColor = CreateColor(128, 64, 128, 255);
 	

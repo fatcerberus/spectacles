@@ -77,7 +77,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return Math.max(Math.floor(actor.getLevel() * power * (actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3 * (100 - target.stats.foc.getValue() * 0.95) / 60000), 1);
+				return Math.pow((100 + power + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 5 * (100 - target.stats.foc.getValue()) / 105, 3) / 250;
 			},
 			pistol: function(actor, target, power) {
 				return 1;
@@ -86,7 +86,7 @@ Game = {
 				return 1;
 			},
 			sword: function(actor, target, power) {
-				return Math.max(Math.floor(actor.weapon.level * actor.stats.str.getValue() * power * (100 - target.stats.def.getValue() * 0.95) / 50000), 1);
+				return Math.pow((actor.weapon.level + power + actor.stats.str.getValue()) / 3 * (100 - target.stats.def.getValue()) / 105, 3) / 250;
 			}
 		},
 		experience: {
@@ -106,16 +106,16 @@ Game = {
 			}
 		},
 		hp: {
-			enemy: function(enemy, level) {
-				return enemy.baseStats.vit * level;
+			enemy: function(unitInfo) {
+				return (unitInfo.stats.vit * 2 + unitInfo.level) / 3 * 100;
 			},
 			partyMember: function(memberInfo) {
-				return memberInfo.stats.vit * 10;
+				return (memberInfo.stats.vit * 2 + memberInfo.level) / 3 * 10;
 			}
 		},
 		mp: {
-			enemy: function(enemyInfo, level) {
-				return enemyInfo.baseStats.mag * level / 100 * 15;
+			enemy: function(unitInfo) {
+				return (unitInfo.stats.mag * 2 + unitInfo.level) / 3 * 15;
 			},
 			party: function(partyInfo) {
 				var maxMP = 0;
@@ -125,9 +125,9 @@ Game = {
 				}
 				return maxMP;
 			},
-			usage: function(skillInfo, level, userInfo) {
-				var baseCost = 'baseMPCost' in skillInfo ? skillInfo.baseMPCost : 0;
-				return baseCost * level * userInfo.stats.foc / 10000;
+			usage: function(skill, level, userInfo) {
+				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
+				return baseCost * level * userInfo.level / 10000;
 			}
 		},
 		retreatChance: function(enemyUnits) {
@@ -199,7 +199,7 @@ Game = {
 			uses: 1,
 			action: {
 				announceAs: "Alcohol",
-				rank: 1,
+				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -209,6 +209,36 @@ Game = {
 						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'drunk'
+					}
+				]
+			}
+		},
+		holyWater: {
+			name: "Holy Water",
+			uses: 1,
+			action: {
+				announceAs: "Holy Water",
+				rank: 3,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatus',
+						status: 'zombie'
+					}
+				]
+			}
+		},
+		tonic: {
+			name: "Tonic",
+			uses: 5,
+			action: {
+				announceAs: "Tonic",
+				rank: 3,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverHP',
+						strength: 35
 					}
 				]
 			}
@@ -260,7 +290,7 @@ Game = {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var damage = Math.floor(Game.math.damage[effect.damageType](actor, target, effect.power) / reducer);
+				var damage = Math.floor(Math.max(Game.math.damage[effect.damageType](actor, target, effect.power) / reducer, 1));
 				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
 			}
 		},
@@ -281,9 +311,19 @@ Game = {
 				targets[i].takeDamage(targets[i].maxHP);
 			}
 		},
+		liftStatus: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].liftStatus(effect.status);
+			}
+		},
 		recoverAll: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].heal(targets[i].maxHP);
+			}
+		},
+		recoverHP: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].heal(targets[i].maxHP * effect.strength / 100);
 			}
 		}
 	},
@@ -614,9 +654,9 @@ Game = {
 							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even regular, uncooked, feathery chicken...")
 						.talk("Robert", 2.0, "...")
 						.run(true);
+					this.queueItem('alcohol');
 				}
 				if (this.turnsTaken == 0) {
-					this.useItem('alcohol');
 					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
