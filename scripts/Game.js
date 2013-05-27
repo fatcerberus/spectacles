@@ -77,7 +77,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return Math.pow((100 + power + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 5 * (100 - target.stats.foc.getValue()) / 105, 3) / 250;
+				return power * Math.pow((actor.getLevel() + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 4) / 8, 3) / 50000;
 			},
 			pistol: function(actor, target, power) {
 				return 1;
@@ -86,7 +86,7 @@ Game = {
 				return 1;
 			},
 			sword: function(actor, target, power) {
-				return Math.pow((actor.weapon.level + power + actor.stats.str.getValue()) / 3 * (100 - target.stats.def.getValue()) / 105, 3) / 250;
+				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 4) / 8, 3) / 50000;
 			}
 		},
 		experience: {
@@ -121,7 +121,7 @@ Game = {
 				var maxMP = 0;
 				for (var i = 0; i < partyInfo.length; ++i) {
 					var memberInfo = partyInfo[i];
-					maxMP += memberInfo.stats.mag * 15;
+					maxMP += Math.floor((memberInfo.stats.mag * 2 + memberInfo.level) / 3 * 10);
 				}
 				return maxMP;
 			},

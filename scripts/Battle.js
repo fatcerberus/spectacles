@@ -113,13 +113,15 @@ Battle.prototype.go = function()
 	for (id in this.session.party.members) {
 		var member = this.session.party.members[id];
 		var memberInfo = {
-			characterID: member.characterID
+			characterID: member.characterID,
+			level: member.getLevel()
 		}
 		memberInfo.stats = {};
 		for (var stat in Game.namedStats) {
 			memberInfo.stats[stat] = member.stats[stat].getValue();
 		}
 		partyInfo.push(memberInfo);
+		partyInfo[member.characterID] = memberInfo;
 	}
 	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.mp.party(partyInfo), 0), 9999));
 	var partyMPPool = new MPPool(partyMaxMP);
