@@ -77,7 +77,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return power * Math.pow((actor.getLevel() + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 4) / 8, 3) / 50000;
+				return power * Math.pow((actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12, 3) / 50000;
 			},
 			pistol: function(actor, target, power) {
 				return 1;
@@ -86,7 +86,7 @@ Game = {
 				return 1;
 			},
 			sword: function(actor, target, power) {
-				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 4) / 8, 3) / 50000;
+				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4, 3) / 50000;
 			}
 		},
 		experience: {
@@ -107,10 +107,10 @@ Game = {
 		},
 		hp: {
 			enemy: function(unitInfo) {
-				return (unitInfo.stats.vit * 2 + unitInfo.level) / 3 * 100;
+				return Math.floor((unitInfo.stats.vit * 2 + unitInfo.level) / 3) * 100;
 			},
 			partyMember: function(memberInfo) {
-				return (memberInfo.stats.vit * 2 + memberInfo.level) / 3 * 10;
+				return Math.floor((memberInfo.stats.vit * 2 + memberInfo.level) / 3) * 10;
 			}
 		},
 		mp: {
@@ -121,7 +121,7 @@ Game = {
 				var maxMP = 0;
 				for (var i = 0; i < partyInfo.length; ++i) {
 					var memberInfo = partyInfo[i];
-					maxMP += Math.floor((memberInfo.stats.mag * 2 + memberInfo.level) / 3 * 10);
+					maxMP += Math.floor((memberInfo.stats.mag * 2 + memberInfo.level) / 3 * 15);
 				}
 				return maxMP;
 			},
@@ -290,8 +290,8 @@ Game = {
 			var reducer = targets.length;
 			for (var i = 0; i < targets.length; ++i) {
 				var target = targets[i];
-				var damage = Math.floor(Math.max(Game.math.damage[effect.damageType](actor, target, effect.power) / reducer, 1));
-				target.takeDamage(damage + damage * 0.2 * (Math.random() - 0.5));
+				var damage = Game.math.damage[effect.damageType](actor, target, effect.power) / reducer;
+				target.takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1));
 			}
 		},
 		devour: function(actor, targets, effect) {
@@ -654,7 +654,7 @@ Game = {
 							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even regular, uncooked, feathery chicken...")
 						.talk("Robert", 2.0, "...")
 						.run(true);
-					this.queueItem('alcohol');
+					this.useItem('alcohol');
 				}
 				if (this.turnsTaken == 0) {
 					this.useSkill('omni');

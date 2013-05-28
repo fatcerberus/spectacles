@@ -28,7 +28,7 @@ function MoveMenu(battle, unit)
 	this.isExpanded = false;
 	this.moveCursor = 0;
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
-	this.moveList = null;
+	this.moveMenu = null;
 	this.selection = null;
 	this.topCursor = 0;
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
@@ -101,7 +101,7 @@ function MoveMenu(battle, unit)
 	this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 	{
 		var alpha = 255 * this.fadeness * this.expansion;
-		var isEnabled = item.isUsable(this.unit);
+		var isEnabled = item.isAllowed;
 		var textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
 		var usageTextColor = isSelected ? this.usageTextColor : CreateColor(128, 128, 128, alpha);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
@@ -109,10 +109,10 @@ function MoveMenu(battle, unit)
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
 		Rectangle(x + 142, y + 3, 13, 12, this.moveRankBoxColor);
 		OutlinedRectangle(x + 142, y + 3, 13, 12, CreateColor(0, 0, 0, this.moveRankBoxColor.alpha / 2));
-		this.drawText(this.font, x + 147, y + 3, 0, this.moveRankColor, item.getRank());
+		this.drawText(this.font, x + 147, y + 3, 0, this.moveRankColor, item.rank);
 		this.drawText(this.font, x + 33, y + 3, isEnabled, textColor, item.name);
-		if (item.mpCost(this.unit) > 0) {
-			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost(this.unit), 'right');
+		if (item.mpCost > 0) {
+			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost, 'right');
 		}
 	};
 	
@@ -157,13 +157,23 @@ MoveMenu.prototype.getInput = function()
 	}
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
-			this.moveList = this.drawers[this.topCursor].contents;
+			var usables = this.drawers[this.topCursor].contents;
+			this.moveMenu = [];
+			for (var i = 0; i < usables.length; ++i) {
+				this.moveMenu.push({
+					name: usables[i].name,
+					rank: usables[i].getRank(),
+					mpCost: usables[i].mpCost(this.unit),
+					usable: usables[i],
+					isAllowed: usables[i].isUsable(this.unit)
+				});
+			}
 			this.moveCursor = this.drawers[this.topCursor].cursor;
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
-		} else if (this.isExpanded && this.moveList[this.moveCursor].isUsable(this.unit)) {
-			this.selection = this.moveList[this.moveCursor];
+		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isAllowed) {
+			this.selection = this.moveMenu[this.moveCursor].usable;
 			this.showMoveList.stop();
 			this.chooseMove.run();
 		}
@@ -183,9 +193,9 @@ MoveMenu.prototype.getInput = function()
 			this.topCursor = 0;
 		}
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
-		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveList.length - 1 : this.moveCursor - 1;
+		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
-		this.moveCursor = (this.moveCursor + 1) % this.moveList.length;
+		this.moveCursor = (this.moveCursor + 1) % this.moveMenu.length;
 	}
 };
 
@@ -234,12 +244,12 @@ MoveMenu.prototype.render = function()
 	}
 	if (this.expansion > 0.0) {
 		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
-		var height = this.moveList.length * 16;
+		var height = this.moveMenu.length * 16;
 		var y = yOrigin + 18 - height * (1.0 - this.expansion);
 		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 192 * this.expansion * this.fadeness)); 
-		for (var i = 0; i < this.moveList.length; ++i) {
+		for (var i = 0; i < this.moveMenu.length; ++i) {
 			var itemY = y + i * 18;
-			this.drawMoveItem(0, itemY, this.moveList[i], i == this.moveCursor, this.chooseMove.isRunning());
+			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.isRunning());
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
 	}
