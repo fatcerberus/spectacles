@@ -134,13 +134,15 @@ BattleHUD.prototype.render = function()
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	var itemY = y;
 	if (this.turnPreview !== null) {
-		for (var i = 0; i < Math.min(this.turnPreview.length, 10); ++i) {
+		this.drawElementBox(0, itemY, 48, 16);
+		DrawTextEx(this.font, 24, itemY + 2, "Next", CreateColor(255, 255, 255, 255), 1, 'center');
+		for (var i = 0; i < Math.min(this.turnPreview.length, 7); ++i) {
 			var actor = this.turnPreview[i];
-			var x = i * 16;
-			var pictureColor = actor.isEnemy ? CreateColor(64, 0, 0, 192) : CreateColor(0, 32, 64, 192);
+			var x = 48 + i * 16;
+			var pictureColor = actor.isEnemy ? CreateColor(128, 0, 0, 192) : CreateColor(0, 64, 128, 192);
 			Rectangle(x, itemY, 16, 16, pictureColor);
 			OutlinedRectangle(x, itemY, 16, 16, CreateColor(0, 0, 0, 32));
-			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(192, 192, 192, 192), 1);
+			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(255, 255, 255, 192), 1);
 		}
 	}
 	this.drawElementBox(260, itemY, 60, 60);
@@ -227,7 +229,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 BattleHUD.prototype.setTurnPreview = function(prediction)
 {
 	this.turnPreview = [];
-	for (var i = 0; i < Math.min(prediction.length, 10); ++i) {
+	for (var i = 0; i < Math.min(prediction.length, 7); ++i) {
 		this.turnPreview.push(prediction[i].unit.actor);
 	}
 };

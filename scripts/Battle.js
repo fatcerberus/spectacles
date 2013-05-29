@@ -185,17 +185,20 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	
 	var forecast = [];
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	for (var turnIndex = 0; turnIndex <= 9; ++turnIndex) {
+	for (var turnIndex = 0; turnIndex < 7; ++turnIndex) {
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
 				var unit = unitLists[iList][i];
+				if (unit === actingUnit && turnIndex == 0) {
+					continue;
+				}
 				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
 				forecast.push({ unit: unit, remainingTime: timeUntilUp });
 			}
 		}
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
-	forecast = forecast.slice(0, 10);
+	forecast = forecast.slice(0, 7);
 	Console.writeLine("Turn prediction");
 	if (actingUnit !== null) {
 		Console.append("reqBy: " + actingUnit.name);

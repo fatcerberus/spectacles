@@ -77,7 +77,7 @@ Game = {
 				return 1;
 			},
 			magic: function(actor, target, power) {
-				return power * Math.pow((actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12, 3) / 50000;
+				return power * Math.pow((actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12, 3) / 75000;
 			},
 			pistol: function(actor, target, power) {
 				return 1;
@@ -86,7 +86,7 @@ Game = {
 				return 1;
 			},
 			sword: function(actor, target, power) {
-				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4, 3) / 50000;
+				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4, 3) / 75000;
 			}
 		},
 		experience: {
