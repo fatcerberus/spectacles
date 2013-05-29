@@ -440,8 +440,8 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	var timeLeft = this.counter;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
-		if (nextActions !== null && i < nextActions.length) {
-			rank = nextActions[i].rank;
+		if (nextActions !== null && i <= nextActions.length) {
+			rank = nextActions[i - 1].rank;
 		}
 		timeLeft += Game.math.timeUntilNextTurn(this, rank);
 	}

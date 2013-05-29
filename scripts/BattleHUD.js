@@ -55,7 +55,7 @@ function BattleHUD(partyMaxMP)
 			CreateColor(192, 192, 192, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
-		Rectangle(x + 82, y + 4, 12, 12, CreateColor(64, 64, 64, 255));
+		Rectangle(x + 82, y + 4, 12, 12, CreateColor(64, 96, 128, 255));
 		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
 	
@@ -133,15 +133,14 @@ BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	var itemY = y;
-	this.drawElementBox(0, itemY, 160, 16);
 	if (this.turnPreview !== null) {
 		for (var i = 0; i < Math.min(this.turnPreview.length, 10); ++i) {
 			var actor = this.turnPreview[i];
 			var x = i * 16;
-			var pictureColor = actor.isEnemy ? CreateColor(128, 32, 32, 192) : CreateColor(32, 64, 128, 192);
+			var pictureColor = actor.isEnemy ? CreateColor(64, 0, 0, 192) : CreateColor(0, 32, 64, 192);
 			Rectangle(x, itemY, 16, 16, pictureColor);
-			OutlinedRectangle(x, itemY, 16, 16, CreateColor(0, 0, 0, 64));
-			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(255, 255, 255, 192), 1);
+			OutlinedRectangle(x, itemY, 16, 16, CreateColor(0, 0, 0, 32));
+			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(192, 192, 192, 192), 1);
 		}
 	}
 	this.drawElementBox(260, itemY, 60, 60);

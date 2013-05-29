@@ -26,17 +26,17 @@ function TargetMenu(unit, battle, usable)
 	
 	this.drawCursor = function(unit)
 	{
-		var width = this.cursorFont.getStringWidth(unit.name.toUpperCase()) + 10;
+		var width = this.cursorFont.getStringWidth(this.usable.name) + 20;
 		var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 21 : unit.actor.x - 5 - width;
 		var y = unit.actor.y + 6;
 		Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
 		OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
-		DrawTextEx(this.cursorFont, x + width / 2, y + 4, unit.name.toUpperCase(), CreateColor(255, 255, 255, 255), 1, 'center');
+		DrawTextEx(this.cursorFont, x + width / 2, y + 4, this.usable.name, CreateColor(255, 255, 255, 255), 1, 'center');
 	};
 	
-	this.drawInfoBox = function(x, y, width, height)
+	this.drawInfoBox = function(x, y, width, height, alpha)
 	{
-		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 160 * (1.0 - this.infoBoxFadeness)));
+		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha * (1.0 - this.infoBoxFadeness)));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32 * (1.0 - this.infoBoxFadeness)));
 	};
 	
@@ -158,18 +158,18 @@ TargetMenu.prototype.render = function()
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 		var y = -52 * this.infoBoxFadeness + 16;
 		Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
-		this.drawInfoBox(0, y, 160, 32);
-		DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(255, 255, 128, textAlpha), 1, 'center');
+		this.drawInfoBox(0, y, 160, 32, 160);
+		DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(255, 255, 255, textAlpha), 1, 'center');
 		var statusColor = this.unitToShowInfo.statuses.length == 0 ?
-			CreateColor(255, 255, 255, 255) :
-			CreateColor(255, 128, 128, 255);
+			CreateColor(96, 192, 96, textAlpha) :
+			CreateColor(192, 192, 96, textAlpha);
 		var statusText = this.unitToShowInfo.statuses.length > 0 ? this.unitToShowInfo.statuses[0].name : "Normal";
 		DrawTextEx(this.infoFont, 80, y + 16, statusText, statusColor, 1, 'center');
-		if (true || this.unitToShowInfo.isPartyMember()) {
-			this.drawInfoBox(0, y + 32, 80, 20);
-			DrawTextEx(this.infoFont, 40, y + 36, "HP " + this.unitToShowInfo.hp, CreateColor(192, 192, 192, textAlpha), 1, 'center');
-			this.drawInfoBox(80, y + 32, 80, 20);
-			DrawTextEx(this.infoFont, 120, y + 36, "MP " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 192, textAlpha), 1, 'center');
+		if (this.unitToShowInfo.isPartyMember()) {
+			this.drawInfoBox(0, y + 32, 80, 20, 128);
+			DrawTextEx(this.infoFont, 40, y + 36, "HP " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+			this.drawInfoBox(80, y + 32, 80, 20, 128);
+			DrawTextEx(this.infoFont, 120, y + 36, "MP " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
 	}

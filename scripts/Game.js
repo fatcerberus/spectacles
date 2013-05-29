@@ -14,9 +14,7 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
