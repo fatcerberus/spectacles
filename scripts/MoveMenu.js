@@ -8,9 +8,9 @@ RequireScript("TargetMenu.js");
 // MoveMenu() constructor
 // Creates an object representing a move-choosing menu.
 // Arguments:
-//     battle: The Battle during which the menu will be shown.
-//     unit:   The BattleUnit this menu belongs to.
-function MoveMenu(battle, unit)
+//     unit:   The BattleUnit the menu belongs to.
+//     battle: The battle session during which the menu will be shown.
+function MoveMenu(unit, battle)
 {
 	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
 	this.moveRankColor = CreateColor(0, 0, 0, 255);
@@ -144,17 +144,22 @@ function MoveMenu(battle, unit)
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name, 'center');
 	};
+	
+	this.updateTurnPreview = function(nextMoveUsable)
+	{
+		var prediction = this.battle.predictTurns(this.unit, nextMoveUsable.peekActions());
+		this.battle.ui.hud.setTurnPreview(prediction);
+	};
 }
 
 // .getInput() method
-// Checks for player input and updates the state accordingly.
+// Checks for player input and updates the state of the menu accordingly.
 MoveMenu.prototype.getInput = function()
 {
 	var key = AreKeysLeft() ? GetKey() : null;
-	while (AreKeysLeft()) { GetKey(); }
-	if (this.showMenu.isRunning()) {
+	/*if (this.showMenu.isRunning()) {
 		return;
-	}
+	}*/
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
 			var usables = this.drawers[this.topCursor].contents;
@@ -172,6 +177,7 @@ MoveMenu.prototype.getInput = function()
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
+			this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
 		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isAllowed) {
 			this.selection = this.moveMenu[this.moveCursor].usable;
 			this.showMoveList.stop();
@@ -194,8 +200,10 @@ MoveMenu.prototype.getInput = function()
 		}
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
 		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
+		this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
 		this.moveCursor = (this.moveCursor + 1) % this.moveMenu.length;
+		this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
 	}
 };
 
@@ -211,20 +219,23 @@ MoveMenu.prototype.open = function()
 	for (var i = 0; i < this.drawers.length; ++i) {
 		this.drawers[i].cursor = 0;
 	}
-	this.expansion = 0.0;
-	this.isExpanded = false;
-	this.selection = null;
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
-	this.showMenu.run();
-	Threads.waitFor(Threads.createEntityThread(this, 10));
+	var chosenTargets = null;
+	while (chosenTargets === null) {
+		this.expansion = 0.0;
+		this.isExpanded = false;
+		this.selection = null;
+		while (AreKeysLeft()) { GetKey(); }
+		this.showMenu.run();
+		Threads.waitFor(Threads.createEntityThread(this, 10));
+		var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+	}
 	this.battle.ui.hud.highlight(null);
 	this.battle.resume();
 	return {
 		usable: this.selection,
-		targets: this.selection instanceof ItemUsable ?
-			[ this.unit ] :
-			[ this.battle.enemiesOf(this.unit)[0] ]
+		targets: chosenTargets
 	};
 };
 

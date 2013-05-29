@@ -46,6 +46,39 @@ RequireScript('TitleScreen.js');
 	}
 })();
 
+function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
+{
+	var aligners = {
+		left: function(font, x, text) { return x; },
+		center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
+		right: function(font, x, text) { return x - font.getStringWidth(text); }
+	};
+	
+	color = color !== void null ? color : CreateColor(255, 255, 255, 255);
+	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
+	alignment = alignment !== void null ? alignment : 'left';
+	
+	if (arguments.length < 4) {
+		Abort(
+			"DrawTextEx() - error: Wrong numbers of arguments\n" +
+			"At least 4 arguments were expected; caller only passed " + arguments.length + "."
+		);
+	}
+	if (!(alignment in aligners)) {
+		Abort(
+			"DrawTextEx() - error: Invalid argument\n" +
+			"The caller specified an invalid text alignment mode: '" + alignment + "'."
+		);
+	}
+	x = aligners[alignment](font, x, text);
+	var oldColorMask = font.getColorMask();
+	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
+	font.drawText(x + shadowDistance, y + shadowDistance, text);
+	font.setColorMask(color);
+	font.drawText(x, y, text);
+	font.setColorMask(oldColorMask);
+}
+
 // clone() function
 // Creates a deep copy of an object, preserving circular references.
 // Arguments:

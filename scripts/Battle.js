@@ -76,13 +76,13 @@ Battle.prototype.getLevel = function()
 };
 
 // .alliesOf() method
-// Gets a list of all BattleUnits allied with a specified unit.
+// Compiles a list of all the battlers allied with this battler, including itself.
 // Arguments:
-//     unit: The BattleUnit for which to find allies.
+//     unit: The battler for which to find allies.
 Battle.prototype.alliesOf = function(unit)
 {
 	if (unit.isPartyMember()) {
-		return this.partyUnits;
+		return this.playerUnits;
 	} else {
 		return this.enemyUnits;
 	}
@@ -146,6 +146,7 @@ Battle.prototype.go = function()
 	if (this.parameters.bgm != null) {
 		battleBGMTrack = this.parameters.bgm;
 	}
+	this.ui.hud.setTurnPreview(this.predictTurns());
 	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
@@ -174,17 +175,21 @@ Battle.prototype.go = function()
 // .predictTurns() method
 // Takes a forecast of the next 10 units to act.
 // Arguments:
-//     actingUnit: The BattleUnit that is about to act.
-//     nextMoves:  The list of move(s) to be used by actingUnit.
-Battle.prototype.predictTurns = function(actingUnit, nextMoves)
+//     actingUnit:  Optional. The BattleUnit that is about to act, if any.
+//     nextActions: Optional. The list of action(s) to be carried out by actingUnit, if any. Ignored
+//                  if actingUnit is not provided or is null.
+Battle.prototype.predictTurns = function(actingUnit, nextActions)
 {
+	actingUnit = actingUnit !== void null ? actingUnit : null;
+	nextActions = nextActions !== void null ? nextActions : null;
+	
 	var forecast = [];
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	for (var turnIndex = 0; turnIndex <= 9; ++turnIndex) {
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
 				var unit = unitLists[iList][i];
-				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextMoves : null);
+				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
 				forecast.push({ unit: unit, remainingTime: timeUntilUp });
 			}
 		}
@@ -192,7 +197,9 @@ Battle.prototype.predictTurns = function(actingUnit, nextMoves)
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
 	forecast = forecast.slice(0, 10);
 	Console.writeLine("Turn prediction");
-	Console.append("reqBy: " + actingUnit.name);
+	if (actingUnit !== null) {
+		Console.append("reqBy: " + actingUnit.name);
+	}
 	Console.append("next: " + forecast[1].unit.name)
 	return forecast;
 };

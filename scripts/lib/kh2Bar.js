@@ -77,7 +77,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 		return;
 	}
 	var numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
-	var numReservesFilled = Math.ceil(this.reading / this.sectorSize - 1);
+	var numReservesFilled = Math.max(Math.ceil(this.reading / this.sectorSize - 1), 0);
 	var numReservesDamaged = Math.ceil((this.damage + this.reading) / this.sectorSize - 1);
 	var barInUse = this.sectorSize;
 	if (numReservesFilled == numReserves) {

@@ -10,16 +10,13 @@ RequireScript('lib/kh2Bar.js');
 // Creates an object representing the battle screen heads-up display (HUD).
 // Arguments:
 //     partyMaxMP: The party's current MP capacity.
-function BattleHUD(partyMaxMP, accentColor)
+function BattleHUD(partyMaxMP)
 {
-	accentColor = accentColor !== void null ? accentColor : CreateColor(128, 128, 128, 255);
-	
 	this.enemyHPGaugeColor = CreateColor(255, 255, 255, 255);
-	this.partyHPGaugeColor = CreateColor(0, 192, 0, 255);
+	this.partyHPGaugeColor = CreateColor(0, 255, 0, 255);
 	this.partyHighlightColor = CreateColor(0, 36, 72, 255);
 	this.partyMPGaugeColor = CreateColor(128, 64, 128, 255);
 	
-	this.accentColor = accentColor;
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.highlightColor = CreateColor(0, 0, 0, 0);
@@ -28,6 +25,7 @@ function BattleHUD(partyMaxMP, accentColor)
 	this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
+	this.turnPreview = null;
 	
 	this.drawElementBox = function(x, y, width, height)
 	{
@@ -55,12 +53,10 @@ function BattleHUD(partyMaxMP, accentColor)
 		var textColor = isHighlighted ?
 			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 192, 192, 255);
-		var titleColor = isHighlighted ?
-			BlendColorsWeighted(CreateColor(192, 192, 192, 255), CreateColor(128, 128, 128, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-			CreateColor(128, 128, 128, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
-		//this.drawText(this.font, x + 94, y + 4, 1, titleColor, Math.round(memberInfo.hp), 'right');
+		Rectangle(x + 82, y + 4, 12, 12, CreateColor(64, 64, 64, 255));
+		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
 	
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
@@ -121,7 +117,7 @@ BattleHUD.prototype.highlight = function(name)
 	if (name !== null) {
 		this.highlightedName = name;
 		new Scenario()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', this.accentColor)
+			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
@@ -136,8 +132,18 @@ BattleHUD.prototype.highlight = function(name)
 BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-	this.drawElementBox(0, y, 160, 16);
 	var itemY = y;
+	this.drawElementBox(0, itemY, 160, 16);
+	if (this.turnPreview !== null) {
+		for (var i = 0; i < Math.min(this.turnPreview.length, 10); ++i) {
+			var actor = this.turnPreview[i];
+			var x = i * 16;
+			var pictureColor = actor.isEnemy ? CreateColor(128, 32, 32, 192) : CreateColor(32, 64, 128, 192);
+			Rectangle(x, itemY, 16, 16, pictureColor);
+			OutlinedRectangle(x, itemY, 16, 16, CreateColor(0, 0, 0, 64));
+			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(255, 255, 255, 192), 1);
+		}
+	}
 	this.drawElementBox(260, itemY, 60, 60);
 	this.mpGauge.draw(261, itemY + 1, 58);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
@@ -157,7 +163,9 @@ BattleHUD.prototype.render = function()
 		if (this.highlightedName == gaugeInfo.owner) {
 			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 		}
-		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 150, 10);
+		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
+		Rectangle(itemX + 142, itemY + 4, 12, 12, CreateColor(128, 32, 32, 255));
+		OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
 };
 
@@ -211,6 +219,18 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 		hpGauge: hpGauge,
 		lightColor: CreateColor(255, 0, 0, 0)
 	};
+};
+
+// .setTurnPreview() method
+// Populates the upcoming turn preview in the HUD.
+// Arguments:
+//     prediction: The upcoming turn prediction, as returned by Battle.predictTurns().
+BattleHUD.prototype.setTurnPreview = function(prediction)
+{
+	this.turnPreview = [];
+	for (var i = 0; i < Math.min(prediction.length, 10); ++i) {
+		this.turnPreview.push(prediction[i].unit.actor);
+	}
 };
 
 // .show() method

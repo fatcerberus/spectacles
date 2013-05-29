@@ -6,11 +6,13 @@
 // BattleActor() constructor
 // Creates an object representing a battle screen actor.
 // Arguments:
-//     name:         The actor's name.
-//     position:     The position of the battler in the party order.
-//     row:          The row (front, middle, rear) that the battler is in.
-//     isMirrored:   If true, the actor enters from the right. Otherwise, it enters from the left.
-function BattleActor(name, position, row, isMirrored)
+//     name:     The actor's name.
+//     position: The position of the battler in the party order. The leader should be in position 1 (center)
+//               while the left and right flanks are positions 0 and 2, respectively.
+//     row:      The row (front, middle, rear) that the battler is in.
+//     isEnemy:  If true, the actor plays an enemy and enters from the left. Otherwise, it enters from the
+//               right.
+function BattleActor(name, position, row, isEnemy)
 {
 	this.messageStyles = {
 		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
@@ -21,15 +23,15 @@ function BattleActor(name, position, row, isMirrored)
 	};
 	
 	this.hasEntered = false;
-	this.idFont = GetSystemFont(); /*ALPHA*/
-	this.isMirrored = isMirrored;
+	this.isEnemy = isEnemy;
 	this.isVisible = true;
+	this.messageFont = GetSystemFont();
 	this.messages = [];
 	this.name = name;
-	this.position = position;
+	this.position = isEnemy ? position : 2 - position;
 	this.row = row;
-	this.x = this.isMirrored ? 320 : -16;
-	this.y = 128 + this.position * 32;
+	this.x = isEnemy ? -16 : 320;
+	this.y = 192 - position * 32;
 };
 
 // .animate() method
@@ -56,7 +58,7 @@ BattleActor.prototype.enter = function(isImmediate)
 	if (this.hasEntered) {
 		return;
 	}
-	var newX = this.isMirrored ? 256 + this.row * 16 : 48 - this.row * 16;
+	var newX = this.isEnemy ? 48 - this.row * 16 : 256 + this.row * 16;
 	var threadID = null;
 	if (!isImmediate) {
 		var entrance = new Scenario()
@@ -76,21 +78,30 @@ BattleActor.prototype.enter = function(isImmediate)
 // Renders the BattleActor in its current state.
 BattleActor.prototype.render = function()
 {
-	if (!this.isVisible) {
+	function drawText(font, x, y, text, shadowDistance, color)
+	{
+		shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
+		color = color !== void null ? color : CreateColor(255, 255, 255, 255);
+		
+		if (shadowDistance != 0) {
+			font.setColorMask(CreateColor(0, 0, 0, 255));
+			font.drawText(x + shadowDistance, y + shadowDistance, text);
+		}
+		font.setColorMask(color);
+		font.drawText(x, y, text);
+	}
+	
+	if (!this.isVisible && this.messages.length == 0) {
 		return;
 	}
 	OutlinedRectangle(this.x, this.y, 16, 32, CreateColor(0, 0, 0, 255));
 	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
-	this.idFont.setColorMask(CreateColor(128, 128, 128, 255));
-	this.idFont.drawText(this.x + 5, this.y + 17, this.name[0]);
+	drawText(this.messageFont, this.x + 5, this.y + 17, this.name[0], 0, CreateColor(128, 128, 128, 255));
 	for (var i = 0; i < this.messages.length; ++i) {
 		var message = this.messages[i];
-		var x = this.x + 8 - this.idFont.getStringWidth(message.text) / 2;
+		var x = this.x + 8 - this.messageFont.getStringWidth(message.text) / 2;
 		var y = this.y + 20 - message.height;
-		this.idFont.setColorMask(CreateColor(0, 0, 0, 255));
-		this.idFont.drawText(x + 1, y + 1, message.text);
-		this.idFont.setColorMask(message.color);
-		this.idFont.drawText(x, y, message.text);
+		drawText(this.messageFont, x, y, message.text, 1, message.color);
 	}
 };
 

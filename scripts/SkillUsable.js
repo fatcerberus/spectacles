@@ -66,6 +66,15 @@ SkillUsable.prototype.mpCost = function(user)
 	return Math.min(Math.max(Math.ceil(Game.math.mp.usage(this.skillInfo, this.getLevel(), user.getInfo())), 0), 999);
 };
 
+// .peekActions() method
+// Peeks at the battle actions that will be executed if the skill is used.
+// Returns:
+//     A list of battle actions that will be executed when the skill is used.
+SkillUsable.prototype.peekActions = function()
+{
+	return this.skillInfo.actions;
+};
+
 // .use() method
 // Utilizes the skill.
 // Arguments:

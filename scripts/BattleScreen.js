@@ -16,8 +16,8 @@ function BattleScreen(partyMaxMP, accentColor)
 	accentColor = accentColor !== void null ? accentColor : CreateColor(255, 255, 255, 255);
 	
 	this.actorTypes = {
-		enemy: { isMirrored: false },
-		party: { isMirrored: true }
+		enemy: { isEnemy: true },
+		party: { isEnemy: false }
 	};
 	
 	this.accentColor = accentColor;
@@ -82,20 +82,28 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 };
 
 // .createActor() method
-// Creates an actor sprite to be displayed on this BattleScreen.
+// Creates an actor to be displayed on this BattleScreen.
 // Arguments:
-//     name: The name of the actor.
+//     name:         The actor's name.
+//     position:     The position of the battler in the party order. The leader should be in position 1 (center)
+//                   while the left and right flanks are positions 0 and 2, respectively.
+//     row:          The row (front, middle, rear) that the battler is in.
+//     alignment:    The alignment of the battler the actor will be playing. Can be one of the following:
+//                       'enemy': The actor represents a monster or other enemy. Enters from the left.
+//                       'party': The actor represents a playable character. Enters from the right.
+//     alreadyThere: If true, the actor is displayed immediately. Otherwise, you must call the actor's .enter()
+//                   method to bring it on-screen.
 // Returns:
-//     A reference to a BattleSprite object representing the new sprite.
+//     A reference to a BattleActor object representing the new actor.
 BattleScreen.prototype.createActor = function(name, position, row, alignment, alreadyThere)
 {
 	if (!(alignment in this.actorTypes)) {
-		Abort("BattleScreen.createSprite(): Invalid battler alignment '" + alignment + "'");
+		Abort("BattleScreen.createActor(): Invalid actor alignment '" + alignment + "'");
 	}
-	var isMirrored = this.actorTypes[alignment].isMirrored;
-	var sprite = new BattleActor(name, position, row, isMirrored, alreadyThere);
-	this.actors[alignment].push(sprite);
-	return sprite;
+	var isEnemy = this.actorTypes[alignment].isEnemy;
+	var actor = new BattleActor(name, position, row, isEnemy, alreadyThere);
+	this.actors[alignment].push(actor);
+	return actor;
 };
 
 // .go() method

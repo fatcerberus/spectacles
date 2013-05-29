@@ -14,7 +14,9 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -107,10 +109,10 @@ Game = {
 		},
 		hp: {
 			enemy: function(unitInfo) {
-				return Math.floor((unitInfo.stats.vit * 2 + unitInfo.level) / 3) * 100;
+				return unitInfo.stats.vit * 100;
 			},
 			partyMember: function(memberInfo) {
-				return Math.floor((memberInfo.stats.vit * 2 + memberInfo.level) / 3) * 10;
+				return memberInfo.stats.vit * 10;
 			}
 		},
 		mp: {
@@ -177,7 +179,6 @@ Game = {
 		},
 		maggie: {
 			name: "maggie",
-			fullName: "maggie",
 			baseStats: {
 				vit: 100,
 				str: 90,
@@ -602,7 +603,8 @@ Game = {
 	
 	enemies: {
 		headlessHorse: {
-			name: "Headless Horse",
+			name: "H. Horse",
+			fullName: "Headless Horse",
 			hasLifeBar: true,
 			baseStats: {
 				vit: 50,
@@ -618,11 +620,12 @@ Game = {
 				experience: 25
 			},
 			strategize: function(me, nextUp) {
-				useSkill('flare');
+				this.useSkill('flare');
 			}
 		},
 		robert2: {
 			name: "Robert",
+			fullName: "Robert Spellbinder",
 			hasLifeBar: true,
 			baseStats: {
 				vit: 75,

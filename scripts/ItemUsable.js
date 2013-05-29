@@ -43,6 +43,15 @@ ItemUsable.prototype.mpCost = function(user)
 	return 0;
 };
 
+// .peekActions() method
+// Peeks at the battle actions that will be executed if the item is used.
+// Returns:
+//     A list of battle actions that will be executed when the item is used.
+ItemUsable.prototype.peekActions = function()
+{
+	return [ Game.items[this.itemID].action ];
+};
+
 // .use() method
 // Utilizes the item, consuming one of its uses.
 // Arguments:

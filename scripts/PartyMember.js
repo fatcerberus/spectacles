@@ -28,7 +28,9 @@ function PartyMember(characterID, level)
 	level = level !== void null ? level : 1;
 	
 	this.characterID = characterID;
-	this.fullName = Game.characters[characterID].fullName;
+	this.fullName = 'fullName' in Game.characters[characterID] ?
+		Game.characters[characterID].fullName :
+		Game.characters[characterID].name;
 	this.items = [];
 	this.name = Game.characters[characterID].name;
 	this.skillList = [];

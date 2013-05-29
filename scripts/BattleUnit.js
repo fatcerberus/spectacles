@@ -50,7 +50,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.battle = battle;
 	this.counter = 0;
 	this.hp = 0;
-	this.moveMenu = new MoveMenu(battle, this);
+	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
 	this.mpPool = null;
 	this.newSkills = [];
@@ -76,6 +76,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.maxHP = Math.floor(Math.min(Math.max(Game.math.hp.partyMember(memberInfo), 1), 1000));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
+		this.fullName = this.partyMember.fullName;
 		var skills = this.partyMember.getUsableSkills();
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);
@@ -93,6 +94,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.ai = new BattleAI(this, battle, this.enemyInfo.strategize);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
+		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
 		}
@@ -386,6 +388,7 @@ BattleUnit.prototype.tick = function()
 			} else {
 				this.moveUsed = this.ai.getNextMove();
 			}
+			
 			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
 			var nextActions = this.moveUsed.usable.use(this);
 			var action = nextActions[0];
@@ -437,7 +440,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	var timeLeft = this.counter;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
-		if (nextActions !== null && i <= nextActions.length) {
+		if (nextActions !== null && i < nextActions.length) {
 			rank = nextActions[i].rank;
 		}
 		timeLeft += Game.math.timeUntilNextTurn(this, rank);
