@@ -148,7 +148,7 @@ function MoveMenu(unit, battle)
 	this.updateTurnPreview = function(nextMoveUsable)
 	{
 		var prediction = this.battle.predictTurns(this.unit, nextMoveUsable.peekActions());
-		this.battle.ui.hud.setTurnPreview(prediction);
+		this.battle.ui.hud.turnPreview.set(prediction);
 	};
 }
 

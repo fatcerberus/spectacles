@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (C) 2013 Power-Command
 ***/
 
 RequireScript('BattleScreen.js');
@@ -142,11 +142,11 @@ Battle.prototype.go = function()
 		this.playerUnits.push(unit);
 		++i;
 	}
-	var battleBGMTrack = this.defaultBattleBGM;
-	if (this.parameters.bgm != null) {
+	var battleBGMTrack = Game.defaultBattleBGM;
+	if ('bgm' in this.parameters) {
 		battleBGMTrack = this.parameters.bgm;
 	}
-	this.ui.hud.setTurnPreview(this.predictTurns());
+	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
@@ -160,6 +160,7 @@ Battle.prototype.go = function()
 		var thread = this.playerUnits[i].actor.enter();
 		walkInThreads.push(thread);
 	}
+	this.ui.hud.turnPreview.show();
 	if ('onStart' in this.parameters) {
 		this.parameters.onStart.call(this);
 	}
@@ -173,11 +174,19 @@ Battle.prototype.go = function()
 };
 
 // .predictTurns() method
-// Takes a forecast of the next 10 units to act.
+// Takes a forecast of the next seven units to act.
 // Arguments:
 //     actingUnit:  Optional. The BattleUnit that is about to act, if any.
-//     nextActions: Optional. The list of action(s) to be carried out by actingUnit, if any. Ignored
-//                  if actingUnit is not provided or is null.
+//     nextActions: Optional. The list of action(s) to be performed by the acting unit, if any. Ignored if
+//                  actingUnit is null.
+// Returns:
+//     An array of objects representing the predicted turns, sorted by turn order. Each object in the array has
+//     the following properties:
+//         unit:          The unit whose turn has been predicted.
+//         turnIndex:     The number of turns ahead the prediction is for. This can be zero, in which case it
+//                        represents the unit's next turn.
+//         remainingTime: The predicted number of battle engine ticks before the turn comes up.
+//
 Battle.prototype.predictTurns = function(actingUnit, nextActions)
 {
 	actingUnit = actingUnit !== void null ? actingUnit : null;
@@ -193,7 +202,11 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 					continue;
 				}
 				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
-				forecast.push({ unit: unit, remainingTime: timeUntilUp });
+				forecast.push({
+					unit: unit,
+					turnIndex: turnIndex,
+					remainingTime: timeUntilUp
+				});
 			}
 		}
 	}

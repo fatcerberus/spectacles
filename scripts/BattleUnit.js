@@ -384,7 +384,7 @@ BattleUnit.prototype.tick = function()
 			action = this.actionQueue.shift();
 		} else {
 			if (this.ai == null) {
-				this.battle.ui.hud.setTurnPreview(this.battle.predictTurns(this));
+				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				this.moveUsed = this.moveMenu.open();
 			} else {
 				this.moveUsed = this.ai.getNextMove();
@@ -392,7 +392,7 @@ BattleUnit.prototype.tick = function()
 			
 			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
 			var nextActions = this.moveUsed.usable.use(this);
-			this.battle.ui.hud.setTurnPreview(this.battle.predictTurns(this, nextActions));
+			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];
 			for (var i = 1; i < nextActions.length; ++i) {
 				this.actionQueue.push(nextActions[i]);

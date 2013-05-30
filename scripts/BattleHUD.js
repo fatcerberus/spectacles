@@ -1,9 +1,10 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (C) 2013 Power-Command
 ***/
 
 RequireScript('MPGauge.js');
+RequireScript('TurnPreview.js');
 RequireScript('lib/kh2Bar.js');
 
 // BattleHUD() constructor
@@ -25,7 +26,7 @@ function BattleHUD(partyMaxMP)
 	this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
-	this.turnPreview = null;
+	this.turnPreview = new TurnPreview();
 	
 	this.drawElementBox = function(x, y, width, height)
 	{
@@ -133,18 +134,6 @@ BattleHUD.prototype.render = function()
 {
 	var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
 	var itemY = y;
-	if (this.turnPreview !== null) {
-		this.drawElementBox(0, itemY, 48, 16);
-		DrawTextEx(this.font, 24, itemY + 2, "Next", CreateColor(255, 255, 255, 255), 1, 'center');
-		for (var i = 0; i < Math.min(this.turnPreview.length, 7); ++i) {
-			var actor = this.turnPreview[i];
-			var x = 48 + i * 16;
-			var pictureColor = actor.isEnemy ? CreateColor(128, 0, 0, 192) : CreateColor(0, 64, 128, 192);
-			Rectangle(x, itemY, 16, 16, pictureColor);
-			OutlinedRectangle(x, itemY, 16, 16, CreateColor(0, 0, 0, 32));
-			DrawTextEx(this.font, x + 4, itemY + 2, actor.name[0], CreateColor(255, 255, 255, 192), 1);
-		}
-	}
 	this.drawElementBox(260, itemY, 60, 60);
 	this.mpGauge.draw(261, itemY + 1, 58);
 	for (var i = 0; i < this.partyInfo.length; ++i) {
@@ -220,18 +209,6 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 		hpGauge: hpGauge,
 		lightColor: CreateColor(255, 0, 0, 0)
 	};
-};
-
-// .setTurnPreview() method
-// Populates the upcoming turn preview in the HUD.
-// Arguments:
-//     prediction: The upcoming turn prediction, as returned by Battle.predictTurns().
-BattleHUD.prototype.setTurnPreview = function(prediction)
-{
-	this.turnPreview = [];
-	for (var i = 0; i < Math.min(prediction.length, 7); ++i) {
-		this.turnPreview.push(prediction[i].unit.actor);
-	}
 };
 
 // .show() method

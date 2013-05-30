@@ -14,7 +14,9 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -264,7 +266,7 @@ Game = {
 		reGen: {
 			name: "ReGen",
 			beginTurn: function(subject, event) {
-				subject.heal(subject.stats.mag.getValue());
+				subject.heal(subject.stats.mag.getValue() / 2);
 			}
 		},
 		zombie: {
@@ -490,7 +492,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
-							power: 10
+							power: 5
 						}
 					]
 				}
@@ -561,7 +563,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
-							power: 25
+							power: 10
 						}
 					]
 				}
@@ -689,7 +691,6 @@ Game = {
 		},
 		robert2: {
 			title: "Robert Spellbinder",
-			bgm: 'ThePromise',
 			battleLevel: 50,
 			enemies: [
 				'robert2'
@@ -702,13 +703,8 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.fork()
-						.fadeBGM(0.0, 2.0)
-					.end()
+					.overrideBGM('ThePromise')
 					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
-					.synchronize()
-					.overrideBGM('MyDreamsButADropOfFuel')
-					.fadeBGM(1.0, 0.0)
 					.run(true);
 			}
 		}
