@@ -54,7 +54,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(user, target) {
-				return (user.getHealth() - target.getHealth()) * user.stats.agi.getValue() / target.stats.agi.getValue() / 500;
+				return (user.getHealth() - target.getHealth()) * user.stats.agi.getValue() / target.stats.agi.getValue() / 400;
 			},
 			instaKill: function(user, target) {
 				return 1.0;
@@ -74,19 +74,19 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return 1;
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / 2 / 25;
 			},
 			magic: function(actor, target, power) {
-				return power * Math.pow((actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12, 3) / 75000;
+				return power * (actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12 / 25;
 			},
 			pistol: function(actor, target, power) {
-				return 1;
+				return power * (actor.weapon.level + (100 - target.stats.def.getValue())) / 2 / 25;
 			},
 			physical: function(actor, target, power) {
-				return 1;
+				return power * (actor.getLevel() * 3 + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 4 + (100 - target.stats.str.getValue()) * 2) / 12 / 25;
 			},
 			sword: function(actor, target, power) {
-				return power * Math.pow((actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4, 3) / 75000;
+				return power * (actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4 / 25;
 			}
 		},
 		experience: {
@@ -163,7 +163,11 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				'necromancy'
+				'necromancy',
+				'flare',
+				'chill',
+				'lightning',
+				'quake',
 			]
 		},
 		bruce: {
@@ -253,6 +257,9 @@ Game = {
 	},
 	
 	statuses: {
+		crackdown: {
+			name: "Crackdown"
+		},
 		drunk: {
 			name: "Drunk"
 		},
@@ -376,6 +383,47 @@ Game = {
 				}
 			]
 		},
+		chill: {
+			name: "Chill",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 50,
+			actions: [
+				{
+					announceAs: "Chill",
+					rank: 2,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 25,
+							element: 'ice'
+						}
+					],
+				}
+			]
+		},
+		crackdown: {
+			name: "Crackdown",
+			category: 'strategy',
+			targetType: 'single',
+			baseMPCost: 250,
+			actions: [
+				{
+					announceAs: "Crackdown",
+					rank: 3,
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'crackdown'
+						}
+					],
+				}
+			]
+		},
 		fatSlam: {
 			name: "Fat Slam",
 			category: 'attack',
@@ -412,8 +460,30 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 35,
+							power: 25,
 							element: 'fire'
+						}
+					],
+				}
+			]
+		},
+		lightning: {
+			name: "Lightning",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 50,
+			actions: [
+				{
+					announceAs: "Lightning",
+					rank: 2,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 25,
+							element: 'lightning'
 						}
 					],
 				}
@@ -473,6 +543,28 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 100
+						}
+					],
+				}
+			]
+		},
+		quake: {
+			name: "Quake",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 50,
+			actions: [
+				{
+					announceAs: "Quake",
+					rank: 2,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 25,
+							element: 'earth'
 						}
 					],
 				}
