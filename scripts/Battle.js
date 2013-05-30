@@ -212,11 +212,6 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	}
 	forecast.sort(function(a, b) { return a.remainingTime - b.remainingTime; });
 	forecast = forecast.slice(0, 7);
-	Console.writeLine("Turn prediction");
-	if (actingUnit !== null) {
-		Console.append("reqBy: " + actingUnit.name);
-	}
-	Console.append("next: " + forecast[1].unit.name)
 	return forecast;
 };
 
@@ -231,13 +226,13 @@ Battle.prototype.resume = function()
 };
 
 // .runAction() method
-// Executes a battler action.
+// Executes a battle action.
 // Arguments:
-//     action:      The action to be executed.
-//     actingUnit:  The BattleUnit performing the action.
-//     targetUnits: The list of BattleUnits, if any, targetted by the action.
+//     action:      The battle action to be executed.
+//     actingUnit:  The battler performing the action.
+//     targetUnits: An array specifying the battlers, if any, targetted by the action.
 // Returns:
-//     A list of all units affected by the action.
+//     An array of references to all units affected by the action.
 Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 {
 	if ('announceAs' in action && action.announceAs != null) {

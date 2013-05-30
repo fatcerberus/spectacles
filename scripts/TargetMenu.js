@@ -167,9 +167,9 @@ TargetMenu.prototype.render = function()
 		DrawTextEx(this.infoFont, 80, y + 16, statusText, statusColor, 1, 'center');
 		if (this.unitToShowInfo.isPartyMember()) {
 			this.drawInfoBox(0, y + 32, 80, 20, 128);
-			DrawTextEx(this.infoFont, 40, y + 36, "HP " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 40, y + 36, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 			this.drawInfoBox(80, y + 32, 80, 20, 128);
-			DrawTextEx(this.infoFont, 120, y + 36, "MP " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 120, y + 36, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
 	}

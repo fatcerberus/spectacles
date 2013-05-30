@@ -14,9 +14,7 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -56,7 +54,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(user, target) {
-				return (user.getHealth() - target.getHealth() + 1) / 5000;
+				return (user.getHealth() - target.getHealth()) * user.stats.agi.getValue() / target.stats.agi.getValue() / 500;
 			},
 			instaKill: function(user, target) {
 				return 1.0;
@@ -109,10 +107,18 @@ Game = {
 		},
 		hp: {
 			enemy: function(unitInfo) {
-				return unitInfo.stats.vit * 100;
+				return 10 * (unitInfo.stats.vit * 5 +
+					unitInfo.stats.str + unitInfo.stats.def +
+					unitInfo.stats.foc + unitInfo.stats.mag + 
+					unitInfo.stats.agi);
 			},
 			partyMember: function(memberInfo) {
-				return memberInfo.stats.vit * 10;
+				return memberInfo.stats.vit * 5 +
+					memberInfo.stats.str +
+					memberInfo.stats.def +
+					memberInfo.stats.foc +
+					memberInfo.stats.mag +
+					memberInfo.stats.agi;
 			}
 		},
 		mp: {
@@ -668,6 +674,10 @@ Game = {
 						me.getHealth() > 50 ? 2 :
 						me.getHealth() > 33 ? 3 :
 						4;
+					var turnForecast = this.turnForecast('quickstrike');
+					if (turnForecast[0].unit === me) {
+						this.useSkill('quickstrike');
+					}
 					this.useSkill('swordSlash');
 				}
 			}

@@ -50,7 +50,7 @@ MPGauge.prototype.draw = function(x, y, size)
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
-		this.drawText(this.textFont, x + size / 2 - 18, y + size / 2 - 12, 1, CreateColor(255, 255, 255, 255), "MP");
+		this.drawText(this.textFont, x + size / 2 - 18, y + size / 2 - 12, 1, CreateColor(255, 255, 255, 255), "MP:");
 		this.drawText(this.textFont, x + size / 2 + 18, y + size / 2, 1, CreateColor(255, 192, 0, 255), Math.round(this.reading), 'right');
 	}
 	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);

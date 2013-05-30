@@ -34,7 +34,7 @@ function BattleAI(unit, battle, strategy)
 BattleAI.prototype.getNextMove = function()
 {
 	if (this.moveQueue.length == 0) {
-		Console.writeLine("Calling " + this.unit.name + "'s AI strategy function");
+		Console.writeLine("Deferring to AI for " + this.unit.name + "'s next move");
 		var enemyList = this.battle.enemiesOf(this.unit);
 		this.enemies = [];
 		for (var i = 0; i < enemyList.length; ++i) {
@@ -57,6 +57,22 @@ BattleAI.prototype.getNextMove = function()
 	++this.turnsTaken;
 	return this.moveQueue.shift();
 }
+
+// .turnForecast() method
+// Gets a turn order prediction for the use of a specified skill.
+// Arguments:
+//     skillID: The ID, as defined in the gamedef, of the skill whose effects on
+//              the turn order are to be tested.
+BattleAI.prototype.turnForecast = function(skillID)
+{
+	if (!(skillID in Game.skills)) {
+		Abort("BattleAI.turnForecast(): The skill '" + skillID + "' doesn't exist!");
+	}
+	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
+	Console.writeLine(this.unit.name + " considering " + Game.skills[skillID].name);
+	Console.append("next: " + forecast[0].unit.name);
+	return forecast;
+};
 
 // .setTarget() method
 // Sets the battler to be targetted by the AI's actions.
@@ -87,7 +103,7 @@ BattleAI.prototype.useItem = function(itemID)
 	if (itemToUse == null) {
 		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an item it didn't have");
 	}
-	Console.writeLine("AI for " + this.unit.name + " queued use of item " + itemToUse.name);
+	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 	this.moveQueue.push({
 		usable: itemToUse,
 		targets: [ this.unit ]
@@ -114,7 +130,7 @@ BattleAI.prototype.useSkill = function(skillID)
 	if (skillToUse == null) {
 		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
-	Console.writeLine("AI for " + this.unit.name + " queued use of skill " + skillToUse.name);
+	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
 	this.moveQueue.push({
 		usable: skillToUse,
 		targets: [ this.battle.enemiesOf(this.unit)[0] ]
