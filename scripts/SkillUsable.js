@@ -84,7 +84,7 @@ SkillUsable.prototype.peekActions = function()
 SkillUsable.prototype.use = function(unit)
 {
 	if (!this.isUsable(unit)) {
-		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name, ", which was unusable.");
+		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
 	}
 	Console.writeLine(unit.name + " is using skill " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {

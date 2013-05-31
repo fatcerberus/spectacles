@@ -158,7 +158,7 @@ TargetMenu.prototype.render = function()
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 		var y = -52 * this.infoBoxFadeness + 16;
 		Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
-		if (this.unitToShowInfo.isPartyMember()) {
+		if (true || this.unitToShowInfo.isPartyMember()) {
 			this.drawInfoBox(0, y, 160, 32, 160);
 			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(255, 255, 255, textAlpha), 1, 'center');
 			var statusColor = this.unitToShowInfo.statuses.length == 0 ?

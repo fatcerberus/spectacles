@@ -19,6 +19,7 @@ RequireScript("SkillUsable.js");
 function BattleAI(unit, battle, strategy)
 {
 	this.battle = battle;
+	this.data = {};
 	this.moveQueue = [];
 	this.strategy = strategy;
 	this.targets = [];

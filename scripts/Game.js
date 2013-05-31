@@ -74,19 +74,29 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return 0.05 * power * (actor.weapon.level + actor.stats.str.getValue()) / 2;
+				return actor.getLevel() / target.getLevel() * power
+					* (actor.weapon.level + actor.stats.str.getValue()) / 2
+					* (115 - actor.weapon.level) / 1500;
 			},
 			magic: function(actor, target, power) {
-				return 0.05 * power * (actor.getLevel() * 6 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 3) / 12;
+				return actor.getLevel() / target.getLevel() * power
+					* (actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 6
+					* (115 - target.stats.foc.getValue()) / 1500;
 			},
 			pistol: function(actor, target, power) {
-				return 0.05 * power * (actor.weapon.level + (100 - target.stats.def.getValue())) / 2;
+				return actor.weapon.level / target.getLevel() * power
+					* (actor.weapon.level + actor.weapon.level) / 2
+					* (115 - target.stats.def.getValue()) / 1500;
 			},
 			physical: function(actor, target, power) {
-				return 0.05 * power * (actor.getLevel() * 6 + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 2 + (100 - target.stats.str.getValue()) * 1) / 12;
+				return actor.getLevel() / target.getLevel() * power
+					* (actor.getLevel() + actor.stats.str.getValue()) / 2
+					* (115 - (target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3) / 1500;
 			},
 			sword: function(actor, target, power) {
-				return 0.05 * power * (actor.weapon.level * 4 + actor.stats.str.getValue() * 2 + (100 - target.stats.def.getValue()) * 2) / 8;
+				return actor.getLevel() / target.getLevel() * power
+					* (actor.weapon.level + actor.stats.str.getValue()) / 2
+					* (115 - target.stats.def.getValue()) / 1500;
 			}
 		},
 		experience: {
@@ -160,6 +170,7 @@ Game = {
 				'chill',
 				'lightning',
 				'quake',
+				'omni'
 			]
 		},
 		bruce: {
@@ -675,7 +686,7 @@ Game = {
 		arsenRifle: {
 			name: "Arsen's Rifle",
 			type: 'rifle',
-			level: 25,
+			level: 10,
 			techniques: [
 				'sharpshooter'
 			]
@@ -750,19 +761,34 @@ Game = {
 					this.useItem('alcohol');
 				}
 				if (this.turnsTaken == 0) {
+					this.phase = 1;
 					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
-					var phase =
+					var phaseToEnter =
 						me.getHealth() > 75 ? 1 :
-						me.getHealth() > 50 ? 2 :
-						me.getHealth() > 33 ? 3 :
+						me.getHealth() > 40 ? 2 :
+						me.getHealth() > 10 ? 3 :
 						4;
-					var turnForecast = this.turnForecast('quickstrike');
-					if (turnForecast[0].unit === me) {
-						this.useSkill('quickstrike');
+					this.data.phase = this.data.phase > phaseToEnter ? this.data.phase : phaseToEnter
+					switch (this.data.phase) {
+						case 1:
+							var turnForecast = this.turnForecast('quickstrike');
+							if (turnForecast[0].unit === me) {
+								this.useSkill('quickstrike');
+							}
+							this.useSkill('swordSlash');
+							break;
+						case 2:
+							var turnForecast = this.turnForecast('quickstrike');
+							if (Math.random() < 0.5 && turnForecast[0].unit == me) {
+								this.useSkill('quickstrike');
+							}
+							var moveCandidates = [ 'flare', 'chill', 'lightning', 'quake' ];
+							this.useSkill(moveCandidates[Math.min(Math.floor(Math.random() * 4), 3)]);
+							break;
+						case 3:
 					}
-					this.useSkill('swordSlash');
 				}
 			}
 		}
@@ -797,7 +823,7 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.overrideBGM('ThePromise')
+					.overrideBGM('MyDreamsButADropOfFuel')
 					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
 					.run(true);
 			}
