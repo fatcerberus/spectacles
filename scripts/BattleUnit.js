@@ -73,7 +73,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		for (var stat in Game.namedStats) {
 			memberInfo.stats[stat] = this.partyMember.stats[stat].getValue();
 		}
-		this.maxHP = Math.floor(Math.min(Math.max(Game.math.hp.partyMember(memberInfo), 1), 1000));
+		this.maxHP = Math.floor(Math.max(Game.math.hp.partyMember(memberInfo), 1));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		this.fullName = this.partyMember.fullName;
@@ -104,7 +104,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.maxHP = Math.floor(Math.min(Math.max(Game.math.hp.enemy(this.getInfo()), 1), 10000));
+		this.maxHP = Math.floor(Math.max(Game.math.hp.enemy(this.getInfo()), 1));
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {

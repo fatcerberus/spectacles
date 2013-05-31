@@ -74,19 +74,19 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / 2 / 25;
+				return 0.05 * power * (actor.weapon.level + actor.stats.str.getValue()) / 2;
 			},
 			magic: function(actor, target, power) {
-				return power * (actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 6) / 12 / 25;
+				return 0.05 * power * (actor.getLevel() * 6 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue() + (100 - target.stats.foc.getValue()) * 3) / 12;
 			},
 			pistol: function(actor, target, power) {
-				return power * (actor.weapon.level + (100 - target.stats.def.getValue())) / 2 / 25;
+				return 0.05 * power * (actor.weapon.level + (100 - target.stats.def.getValue())) / 2;
 			},
 			physical: function(actor, target, power) {
-				return power * (actor.getLevel() * 3 + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 4 + (100 - target.stats.str.getValue()) * 2) / 12 / 25;
+				return 0.05 * power * (actor.getLevel() * 6 + actor.stats.str.getValue() * 3 + (100 - target.stats.def.getValue()) * 2 + (100 - target.stats.str.getValue()) * 1) / 12;
 			},
 			sword: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue() + (100 - target.stats.def.getValue()) * 2) / 4 / 25;
+				return 0.05 * power * (actor.weapon.level * 4 + actor.stats.str.getValue() * 2 + (100 - target.stats.def.getValue()) * 2) / 8;
 			}
 		},
 		experience: {
@@ -107,18 +107,10 @@ Game = {
 		},
 		hp: {
 			enemy: function(unitInfo) {
-				return 10 * (unitInfo.stats.vit * 5 +
-					unitInfo.stats.str + unitInfo.stats.def +
-					unitInfo.stats.foc + unitInfo.stats.mag + 
-					unitInfo.stats.agi);
+				return 100 * (unitInfo.stats.vit * 5 + unitInfo.stats.str + unitInfo.stats.def + unitInfo.stats.foc + unitInfo.stats.mag + unitInfo.stats.agi) / 10;
 			},
 			partyMember: function(memberInfo) {
-				return memberInfo.stats.vit * 5 +
-					memberInfo.stats.str +
-					memberInfo.stats.def +
-					memberInfo.stats.foc +
-					memberInfo.stats.mag +
-					memberInfo.stats.agi;
+				return 10 * (memberInfo.stats.vit * 5 + memberInfo.stats.str + memberInfo.stats.def + memberInfo.stats.foc + memberInfo.stats.mag + memberInfo.stats.agi) / 10;
 			}
 		},
 		mp: {

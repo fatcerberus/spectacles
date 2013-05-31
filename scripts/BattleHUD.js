@@ -95,7 +95,7 @@ BattleHUD.prototype.dispose = function()
 //     capacity: The HP capacity of the gauge.
 BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
-	var gauge = new kh2Bar(capacity, 400, this.enemyHPGaugeColor);
+	var gauge = new kh2Bar(capacity, 500, this.enemyHPGaugeColor);
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
 	gauge.show(0.0);
 };
