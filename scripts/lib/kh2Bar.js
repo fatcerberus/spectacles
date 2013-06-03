@@ -1,5 +1,5 @@
 /**
- * kh2Bar 1.7 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 2.0 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -32,13 +32,13 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
-	this.damageFadeDelay = 0.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;
 	this.hpColor = BlendColors(color, color);
 	this.isVisible = true;
 	this.maxSectors = maxSectors;
+	this.numCombosRunning = 0;
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
 	
@@ -56,6 +56,13 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 		return CreateColor(color.red, color.green, color.blue, color.alpha * (1.0 - fadeness));
 	}
 }
+
+// .beginCombo() method
+// Begins a combo, preventing accumulated damage from fading out.
+kh2Bar.prototype.beginCombo = function()
+{
+	++this.numCombosRunning;
+};
 
 // .draw() method
 // Draws the gauge in its current state on the screen.
@@ -128,6 +135,16 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	}
 };
 
+// .endCombo() method
+// Ends a combo, causing all damage accumulated since .beginCombo() was called to fade out.
+kh2Bar.prototype.endCombo = function()
+{
+	--this.numCombosRunning;
+	if (numCombosRunning < 0) {
+		numCombosRunning = 0;
+	}
+};
+
 // .fadeTo() method
 // Changes the color and opacity of the gauge.
 kh2Bar.prototype.fadeTo = function(color)
@@ -164,8 +181,11 @@ kh2Bar.prototype.set = function(value)
 	
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
 	if (value != this.reading) {
-		this.damage += this.reading - value;
-		this.damageFadeDelay = 0.0;
+		if (this.numCombosRunning > 0) {
+			this.damage += this.reading - value;
+		} else {
+			this.damage = this.reading - value;
+		}
 		this.damageFadeness = 0.0;
 		this.reading = value;
 	}
@@ -193,13 +213,10 @@ kh2Bar.prototype.update = function()
 {
 	var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
 	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
-	this.damageFadeDelay -= 1.0 / frameRate;
-	if (this.damageFadeDelay <= 0.0) {
-		this.damageFadeDelay = 0.0;
-		this.damageFadeness += 2.0 / frameRate;
+	if (this.numCombosRunning <= 0) {
+		this.damageFadeness += 1.0 / frameRate;
 		if (this.damageFadeness >= 1.0) {
 			this.damage = 0;
-			this.damageFadeDelay = 0.0;
 			this.damageFadeness = 1.0;
 		}
 	}

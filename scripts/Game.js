@@ -14,7 +14,9 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'maggie',
+		
 	],
 	
 	namedStats: {
@@ -778,15 +780,18 @@ Game = {
 					this.data.phase = this.data.phase > phaseToEnter ? this.data.phase : phaseToEnter
 					switch (this.data.phase) {
 						case 1:
-							var turnForecast = this.turnForecast('quickstrike');
-							if (turnForecast[0].unit === me) {
+							var forecast = this.turnForecast('quickstrike');
+							if (forecast[0].unit === me) {
 								this.useSkill('quickstrike');
+								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+								this.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
+							} else {
+								this.useSkill('swordSlash');
 							}
-							this.useSkill('swordSlash');
 							break;
 						case 2:
 							var turnForecast = this.turnForecast('quickstrike');
-							if (Math.random() < 0.5 && turnForecast[0].unit == me) {
+							if (Math.random() < 0.5 && turnForecast[0].unit === me) {
 								this.useSkill('quickstrike');
 							}
 							var moveCandidates = [ 'flare', 'chill', 'lightning', 'quake' ];
