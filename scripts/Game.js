@@ -74,29 +74,19 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return actor.getLevel() / target.getLevel() * power
-					* (actor.weapon.level + actor.stats.str.getValue()) / 2
-					* (115 - actor.weapon.level) / 1500;
+				return 1;
 			},
 			magic: function(actor, target, power) {
-				return actor.getLevel() / target.getLevel() * power
-					* (actor.getLevel() * 3 + actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 6
-					* (115 - target.stats.foc.getValue()) / 1500;
+				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
 			},
 			pistol: function(actor, target, power) {
-				return actor.weapon.level / target.getLevel() * power
-					* (actor.weapon.level + actor.weapon.level) / 2
-					* (115 - target.stats.def.getValue()) / 1500;
+				return 1;
 			},
 			physical: function(actor, target, power) {
-				return actor.getLevel() / target.getLevel() * power
-					* (actor.getLevel() + actor.stats.str.getValue()) / 2
-					* (115 - (target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3) / 1500;
+				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue) / 3);
 			},
 			sword: function(actor, target, power) {
-				return actor.getLevel() / target.getLevel() * power
-					* (actor.weapon.level + actor.stats.str.getValue()) / 2
-					* (115 - target.stats.def.getValue()) / 1500;
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
 			}
 		},
 		experience: {
@@ -116,11 +106,23 @@ Game = {
 			}
 		},
 		hp: {
-			enemy: function(unitInfo) {
-				return 100 * (unitInfo.stats.vit * 5 + unitInfo.stats.str + unitInfo.stats.def + unitInfo.stats.foc + unitInfo.stats.mag + unitInfo.stats.agi) / 10;
+			enemy: function(enemyInfo, level) {
+				var statAverage = Math.floor((enemyInfo.baseStats.vit * 5
+					+ enemyInfo.baseStats.str
+					+ enemyInfo.baseStats.def
+					+ enemyInfo.baseStats.foc
+					+ enemyInfo.baseStats.mag
+					+ enemyInfo.baseStats.agi) / 10);
+				return Math.floor(75 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
 			},
-			partyMember: function(memberInfo) {
-				return 10 * (memberInfo.stats.vit * 5 + memberInfo.stats.str + memberInfo.stats.def + memberInfo.stats.foc + memberInfo.stats.mag + memberInfo.stats.agi) / 10;
+			partyMember: function(characterInfo, level) {
+				var statAverage = Math.floor((characterInfo.baseStats.vit * 5
+					+ characterInfo.baseStats.str
+					+ characterInfo.baseStats.def
+					+ characterInfo.baseStats.foc
+					+ characterInfo.baseStats.mag
+					+ characterInfo.baseStats.agi) / 10);
+				return Math.floor(15 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
 			}
 		},
 		mp: {
@@ -143,8 +145,11 @@ Game = {
 		retreatChance: function(enemyUnits) {
 			return 1.0;
 		},
+		statValue: function(baseStat, level) {
+			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1))
+		},
 		timeUntilNextTurn: function(unit, rank) {
-			return rank * (101 - unit.stats.agi.getValue());
+			return Math.floor(rank * 10000 / unit.stats.agi.getValue());
 		}
 	},
 	
@@ -282,7 +287,7 @@ Game = {
 		reGen: {
 			name: "ReGen",
 			beginTurn: function(subject, event) {
-				subject.heal(subject.stats.mag.getValue() / 2);
+				subject.heal(subject.stats.mag.getValue());
 			}
 		},
 		zombie: {

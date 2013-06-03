@@ -44,7 +44,7 @@ Stat.prototype.getLevel = function()
 // Returns the stat's current value.
 Stat.prototype.getValue = function()
 {
-	return Math.max(Math.floor(this.baseValue * this.getLevel() / 100), 1);
+	return Game.math.statValue(this.baseValue, this.getLevel());
 };
 
 // .grow() method
