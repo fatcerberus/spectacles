@@ -14,9 +14,7 @@ Game = {
 	useItemMoveRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'maggie',
-		
+		'scott'
 	],
 	
 	namedStats: {
@@ -76,16 +74,16 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return 1;
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
 			},
 			magic: function(actor, target, power) {
 				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
 			},
 			pistol: function(actor, target, power) {
-				return 1;
+				return power * actor.weapon.level * 2 / target.stats.def.getValue();
 			},
 			physical: function(actor, target, power) {
-				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue) / 3);
+				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
 			},
 			sword: function(actor, target, power) {
 				return power * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
@@ -109,21 +107,21 @@ Game = {
 		},
 		hp: {
 			enemy: function(enemyInfo, level) {
-				var statAverage = Math.floor((enemyInfo.baseStats.vit * 5
+				var statAverage = Math.floor((enemyInfo.baseStats.vit * 10
 					+ enemyInfo.baseStats.str
 					+ enemyInfo.baseStats.def
 					+ enemyInfo.baseStats.foc
 					+ enemyInfo.baseStats.mag
-					+ enemyInfo.baseStats.agi) / 10);
+					+ enemyInfo.baseStats.agi) / 15);
 				return Math.floor(75 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
 			},
 			partyMember: function(characterInfo, level) {
-				var statAverage = Math.floor((characterInfo.baseStats.vit * 5
+				var statAverage = Math.floor((characterInfo.baseStats.vit * 10
 					+ characterInfo.baseStats.str
 					+ characterInfo.baseStats.def
 					+ characterInfo.baseStats.foc
 					+ characterInfo.baseStats.mag
-					+ characterInfo.baseStats.agi) / 10);
+					+ characterInfo.baseStats.agi) / 15);
 				return Math.floor(15 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
 			}
 		},
@@ -148,10 +146,10 @@ Game = {
 			return 1.0;
 		},
 		statValue: function(baseStat, level) {
-			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1))
+			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return Math.floor(rank * 10000 / unit.stats.agi.getValue());
+			return Math.ceil(rank * 10000 / unit.stats.agi.getValue());
 		}
 	},
 	
@@ -176,8 +174,7 @@ Game = {
 				'flare',
 				'chill',
 				'lightning',
-				'quake',
-				'omni'
+				'quake'
 			]
 		},
 		bruce: {
@@ -289,7 +286,7 @@ Game = {
 		reGen: {
 			name: "ReGen",
 			beginTurn: function(subject, event) {
-				subject.heal(subject.stats.mag.getValue());
+				subject.heal(subject.getLevel() / 2);
 			}
 		},
 		zombie: {
@@ -833,8 +830,8 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.overrideBGM('MyDreamsButADropOfFuel')
 					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
+					.overrideBGM('MyDreamsButADropOfFuel')
 					.run(true);
 			}
 		}

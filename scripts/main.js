@@ -36,13 +36,13 @@ RequireScript('TitleScreen.js');
 	
 	Scenario.prototype.run = function(waitUntilDone)
 	{
-		old_Scenario_run.call(this, false);
+		value = old_Scenario_run.call(this, false);
 		if (waitUntilDone) {
 			Threads.waitFor(Threads.doWith(this, function() {
 				return this.isRunning();
 			}));
 		}
-		return this;
+		return value;
 	}
 })();
 

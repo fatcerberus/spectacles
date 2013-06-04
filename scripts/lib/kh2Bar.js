@@ -10,7 +10,8 @@ kh2Bar = kh2Bar || {};
 // Arguments:
 //     capacity:   The largest HP value representable by the gauge.
 //     sectorSize: Optional. The amount of HP represented by each full bar of the gauge. (default: 100)
-//     color:      Optional. The color of the gauge. (default: #00FF00 @ 100%)
+//     color:      Optional. The initial color of the gauge. If not specified, a default color of bright green (#00FF00 @ 100%)
+//                 will be used, the same color Kingdom Hearts 2 uses.
 //     maxSectors: Optional. The maximum number of sectors the gauge can display. If this is not specified or
 //                 is null, the gauge will be rendered as it would be in Kingdom Hearts 2, with the maximum number
 //                 of sectors determined by the width and height of the gauge.
@@ -24,11 +25,13 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	}
 	
 	sectorSize = sectorSize !== void null ? sectorSize : 100;
-	color = color !== void null ? color : CreateColor(0, 255, 0, 255);
+	color = color !== void null ? BlendColors(color, color) : CreateColor(0, 255, 0, 255);
 	maxSectors = maxSectors !== void null ? maxSectors : null;
 	
 	this.borderColor = CreateColor(0, 0, 0, color.alpha);
 	this.capacity = capacity;
+	this.colorFadeDuration = 0.0;
+	this.colorFadeTimer = 0.0;
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
@@ -38,6 +41,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.hpColor = BlendColors(color, color);
 	this.isVisible = true;
 	this.maxSectors = maxSectors;
+	this.newColor = color;
 	this.numCombosRunning = 0;
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
@@ -55,13 +59,39 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	{
 		return CreateColor(color.red, color.green, color.blue, color.alpha * (1.0 - fadeness));
 	}
+	
+	this.tween = function(start, time, duration, end)
+	{
+		return start + (end - start) * time / duration; 
+	}
 }
 
 // .beginCombo() method
-// Begins a combo, preventing accumulated damage from fading out.
+// Begins a combo. Damage displayed on the gauge will accumulate without fading out until
+// kh2Bar.endCombo() is called.
 kh2Bar.prototype.beginCombo = function()
 {
 	++this.numCombosRunning;
+};
+
+// .changeColor() method
+// Changes the color of the gauge, optionally easing into the new color.
+// Arguments:
+//     color:    The color to change the gauge to.
+//     duration: Optional. The length of time over which to ease in the new color. A duration of 0
+//               means no easing (immediate). (default: 0.0)
+kh2Bar.prototype.changeColor = function(color, duration)
+{
+	duration = duration !== void null ? duration : 0.0;
+	
+	this.oldColor = BlendColors(this.hpColor, this.hpColor);
+	this.newColor = BlendColors(color, color);
+	if (duration != 0.0) {
+		this.colorFadeDuration = duration;
+		this.colorFadeTimer = 0.0;
+	} else {
+		this.hpColor = this.newColor;
+	}
 };
 
 // .draw() method
@@ -136,20 +166,13 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 };
 
 // .endCombo() method
-// Ends a combo, causing all damage accumulated since .beginCombo() was called to fade out.
+// Ends a combo, causing all damage sustained since .beginCombo() was called to fade out.
 kh2Bar.prototype.endCombo = function()
 {
 	--this.numCombosRunning;
 	if (numCombosRunning < 0) {
 		numCombosRunning = 0;
 	}
-};
-
-// .fadeTo() method
-// Changes the color and opacity of the gauge.
-kh2Bar.prototype.fadeTo = function(color)
-{
-	// TODO: implement me!
 };
 
 // .hide() method
@@ -212,6 +235,16 @@ kh2Bar.prototype.show = function(duration)
 kh2Bar.prototype.update = function()
 {
 	var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
+	this.colorFadeTimer += 1.0 / frameRate;
+	if (this.colorFadeDuration != 0.0 && this.colorFadeTimer < this.colorFadeDuration) {
+		this.hpColor.red = this.tween(this.oldColor.red, this.colorFadeTimer, this.colorFadeDuration, this.newColor.red);
+		this.hpColor.green = this.tween(this.oldColor.green, this.colorFadeTimer, this.colorFadeDuration, this.newColor.green);
+		this.hpColor.blue = this.tween(this.oldColor.blue, this.colorFadeTimer, this.colorFadeDuration, this.newColor.blue);
+		this.hpColor.alpha = this.tween(this.oldColor.alpha, this.colorFadeTimer, this.colorFadeDuration, this.newColor.alpha);
+	} else {
+		this.hpColor = this.newColor;
+		this.colorFadeDuration = 0.0;
+	}
 	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
 	if (this.numCombosRunning <= 0) {
 		this.damageFadeness += 1.0 / frameRate;
