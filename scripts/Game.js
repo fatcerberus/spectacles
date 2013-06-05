@@ -11,7 +11,7 @@ Game = {
 	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
-	useItemMoveRank: 3,
+	defaultItemRank: 3,
 	
 	initialPartyMembers: [
 		'scott'
@@ -74,19 +74,19 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return power * (1.0 + 1.0 * power / 100) * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
 			},
 			magic: function(actor, target, power) {
-				return power * (1.0 + 1.0 * power / 100) * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
+				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
 			},
 			pistol: function(actor, target, power) {
-				return power * (1.0 + 1.0 * power / 100) * actor.weapon.level * 2 / target.stats.def.getValue();
+				return power * actor.weapon.level * 2 / target.stats.def.getValue();
 			},
 			physical: function(actor, target, power) {
-				return power * (1.0 + 1.0 * power / 100) * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
+				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
 			},
 			sword: function(actor, target, power) {
-				return power * (1.0 + 1.0 * power / 100) * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
 			}
 		},
 		experience: {
@@ -127,7 +127,7 @@ Game = {
 		},
 		mp: {
 			enemy: function(unitInfo) {
-				return (unitInfo.stats.mag * 2 + unitInfo.level) / 3 * 15;
+				return Infinity; //(unitInfo.stats.mag * 2 + unitInfo.level) / 3 * 15;
 			},
 			party: function(partyInfo) {
 				var maxMP = 0;
@@ -214,10 +214,8 @@ Game = {
 	items: {
 		alcohol: {
 			name: "Alcohol",
-			uses: 1,
 			action: {
 				announceAs: "Alcohol",
-				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -233,10 +231,8 @@ Game = {
 		},
 		holyWater: {
 			name: "Holy Water",
-			uses: 1,
 			action: {
 				announceAs: "Holy Water",
-				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -251,7 +247,6 @@ Game = {
 			uses: 5,
 			action: {
 				announceAs: "Tonic",
-				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -282,6 +277,12 @@ Game = {
 				this.multiplier = data.skill.category != this.lastSkillType ? 1.0
 					: this.multiplier * 0.75;
 				this.lastSkillType = data.skill.category;
+			}
+		},
+		disarray: {
+			name: "Disarray",
+			takeAction: function(unit, data) {
+				data.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
 		},
 		drunk: {
@@ -351,7 +352,8 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(targets[i].maxHP);
+				targets[i].takeDamage(Infinity);
+				//targets[i].takeDamage(targets[i].maxHP);
 			}
 		},
 		liftStatus: function(actor, targets, effect) {
@@ -714,6 +716,31 @@ Game = {
 					]
 				}
 			]
+		},
+		upheaval: {
+			name: "Upheaval",
+			category: 'magic',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Upheaval",
+					rank: 3,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 80
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'disarray'
+						}
+					]
+				}
+			]
 		}
 	},
 	
@@ -806,8 +833,8 @@ Game = {
 					this.useItem('alcohol');
 				}
 				if (this.turnsTaken == 0) {
-					this.phase = 1;
-					this.useSkill('crackdown');
+					this.phase = 0;
+					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =
@@ -819,28 +846,55 @@ Game = {
 					this.data.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter
 					switch (this.data.phase) {
 						case 1:
-							var forecast = this.turnForecast('quickstrike');
-							if (forecast[0].unit === me) {
-								this.useSkill('quickstrike');
-								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-								this.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
+							if (this.data.phase > lastPhase) {
+								this.isComboStarted = false;
+							}
+							var forecast = this.turnForecast('chargeSlash');
+							if (forecast[0].unit == me) {
+								this.useSkill('chargeSlash');
 							} else {
-								this.useSkill('swordSlash');
+								forecast = this.turnForecast('quickstrike');
+								if (forecast[0].unit === me) {
+									this.useSkill('quickstrike');
+									this.isComboStarted = true;
+								} else {
+									if (this.isComboStarted) {
+										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+										this.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
+										this.isComboStarted = false;
+									} else {
+										this.useSkill('swordSlash');
+									}
+								}
 							}
 							break;
 						case 2:
+							if (this.data.phase > lastPhase) {
+								this.isComboStarted = false;
+							}
 							var turnForecast = this.turnForecast('quickstrike');
-							if (Math.random() < 0.5 && turnForecast[0].unit === me) {
+							if ((Math.random() < 0.5 || this.isComboStarted) && turnForecast[0].unit === me) {
 								this.useSkill('quickstrike');
+								this.isComboStarted = true;
 							}
 							var moveCandidates = [ 'flare', 'chill', 'lightning', 'quake' ];
 							this.useSkill(moveCandidates[Math.min(Math.floor(Math.random() * 4), 3)]);
 							break;
 						case 3:
-							if (lastPhase < this.data.phase) {
+							if (this.data.phase > lastPhase) {
 								this.useSkill('protectiveAura');
+								this.useSkill('upheaval');
 							} else {
+								// TODO: implement me!
 							}
+							break;
+						case 4:
+							if (this.data.phase > lastPhase) {
+								this.useSkill('desperationSlash');
+							} else {
+								// TODO: implement me!
+							}
+							break;
 					}
 				}
 			}
@@ -864,6 +918,7 @@ Game = {
 		},
 		robert2: {
 			title: "Robert Spellbinder",
+			bgm: 'ThePromise',
 			battleLevel: 50,
 			enemies: [
 				'robert2'
@@ -876,8 +931,10 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
+					//.adjustBGMVolume(0.0, 1.0)
 					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
-					.overrideBGM('MyDreamsButADropOfFuel')
+					//.overrideBGM('MyDreamsButADropOfFuel')
+					.adjustBGMVolume(1.0)
 					.run(true);
 			}
 		}

@@ -69,7 +69,10 @@ SkillUsable.prototype.mpCost = function(user)
 // .peekActions() method
 // Peeks at the battle actions that will be executed if the skill is used.
 // Returns:
-//     A list of battle actions that will be executed when the skill is used.
+//     An array of battle actions that will be executed when the skill is used.
+// Remarks:
+//     The array returned by this method should be considered read-only. Changing its contents
+//     will change the skill definition, which is probably not what you want.
 SkillUsable.prototype.peekActions = function()
 {
 	return this.skillInfo.actions;
@@ -78,9 +81,10 @@ SkillUsable.prototype.peekActions = function()
 // .use() method
 // Utilizes the skill.
 // Arguments:
-//     unit: The battle unit using the skill.
+//     unit: The battler using the skill.
 // Returns:
-//     A list of battle actions to be executed.
+//     An array of battle actions to be executed. Unlike with peekActions(), the contents of the array may
+//     be freely modified without changing the skill definition.
 SkillUsable.prototype.use = function(unit)
 {
 	if (!this.isUsable(unit)) {
@@ -96,5 +100,5 @@ SkillUsable.prototype.use = function(unit)
 	this.levelStat.grow(experience);
 	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
 	Console.append("level: " + this.levelStat.getValue());
-	return this.skillInfo.actions;
+	return clone(this.skillInfo.actions);
 };

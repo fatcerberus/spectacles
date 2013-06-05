@@ -5,6 +5,18 @@
 
 RequireScript('Battle.js');
 
+Scenario.defineCommand('adjustBGMVolume',
+{
+	start: function(sceneState, state, volume, duration) {
+		duration = duration !== void null ? duration : 0.0;
+		
+		BGM.adjustVolume(volume, duration);
+	},
+	update: function(sceneState, state) {
+		return BGM.isAdjusting();
+	}
+});
+
 // .battle() command
 // Starts a battle.
 // Arguments:
@@ -21,16 +33,6 @@ Scenario.defineCommand('changeBGM',
 {
 	start: function(scene, state, trackName) {
 		BGM.change(trackName);
-	}
-});
-
-Scenario.defineCommand('fadeBGM',
-{
-	start: function(sceneState, state, volume, duration) {
-		BGM.adjustVolume(volume, duration);
-	},
-	update: function(sceneState, state) {
-		return BGM.isAdjusting();
 	}
 });
 

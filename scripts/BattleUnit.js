@@ -103,7 +103,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
-	var maxMPIfEnemy = Math.floor(Math.min(Math.max(Game.math.mp.enemy(this.getInfo()), 1), 1000));
+	var maxMPIfEnemy = Math.floor(Math.max(Game.math.mp.enemy(this.getInfo()), 0));
 	this.mpPool = mpPool !== void null ? mpPool : new MPPool(maxMPIfEnemy);
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
@@ -392,11 +392,9 @@ BattleUnit.prototype.tick = function()
 			}
 		}
 		if (this.isAlive()) {
-			var eventData = {
-				action: clone(action)
-			};
+			var eventData = { action: action };
 			this.invokeStatuses('takeAction', eventData);
-			var unitsHit = this.battle.runAction(eventData.action, this, this.moveUsed.targets);
+			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
 				this.growAsAttacker(action, this.skillUsed);
 				for (var i = 0; i < unitsHit.length; ++i) {

@@ -13,16 +13,22 @@ function ItemUsable(itemID)
 		Abort("ItemUsable(): The item definition '" + itemID + "' doesn't exist.");
 	}
 	this.isUnlimited = false;
+	this.itemDef = Game.items[itemID];
 	this.itemID = itemID;
 	this.name = Game.items[itemID].name;
-	this.usesLeft = Game.items[itemID].uses;
+	this.usesLeft = 1;
+	
+	if ('uses' in this.itemDef) {
+		this.usesLeft = this.itemDef.uses;
+	}
 }
 
 // .getRank() method
 // Calculates the move rank of using the item.
 ItemUsable.prototype.getRank = function()
 {
-	return Game.useItemMoveRank;
+	return !('rank' in this.itemDef.action) ? Game.defaultItemRank
+		: this.itemDef.action.rank;
 };
 
 // .isUsable() method
@@ -47,6 +53,9 @@ ItemUsable.prototype.mpCost = function(user)
 // Peeks at the battle actions that will be executed if the item is used.
 // Returns:
 //     A list of battle actions that will be executed when the item is used.
+// Remarks:
+//     The array returned by this method should be considered read-only. Changing its contents
+//     will change the item definition, which is probably not what you want.
 ItemUsable.prototype.peekActions = function()
 {
 	return [ Game.items[this.itemID].action ];
@@ -55,9 +64,10 @@ ItemUsable.prototype.peekActions = function()
 // .use() method
 // Utilizes the item, consuming one of its uses.
 // Arguments:
-//     unit: The battle unit using the item.
+//     unit: The battler using the item.
 // Returns:
-//     A list of battle actions to be executed.
+//     An array of battle actions to be executed. Unlike with peekActions(), the contents of the array may
+//     be freely modified without changing the item definition.
 ItemUsable.prototype.use = function(unit)
 {
 	if (!this.isUsable(unit)) {
@@ -66,5 +76,7 @@ ItemUsable.prototype.use = function(unit)
 	Console.writeLine(unit.name + " is using item " + this.name);
 	--this.usesLeft;
 	Console.append("usesLeft: " + this.usesLeft);
-	return [ Game.items[this.itemID].action ];
+	var action = clone(Game.items[this.itemID].action);
+	action.rank = 'rank' in action ? action.rank : Game.defaultItemRank;
+	return [ action ];
 }
