@@ -74,7 +74,7 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
+				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());
 			},
 			magic: function(actor, target, power) {
 				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
@@ -147,7 +147,7 @@ Game = {
 			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return Math.ceil(rank * 10000 / unit.stats.agi.getValue());
+			return Math.ceil(Math.pow(rank, 2) * 10000 / unit.stats.agi.getValue());
 		}
 	},
 	
@@ -744,6 +744,16 @@ Game = {
 	},
 	
 	weapons: {
+		heirloom: {
+			name: "Heirloom",
+			type: 'sword',
+			level: 10,
+			techniques: [
+				'swordSlash',
+				'quickstrike',
+				'chargeSlash'
+			]
+		},
 		templeSword: {
 			name: "Temple Sword",
 			type: 'sword',
@@ -910,8 +920,11 @@ Game = {
 			],
 			onStart: function() {
 				new Scenario()
-					.talk("maggie", 2.0, "I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. "
-						+ "It won't hesitate to roast you--and then I'd have to eat you!")
+					.talk("maggie", 2.0,
+						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!",
+						"Mmm, barbequed Littermates... tastes like chicken!")
+					.talk("Scott", 2.0, "Barbequed... littermates?")
+					.talk("Elysia", 2.0, "Focus, guys!")
 					.run(true);
 			}
 		},
@@ -930,9 +943,10 @@ Game = {
 						+ "brazen as to face me alone?")
 					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					//.adjustBGMVolume(0.0, 1.0)
-					.talk("Robert", 2.0, "What makes you so sure you have a choice?")
-					//.overrideBGM('MyDreamsButADropOfFuel')
+					.pause(1.0)
+					.adjustBGMVolume(0.0, 1.0)
+					.talk("Robert", 1.0, "What makes you so sure you have a choice?")
+					.overrideBGM('MyDreamsButADropOfFuel')
 					.adjustBGMVolume(1.0)
 					.run(true);
 			}
