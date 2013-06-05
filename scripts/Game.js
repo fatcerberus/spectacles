@@ -74,19 +74,19 @@ Game = {
 		},
 		damage: {
 			bow: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
+				return power * (1.0 + 1.0 * power / 100) * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());;
 			},
 			magic: function(actor, target, power) {
-				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
+				return power * (1.0 + 1.0 * power / 100) * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
 			},
 			pistol: function(actor, target, power) {
-				return power * actor.weapon.level * 2 / target.stats.def.getValue();
+				return power * (1.0 + 1.0 * power / 100) * actor.weapon.level * 2 / target.stats.def.getValue();
 			},
 			physical: function(actor, target, power) {
-				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
+				return power * (1.0 + 1.0 * power / 100) * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
 			},
 			sword: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
+				return power * (1.0 + 1.0 * power / 100) * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
 			}
 		},
 		experience: {
@@ -265,38 +265,60 @@ Game = {
 	
 	statuses: {
 		crackdown: {
-			name: "Crackdown"
+			name: "Crackdown",
+			initialize: function(unit) {
+				this.lastSkillType = null;
+				this.multiplier = 1.0;
+			},
+			takeAction: function(unit, data) {
+				for (var i = 0; i < data.action.effects.length; ++i) {
+					var effect = data.action.effects[i];
+					if (effect.type == 'damage') {
+						effect.power = Math.ceil(effect.power * this.multiplier);
+					}
+				}
+			},
+			useSkill: function(unit, data) {
+				this.multiplier = data.skill.category != this.lastSkillType ? 1.0
+					: this.multiplier * 0.75;
+				this.lastSkillType = data.skill.category;
+			}
 		},
 		drunk: {
 			name: "Drunk"
 		},
 		offGuard: {
 			name: "Off-Guard",
-			beginTurn: function(subject, event) {
-				subject.liftStatus('offGuard');
+			beginTurn: function(unit, data) {
+				unit.liftStatus('offGuard');
 			},
-			damaged: function(subject, event) {
-				if (event.cancel) {
+			damaged: function(unit, data) {
+				data.amount = Math.ceil(data.amount * 1.5);
+				unit.liftStatus('offGuard');
+			}
+		},
+		protect: {
+			name: "Protect",
+			damaged: function(unit, data) {
+				if (data.isPriority) {
 					return;
 				}
-				event.amount = Math.floor(event.amount * 1.5);
-				subject.liftStatus('offGuard');
+				data.amount = Math.floor(data.amount * 0.5);
 			}
 		},
 		reGen: {
 			name: "ReGen",
-			beginTurn: function(subject, event) {
-				subject.heal(subject.getLevel() / 2);
+			beginTurn: function(unit, data) {
+				unit.heal(unit.getLevel() / 2);
 			}
 		},
 		zombie: {
 			name: "Zombie",
-			healed: function(subject, event) {
-				if (event.isPriority) {
+			healed: function(unit, data) {
+				if (data.isPriority) {
 					return;
 				}
-				subject.takeDamage(event.amount);
-				event.cancel = true;
+				data.amount = -data.amount;
 			}
 		}
 	},
@@ -551,7 +573,26 @@ Game = {
 							damageType: 'magic',
 							power: 100
 						}
-					],
+					]
+				}
+			]
+		},
+		protectiveAura: {
+			name: "Protective Aura",
+			category: 'strategy',
+			targetType: 'single',
+			baseMPCost: 200,
+			actions: [
+				{
+					announceAs: "Protective Aura",
+					rank: 3,
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'protect'
+						}
+					]
 				}
 			]
 		},
@@ -766,7 +807,7 @@ Game = {
 				}
 				if (this.turnsTaken == 0) {
 					this.phase = 1;
-					this.useSkill('omni');
+					this.useSkill('crackdown');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =
@@ -774,7 +815,8 @@ Game = {
 						me.getHealth() > 40 ? 2 :
 						me.getHealth() > 10 ? 3 :
 						4;
-					this.data.phase = this.data.phase > phaseToEnter ? this.data.phase : phaseToEnter
+					var lastPhase = this.data.phase;
+					this.data.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter
 					switch (this.data.phase) {
 						case 1:
 							var forecast = this.turnForecast('quickstrike');
@@ -795,6 +837,10 @@ Game = {
 							this.useSkill(moveCandidates[Math.min(Math.floor(Math.random() * 4), 3)]);
 							break;
 						case 3:
+							if (lastPhase < this.data.phase) {
+								this.useSkill('protectiveAura');
+							} else {
+							}
 					}
 				}
 			}

@@ -156,21 +156,30 @@ TargetMenu.prototype.render = function()
 	if (this.unitToShowInfo != null) {
 		SetClippingRectangle(0, 16, 160, GetScreenHeight() - 16);
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
-		var y = -52 * this.infoBoxFadeness + 16;
-		Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
-		if (true || this.unitToShowInfo.isPartyMember()) {
-			this.drawInfoBox(0, y, 160, 32, 160);
+		if (this.unitToShowInfo.isPartyMember()) {
+			var statuses = this.unitToShowInfo.statuses;
+			var nameBoxHeight = 20 + 12 * Math.max(statuses.length, 1);
+			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
+			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
+			this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
 			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(255, 255, 255, textAlpha), 1, 'center');
 			var statusColor = this.unitToShowInfo.statuses.length == 0 ?
 				CreateColor(96, 192, 96, textAlpha) :
 				CreateColor(192, 192, 96, textAlpha);
-			var statusText = this.unitToShowInfo.statuses.length > 0 ? this.unitToShowInfo.statuses[0].name : "Normal";
-			DrawTextEx(this.infoFont, 80, y + 16, statusText, statusColor, 1, 'center');
-			this.drawInfoBox(0, y + 32, 80, 20, 128);
-			DrawTextEx(this.infoFont, 40, y + 36, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
-			this.drawInfoBox(80, y + 32, 80, 20, 128);
-			DrawTextEx(this.infoFont, 120, y + 36, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+			if (statuses.length > 0) {
+				for (var i = 0; i < statuses.length; ++i) {
+					DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, statuses[i].name, CreateColor(192, 192, 96, textAlpha), 1, 'center');
+				}
+			} else {
+				DrawTextEx(this.infoFont, 80, y + 16, "Normal", CreateColor(96, 192, 96, textAlpha), 1, 'center');
+			}
+			this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);
+			DrawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+			this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 128);
+			DrawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 		} else {
+			var y = 16 - 20 * this.infoBoxFadeness;
+			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 			this.drawInfoBox(0, y, 160, 20, 160);
 			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(255, 255, 255, textAlpha), 1, 'center');
 		}

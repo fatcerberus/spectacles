@@ -64,7 +64,7 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			var width = this.font.getStringWidth(this.text) + 50;
 			var height = this.font.getHeight() + 10;
 			var x = GetScreenWidth() / 2 - width / 2;
-			var y = GetScreenHeight() / 2 - height / 2;
+			var y = 132; //GetScreenHeight() / 2 - height / 2;
 			var textX = x + width / 2 - this.font.getStringWidth(this.text) / 2;
 			var textY = y + height / 2 - this.font.getHeight() / 2;
 			Rectangle(x, y, width, height, this.color);

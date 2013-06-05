@@ -124,7 +124,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 //     statusID: The ID of the status to inflict.
 BattleUnit.prototype.addStatus = function(statusID)
 {
-	var effect = new StatusEffect(this, statusID)
+	var effect = new StatusEffect(statusID, this);
 	this.statuses.push(effect);
 	this.actor.showMessage("+", 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
@@ -206,7 +206,7 @@ BattleUnit.prototype.growAsAttacker = function(action, skillUsed)
 };
 
 // .growAsDefender() method
-// Grants the unit battle experience for defending against an attack.
+// Grants the unit battle experience for surviving an attack.
 // Arguments:
 //     action:    The action performed by the attacking unit.
 //     skillUsed: The skill used in performing the action.
@@ -260,28 +260,25 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 // Restores a specified amount of the battler's HP.
 // Arguments:
 //     amount:     The number of hit points to restore.
-//     isPriority: Optional. If true, specifies a priority healing effect. Certain statuses (e.g. Zombie) use
-//                 this flag to determine how to act on the effect. Defaults to false.
+//     isPriority: Optional. If true, specifies priority healing. Statuses handling healing events can check
+//                 for the priority flag to determine how to act on the event. (default: false)
 BattleUnit.prototype.heal = function(amount, isPriority)
 {
-	if (isPriority === undefined) { isPriority = false; }
+	isPriority = isPriority !== void null ? isPriority : false;
 	
-	var healEvent = {
+	var eventData = {
 		amount: Math.floor(amount),
-		isPriority: isPriority,
-		cancel: false
+		isPriority: isPriority
 	};
-	this.invokeStatuses('healed', healEvent);
-	if (healEvent.cancel) {
-		return;
-	}
-	if (healEvent.amount >= 0) {
-		this.hp = Math.min(this.hp + healEvent.amount, this.maxHP);
-		this.actor.showMessage(healEvent.amount, 'heal');
+	this.invokeStatuses('healed', eventData);
+	eventData.amount = Math.floor(eventData.amount);
+	if (eventData.amount > 0) {
+		this.hp = Math.min(this.hp + eventData.amount, this.maxHP);
+		this.actor.showMessage(eventData.amount, 'heal');
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		Console.writeLine(this.name + " healed for " + healEvent.amount + " HP");
-	} else {
-		this.takeDamage(healEvent.amount, true);
+		Console.writeLine(this.name + " healed for " + eventData.amount + " HP");
+	} else if (eventData.amount < 0) {
+		this.takeDamage(-eventData.amount, true);
 	}
 };
 
@@ -318,39 +315,34 @@ BattleUnit.prototype.liftStatus = function(statusID)
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
-//     amount:       Required. The amount of damage to inflict.
-//     ignoreDefend: If set to true, prevents damage reduction when the battler is defending.
-//                   Defaults to false.
-BattleUnit.prototype.takeDamage = function(amount, ignoreDefend)
+//     amount:     The amount of damage to inflict.
+//     isPriority: Optional. If true, specifies priority damage. Statuses handling damage events can check
+//                 for the priority flag to determine how to act on the event. (default: false)
+BattleUnit.prototype.takeDamage = function(amount, isPriority)
 {
-	if (ignoreDefend === undefined) { ignoreDefend = false; }
+	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.floor(amount);
-	if (this.isDefending && !ignoreDefend) {
-		amount = Math.ceil(amount / 2);
-	}
-	var damageEvent = {
+	var eventData = {
 		amount: amount,
-		cancel: false
+		isPriority: isPriority
 	};
-	this.invokeStatuses('damaged', damageEvent);
-	if (damageEvent.cancel) {
-		return;
-	}
-	if (damageEvent.amount >= 0) {
-		this.hp = Math.max(this.hp - damageEvent.amount, 0);
-		Console.writeLine(this.name + " took " + damageEvent.amount + " HP damage - remaining: " + this.hp);
+	this.invokeStatuses('damaged', eventData);
+	eventData.amount = Math.floor(eventData.amount);
+	if (eventData.amount > 0) {
+		this.hp = Math.max(this.hp - eventData.amount, 0);
+		Console.writeLine(this.name + " took " + eventData.amount + " HP damage - remaining: " + this.hp);
 		if (this.lifeBar != null) {
 			this.lifeBar.setReading(this.hp);
 		}
-		this.actor.showMessage(damageEvent.amount, 'damage');
+		this.actor.showMessage(eventData.amount, 'damage');
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		if (this.hp <= 0) {
 			Console.writeLine(this.name + " died from lack of HP");
 			this.actor.animate('die');
 		}
-	} else {
-		this.heal(damageEvent.amount);
+	} else if (eventData.amount < 0) {
+		this.heal(-eventData.amount, true);
 	}
 };
 
@@ -383,6 +375,12 @@ BattleUnit.prototype.tick = function()
 			}
 			
 			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
+			if (this.skillUsed !== null) {
+				var eventData = {
+					skill: this.skillUsed.skillInfo
+				};
+				this.invokeStatuses('useSkill', eventData);
+			}
 			var nextActions = this.moveUsed.usable.use(this);
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];
@@ -394,7 +392,11 @@ BattleUnit.prototype.tick = function()
 			}
 		}
 		if (this.isAlive()) {
-			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
+			var eventData = {
+				action: clone(action)
+			};
+			this.invokeStatuses('takeAction', eventData);
+			var unitsHit = this.battle.runAction(eventData.action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
 				this.growAsAttacker(action, this.skillUsed);
 				for (var i = 0; i < unitsHit.length; ++i) {

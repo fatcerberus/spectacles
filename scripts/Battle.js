@@ -36,6 +36,7 @@ function Battle(session, battleID)
 	this.result = null;
 	this.session = session;
 	this.suspendCount = 0;
+	this.timer = 0;
 	Console.writeLine("Battle session prepared");
 	Console.append("battle def: " + this.battleID);
 	
@@ -43,6 +44,7 @@ function Battle(session, battleID)
 		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
+		++this.timer;
 		var unitLists = [ this.enemyUnits, this.playerUnits ];
 		var actionTaken = false;
 		while (!actionTaken) {
@@ -148,6 +150,7 @@ Battle.prototype.go = function()
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
+	this.timer = 0;
 	var battleThread = Threads.createEntityThread(this);
 	this.suspend();
 	this.ui.go('title' in this.parameters ? this.parameters.title : null);

@@ -6,9 +6,9 @@
 // StatusEffect() constructor
 // Creates an object representing the manifestation of a status.
 // Arguments:
-//     subject: The battle unit affected by the status effect.
-//     handle:  The ID of the status as defined in the gamedef.
-function StatusEffect(subject, statusID)
+//     statusID: The ID of the status, as defined in the gamedef.
+//     unit:     The battler to be subjected to the status effect.
+function StatusEffect(statusID, unit)
 {
 	if (!(statusID in Game.statuses)) {
 		Abort("StatusEffect(): The status definition '" + statusID + "' doesn't exist!");
@@ -17,7 +17,11 @@ function StatusEffect(subject, statusID)
 	this.name = Game.statuses[statusID].name;
 	this.status = Game.statuses[statusID];
 	this.statusID = statusID;
-	this.subject = subject;
+	this.unit = unit;
+	
+	if ('initialize' in this.status) {
+		this.status.initialize.call(this.context);
+	}
 }
 
 // .invoke() method
@@ -25,14 +29,14 @@ function StatusEffect(subject, statusID)
 // Arguments:
 //     eventID: The ID of the event to raise. If the correct event hook doesn't exist in
 //              the status definition, .invoke() does nothing.
-//     event:   An object specifying the parameters for the event. Note that the hook function may
-//              add or change properties in the event object.
-StatusEffect.prototype.invoke = function(eventID, event)
+//     data:    An object containing data for the event. Note that the event handler is allowed
+//              to add or change properties of this object.
+StatusEffect.prototype.invoke = function(eventID, data)
 {
 	if (!(eventID in this.status)) {
 		return;
 	}
 	Console.writeLine("Invoking status " + this.name);
 	Console.append("event: " + eventID);
-	this.status[eventID].call(this.context, this.subject, event);
+	this.status[eventID].call(this.context, this.unit, data);
 };

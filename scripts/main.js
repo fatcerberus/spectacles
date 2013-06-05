@@ -83,6 +83,8 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 // Creates a deep copy of an object, preserving circular references.
 // Arguments:
 //     o: The object to clone.
+// Returns:
+//     The new, cloned object.
 function clone(o)
 {
 	var clones = arguments.length >= 2 ? arguments[1] : [];
@@ -92,7 +94,7 @@ function clone(o)
 				return clones[i].dolly;
 			}
 		}
-		var dolly = {};
+		var dolly = o.hasOwnProperty('length') ? [] : {};
 		clones.push({ original: o, dolly: dolly });
 		for (var p in o) {
 			dolly[p] = clone(o[p], clones);

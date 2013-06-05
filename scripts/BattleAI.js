@@ -50,6 +50,7 @@ BattleAI.prototype.getNextMove = function()
 			this.allies.push(ally);
 			this.allies[ally.id] = ally;
 		}
+		this.targets = null;
 		this.strategy.call(this, this.unit, null);
 		if (this.moveQueue.length == 0) {
 			Abort("BattleAI.getNextAction(): The strategy function for " + this.unit.name + " didn't queue any moves.");
@@ -78,8 +79,8 @@ BattleAI.prototype.turnForecast = function(skillID)
 // .setTarget() method
 // Sets the battler to be targetted by the AI's actions.
 // Arguments:
-//     targetID: The enemy or character ID of the unit to target.
-BattleAI.prototype.setTarget = function(targetID)
+//     targetIDs: The enemy or character ID of the unit to target.
+BattleAI.prototype.setTarget = function(targetIDs)
 {
 	// TODO: implement me!
 };
