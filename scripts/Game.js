@@ -126,16 +126,14 @@ Game = {
 			}
 		},
 		mp: {
-			enemy: function(unitInfo) {
-				return Infinity; //(unitInfo.stats.mag * 2 + unitInfo.level) / 3 * 15;
-			},
-			party: function(partyInfo) {
-				var maxMP = 0;
-				for (var i = 0; i < partyInfo.length; ++i) {
-					var memberInfo = partyInfo[i];
-					maxMP += Math.floor((memberInfo.stats.mag * 2 + memberInfo.level) / 3 * 15);
-				}
-				return maxMP;
+			capacity: function(battlerInfo) {
+				var statAverage = Math.floor((battlerInfo.baseStats.mag * 10
+					+ battlerInfo.baseStats.vit
+					+ battlerInfo.baseStats.str
+					+ battlerInfo.baseStats.def
+					+ battlerInfo.baseStats.foc
+					+ battlerInfo.baseStats.agi) / 15);
+				return Math.floor(25 * (50 + Math.floor(statAverage / 2)) * (10 + battlerInfo.level) / 110);
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;

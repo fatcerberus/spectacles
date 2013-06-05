@@ -103,8 +103,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
-	var maxMPIfEnemy = Math.floor(Math.max(Game.math.mp.enemy(this.getInfo()), 0));
-	this.mpPool = mpPool !== void null ? mpPool : new MPPool(maxMPIfEnemy);
+	this.mpPool = mpPool !== void null ? mpPool
+		: new MPPool(Math.floor(Math.max(Game.math.mp.capacity(this.getInfo()), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -166,8 +166,12 @@ BattleUnit.prototype.getInfo = function()
 	info.name = this.name;
 	info.health = Math.ceil(100 * this.hp / this.maxHP);
 	info.level = this.getLevel();
+	info.baseStats = {};
 	info.stats = {};
 	for (var stat in Game.namedStats) {
+		info.baseStats[stat] = this.isPartyMember() ?
+			this.character.baseStats[stat] :
+			this.enemyInfo.baseStats[stat];
 		info.stats[stat] = this.stats[stat].getValue();
 	}
 	return info;

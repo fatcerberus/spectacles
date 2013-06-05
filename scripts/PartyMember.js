@@ -27,6 +27,7 @@ function PartyMember(characterID, level)
 	
 	level = level !== void null ? level : 1;
 	
+	this.characterDef = Game.characters[characterID];
 	this.characterID = characterID;
 	this.fullName = 'fullName' in Game.characters[characterID] ?
 		Game.characters[characterID].fullName :
@@ -46,6 +47,25 @@ function PartyMember(characterID, level)
 		this.learnSkill(character.skills[i]);
 	}
 }
+
+// .getInfo() property
+// Compiles information about the party member.
+// Returns:
+//     An object containing information about the party member.
+PartyMember.prototype.getInfo = function()
+{
+	var info = {
+		characterID: this.characterID,
+		level: this.getLevel()
+	}
+	info.baseStats = {};
+	info.stats = {};
+	for (var stat in Game.namedStats) {
+		info.baseStats[stat] = this.characterDef.baseStats[stat];
+		info.stats[stat] = this.stats[stat].getValue();
+	}
+	return info;
+};
 
 // .getLevel() property
 // Gets the party member's current overall level.

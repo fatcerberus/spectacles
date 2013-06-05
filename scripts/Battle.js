@@ -111,22 +111,13 @@ Battle.prototype.go = function()
 		return BattleResult.playerWon;
 	}
 	Console.writeLine("Starting battle '" + this.battleID + "'");
-	var partyInfo = [];
+	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
-		var member = this.session.party.members[id];
-		var memberInfo = {
-			characterID: member.characterID,
-			level: member.getLevel()
-		}
-		memberInfo.stats = {};
-		for (var stat in Game.namedStats) {
-			memberInfo.stats[stat] = member.stats[stat].getValue();
-		}
-		partyInfo.push(memberInfo);
-		partyInfo[member.characterID] = memberInfo;
+		var battlerInfo = this.session.party.members[id].getInfo();
+		partyMaxMP += Math.floor(Game.math.mp.capacity(battlerInfo));
 	}
-	var partyMaxMP = Math.round(Math.min(Math.max(Game.math.mp.party(partyInfo), 0), 9999));
-	var partyMPPool = new MPPool(partyMaxMP);
+	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
+	var partyMPPool = new MPPool(Math.min(Math.max(partyMaxMP, 0), 9999));
 	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
