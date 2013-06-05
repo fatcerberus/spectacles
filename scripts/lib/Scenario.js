@@ -435,7 +435,6 @@ Scenario.prototype.run = function(waitUntilDone)
 	if (this.isRunning()) {
 		return;
 	}
-	this.synchronize();
 	var mainThreadState = {
 		currentCommandThread: 0,
 		commandQueue:         this.currentQueue,

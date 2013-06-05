@@ -137,7 +137,7 @@ Game = {
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-				return baseCost * level * userInfo.level / 10000;
+				return (level + userInfo.baseStats.mag) * baseCost / 100;
 			}
 		},
 		retreatChance: function(enemyUnits) {
@@ -416,7 +416,7 @@ Game = {
 			name: "Chill",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 50,
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Chill",
@@ -438,7 +438,7 @@ Game = {
 			name: "Crackdown",
 			category: 'strategy',
 			targetType: 'single',
-			baseMPCost: 250,
+			baseMPCost: 75,
 			actions: [
 				{
 					announceAs: "Crackdown",
@@ -478,7 +478,7 @@ Game = {
 			name: "Flare",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 50,
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Flare",
@@ -500,7 +500,7 @@ Game = {
 			name: "Lightning",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 50,
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Lightning",
@@ -541,7 +541,7 @@ Game = {
 			name: "Necromancy",
 			category: 'strategy',
 			targetType: 'single',
-			baseMPCost: 200,
+			baseMPCost: 35,
 			actions: [
 				{
 					announceAs: "Necromancy",
@@ -560,7 +560,7 @@ Game = {
 			name: "Omni",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 500,
+			baseMPCost: 100,
 			actions: [
 				{
 					announceAs: "Omni",
@@ -600,7 +600,7 @@ Game = {
 			name: "Quake",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 50,
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Quake",
@@ -719,6 +719,7 @@ Game = {
 			name: "Upheaval",
 			category: 'magic',
 			targetType: 'single',
+			baseMPCost: 50,
 			actions: [
 				{
 					announceAs: "Upheaval",
