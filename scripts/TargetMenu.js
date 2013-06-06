@@ -19,9 +19,9 @@ function TargetMenu(unit, battle, usable)
 	this.statusInfo = null;
 	this.cursorFont = GetSystemFont();
 	this.infoFont = GetSystemFont();
-	this.unitToShowInfo = null;
 	this.targets = [];
 	this.unit = unit;
+	this.unitToShowInfo = null;
 	this.usable = usable;
 	
 	this.drawCursor = function(unit)

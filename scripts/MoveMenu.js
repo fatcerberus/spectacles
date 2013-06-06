@@ -13,8 +13,8 @@ RequireScript("TargetMenu.js");
 function MoveMenu(unit, battle)
 {
 	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
-	this.moveRankColor = CreateColor(0, 0, 0, 255);
-	this.moveRankBoxColor = CreateColor(128, 128, 128, 255);
+	this.moveRankColor = CreateColor(255, 255, 255, 255);
+	this.moveRankBoxColor = CreateColor(48, 48, 48, 255);
 	this.normalCursorColor = CreateColor(0, 72, 144, 255);
 	this.textColor = CreateColor(255, 255, 255, 255);
 	this.usageTextColor = CreateColor(255, 192, 0, 255);
@@ -107,10 +107,10 @@ function MoveMenu(unit, battle)
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		Rectangle(x + 142, y + 3, 13, 12, this.moveRankBoxColor);
-		OutlinedRectangle(x + 142, y + 3, 13, 12, CreateColor(0, 0, 0, this.moveRankBoxColor.alpha / 2));
-		this.drawText(this.font, x + 147, y + 3, 0, this.moveRankColor, item.rank);
-		this.drawText(this.font, x + 33, y + 3, isEnabled, textColor, item.name);
+		Rectangle(x + 133, y + 2, 22, 14, this.moveRankBoxColor);
+		OutlinedRectangle(x + 133, y + 2, 22, 14, CreateColor(0, 0, 0, this.moveRankBoxColor.alpha / 2));
+		DrawTextEx(this.font, x + 144, y + 3, item.rank, textColor, 1, 'center');
+		DrawTextEx(this.font, x + 33, y + 3, item.name, textColor, 1 * isEnabled);
 		if (item.mpCost > 0) {
 			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost, 'right');
 		}
@@ -167,7 +167,7 @@ MoveMenu.prototype.getInput = function()
 			for (var i = 0; i < usables.length; ++i) {
 				this.moveMenu.push({
 					name: usables[i].name,
-					rank: usables[i].getRank(),
+					rank: usables[i].getRank().toFixed(1),
 					mpCost: usables[i].mpCost(this.unit),
 					usable: usables[i],
 					isAllowed: usables[i].isUsable(this.unit)

@@ -60,6 +60,15 @@ BattleAI.prototype.getNextMove = function()
 	return this.moveQueue.shift();
 }
 
+// .hasStatus() method
+// Determines whether the unit being controlled is afflicted with a specified status.
+// Arguments:
+//     statusID: The ID of the status to test for, as defined in the gamedef.
+BattleAI.prototype.hasStatus = function(statusID)
+{
+	return this.unit.hasStatus(statusID);
+};
+
 // .turnForecast() method
 // Gets a turn order prediction for the use of a specified skill.
 // Arguments:

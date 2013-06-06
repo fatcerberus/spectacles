@@ -143,6 +143,13 @@ Game = {
 		retreatChance: function(enemyUnits) {
 			return 1.0;
 		},
+		skillRank: function(skill) {
+			var multiplier = 0;
+			for (var i = 0; i < skill.actions.length; ++i) {
+				multiplier += Math.pow(skill.actions[i].rank, 2);
+			}
+			return Math.round(Math.sqrt(multiplier) * 10) / 10;
+		},
 		statValue: function(baseStat, level) {
 			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
 		},
@@ -427,7 +434,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 33,
 							element: 'ice'
 						}
 					],
@@ -489,7 +496,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 33,
 							element: 'fire'
 						}
 					],
@@ -511,7 +518,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 33,
 							element: 'lightning'
 						}
 					],
@@ -611,7 +618,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 33,
 							element: 'earth'
 						}
 					],
@@ -836,13 +843,13 @@ Game = {
 						.talk("Robert", 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
 						.talk("maggie", 2.0,
 							"Tastes like chicken!",
-							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even regular, uncooked, feathery chicken...")
+							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even the regular, uncooked, feathery kind...")
 						.talk("Robert", 2.0, "...")
 						.run(true);
 					this.useItem('alcohol');
 				}
 				if (this.turnsTaken == 0) {
-					this.phase = 0;
+					this.data.phase = 0;
 					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
@@ -856,52 +863,100 @@ Game = {
 					switch (this.data.phase) {
 						case 1:
 							if (this.data.phase > lastPhase) {
-								this.isComboStarted = false;
+								this.data.isComboStarted = false;
 							}
 							var forecast = this.turnForecast('chargeSlash');
-							if (forecast[0].unit == me) {
+							if (forecast[0].unit === me) {
+								Abort("maggie");
 								this.useSkill('chargeSlash');
 							} else {
 								forecast = this.turnForecast('quickstrike');
 								if (forecast[0].unit === me) {
 									this.useSkill('quickstrike');
-									this.isComboStarted = true;
+									this.data.isComboStarted = true;
 								} else {
-									if (this.isComboStarted) {
+									if (this.data.isComboStarted) {
+										this.useSkill('swordSlash');
+										this.data.isComboStarted = false;
+									} else {
 										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
 										this.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
-										this.isComboStarted = false;
-									} else {
-										this.useSkill('swordSlash');
 									}
 								}
 							}
 							break;
 						case 2:
 							if (this.data.phase > lastPhase) {
-								this.isComboStarted = false;
+								this.useSkill('upheaval');
+								this.data.isComboStarted = false;
+							} else {
+								var forecast = this.turnForecast('quickstrike');
+								if ((Math.random() < 0.5 || this.data.isComboStarted) && forecast[0].unit === me) {
+									this.useSkill('quickstrike');
+									this.data.isComboStarted = true;
+								} else {
+									if (this.data.isComboStarted) {
+										this.useSkill('swordSlash');
+										this.data.isComboStarted = false;
+									} else {
+										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+										this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+									}
+								}
 							}
-							var turnForecast = this.turnForecast('quickstrike');
-							if ((Math.random() < 0.5 || this.isComboStarted) && turnForecast[0].unit === me) {
-								this.useSkill('quickstrike');
-								this.isComboStarted = true;
-							}
-							var moveCandidates = [ 'flare', 'chill', 'lightning', 'quake' ];
-							this.useSkill(moveCandidates[Math.min(Math.floor(Math.random() * 4), 3)]);
 							break;
 						case 3:
 							if (this.data.phase > lastPhase) {
 								this.useSkill('protectiveAura');
-								this.useSkill('upheaval');
+								this.useSkill('crackdown');
+								this.data.doChargeSlashNext = false;
+								this.data.isComboStarted = false;
 							} else {
-								// TODO: implement me!
+								var chanceOfCombo = 0.25 + this.hasStatus('crackdown') * 0.25;
+								if (Math.random() < chanceOfCombo || this.data.isComboStarted) {
+									var forecast = this.turnForecast('chargeSlash');
+									if ((forecast[0] === me && !this.data.isComboStarted) || this.useChargeSlashNext) {
+										this.data.isComboStarted = false;
+										if (forecast[0] === me) {
+											this.useSkill('chargeSlash');
+										} else {
+											this.useSkill('hellfire');
+										}
+									} else {
+										this.data.isComboStarted = true;
+										forecast = this.turnForecast('quickstrike');
+										if (forecast[0] === me) {
+											this.useSkill('quickstrike');
+										} else {
+											if (this.hasStatus('crackdown')) {
+												this.useSkill('omni');
+												this.data.isComboStarted = false;
+											} else {
+												this.useSkill('quickstrike');
+												this.data.doChargeSlashNext = true;
+											}
+										}
+									}
+								} else {
+									var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+									this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+								}
 							}
 							break;
 						case 4:
 							if (this.data.phase > lastPhase) {
-								this.useSkill('desperationSlash');
+								if (!this.hasStatus('drunk')) {
+									this.useSkill('desperationSlash');
+								} else {
+									// TODO: implement me!
+								}
 							} else {
-								// TODO: implement me!
+								var forecast = this.turnForecast('omni');
+								if (forecast[0] === 'me' || forecast[1] === 'me') {
+									this.useSkill("omni");
+								} else {
+									// TODO: implement me!
+								}
 							}
 							break;
 					}

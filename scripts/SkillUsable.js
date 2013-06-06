@@ -34,11 +34,7 @@ SkillUsable.prototype.getLevel = function()
 // Calculates the skill's move rank.
 SkillUsable.prototype.getRank = function()
 {
-	var rank = 0;
-	for (var i = 0; i < this.skillInfo.actions.length; ++i) {
-		rank += this.skillInfo.actions[i].rank;
-	}
-	return rank;
+	return Game.math.skillRank(this.skillInfo);
 };
 
 // .isUsable() method

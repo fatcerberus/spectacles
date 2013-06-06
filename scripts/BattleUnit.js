@@ -260,6 +260,20 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 	}
 };
 
+// .hasStatus() method
+// Determines whether the unit is under the effects of a specified status.
+// Arguments:
+//     statusID: The ID of the status to test for, as defined in the gamedef.
+BattleUnit.prototype.hasStatus = function(statusID)
+{
+	for (var i = 0; i < this.statuses.length; ++i) {
+		if (statusID == this.statuses[i].statusID) {
+			return true;
+		}
+	}
+	return false;
+};
+
 // .heal() method
 // Restores a specified amount of the battler's HP.
 // Arguments:
