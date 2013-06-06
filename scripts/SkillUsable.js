@@ -96,5 +96,7 @@ SkillUsable.prototype.use = function(unit)
 	this.levelStat.grow(experience);
 	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
 	Console.append("level: " + this.levelStat.getValue());
-	return clone(this.skillInfo.actions);
+	var eventData = { skill: clone(this.skillInfo) };
+	unit.raiseEvent('useSkill', eventData);
+	return eventData.skill.actions;
 };

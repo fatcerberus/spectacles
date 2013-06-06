@@ -219,6 +219,7 @@ Game = {
 	items: {
 		alcohol: {
 			name: "Alcohol",
+			type: 'drink',
 			action: {
 				announceAs: "Alcohol",
 				effects: [
@@ -236,9 +237,15 @@ Game = {
 		},
 		holyWater: {
 			name: "Holy Water",
+			type: 'drink',
 			action: {
 				announceAs: "Holy Water",
 				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatus',
+						status: 'skeleton'
+					},
 					{
 						targetHint: 'selected',
 						type: 'liftStatus',
@@ -249,6 +256,7 @@ Game = {
 		},
 		tonic: {
 			name: "Tonic",
+			type: 'drink',
 			uses: 5,
 			action: {
 				announceAs: "Tonic",
@@ -293,6 +301,16 @@ Game = {
 		drunk: {
 			name: "Drunk"
 		},
+		ignite: {
+			name: "Ignite",
+			initialize: function(unit, data) {
+				this.multiplier = 1.0;
+			},
+			cycle: function(unit, data) {
+				unit.takeDamage(multiplier * 0.05 * unit.maxHP, true);
+				this.multiplier = Math.max(multiplier * 0.95, 0.125);
+			}
+		},
 		offGuard: {
 			name: "Off-Guard",
 			beginTurn: function(unit, data) {
@@ -316,6 +334,23 @@ Game = {
 			name: "ReGen",
 			beginTurn: function(unit, data) {
 				unit.heal(unit.getLevel() / 2);
+			}
+		},
+		skeleton: {
+			name: "Skeleton",
+			cycle: function(unit, data) {
+				unit.takeDamage(0.025 * unit.maxHP);
+			},
+			healed: function(unit, data) {
+				if (data.isPriority) {
+					return;
+				}
+				data.amount = -data.amount;
+			},
+			useItem: function(unit, data) {
+				if (data.item.type == 'drink' && data.item.name != "Holy Water") {
+					data.item.action.effects = null;
+				}
 			}
 		},
 		zombie: {
@@ -357,8 +392,7 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(Infinity);
-				//targets[i].takeDamage(targets[i].maxHP);
+				targets[i].takeDamage(targets[i].maxHP);
 			}
 		},
 		liftStatus: function(actor, targets, effect) {
@@ -434,7 +468,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 33,
+							power: 35,
 							element: 'ice'
 						}
 					],
@@ -457,6 +491,33 @@ Game = {
 							status: 'crackdown'
 						}
 					],
+				}
+			]
+		},
+		electrocute: {
+			name: "Electrocute",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 80,
+			actions: [
+				{
+					announceAs: "Electrocute",
+					rank: 3,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 80,
+							element: 'lightning'
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'skeleton'
+						}
+					]
 				}
 			]
 		},
@@ -496,10 +557,37 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 33,
+							power: 35,
 							element: 'fire'
 						}
 					],
+				}
+			]
+		},
+		hellfire: {
+			name: "Hellfire",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 50,
+			actions: [
+				{
+					announceAs: "Hellfire",
+					rank: 3,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 80,
+							element: 'fire'
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'ignite'
+						}
+					]
 				}
 			]
 		},
@@ -518,7 +606,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 33,
+							power: 35,
 							element: 'lightning'
 						}
 					],
@@ -618,7 +706,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 33,
+							power: 35,
 							element: 'earth'
 						}
 					],
@@ -737,7 +825,8 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 80
+							power: 80,
+							element: 'earth'
 						},
 						{
 							targetHint: 'selected',
@@ -850,7 +939,7 @@ Game = {
 				}
 				if (this.turnsTaken == 0) {
 					this.data.phase = 0;
-					this.useSkill('omni');
+					this.useSkill('electrocute');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =

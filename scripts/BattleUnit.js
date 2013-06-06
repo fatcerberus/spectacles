@@ -31,13 +31,6 @@ var BattleRow =
 //                  MP pool will be created for the unit.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
-	this.invokeStatuses = function(eventID, event) {
-		event = event !== void null ? event : null;
-		
-		for (var i = 0; i < this.statuses.length; ++i) {
-			this.statuses[i].invoke(eventID, event);
-		}
-	};
 	this.resetCounter = function(rank) {
 		this.counter = Game.math.timeUntilNextTurn(this, rank);
 		Console.writeLine(this.name + "'s CV reset to " + this.counter);
@@ -128,6 +121,14 @@ BattleUnit.prototype.addStatus = function(statusID)
 	this.statuses.push(effect);
 	this.actor.showMessage("+", 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
+};
+
+// .beginCycle() method
+// Specifies that a cycle is beginning. The battle engine should call this for all battlers
+// whenever its own beginCycle() method is called.
+BattleUnit.prototype.beginCycle = function()
+{
+	this.raiseEvent('cycle');
 };
 
 // .die() method
@@ -288,7 +289,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		amount: Math.floor(amount),
 		isPriority: isPriority
 	};
-	this.invokeStatuses('healed', eventData);
+	this.raiseEvent('healed', eventData);
 	eventData.amount = Math.floor(eventData.amount);
 	if (eventData.amount > 0) {
 		this.hp = Math.min(this.hp + eventData.amount, this.maxHP);
@@ -330,6 +331,25 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	}
 };
 
+// .raiseEvent() method
+// Raises a battler event, allowing the unit's status effects to act on it.
+// Arguments:
+//     eventID: The event ID. All active statuses containing a function by this name will receive the
+//              event.
+//     data:    An object containing data for the event.
+// Remarks:
+//     Status events can change the objects referenced in the data object, for example to change the effect of
+//     using a skill or item. If you pass in any objects from the gamedef, they should be cloned first to prevent
+//     the event from modifying the original definition.
+BattleUnit.prototype.raiseEvent = function(eventID, data)
+{
+	data = data !== void null ? data : null;
+	
+	for (var i = 0; i < this.statuses.length; ++i) {
+		this.statuses[i].invoke(eventID, data);
+	}
+};
+
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
@@ -345,7 +365,7 @@ BattleUnit.prototype.takeDamage = function(amount, isPriority)
 		amount: amount,
 		isPriority: isPriority
 	};
-	this.invokeStatuses('damaged', eventData);
+	this.raiseEvent('damaged', eventData);
 	eventData.amount = Math.floor(eventData.amount);
 	if (eventData.amount > 0) {
 		this.hp = Math.max(this.hp - eventData.amount, 0);
@@ -374,9 +394,10 @@ BattleUnit.prototype.tick = function()
 	--this.counter;
 	if (this.counter == 0) {
 		this.battle.suspend();
+		this.battle.beginCycle();
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
-		this.invokeStatuses('beginTurn');
+		this.raiseEvent('beginTurn');
 		if (!this.isAlive()) {
 			return false;
 		}
@@ -393,12 +414,6 @@ BattleUnit.prototype.tick = function()
 			}
 			
 			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
-			if (this.skillUsed !== null) {
-				var eventData = {
-					skill: this.skillUsed.skillInfo
-				};
-				this.invokeStatuses('useSkill', eventData);
-			}
 			var nextActions = this.moveUsed.usable.use(this);
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];
@@ -411,7 +426,7 @@ BattleUnit.prototype.tick = function()
 		}
 		if (this.isAlive()) {
 			var eventData = { action: action };
-			this.invokeStatuses('takeAction', eventData);
+			this.raiseEvent('takeAction', eventData);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
 				this.growAsAttacker(action, this.skillUsed);

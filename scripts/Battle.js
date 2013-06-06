@@ -40,7 +40,8 @@ function Battle(session, battleID)
 	Console.writeLine("Battle session prepared");
 	Console.append("battle def: " + this.battleID);
 	
-	this.tick = function() {
+	this.tick = function()
+	{
 		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
@@ -69,6 +70,20 @@ function Battle(session, battleID)
 		}
 	};
 }
+
+// .beginCycle() method
+// Specifies that a new battle cycle is starting. This generally happens whenever a battler
+// receives a turn.
+Battle.prototype.beginCycle = function()
+{
+	var unitLists = [ this.enemyUnits, this.playerUnits ];
+	for (var iList = 0; iList < unitLists.length; ++iList) {
+		for (var i = 0; i < unitLists[iList].length; ++i) {
+			var unit = unitLists[iList][i];
+			unit.beginCycle();
+		}
+	}
+};
 
 // .getLevel() method
 // Gets the enemy battle level for the battle.
@@ -232,6 +247,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
+	}
+	if (action.effects === null) {
+		return [];
 	}
 	var targetsHit = [];
 	if ('accuracyType' in action) {
