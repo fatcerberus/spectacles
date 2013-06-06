@@ -338,6 +338,9 @@ Game = {
 		},
 		skeleton: {
 			name: "Skeleton",
+			initialize: function(unit) {
+				unit.liftStatus('zombie');
+			},
 			cycle: function(unit, data) {
 				unit.takeDamage(0.025 * unit.maxHP);
 			},
@@ -939,7 +942,7 @@ Game = {
 				}
 				if (this.turnsTaken == 0) {
 					this.data.phase = 0;
-					this.useSkill('electrocute');
+					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =
@@ -1080,7 +1083,6 @@ Game = {
 				'robert2'
 			],
 			onStart: function() {
-				this.playerUnits[0].addStatus('reGen');
 				new Scenario()
 					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
@@ -1093,6 +1095,7 @@ Game = {
 					.overrideBGM('MyDreamsButADropOfFuel')
 					.adjustBGMVolume(1.0)
 					.run(true);
+				this.playerUnits[0].addStatus('reGen');
 			}
 		}
 	}

@@ -119,7 +119,7 @@ BattleUnit.prototype.addStatus = function(statusID)
 {
 	var effect = new StatusEffect(statusID, this);
 	this.statuses.push(effect);
-	this.actor.showMessage("+", 'afflict');
+	this.actor.showMessage(effect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
 };
 
@@ -323,7 +323,6 @@ BattleUnit.prototype.liftStatus = function(statusID)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
 		if (statusID == this.statuses[i].statusID) {
-			this.actor.showMessage("+", 'dispel');
 			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;

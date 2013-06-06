@@ -20,7 +20,7 @@ function StatusEffect(statusID, unit)
 	this.unit = unit;
 	
 	if ('initialize' in this.status) {
-		this.status.initialize.call(this.context);
+		this.status.initialize.call(this.context, this.unit);
 	}
 }
 

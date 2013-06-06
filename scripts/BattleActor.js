@@ -15,9 +15,8 @@
 function BattleActor(name, position, row, isEnemy)
 {
 	this.messageStyles = {
-		afflict: { color: CreateColor(255, 255, 0, 255), yStart: 4, yEnd: 16, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
+		afflict: { color: CreateColor(255, 255, 128, 255), yStart: 4, yEnd: 20, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
 		damage: { color: CreateColor(255, 255, 255, 255), yStart: 20, yEnd: 0, easing: 'easeOutBounce', duration: 0.5, delay: 0.25 },
-		dispel: { color: CreateColor(192, 192, 0, 255), yStart: 16, yEnd: 0, easing: 'easeInBack', duration: 0.5, delay: 0.5 },
 		evade: { color: CreateColor(192, 192, 160, 255), yStart: 20, yEnd: 10, easing: 'easeOutElastic', duration: 0.5, delay: 0.25 },
 		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 20, easing: 'easeOutQuad', duration: 1.0, delay: 0.25 }
 	};
