@@ -245,7 +245,7 @@ Battle.prototype.resume = function()
 Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 {
 	if ('announceAs' in action && action.announceAs != null) {
-		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 64, 192, 255) : CreateColor(192, 64, 64, 255);
+		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
 	if (action.effects === null) {

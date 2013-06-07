@@ -144,17 +144,17 @@ Game = {
 			return 1.0;
 		},
 		skillRank: function(skill) {
-			var multiplier = 0;
+			var rankTotal = 0;
 			for (var i = 0; i < skill.actions.length; ++i) {
-				multiplier += Math.pow(skill.actions[i].rank, 2);
+				rankTotal += skill.actions[i].rank;
 			}
-			return Math.round(Math.sqrt(multiplier) * 10) / 10;
+			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
 			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
 		},
 		timeUntilNextTurn: function(unit, rank) {
-			return Math.ceil(Math.pow(rank, 2) * 10000 / unit.stats.agi.getValue());
+			return Math.ceil(rank * 10000 / unit.stats.agi.getValue());
 		}
 	},
 	
@@ -317,8 +317,10 @@ Game = {
 				unit.liftStatus('offGuard');
 			},
 			damaged: function(unit, data) {
+				if (data.isPriority) {
+					return;
+				}
 				data.amount = Math.ceil(data.amount * 1.5);
-				unit.liftStatus('offGuard');
 			}
 		},
 		protect: {
@@ -959,7 +961,6 @@ Game = {
 							}
 							var forecast = this.turnForecast('chargeSlash');
 							if (forecast[0].unit === me) {
-								Abort("maggie");
 								this.useSkill('chargeSlash');
 							} else {
 								forecast = this.turnForecast('quickstrike');
@@ -1007,12 +1008,13 @@ Game = {
 								var chanceOfCombo = 0.25 + this.hasStatus('crackdown') * 0.25;
 								if (Math.random() < chanceOfCombo || this.data.isComboStarted) {
 									var forecast = this.turnForecast('chargeSlash');
-									if ((forecast[0] === me && !this.data.isComboStarted) || this.useChargeSlashNext) {
+									if ((forecast[0] === me && !this.data.isComboStarted) || this.data.doChargeSlashNext) {
 										this.data.isComboStarted = false;
 										if (forecast[0] === me) {
 											this.useSkill('chargeSlash');
 										} else {
-											this.useSkill('hellfire');
+											var moves = [ 'hellfire', 'windchill' ];
+											this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 										}
 									} else {
 										this.data.isComboStarted = true;
@@ -1039,15 +1041,19 @@ Game = {
 							if (this.data.phase > lastPhase) {
 								if (!this.hasStatus('drunk')) {
 									this.useSkill('desperationSlash');
-								} else {
-									// TODO: implement me!
 								}
+								this.useSkill('electrocute');
 							} else {
 								var forecast = this.turnForecast('omni');
-								if (forecast[0] === 'me' || forecast[1] === 'me') {
-									this.useSkill("omni");
+								if (forecast[0] === me || forecast[1] === me) {
+									this.useSkill('omni');
 								} else {
-									// TODO: implement me!
+									if (Math.random() < 0.5) {
+										this.useSkill('chargeSlash');
+									} else {
+										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+										this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+									}
 								}
 							}
 							break;

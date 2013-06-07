@@ -52,33 +52,36 @@ BattleScreen.prototype.dispose = function()
 //     bannerColor: The background color to use for the announcement banner.
 BattleScreen.prototype.announceAction = function(actionName, alignment, bannerColor)
 {
-	var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 255) : CreateColor(64, 64, 192, 255);
+	var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(64, 64, 192, 192);
 	var announcement = {
 		screen: this,
 		text: actionName,
 		alignment: alignment,
 		color: bannerColor,
 		font: GetSystemFont(),
-		endTime: 1000 + GetTime(),
+		fadeness: 1.0,
+		endTime: 2000 + GetTime(),
 		render: function() {
-			var width = this.font.getStringWidth(this.text) + 50;
+			var width = this.font.getStringWidth(this.text) + 20;
 			var height = this.font.getHeight() + 10;
 			var x = GetScreenWidth() / 2 - width / 2;
-			var y = 132; //GetScreenHeight() / 2 - height / 2;
-			var textX = x + width / 2 - this.font.getStringWidth(this.text) / 2;
+			var y = 132;
 			var textY = y + height / 2 - this.font.getHeight() / 2;
-			Rectangle(x, y, width, height, this.color);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 128));
-			this.font.setColorMask(CreateColor(0, 0, 0, 255));
-			this.font.drawText(textX + 1, textY + 1, this.text);
-			this.font.setColorMask(CreateColor(255, 255, 255, 255));
-			this.font.drawText(textX, textY, this.text);
+			var boxColor = CreateColor(this.color.red, this.color.green, this.color.blue, this.color.alpha * (1.0 - this.fadeness));
+			Rectangle(x, y, width, height, boxColor);
+			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64 * (1.0 - this.fadeness)));
+			DrawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 		},
 		update: function() {
 			return GetTime() < this.endTime;
 		}
 	};
-	Threads.waitFor(Threads.createEntityThread(announcement, 10));
+	Threads.createEntityThread(announcement, 10);
+	new Scenario()
+		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 0.0 })
+		.pause(0.75)
+		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 1.0 })
+		.run(true);
 };
 
 // .createActor() method

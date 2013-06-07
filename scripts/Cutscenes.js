@@ -79,7 +79,7 @@ Scenario.defineCommand('talk',
 		state.lineToReveal = 0;
 		state.textSurface = CreateSurface(textAreaWidth, state.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		state.transition = new Scenario()
-			.tween(state, 0.75 / state.textSpeed, 'easeOutBack', { boxVisibility: 1.0 })
+			.tween(state, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		state.mode = "fadein";
 		if (DBG_DISABLE_TEXTBOXES) state.mode = "finish";
@@ -139,7 +139,7 @@ Scenario.defineCommand('talk',
 				}
 				break;
 			case "write":
-				state.nameVisibility = Math.min(state.nameVisibility + (2.0 * state.textSpeed) / Engine.frameRate, 1.0);
+				state.nameVisibility = Math.min(state.nameVisibility + 4.0 / Engine.frameRate, 1.0);
 				if (state.nameVisibility >= 1.0) {
 					state.lineVisibility = Math.min(state.lineVisibility + (0.5 * state.textSpeed) / Engine.frameRate, 1.0);
 					var lineCount = Math.min(3,state.text[state.currentPage].length - state.topLine);
@@ -194,7 +194,7 @@ Scenario.defineCommand('talk',
 				state.textVisibility = Math.max(state.textVisibility - (4.0 * state.textSpeed) / Engine.frameRate, 0.0);
 				if (state.textVisibility <= 0.0) {
 					state.transition = new Scenario()
-						.tween(state, 0.75 / state.textSpeed, 'easeInBack', { boxVisibility: 0.0 })
+						.tween(state, 0.375, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					state.mode = "fadeout";
 				}
