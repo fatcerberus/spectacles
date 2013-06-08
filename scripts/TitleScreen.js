@@ -22,7 +22,7 @@ function TitleScreen(themeTrack)
 					this.choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
 					this.transition = new Scenario()
 						.fork()
-							.fadeBGM(0.0, 2.0)
+							.adjustBGMVolume(0.0, 2.0)
 						.end()
 						.tween(this, 2.0, 'linear', { fadeness: 1.0 })
 						.run();

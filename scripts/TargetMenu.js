@@ -158,7 +158,7 @@ TargetMenu.prototype.render = function()
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 		if (true || this.unitToShowInfo.isPartyMember()) {
 			var statuses = this.unitToShowInfo.statuses;
-			var nameBoxHeight = 20 + 12 * Math.max(statuses.length, 1);
+			var nameBoxHeight = 20 + 12 * statuses.length;
 			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
 			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 			this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
@@ -166,12 +166,8 @@ TargetMenu.prototype.render = function()
 			var statusColor = this.unitToShowInfo.statuses.length == 0 ?
 				CreateColor(96, 192, 96, textAlpha) :
 				CreateColor(192, 192, 96, textAlpha);
-			if (statuses.length > 0) {
-				for (var i = 0; i < statuses.length; ++i) {
-					DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, statuses[i].name, CreateColor(192, 192, 96, textAlpha), 1, 'center');
-				}
-			} else {
-				DrawTextEx(this.infoFont, 80, y + 16, "Normal", CreateColor(96, 192, 96, textAlpha), 1, 'center');
+			for (var i = 0; i < statuses.length; ++i) {
+				DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, statuses[i].name, CreateColor(192, 192, 96, textAlpha), 1, 'center');
 			}
 			this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);
 			DrawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');

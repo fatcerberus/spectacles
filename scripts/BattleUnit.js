@@ -43,6 +43,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.battle = battle;
 	this.counter = 0;
 	this.hp = 0;
+	this.lazarusFlag = false;
 	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
 	this.mpPool = null;
@@ -136,8 +137,10 @@ BattleUnit.prototype.beginCycle = function()
 BattleUnit.prototype.die = function()
 {
 	Console.writeLine(this.name + " afflicted with instant death");
+	this.lazarusFlag = false;
 	this.hp = 0;
 	this.battle.ui.hud.setHP(this.name, this.hp);
+	this.actor.animate('die');
 };
 
 // .evade() method
@@ -174,6 +177,13 @@ BattleUnit.prototype.getInfo = function()
 			this.character.baseStats[stat] :
 			this.enemyInfo.baseStats[stat];
 		info.stats[stat] = this.stats[stat].getValue();
+		for (var i = 0; i < this.statuses.length; ++i) {
+			var statusDef = this.statuses[i].status;
+			if (!('statModifiers' in statusDef) || !(stat in statusDef.statModifiers)) {
+				continue;
+			}
+			this.stats[stat] *= this.statuses[i].status.statModifiers[stat];
+		}
 	}
 	return info;
 }
@@ -305,7 +315,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 // Determines whether the unit is still able to battle.
 BattleUnit.prototype.isAlive = function()
 {
-	return this.hp > 0;
+	return this.hp > 0 || this.lazarusFlag;
 };
 
 // .isPartyMember() method
@@ -374,9 +384,14 @@ BattleUnit.prototype.takeDamage = function(amount, isPriority)
 		}
 		this.actor.showMessage(eventData.amount, 'damage');
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		if (this.hp <= 0) {
-			Console.writeLine(this.name + " died from lack of HP");
-			this.actor.animate('die');
+		if (this.hp <= 0 && !this.lazarusFlag) {
+			var eventData = { cancel: false };
+			this.raiseEvent('dying', eventData);
+			this.lazarusFlag = eventData.cancel;
+			if (!eventData.cancel) {
+				Console.writeLine(this.name + " died from lack of HP");
+				this.actor.animate('die');
+			}
 		}
 	} else if (eventData.amount < 0) {
 		this.heal(-eventData.amount, true);
@@ -425,7 +440,7 @@ BattleUnit.prototype.tick = function()
 		}
 		if (this.isAlive()) {
 			var eventData = { action: action };
-			this.raiseEvent('takeAction', eventData);
+			this.raiseEvent('acting', eventData);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
 				this.growAsAttacker(action, this.skillUsed);
@@ -434,6 +449,7 @@ BattleUnit.prototype.tick = function()
 				}
 			}
 			this.resetCounter(action.rank);
+			this.raiseEvent('endTurn');
 		}
 		this.battle.resume();
 		return true;

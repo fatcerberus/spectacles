@@ -278,7 +278,7 @@ Game = {
 				this.lastSkillType = null;
 				this.multiplier = 1.0;
 			},
-			takeAction: function(unit, data) {
+			acting: function(unit, data) {
 				for (var i = 0; i < data.action.effects.length; ++i) {
 					var effect = data.action.effects[i];
 					if (effect.type == 'damage') {
@@ -294,12 +294,28 @@ Game = {
 		},
 		disarray: {
 			name: "Disarray",
-			takeAction: function(unit, data) {
+			acting: function(unit, data) {
 				data.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
 		},
 		drunk: {
-			name: "Drunk"
+			name: "Drunk",
+			statModifiers: {
+				foc: 0.5
+			},
+			acting: function(unit, data) {
+				data.action.rank = Math.max(data.action.rank - 1, 1);
+			}
+		},
+		frostbite: {
+			name: "Frostbite",
+			initialize: function(unit, data) {
+				this.multiplier = 1.0;
+			},
+			endTurn: function(unit, data) {
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, true);
+				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
+			}
 		},
 		ignite: {
 			name: "Ignite",
@@ -307,8 +323,8 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			cycle: function(unit, data) {
-				unit.takeDamage(multiplier * 0.05 * unit.maxHP, true);
-				this.multiplier = Math.max(multiplier * 0.95, 0.125);
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, true);
+				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
 		},
 		offGuard: {
@@ -334,8 +350,8 @@ Game = {
 		},
 		reGen: {
 			name: "ReGen",
-			beginTurn: function(unit, data) {
-				unit.heal(unit.getLevel() / 2);
+			cycle: function(unit, data) {
+				unit.heal(unit.maxHP * 0.01);
 			}
 		},
 		skeleton: {
@@ -345,6 +361,12 @@ Game = {
 			},
 			cycle: function(unit, data) {
 				unit.takeDamage(0.025 * unit.maxHP);
+			},
+			damaged: function(unit, data) {
+				// TODO: implement me!
+			},
+			dying: function(unit, data) {
+				data.cancel = true;
 			},
 			healed: function(unit, data) {
 				if (data.isPriority) {
@@ -841,6 +863,33 @@ Game = {
 					]
 				}
 			]
+		},
+		windchill: {
+			name: "Windchill",
+			category: 'magic',
+			targetType: 'single',
+			baseMPCost: 50,
+			actions: [
+				{
+					announceAs: "Windchill",
+					rank: 3,
+					accuracyType: 'magic',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'magic',
+							power: 80,
+							element: 'fire'
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'frostbite'
+						}
+					]
+				}
+			]
 		}
 	},
 	
@@ -1051,7 +1100,7 @@ Game = {
 									if (Math.random() < 0.5) {
 										this.useSkill('chargeSlash');
 									} else {
-										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+										var moves = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
 										this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 									}
 								}
