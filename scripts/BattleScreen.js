@@ -10,22 +10,18 @@ RequireScript('BattleHUD.js');
 // Creates an object representing a battle screen.
 // Arguments:
 //     partyMaxMP:  The party's current MP capacity.
-//     accentColor: Optional. The accent color for the battle. (default: #008000).
-function BattleScreen(partyMaxMP, accentColor)
+function BattleScreen(partyMaxMP)
 {
-	accentColor = accentColor !== void null ? accentColor : CreateColor(255, 255, 255, 255);
-	
 	this.actorTypes = {
 		enemy: { isEnemy: true },
 		party: { isEnemy: false }
 	};
 	
-	this.accentColor = accentColor;
 	this.actors = {};
 	for (var type in this.actorTypes) {
 		this.actors[type] = [];
 	}
-	this.hud = new BattleHUD(partyMaxMP, accentColor);
+	this.hud = new BattleHUD(partyMaxMP);
 	
 	this.startRunning = function()
 	{

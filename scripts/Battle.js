@@ -26,7 +26,6 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	this.accentColor = 'accentColor' in Game.battles[battleID] ? Game.battles[battleID].accentColor : CreateColor(255, 255, 255, 255);
 	this.battleID = battleID;
 	this.conditions = [];
 	this.enemyUnits = [];
@@ -48,6 +47,13 @@ function Battle(session, battleID)
 		++this.timer;
 		var unitLists = [ this.enemyUnits, this.playerUnits ];
 		var actionTaken = false;
+		for (var iList = 0; iList < unitLists.length; ++iList) {
+			for (var i = 0; i < unitLists[iList].length; ++i) {
+				var unit = unitLists[iList][i];
+				unit.refreshInfo();
+				unit.raiseEvent('beginCycle');
+			}
+		}
 		while (!actionTaken) {
 			for (var iList = 0; iList < unitLists.length; ++iList) {
 				for (var i = 0; i < unitLists[iList].length; ++i) {
@@ -70,20 +76,6 @@ function Battle(session, battleID)
 		}
 	};
 }
-
-// .beginCycle() method
-// Specifies that a new battle cycle is starting. This generally happens whenever a battler
-// receives a turn.
-Battle.prototype.beginCycle = function()
-{
-	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	for (var iList = 0; iList < unitLists.length; ++iList) {
-		for (var i = 0; i < unitLists[iList].length; ++i) {
-			var unit = unitLists[iList][i];
-			unit.beginCycle();
-		}
-	}
-};
 
 // .getLevel() method
 // Gets the enemy battle level for the battle.
@@ -136,7 +128,7 @@ Battle.prototype.go = function()
 	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
-	this.ui = new BattleScreen(partyMaxMP, this.accentColor);
+	this.ui = new BattleScreen(partyMaxMP);
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
@@ -278,10 +270,10 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 		} else if (action.effects[i].targetHint == 'user') {
 			effectTargets = [ actingUnit ];
 		}
-		var effect = Game.effects[action.effects[i].type];
+		var effectHandler = Game.effects[action.effects[i].type];
 		Console.writeLine("Applying effect '" + action.effects[i].type + "'");
 		Console.append("retarget: " + action.effects[i].targetHint);
-		effect(actingUnit, effectTargets, action.effects[i]);
+		effectHandler(actingUnit, effectTargets, action.effects[i]);
 	}
 	return targetsHit;
 };

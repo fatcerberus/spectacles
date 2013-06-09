@@ -314,7 +314,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			endTurn: function(unit, data) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, true);
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
 				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
 			}
 		},
@@ -324,8 +324,8 @@ Game = {
 			initialize: function(unit, data) {
 				this.multiplier = 1.0;
 			},
-			cycle: function(unit, data) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, true);
+			beginCycle: function(unit, data) {
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
 				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
 		},
@@ -335,44 +335,36 @@ Game = {
 				unit.liftStatus('offGuard');
 			},
 			damaged: function(unit, data) {
-				if (data.isPriority) {
-					return;
+				if (data.tag != "status") {
+					data.amount = Math.ceil(data.amount * 1.5);
 				}
-				data.amount = Math.ceil(data.amount * 1.5);
 			}
 		},
 		protect: {
 			name: "Protect",
 			damaged: function(unit, data) {
-				if (data.isPriority) {
-					return;
+				if (data.tag != "status") {
+					data.amount = Math.floor(data.amount * 0.5);
 				}
-				data.amount = Math.floor(data.amount * 0.5);
 			}
 		},
 		reGen: {
 			name: "ReGen",
-			cycle: function(unit, data) {
+			beginCycle: function(unit, data) {
 				unit.heal(unit.maxHP * 0.01);
 			}
 		},
 		skeleton: {
 			name: "Skeleton",
 			overrules: [ 'zombie' ],
-			cycle: function(unit, data) {
-				unit.takeDamage(0.025 * unit.maxHP);
+			beginCycle: function(unit, data) {
+				unit.takeDamage(0.025 * unit.maxHP, "special");
 			},
 			damaged: function(unit, data) {
-				// TODO: implement me!
-			},
-			dying: function(unit, data) {
-				data.cancel = true;
+				data.suppressKO = data.tag != 'physical' && data.tag != 'sword';
 			},
 			healed: function(unit, data) {
-				if (data.isPriority) {
-					return;
-				}
-				data.amount = -data.amount;
+				data.amount = -Math.abs(data.amount);
 			},
 			useItem: function(unit, data) {
 				if (data.item.type == 'drink' && data.item.name != "Holy Water") {
@@ -383,10 +375,7 @@ Game = {
 		zombie: {
 			name: "Zombie",
 			healed: function(unit, data) {
-				if (data.isPriority) {
-					return;
-				}
-				data.amount = -data.amount;
+				data.amount = -Math.abs(data.amount);
 			}
 		}
 	},
@@ -403,14 +392,14 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				var targetInfo = targets[i].getInfo();
 				var damage = Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power) / reducer;
-				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1));
+				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), effect.damageType);
 			}
 		},
 		devour: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				if (!targets[i].isPartyMember) {
-					var munchGrowthInfo = targets[i].enemyInfo.munchGrowth;
-					actor.growSkill(munchGrowthInfo.technique, munchGrowthInfo.experience);
+					var munchData = targets[i].enemyInfo.munchData;
+					actor.growSkill(munchData.skill, munchData.experience);
 				}
 				targets[i].die();
 				new Scenario()
@@ -948,8 +937,8 @@ Game = {
 				agi: 70
 			},
 			immunities: [],
-			munchGrowth: {
-				technique: 'Dragonflame',
+			munchData: {
+				skill: 'Dragonflame',
 				experience: 25
 			},
 			strategize: function(me, nextUp) {
@@ -970,7 +959,7 @@ Game = {
 			},
 			immunities: [],
 			weapon: 'rsbSword',
-			munchGrowth: {
+			munchData: {
 				technique: 'omni',
 				experience: 1000
 			},
@@ -980,7 +969,7 @@ Game = {
 			strategize: function(me, nextUp) {
 				if ('maggie' in this.enemies && this.turnsTaken == 0) {
 					new Scenario()
-						.talk("Robert", 2.0, "Wait a minute... what in Hades' name is SHE doing here?")
+						.talk("Robert", 2.0, "Wait, hold on... what in Hades' name is SHE doing here?")
 						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
 						.call(function() { me.takeDamage(me.maxHP - 1); })
 						.playSound('Munch.wav')

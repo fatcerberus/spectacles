@@ -31,18 +31,13 @@ var BattleRow =
 //                  MP pool will be created for the unit.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
-	this.resetCounter = function(rank) {
-		this.counter = Game.math.timeUntilNextTurn(this.getInfo(), rank);
-		Console.writeLine(this.name + "'s CV reset to " + this.counter);
-		Console.append("rank: " + rank);
-	};
-	
 	this.actionQueue = [];
 	this.actor = null;
 	this.ai = null;
 	this.battle = battle;
 	this.counter = 0;
 	this.hp = 0;
+	this.infoCache = {};
 	this.lazarusFlag = false;
 	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
@@ -97,6 +92,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
 	}
+	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
 		: new MPPool(Math.floor(Math.max(Game.math.mp.capacity(this.getInfo()), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
@@ -106,7 +102,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	if (!this.isPartyMember()) {
 		this.actor.enter(true);
 	}
-	this.counter = Game.math.timeUntilNextTurn(this.getInfo(), Game.defaultMoveRank);
+	this.resetCV(Game.defaultMoveRank);
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -124,19 +120,11 @@ BattleUnit.prototype.addStatus = function(statusID)
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
 };
 
-// .beginCycle() method
-// Specifies that a cycle is beginning. The battle engine should call this for all battlers
-// whenever its own beginCycle() method is called.
-BattleUnit.prototype.beginCycle = function()
-{
-	this.raiseEvent('cycle');
-};
-
 // .die() method
 // Inflicts unconditional instant death on the battler.
 BattleUnit.prototype.die = function()
 {
-	Console.writeLine(this.name + " afflicted with instant death");
+	Console.writeLine(this.name + " afflicted with death");
 	this.lazarusFlag = false;
 	this.hp = 0;
 	this.battle.ui.hud.setHP(this.name, this.hp);
@@ -161,32 +149,12 @@ BattleUnit.prototype.getHealth = function()
 };
 
 // .getInfo() method
-// Compiles information about the battler.
+// Returns information about the battler.
 // Returns:
 //     An object containing information about the battler.
 BattleUnit.prototype.getInfo = function()
 {
-	var info = {};
-	info.name = this.name;
-	info.health = Math.ceil(100 * this.hp / this.maxHP);
-	info.level = this.getLevel();
-	info.weapon = this.weapon;
-	info.baseStats = {};
-	info.stats = {};
-	for (var stat in Game.namedStats) {
-		info.baseStats[stat] = this.isPartyMember() ?
-			this.character.baseStats[stat] :
-			this.enemyInfo.baseStats[stat];
-		info.stats[stat] = this.stats[stat].getValue();
-		for (var i = 0; i < this.statuses.length; ++i) {
-			var statusDef = this.statuses[i].status;
-			if (!('statModifiers' in statusDef) || !(stat in statusDef.statModifiers)) {
-				continue;
-			}
-			this.stats[stat] *= this.statuses[i].status.statModifiers[stat];
-		}
-	}
-	return info;
+	return this.infoCache;
 }
 
 // .getLevel() method
@@ -290,25 +258,27 @@ BattleUnit.prototype.hasStatus = function(statusID)
 // Restores a specified amount of the battler's HP.
 // Arguments:
 //     amount:     The number of hit points to restore.
-//     isPriority: Optional. If true, specifies priority healing. Statuses handling healing events can check
-//                 for the priority flag to determine how to act on the event. (default: false)
-BattleUnit.prototype.heal = function(amount, isPriority)
+//     tag:        Optional. An additional piece of data that statuses can check to determine how to
+//                 respond to the healing.
+//     isPriority: Optional. If true, specifies priority healing. Priority healing is unconditional;
+//                 statuses are not allowed to act on it and as such no event will be raised. (default: false)
+BattleUnit.prototype.heal = function(amount, tag, isPriority)
 {
+	tag = tag !== void null ? tag : null;
 	isPriority = isPriority !== void null ? isPriority : false;
 	
-	var eventData = {
-		amount: Math.floor(amount),
-		isPriority: isPriority
-	};
-	this.raiseEvent('healed', eventData);
-	eventData.amount = Math.floor(eventData.amount);
-	if (eventData.amount > 0) {
-		this.hp = Math.min(this.hp + eventData.amount, this.maxHP);
-		this.actor.showMessage(eventData.amount, 'heal');
+	if (!isPriority) {
+		var eventData = { amount: Math.floor(amount), tag: tag };
+		this.raiseEvent('healed', eventData);
+		amount = Math.floor(eventData.amount);
+	}
+	if (amount > 0) {
+		this.hp = Math.min(this.hp + amount, this.maxHP);
+		this.actor.showMessage(amount, 'heal');
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		Console.writeLine(this.name + " healed for " + eventData.amount + " HP");
-	} else if (eventData.amount < 0) {
-		this.takeDamage(-eventData.amount, true);
+		Console.writeLine(this.name + " healed for " + amount + " HP");
+	} else if (amount < 0) {
+		this.takeDamage(-amount, null, true);
 	}
 };
 
@@ -342,10 +312,9 @@ BattleUnit.prototype.liftStatus = function(statusID)
 };
 
 // .raiseEvent() method
-// Raises a battler event, allowing the unit's status effects to act on it.
+// Raises a status event, allowing the unit's status effects to act on it.
 // Arguments:
-//     eventID: The event ID. All active statuses containing a function by this name will receive the
-//              event.
+//     eventID: The event ID. Only statuses with a corresponding event handler will receive it.
 //     data:    An object containing data for the event.
 // Remarks:
 //     Status events can change the objects referenced in the data object, for example to change the effect of
@@ -360,42 +329,80 @@ BattleUnit.prototype.raiseEvent = function(eventID, data)
 	}
 };
 
+// .refreshInfo() method
+// Refreshes the battler info returned by getInfo().
+BattleUnit.prototype.refreshInfo = function()
+{
+	this.infoCache.name = this.name;
+	this.infoCache.health = Math.ceil(100 * this.hp / this.maxHP);
+	this.infoCache.level = this.getLevel();
+	this.infoCache.weapon = this.weapon;
+	this.infoCache.baseStats = {};
+	this.infoCache.stats = {};
+	for (var stat in Game.namedStats) {
+		this.infoCache.baseStats[stat] = this.isPartyMember() ?
+			this.character.baseStats[stat] :
+			this.enemyInfo.baseStats[stat];
+		this.infoCache.stats[stat] = this.stats[stat].getValue();
+		for (var i = 0; i < this.statuses.length; ++i) {
+			var statusDef = this.statuses[i].status;
+			if ('statModifiers' in statusDef && stat in statusDef.statModifiers) {
+				this.infoCache.stats[stat] *= this.statuses[i].status.statModifiers[stat];
+			}
+		}
+	}
+};
+
+// .resetCV() method
+// Resets the unit's counter value (CV) after an attack. The CV determines the number of
+// ticks that must elapse before the unit is able to act.
+// Arguments:
+//     rank: The rank of the action taken. The higher the rank, the longer the unit will have to
+//           wait for its next turn.
+BattleUnit.prototype.resetCV = function(rank) {
+	this.counter = Game.math.timeUntilNextTurn(this.getInfo(), rank);
+	Console.writeLine(this.name + "'s CV reset to " + this.counter);
+	Console.append("rank: " + rank);
+};
+
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
 //     amount:     The amount of damage to inflict.
-//     isPriority: Optional. If true, specifies priority damage. Statuses handling damage events can check
-//                 for the priority flag to determine how to act on the event. (default: false)
-BattleUnit.prototype.takeDamage = function(amount, isPriority)
+//     tag:        Optional. An additional piece of data that statuses can check to determine how to
+//                 respond to the damage.
+//     isPriority: Optional. If true, specifies priority damage. Priority damage is unconditional;
+//                 statuses are not allowed to act on it and as such no 'damaged' event will be raised.
+//                 (default: false)
+BattleUnit.prototype.takeDamage = function(amount, tag, isPriority)
 {
+	tag = tag !== void null ? tag : null;
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.floor(amount);
-	var eventData = {
-		amount: amount,
-		isPriority: isPriority
-	};
-	this.raiseEvent('damaged', eventData);
-	eventData.amount = Math.floor(eventData.amount);
-	if (eventData.amount > 0) {
-		this.hp = Math.max(this.hp - eventData.amount, 0);
-		Console.writeLine(this.name + " took " + eventData.amount + " HP damage - remaining: " + this.hp);
-		if (this.lifeBar != null) {
-			this.lifeBar.setReading(this.hp);
-		}
-		this.actor.showMessage(eventData.amount, 'damage');
+	var suppressKO = false;
+	if (!isPriority) {
+		var eventData = { amount: amount, tag: tag, suppressKO: false };
+		this.raiseEvent('damaged', eventData);
+		amount = Math.floor(eventData.amount);
+		suppressKO = eventData.suppressKO;
+	}
+	if (amount > 0) {
+		this.hp = Math.max(this.hp - amount, 0);
+		Console.writeLine(this.name + " took " + amount + " HP damage - remaining: " + this.hp);
+		this.actor.showMessage(amount, 'damage');
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		if (this.hp <= 0 && !this.lazarusFlag) {
-			var eventData = { cancel: false };
-			this.raiseEvent('dying', eventData);
-			this.lazarusFlag = eventData.cancel;
-			if (!eventData.cancel) {
-				Console.writeLine(this.name + " died from lack of HP");
-				this.actor.animate('die');
+		this.lazarusFlag = suppressKO;
+		if (this.hp <= 0) {
+			Console.writeLine(this.name + " killed due to lack of HP");
+			if (!suppressKO) {
+				this.die();
+			} else {
+				Console.writeLine(this.name + "'s death suppressed by status effect");
 			}
 		}
-	} else if (eventData.amount < 0) {
-		this.heal(-eventData.amount, true);
+	} else if (amount < 0) {
+		this.heal(-amount, null, true);
 	}
 };
 
@@ -409,7 +416,6 @@ BattleUnit.prototype.tick = function()
 	--this.counter;
 	if (this.counter == 0) {
 		this.battle.suspend();
-		this.battle.beginCycle();
 		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
 		this.raiseEvent('beginTurn');
@@ -449,7 +455,7 @@ BattleUnit.prototype.tick = function()
 					unitsHit[i].growAsDefender(action, this.skillUsed, this);
 				}
 			}
-			this.resetCounter(action.rank);
+			this.resetCV(action.rank);
 			this.raiseEvent('endTurn');
 		}
 		this.battle.resume();
