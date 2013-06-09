@@ -358,6 +358,10 @@ Game = {
 			name: "Skeleton",
 			overrules: [ 'zombie' ],
 			beginCycle: function(unit, data) {
+				if (data.battlerInfo.health <= 0) {
+					data.battlerInfo.stats.str /= 2;
+					data.battlerInfo.stats.mag /= 2;
+				}
 				unit.takeDamage(0.025 * unit.maxHP, "special");
 			},
 			damaged: function(unit, data) {
@@ -388,9 +392,9 @@ Game = {
 		},
 		damage: function(actor, targets, effect) {
 			var reducer = targets.length;
-			var userInfo = actor.getInfo();
+			var userInfo = actor.battlerInfo;
 			for (var i = 0; i < targets.length; ++i) {
-				var targetInfo = targets[i].getInfo();
+				var targetInfo = targets[i].battlerInfo;
 				var damage = Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power) / reducer;
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), effect.damageType);
 			}
@@ -870,7 +874,7 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 80,
-							element: 'fire'
+							element: 'ice'
 						},
 						{
 							targetHint: 'selected',
@@ -936,6 +940,9 @@ Game = {
 				mag: 30,
 				agi: 70
 			},
+			damageModifiers: {
+				ice: 2.0
+			},
 			immunities: [],
 			munchData: {
 				skill: 'Dragonflame',
@@ -983,7 +990,7 @@ Game = {
 				}
 				if (this.turnsTaken == 0) {
 					this.data.phase = 0;
-					this.useSkill('electrocute');
+					this.useSkill('omni');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =

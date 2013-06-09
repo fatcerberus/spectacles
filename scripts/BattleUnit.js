@@ -35,9 +35,9 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.actor = null;
 	this.ai = null;
 	this.battle = battle;
+	this.battlerInfo = {};
 	this.counter = 0;
 	this.hp = 0;
-	this.infoCache = {};
 	this.lazarusFlag = false;
 	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
@@ -94,7 +94,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	}
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
-		: new MPPool(Math.floor(Math.max(Game.math.mp.capacity(this.getInfo()), 0)));
+		: new MPPool(Math.floor(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -118,6 +118,19 @@ BattleUnit.prototype.addStatus = function(statusID)
 	this.statuses.push(effect);
 	this.actor.showMessage(effect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
+};
+
+// .beginCycle() method
+// Specifies that a battle cycle is beginning.
+BattleUnit.prototype.beginCycle = function()
+{
+	this.refreshInfo();
+	var eventData = { battlerInfo: this.battlerInfo };
+	this.raiseEvent('beginCycle', eventData);
+	for (var stat in Game.namedStats) {
+		this.battlerInfo.baseStats[stat] = Math.floor(this.battlerInfo.baseStats[stat]);
+		this.battlerInfo.stats[stat] = Math.floor(this.battlerInfo.stats[stat]);
+	}
 };
 
 // .die() method
@@ -147,15 +160,6 @@ BattleUnit.prototype.getHealth = function()
 {
 	return Math.ceil(100 * this.hp / this.maxHP);
 };
-
-// .getInfo() method
-// Returns information about the battler.
-// Returns:
-//     An object containing information about the battler.
-BattleUnit.prototype.getInfo = function()
-{
-	return this.infoCache;
-}
 
 // .getLevel() method
 // Calculates the unit's overall level.
@@ -312,7 +316,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 };
 
 // .raiseEvent() method
-// Raises a status event, allowing the unit's status effects to act on it.
+// Triggers a status event, allowing the unit's status effects to act on it.
 // Arguments:
 //     eventID: The event ID. Only statuses with a corresponding event handler will receive it.
 //     data:    An object containing data for the event.
@@ -330,24 +334,24 @@ BattleUnit.prototype.raiseEvent = function(eventID, data)
 };
 
 // .refreshInfo() method
-// Refreshes the battler info returned by getInfo().
+// Refreshes the battler info.
 BattleUnit.prototype.refreshInfo = function()
 {
-	this.infoCache.name = this.name;
-	this.infoCache.health = Math.ceil(100 * this.hp / this.maxHP);
-	this.infoCache.level = this.getLevel();
-	this.infoCache.weapon = this.weapon;
-	this.infoCache.baseStats = {};
-	this.infoCache.stats = {};
+	this.battlerInfo.name = this.name;
+	this.battlerInfo.health = Math.ceil(100 * this.hp / this.maxHP);
+	this.battlerInfo.level = this.getLevel();
+	this.battlerInfo.weapon = clone(this.weapon);
+	this.battlerInfo.baseStats = {};
+	this.battlerInfo.stats = {};
 	for (var stat in Game.namedStats) {
-		this.infoCache.baseStats[stat] = this.isPartyMember() ?
+		this.battlerInfo.baseStats[stat] = this.isPartyMember() ?
 			this.character.baseStats[stat] :
 			this.enemyInfo.baseStats[stat];
-		this.infoCache.stats[stat] = this.stats[stat].getValue();
+		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
 		for (var i = 0; i < this.statuses.length; ++i) {
 			var statusDef = this.statuses[i].status;
 			if ('statModifiers' in statusDef && stat in statusDef.statModifiers) {
-				this.infoCache.stats[stat] *= this.statuses[i].status.statModifiers[stat];
+				this.battlerInfo.stats[stat] *= this.statuses[i].status.statModifiers[stat];
 			}
 		}
 	}
@@ -360,7 +364,7 @@ BattleUnit.prototype.refreshInfo = function()
 //     rank: The rank of the action taken. The higher the rank, the longer the unit will have to
 //           wait for its next turn.
 BattleUnit.prototype.resetCV = function(rank) {
-	this.counter = Game.math.timeUntilNextTurn(this.getInfo(), rank);
+	this.counter = Game.math.timeUntilNextTurn(this.battlerInfo, rank);
 	Console.writeLine(this.name + "'s CV reset to " + this.counter);
 	Console.append("rank: " + rank);
 };
@@ -416,7 +420,6 @@ BattleUnit.prototype.tick = function()
 	--this.counter;
 	if (this.counter == 0) {
 		this.battle.suspend();
-		Console.writeLine("");
 		Console.writeLine(this.name + "'s turn is up");
 		this.raiseEvent('beginTurn');
 		if (!this.isAlive()) {
@@ -492,7 +495,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 		if (nextActions !== null && i <= nextActions.length) {
 			rank = nextActions[i - 1].rank;
 		}
-		timeLeft += Game.math.timeUntilNextTurn(this.getInfo(), rank);
+		timeLeft += Game.math.timeUntilNextTurn(this.battlerInfo, rank);
 	}
 	return timeLeft;
 }

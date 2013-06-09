@@ -44,14 +44,15 @@ function Battle(session, battleID)
 		if (this.suspendCount > 0 || this.result != null) {
 			return;
 		}
+		Console.writeLine("");
+		Console.writeLine("Beginning new CTB cycle");
 		++this.timer;
 		var unitLists = [ this.enemyUnits, this.playerUnits ];
 		var actionTaken = false;
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
 				var unit = unitLists[iList][i];
-				unit.refreshInfo();
-				unit.raiseEvent('beginCycle');
+				unit.beginCycle();
 			}
 		}
 		while (!actionTaken) {
@@ -247,7 +248,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 	if ('accuracyType' in action) {
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (var i = 0; i < targetUnits.length; ++i) {
-			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit.getInfo(), targetUnits[i].getInfo()) * accuracyRate, 0.0), 1.0);
+			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) * accuracyRate, 0.0), 1.0);
 			Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 			if (Math.random() < odds) {
 				Console.append("hit");

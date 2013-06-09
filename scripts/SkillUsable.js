@@ -59,7 +59,7 @@ SkillUsable.prototype.isUsable = function(user)
 //     user: The battle unit that will be using the skill.
 SkillUsable.prototype.mpCost = function(user)
 {
-	return Math.min(Math.max(Math.ceil(Game.math.mp.usage(this.skillInfo, this.getLevel(), user.getInfo())), 0), 999);
+	return Math.min(Math.max(Math.ceil(Game.math.mp.usage(this.skillInfo, this.getLevel(), user.battlerInfo)), 0), 999);
 };
 
 // .peekActions() method
@@ -86,9 +86,9 @@ SkillUsable.prototype.use = function(unit)
 	if (!this.isUsable(unit)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
 	}
-	Console.writeLine(unit.name + " is using skill " + this.name);
+	Console.writeLine(unit.name + " using skill " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {
-		Console.append("weaponLv: " + unit.weapon.level);
+		Console.append("weapLv: " + unit.weapon.level);
 	}
 	unit.mpPool.use(this.mpCost(unit));
 	var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
