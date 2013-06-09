@@ -32,7 +32,7 @@ var BattleRow =
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
 	this.resetCounter = function(rank) {
-		this.counter = Game.math.timeUntilNextTurn(this, rank);
+		this.counter = Game.math.timeUntilNextTurn(this.getInfo(), rank);
 		Console.writeLine(this.name + "'s CV reset to " + this.counter);
 		Console.append("rank: " + rank);
 	};
@@ -106,14 +106,14 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	if (!this.isPartyMember()) {
 		this.actor.enter(true);
 	}
-	this.counter = Game.math.timeUntilNextTurn(this, Game.defaultMoveRank);
+	this.counter = Game.math.timeUntilNextTurn(this.getInfo(), Game.defaultMoveRank);
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 }
 
 // .addStatus() method
-// Inflicts a status effect on the battler.
+// Inflicts a status condition on the battler.
 // Arguments:
 //     statusID: The ID of the status to inflict.
 BattleUnit.prototype.addStatus = function(statusID)
@@ -170,6 +170,7 @@ BattleUnit.prototype.getInfo = function()
 	info.name = this.name;
 	info.health = Math.ceil(100 * this.hp / this.maxHP);
 	info.level = this.getLevel();
+	info.weapon = this.weapon;
 	info.baseStats = {};
 	info.stats = {};
 	for (var stat in Game.namedStats) {
@@ -485,7 +486,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 		if (nextActions !== null && i <= nextActions.length) {
 			rank = nextActions[i - 1].rank;
 		}
-		timeLeft += Game.math.timeUntilNextTurn(this, rank);
+		timeLeft += Game.math.timeUntilNextTurn(this.getInfo(), rank);
 	}
 	return timeLeft;
 }

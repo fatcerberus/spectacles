@@ -7,7 +7,7 @@
 // Creates an object representing the manifestation of a status.
 // Arguments:
 //     statusID: The ID of the status, as defined in the gamedef.
-//     unit:     The battler to be subjected to the status effect.
+//     unit:     The battler to be subjected to the status's effects.
 function StatusEffect(statusID, unit)
 {
 	if (!(statusID in Game.statuses)) {
@@ -19,6 +19,11 @@ function StatusEffect(statusID, unit)
 	this.statusID = statusID;
 	this.unit = unit;
 	
+	if ('overrules' in this.status) {
+		for (var i = 0; i < this.status.overrules.length; ++i) {
+			this.unit.liftStatus(this.status.overrules[i]);
+		}
+	}
 	if ('initialize' in this.status) {
 		this.status.initialize.call(this.context, this.unit);
 	}

@@ -50,43 +50,43 @@ Game = {
 	
 	math: {
 		accuracy: {
-			bow: function(user, target) {
+			bow: function(userInfo, target) {
 				return 1.0;
 			},
-			devour: function(user, target) {
-				return (user.getHealth() - target.getHealth()) * user.stats.agi.getValue() / target.stats.agi.getValue() / 400;
+			devour: function(userInfo, targetInfo) {
+				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
 			},
-			instaKill: function(user, target) {
+			instaKill: function(userInfo, targetInfo) {
 				return 1.0;
 			},
-			pistol: function(user, target) {
+			pistol: function(userInfo, targetInfo) {
 				return 1.0;
 			},
-			magic: function(user, target) {
+			magic: function(userInfo, targetInfo) {
 				return 1.0;
 			},
-			physical: function(user, target) {
+			physical: function(userInfo, targetInfo) {
 				return 1.0;
 			},
-			sword: function(user, target) {
+			sword: function(userInfo, targetInfo) {
 				return 1.0;
 			}
 		},
 		damage: {
-			bow: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / Game.math.statValue(0, target.getLevel());
+			bow: function(userInfo, targetInfo, power) {
+				return power * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
 			},
-			magic: function(actor, target, power) {
-				return power * (actor.getLevel() + Math.floor((actor.stats.mag.getValue() * 2 + actor.stats.foc.getValue()) / 3)) / target.stats.foc.getValue();
+			magic: function(userInfo, targetInfo, power) {
+				return power * (userInfo.level + Math.floor((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)) / targetInfo.stats.foc;
 			},
-			pistol: function(actor, target, power) {
-				return power * actor.weapon.level * 2 / target.stats.def.getValue();
+			pistol: function(userInfo, targetInfo, power) {
+				return power * userInfo.weapon.level * 2 / targetInfo.stats.def;
 			},
-			physical: function(actor, target, power) {
-				return power * (actor.getLevel() + actor.stats.str.getValue()) / Math.floor((target.stats.def.getValue() * 2 + target.stats.str.getValue()) / 3);
+			physical: function(userInfo, targetInfo, power) {
+				return power * (userInfo.level + userInfo.stats.str) / Math.floor((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
-			sword: function(actor, target, power) {
-				return power * (actor.weapon.level + actor.stats.str.getValue()) / target.stats.def.getValue();
+			sword: function(userInfo, targetInfo, power) {
+				return power * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
 			}
 		},
 		experience: {
@@ -140,7 +140,7 @@ Game = {
 				return (level + userInfo.baseStats.mag) * baseCost / 100;
 			}
 		},
-		retreatChance: function(enemyUnits) {
+		retreatChance: function(enemyUnitsInfo) {
 			return 1.0;
 		},
 		skillRank: function(skill) {
@@ -153,8 +153,8 @@ Game = {
 		statValue: function(baseStat, level) {
 			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
 		},
-		timeUntilNextTurn: function(unit, rank) {
-			return Math.ceil(rank * 10000 / unit.stats.agi.getValue());
+		timeUntilNextTurn: function(unitInfo, rank) {
+			return Math.ceil(rank * 10000 / unitInfo.stats.agi);
 		}
 	},
 	
@@ -309,6 +309,7 @@ Game = {
 		},
 		frostbite: {
 			name: "Frostbite",
+			overrules: [ 'ignite' ],
 			initialize: function(unit, data) {
 				this.multiplier = 1.0;
 			},
@@ -319,6 +320,7 @@ Game = {
 		},
 		ignite: {
 			name: "Ignite",
+			overrules: [ 'frostbite' ],
 			initialize: function(unit, data) {
 				this.multiplier = 1.0;
 			},
@@ -328,7 +330,7 @@ Game = {
 			}
 		},
 		offGuard: {
-			name: "Off-Guard",
+			name: "Off Guard",
 			beginTurn: function(unit, data) {
 				unit.liftStatus('offGuard');
 			},
@@ -356,9 +358,7 @@ Game = {
 		},
 		skeleton: {
 			name: "Skeleton",
-			initialize: function(unit) {
-				unit.liftStatus('zombie');
-			},
+			overrules: [ 'zombie' ],
 			cycle: function(unit, data) {
 				unit.takeDamage(0.025 * unit.maxHP);
 			},
@@ -399,10 +399,11 @@ Game = {
 		},
 		damage: function(actor, targets, effect) {
 			var reducer = targets.length;
+			var userInfo = actor.getInfo();
 			for (var i = 0; i < targets.length; ++i) {
-				var target = targets[i];
-				var damage = Game.math.damage[effect.damageType](actor, target, effect.power) / reducer;
-				target.takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1));
+				var targetInfo = targets[i].getInfo();
+				var damage = Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power) / reducer;
+				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1));
 			}
 		},
 		devour: function(actor, targets, effect) {
@@ -993,7 +994,7 @@ Game = {
 				}
 				if (this.turnsTaken == 0) {
 					this.data.phase = 0;
-					this.useSkill('omni');
+					this.useSkill('electrocute');
 					this.useSkill('necromancy');
 				} else {
 					var phaseToEnter =
