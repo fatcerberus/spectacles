@@ -170,8 +170,8 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 kh2Bar.prototype.endCombo = function()
 {
 	--this.numCombosRunning;
-	if (numCombosRunning < 0) {
-		numCombosRunning = 0;
+	if (this.numCombosRunning < 0) {
+		this.numCombosRunning = 0;
 	}
 };
 
