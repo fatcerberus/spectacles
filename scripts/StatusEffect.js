@@ -15,33 +15,48 @@ function StatusEffect(statusID, unit)
 	}
 	this.context = {};
 	this.name = Game.statuses[statusID].name;
-	this.status = Game.statuses[statusID];
+	this.statusDef = Game.statuses[statusID];
 	this.statusID = statusID;
 	this.unit = unit;
 	
-	if ('overrules' in this.status) {
-		for (var i = 0; i < this.status.overrules.length; ++i) {
-			this.unit.liftStatus(this.status.overrules[i]);
+	if ('overrules' in this.statusDef) {
+		for (var i = 0; i < this.statusDef.overrules.length; ++i) {
+			this.unit.liftStatus(this.statusDef.overrules[i]);
 		}
 	}
-	if ('initialize' in this.status) {
-		this.status.initialize.call(this.context, this.unit);
+	if ('initialize' in this.statusDef) {
+		this.statusDef.initialize.call(this.context, this.unit);
 	}
 }
 
+// .beginCycle() method
+// Applies static effects defined for the status, such as stat modifiers. This should be
+// called at the beginning of every CTB cycle.
+StatusEffect.prototype.beginCycle = function()
+{
+	if ('statModifiers' in this.statusDef) {
+		for (var stat in this.statusDef.statModifiers) {
+			this.unit.battlerInfo.stats[stat] *= this.statusDef.statModifiers[stat];
+		}
+	}
+};
+
 // .invoke() method
-// Invokes the status, raising a specified status event.
+// Invokes the status effect, calling a specified event handler.
 // Arguments:
-//     eventID: The ID of the event to raise. If the correct event hook doesn't exist in
-//              the status definition, .invoke() does nothing.
-//     data:    An object containing data for the event. Note that the event handler is allowed
+//     eventID: The ID of the event to raise.
+//     data:    Optional. An object containing data for the event. Note that the event handler is allowed
 //              to add or change properties of this object.
+// Remarks:
+//     If the status definition doesn't contain a handler for the event, nothing happens.
 StatusEffect.prototype.invoke = function(eventID, data)
 {
-	if (!(eventID in this.status)) {
+	data = data !== void null ? data : null;
+	
+	if (!(eventID in this.statusDef)) {
 		return;
 	}
 	Console.writeLine("Invoking status " + this.name);
 	Console.append("event: " + eventID);
-	this.status[eventID].call(this.context, this.unit, data);
+	this.statusDef[eventID].call(this.context, this.unit, data);
 };

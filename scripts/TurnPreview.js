@@ -28,14 +28,14 @@ TurnPreview.prototype.render = function()
 	var y = -16 * this.fadeness;
 	Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
 	OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
-	DrawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
+	DrawTextEx(this.font, 24, y + 2, "next", CreateColor(128, 128, 128, alpha), 1, 'center');
 	if (this.nextUp !== null) {
 		for (var i = 0; i < Math.min(this.nextUp.length, 7); ++i) {
 			var actor = this.nextUp[i].actor;
 			var x = 48 + i * 16;
-			var pictureColor = actor.isEnemy ? CreateColor(96, 48, 48, alpha) : CreateColor(64, 64, 64, alpha);
+			var pictureColor = actor.isEnemy ? CreateColor(96, 48, 48, alpha) : CreateColor(64, 80, 96, alpha);
 			Rectangle(x, y, 16, 16, pictureColor);
-			OutlinedRectangle(x, y, 16, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
+			OutlinedRectangle(x, y, 16, 16, CreateColor(0, 0, 0, 64 * alpha / 255));
 			DrawTextEx(this.font, x + 4, y + 2, actor.name[0], CreateColor(255, 255, 255, 128 * alpha / 255), 1);
 		}
 	} else {

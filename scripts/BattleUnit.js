@@ -125,6 +125,9 @@ BattleUnit.prototype.addStatus = function(statusID)
 BattleUnit.prototype.beginCycle = function()
 {
 	this.refreshInfo();
+	for (var i = 0; i < this.statuses.length; ++i) {
+		this.statuses[i].beginCycle();
+	}
 	var eventData = { battlerInfo: this.battlerInfo };
 	this.raiseEvent('beginCycle', eventData);
 	for (var stat in Game.namedStats) {
@@ -348,12 +351,6 @@ BattleUnit.prototype.refreshInfo = function()
 			this.character.baseStats[stat] :
 			this.enemyInfo.baseStats[stat];
 		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
-		for (var i = 0; i < this.statuses.length; ++i) {
-			var statusDef = this.statuses[i].status;
-			if ('statModifiers' in statusDef && stat in statusDef.statModifiers) {
-				this.battlerInfo.stats[stat] *= this.statuses[i].status.statModifiers[stat];
-			}
-		}
 	}
 };
 
