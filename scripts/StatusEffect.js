@@ -4,7 +4,7 @@
 ***/
 
 // StatusEffect() constructor
-// Creates an object representing the manifestation of a status.
+// Creates an object representing a manifestation of a status condition.
 // Arguments:
 //     statusID: The ID of the status, as defined in the gamedef.
 //     unit:     The battler to be subjected to the status's effects.
@@ -18,7 +18,6 @@ function StatusEffect(statusID, unit)
 	this.statusDef = Game.statuses[statusID];
 	this.statusID = statusID;
 	this.unit = unit;
-	
 	if ('overrules' in this.statusDef) {
 		for (var i = 0; i < this.statusDef.overrules.length; ++i) {
 			this.unit.liftStatus(this.statusDef.overrules[i]);
@@ -30,13 +29,17 @@ function StatusEffect(statusID, unit)
 }
 
 // .beginCycle() method
-// Applies static effects defined for the status, such as stat modifiers. This should be
-// called at the beginning of every CTB cycle.
+// Applies static effects defined for the status, such as stat modifiers. This method should
+// be called at the beginning of every CTB cycle.
 StatusEffect.prototype.beginCycle = function()
 {
 	if ('statModifiers' in this.statusDef) {
-		for (var stat in this.statusDef.statModifiers) {
-			this.unit.battlerInfo.stats[stat] *= this.statusDef.statModifiers[stat];
+		for (var stat in Game.namedStats) {
+			if (!(stat in this.statusDef.statModifiers)) {
+				continue;
+			}
+			var multiplier = this.statusDef.statModifiers[stat];
+			this.unit.battlerInfo.stats[stat] = Math.floor(multiplier * this.unit.battlerInfo.stats[stat]);
 		}
 	}
 };

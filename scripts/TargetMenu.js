@@ -184,7 +184,7 @@ TargetMenu.prototype.render = function()
 }
 
 // .update() method
-// Updates the state of the menu for the next frame.
+// Updates the menu for the next frame.
 TargetMenu.prototype.update = function()
 {
 	return !this.isChoiceMade;

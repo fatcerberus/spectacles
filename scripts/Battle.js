@@ -38,44 +38,6 @@ function Battle(session, battleID)
 	this.timer = 0;
 	Console.writeLine("Battle session prepared");
 	Console.append("battle def: " + this.battleID);
-	
-	this.tick = function()
-	{
-		if (this.suspendCount > 0 || this.result != null) {
-			return;
-		}
-		Console.writeLine("");
-		Console.writeLine("Beginning new CTB cycle");
-		++this.timer;
-		var unitLists = [ this.enemyUnits, this.playerUnits ];
-		var actionTaken = false;
-		for (var iList = 0; iList < unitLists.length; ++iList) {
-			for (var i = 0; i < unitLists[iList].length; ++i) {
-				var unit = unitLists[iList][i];
-				unit.beginCycle();
-			}
-		}
-		while (!actionTaken) {
-			for (var iList = 0; iList < unitLists.length; ++iList) {
-				for (var i = 0; i < unitLists[iList].length; ++i) {
-					var unit = unitLists[iList][i];
-					actionTaken = unit.tick() || actionTaken;
-					if (!unit.isAlive()) {
-						unitLists[iList].splice(i, 1);
-						--i; continue;
-					}
-				}
-			}
-			if (this.playerUnits.length == 0) {
-				this.result = BattleResult.enemyWon;
-				return;
-			}
-			if (this.enemyUnits.length == 0) {
-				this.result = BattleResult.partyWon;
-				return;
-			}
-		}
-	};
 }
 
 // .getLevel() method
@@ -295,6 +257,46 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 Battle.prototype.suspend = function()
 {
 	++this.suspendCount;
+};
+
+// .tick() method
+// Executes a single CTB cycle.
+Battle.prototype.tick = function()
+{
+	if (this.suspendCount > 0 || this.result != null) {
+		return;
+	}
+	Console.writeLine("");
+	Console.writeLine("Beginning new CTB cycle");
+	++this.timer;
+	var unitLists = [ this.enemyUnits, this.playerUnits ];
+	var actionTaken = false;
+	for (var iList = 0; iList < unitLists.length; ++iList) {
+		for (var i = 0; i < unitLists[iList].length; ++i) {
+			var unit = unitLists[iList][i];
+			unit.beginCycle();
+		}
+	}
+	while (!actionTaken) {
+		for (var iList = 0; iList < unitLists.length; ++iList) {
+			for (var i = 0; i < unitLists[iList].length; ++i) {
+				var unit = unitLists[iList][i];
+				actionTaken = unit.tick() || actionTaken;
+				if (!unit.isAlive()) {
+					unitLists[iList].splice(i, 1);
+					--i; continue;
+				}
+			}
+		}
+		if (this.playerUnits.length == 0) {
+			this.result = BattleResult.enemyWon;
+			return;
+		}
+		if (this.enemyUnits.length == 0) {
+			this.result = BattleResult.partyWon;
+			return;
+		}
+	}
 };
 
 // .update() method

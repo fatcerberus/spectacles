@@ -28,7 +28,7 @@ var BattleRow =
 //     position:    The position of the unit in the party order.
 //     startingRow: The row the unit starts in.
 //     mpPool:      Optional. The MP pool the battler should draw from. If not provided, a designated
-//                  MP pool will be created for the unit.
+//                  MP pool will be created for the battler.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
 	this.actionQueue = [];
@@ -102,7 +102,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	if (!this.isPartyMember()) {
 		this.actor.enter(true);
 	}
-	this.resetCV(Game.defaultMoveRank);
+	this.resetCounter(Game.defaultMoveRank);
 	var unitType = this.partyMember != null ? "party" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
@@ -121,7 +121,7 @@ BattleUnit.prototype.addStatus = function(statusID)
 };
 
 // .beginCycle() method
-// Specifies that a battle cycle is beginning.
+// Prepares the unit for a new CTB cycle.
 BattleUnit.prototype.beginCycle = function()
 {
 	this.refreshInfo();
@@ -354,13 +354,14 @@ BattleUnit.prototype.refreshInfo = function()
 	}
 };
 
-// .resetCV() method
+// .resetCounter() method
 // Resets the unit's counter value (CV) after an attack. The CV determines the number of
 // ticks that must elapse before the unit is able to act.
 // Arguments:
 //     rank: The rank of the action taken. The higher the rank, the longer the unit will have to
 //           wait for its next turn.
-BattleUnit.prototype.resetCV = function(rank) {
+BattleUnit.prototype.resetCounter = function(rank)
+{
 	this.counter = Game.math.timeUntilNextTurn(this.battlerInfo, rank);
 	Console.writeLine(this.name + "'s CV reset to " + this.counter);
 	Console.append("rank: " + rank);
@@ -455,7 +456,7 @@ BattleUnit.prototype.tick = function()
 					unitsHit[i].growAsDefender(action, this.skillUsed, this);
 				}
 			}
-			this.resetCV(action.rank);
+			this.resetCounter(action.rank);
 			this.raiseEvent('endTurn');
 		}
 		this.battle.resume();
