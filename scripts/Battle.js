@@ -50,7 +50,7 @@ Battle.prototype.addCondition = function(conditionID)
 	if (this.hasCondition(conditionID)) {
 		return;
 	}
-	var effect = new ConditionContext(conditionID);
+	var effect = new ConditionContext(conditionID, this);
 	this.conditions.push(effect);
 	Console.writeLine("Installed battle condition " + effect.name);
 };
@@ -265,8 +265,9 @@ Battle.prototype.resume = function()
 //     An array of references to all units affected by the action.
 Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 {
-	var eventData = { action: action };
+	var eventData = { action: action, targets: targetUnits };
 	this.raiseEvent('actionTaken', eventData);
+	targetUnits = eventData.targets;
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);

@@ -272,6 +272,19 @@ Game = {
 	},
 	
 	conditions: {
+		blackout: {
+			name: "Blackout",
+			actionTaken: function(battle, eventData) {
+				if (eventData.targets.length == 1 && Math.random() < 0.75) {
+					var target = eventData.targets[0];
+					var newTargets = Math.random() < 0.5
+						? battle.alliesOf(target)
+						: battle.enemiesOf(target);
+					var targetID = Math.min(Math.floor(Math.random() * newTargets.length), newTargets.length - 1);
+					eventData.targets = [ newTargets[targetID] ];
+				}
+			}
+		},
 		generalDisarray: {
 			name: "G.Disarray",
 			actionTaken: function(battle, eventData) {

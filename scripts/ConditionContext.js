@@ -13,11 +13,11 @@ function ConditionContext(conditionID, battle)
 	if (!(conditionID in Game.conditions)) {
 		Abort("ConditionContext(): The battle condition definition '" + conditionID + "' doesn't exist!");
 	}
+	this.battle = battle;
 	this.context = {};
 	this.name = Game.conditions[conditionID].name;
 	this.conditionDef = Game.conditions[conditionID];
 	this.conditionID = conditionID;
-	this.battle = battle;
 	if ('overrules' in this.conditionDef) {
 		for (var i = 0; i < this.conditionDef.overrules.length; ++i) {
 			this.battle.liftCondition(this.conditionDef.overrules[i]);
