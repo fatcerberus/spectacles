@@ -5,6 +5,7 @@
 
 RequireScript('BattleScreen.js');
 RequireScript('BattleUnit.js');
+RequireScript('ConditionContext.js');
 RequireScript('MPPool.js');
 
 // BattleResult enumeration
@@ -47,8 +48,19 @@ Battle.prototype.getLevel = function()
 	return this.parameters.battleLevel;
 };
 
+// .addCondition() method
+// Instates a new battle condition.
+// Argument:
+//     conditionID: The ID of the battle condition, as defined in the gamedef.
+Battle.prototype.addCondition = function(conditionID)
+{
+	var effect = new ConditionContext(conditionID);
+	this.conditions.push(effect);
+	Console.writeLine("Installed battle condition " + effect.name);
+};
+
 // .alliesOf() method
-// Compiles a list of all the battlers allied with this battler, including itself.
+// Compiles a list of all the battlers allied with this battler (including itself).
 // Arguments:
 //     unit: The battler for which to find allies.
 Battle.prototype.alliesOf = function(unit)
@@ -131,10 +143,26 @@ Battle.prototype.go = function()
 	Threads.synchronize(walkInThreads);
 	this.ui.showTitle();
 	this.resume();
+	this.addCondition('generalDisarray');
 	Threads.waitFor(battleThread);
 	this.ui.dispose();
 	BGM.reset();
 	return this.result;
+};
+
+// .liftCondition() method
+// Removes a battle condition from play.
+// Arguments:
+//     conditionID: The ID of the battle condition, as defined in the gamedef.
+Battle.prototype.liftCondition = function()
+{
+	for (var i = 0; i < this.condition.length; ++i) {
+		if (conditionID == this.conditions[i].conditionID) {
+			Console.writeLine("Battle condition " + this.conditions[i].name + " lifted");
+			this.conditions.splice(i, 1);
+			--i; continue;
+		}
+	}
 };
 
 // .predictTurns() method
@@ -179,6 +207,24 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	return forecast;
 };
 
+// .raiseEvent() method
+// Triggers a battle event, passing it on to all active battle conditions for processing.
+// Arguments:
+//     eventID: The event ID. Only battle conditions with a corresponding event handler will receive it.
+//     data:    An object containing data for the event.
+// Remarks:
+//     Event handlers can change the objects referenced in the data object, for example to change the effects of
+//     an action performed by a battler. If you pass in any objects from the gamedef, they should be cloned first to prevent
+//     the event from modifying the original definition.
+Battle.prototype.raiseEvent = function(eventID, data)
+{
+	data = data !== void null ? data : null;
+	
+	for (var i = 0; i < this.conditions.length; ++i) {
+		this.conditions[i].invoke(eventID, data);
+	}
+};
+
 // .resume() method
 // Resumes a previously-suspended battle.
 Battle.prototype.resume = function()
@@ -199,6 +245,8 @@ Battle.prototype.resume = function()
 //     An array of references to all units affected by the action.
 Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 {
+	var eventData = { action: action };
+	this.raiseEvent('actionTaken', eventData);
 	if ('announceAs' in action && action.announceAs != null) {
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
@@ -276,6 +324,9 @@ Battle.prototype.tick = function()
 			var unit = unitLists[iList][i];
 			unit.beginCycle();
 		}
+	}
+	for (var i = 0; i < this.conditions.length; ++i) {
+		this.conditions[i].beginCycle();
 	}
 	while (!actionTaken) {
 		for (var iList = 0; iList < unitLists.length; ++iList) {

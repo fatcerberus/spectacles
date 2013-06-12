@@ -3,15 +3,15 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-// StatusEffect() constructor
-// Creates an object representing a manifestation of a status condition.
+// StatusContext() constructor
+// Creates an object representing a manifestation of a status.
 // Arguments:
 //     statusID: The ID of the status, as defined in the gamedef.
 //     unit:     The battler to be subjected to the status's effects.
-function StatusEffect(statusID, unit)
+function StatusContext(statusID, unit)
 {
 	if (!(statusID in Game.statuses)) {
-		Abort("StatusEffect(): The status definition '" + statusID + "' doesn't exist!");
+		Abort("StatusContext(): The status definition '" + statusID + "' doesn't exist!");
 	}
 	this.context = {};
 	this.name = Game.statuses[statusID].name;
@@ -31,7 +31,7 @@ function StatusEffect(statusID, unit)
 // .beginCycle() method
 // Applies static effects defined for the status, such as stat modifiers. This method should
 // be called at the beginning of every CTB cycle.
-StatusEffect.prototype.beginCycle = function()
+StatusContext.prototype.beginCycle = function()
 {
 	if ('statModifiers' in this.statusDef) {
 		for (var stat in Game.namedStats) {
@@ -52,14 +52,14 @@ StatusEffect.prototype.beginCycle = function()
 //              to add or change properties of this object.
 // Remarks:
 //     If the status definition doesn't contain a handler for the event, nothing happens.
-StatusEffect.prototype.invoke = function(eventID, data)
+StatusContext.prototype.invoke = function(eventID, data)
 {
 	data = data !== void null ? data : null;
 	
 	if (!(eventID in this.statusDef)) {
 		return;
 	}
-	Console.writeLine("Invoking status " + this.name);
+	Console.writeLine("Invoking " + this.unit.name + "->" + this.name);
 	Console.append("event: " + eventID);
 	this.statusDef[eventID].call(this.context, this.unit, data);
 };

@@ -9,7 +9,7 @@ RequireScript('MoveMenu.js');
 RequireScript('MPPool.js');
 RequireScript('SkillUsable.js');
 RequireScript('Stat.js');
-RequireScript('StatusEffect.js');
+RequireScript('StatusContext.js');
 
 // BattleRow enumeration
 // Specifies a BattleUnit's relative distance from its opponents.
@@ -109,12 +109,12 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 }
 
 // .addStatus() method
-// Inflicts a status condition on the battler.
+// Afflicts the unit with a status effect.
 // Arguments:
 //     statusID: The ID of the status to inflict.
 BattleUnit.prototype.addStatus = function(statusID)
 {
-	var effect = new StatusEffect(statusID, this);
+	var effect = new StatusContext(statusID, this);
 	this.statuses.push(effect);
 	this.actor.showMessage(effect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
@@ -324,9 +324,9 @@ BattleUnit.prototype.liftStatus = function(statusID)
 //     eventID: The event ID. Only statuses with a corresponding event handler will receive it.
 //     data:    An object containing data for the event.
 // Remarks:
-//     Status events can change the objects referenced in the data object, for example to change the effect of
-//     using a skill or item. If you pass in any objects from the gamedef, they should be cloned first to prevent
-//     the event from modifying the original definition.
+//     Event handlers can change the objects referenced in the data object, for example to change the effects of
+//     an action taken by the battler. If you pass in any objects from the gamedef, they should be cloned first to prevent
+//     the event from inadvertantly modifying the original definition.
 BattleUnit.prototype.raiseEvent = function(eventID, data)
 {
 	data = data !== void null ? data : null;
