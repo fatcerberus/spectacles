@@ -114,6 +114,9 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 //     statusID: The ID of the status to inflict.
 BattleUnit.prototype.addStatus = function(statusID)
 {
+	if (this.hasStatus(statusID)) {
+		return;
+	}
 	var effect = new StatusContext(statusID, this);
 	this.statuses.push(effect);
 	this.actor.showMessage(effect.name, 'afflict');

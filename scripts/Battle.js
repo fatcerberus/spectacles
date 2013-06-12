@@ -41,28 +41,26 @@ function Battle(session, battleID)
 	Console.append("battle def: " + this.battleID);
 }
 
-// .getLevel() method
-// Gets the enemy battle level for the battle.
-Battle.prototype.getLevel = function()
-{
-	return this.parameters.battleLevel;
-};
-
 // .addCondition() method
 // Instates a new battle condition.
 // Argument:
 //     conditionID: The ID of the battle condition, as defined in the gamedef.
 Battle.prototype.addCondition = function(conditionID)
 {
+	if (this.hasCondition(conditionID)) {
+		return;
+	}
 	var effect = new ConditionContext(conditionID);
 	this.conditions.push(effect);
 	Console.writeLine("Installed battle condition " + effect.name);
 };
 
 // .alliesOf() method
-// Compiles a list of all the battlers allied with this battler (including itself).
+// Compiles a list of all active units allied with a specified unit (including itself).
 // Arguments:
-//     unit: The battler for which to find allies.
+//     unit: The unit for which to find allies.
+// Returns:
+//     An array containing references to all units allied with the one specified.
 Battle.prototype.alliesOf = function(unit)
 {
 	if (unit.isPartyMember()) {
@@ -73,9 +71,11 @@ Battle.prototype.alliesOf = function(unit)
 };
 
 // .enemiesOf() method
-// Gets a list of all BattleUnits opposing a specified unit.
+// Compiles a list of all active units opposing a specified unit.
 // Arguments:
-//     unit: The BattleUnit for which to find enemies.
+//     unit: The unit for which to find enemies.
+// Returns:
+//     An array containing references to all units opposing the one specified.
 Battle.prototype.enemiesOf = function(unit)
 {
 	if (unit.isPartyMember()) {
@@ -83,6 +83,13 @@ Battle.prototype.enemiesOf = function(unit)
 	} else {
 		return this.playerUnits;
 	}
+};
+
+// .getLevel() method
+// Gets the enemy battle level for the battle.
+Battle.prototype.getLevel = function()
+{
+	return this.parameters.battleLevel;
 };
 
 // .go() method
@@ -143,11 +150,24 @@ Battle.prototype.go = function()
 	Threads.synchronize(walkInThreads);
 	this.ui.showTitle();
 	this.resume();
-	this.addCondition('generalDisarray');
 	Threads.waitFor(battleThread);
 	this.ui.dispose();
 	BGM.reset();
 	return this.result;
+};
+
+// .hasCondition() method
+// Determines whether a specific battle condition is in play.
+// Arguments:
+//     conditionID: The ID of the battle condition to test for, as defined in the gamedef.
+Battle.prototype.hasCondition = function(conditionID)
+{
+	for (var i = 0; i < this.conditions.length; ++i) {
+		if (conditionID == this.conditions[i].conditionID) {
+			return true;
+		}
+	}
+	return false;
 };
 
 // .liftCondition() method
