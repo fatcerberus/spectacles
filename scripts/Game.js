@@ -268,6 +268,21 @@ Game = {
 					}
 				]
 			}
+		},
+		vaccine: {
+			name: "Vaccine",
+			type: 'drink',
+			uses: 1,
+			action: {
+				announceAs: "Vaccine",
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'immune'
+					}
+				]
+			}
 		}
 	},
 	
@@ -325,8 +340,14 @@ Game = {
 			statModifiers: {
 				foc: 0.5
 			},
+			initialize: function(unit) {
+				this.turnsTaken = 0;
+			},
 			acting: function(unit, data) {
-				data.action.rank = Math.max(data.action.rank - 1, 1);
+				data.action.rank = Math.max(data.action.rank + 1, 1);
+			},
+			endTurn: function(unit, eventData) {
+				++this.turnsTaken;
 			}
 		},
 		frostbite: {
@@ -357,7 +378,7 @@ Game = {
 				this.turnsTaken = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
 				for (var i = 0; i < exemptions.length; ++i) {
 					if (eventData.statusID == exemptions[i]) {
 						return;
@@ -367,7 +388,7 @@ Game = {
 			},
 			endTurn: function(unit, eventData) {
 				++this.turnsTaken;
-				if (this.turnsTaken >= 3) {
+				if (this.turnsTaken > 3) {
 					unit.liftStatus('immune');
 				}
 			}
