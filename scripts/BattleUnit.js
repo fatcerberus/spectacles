@@ -117,7 +117,12 @@ BattleUnit.prototype.addStatus = function(statusID)
 	if (this.hasStatus(statusID)) {
 		return;
 	}
-	var effect = new StatusContext(statusID, this);
+	var eventData = { statusID: statusID };
+	this.raiseEvent('afflicted', eventData);
+	if (eventData.statusID === null) {
+		return;
+	}
+	var effect = new StatusContext(eventData.statusID, this);
 	this.statuses.push(effect);
 	this.actor.showMessage(effect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);

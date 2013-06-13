@@ -351,6 +351,27 @@ Game = {
 				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
 		},
+		immune: {
+			name: "Immune",
+			initialize: function(unit) {
+				this.turnsTaken = 0;
+			},
+			afflicted: function(unit, eventData) {
+				var exemptions = [ 'offGuard', 'protect', 'reGen' ];
+				for (var i = 0; i < exemptions.length; ++i) {
+					if (eventData.statusID == exemptions[i]) {
+						return;
+					}
+				}
+				eventData.statusID = null;
+			},
+			endTurn: function(unit, eventData) {
+				++this.turnsTaken;
+				if (this.turnsTaken >= 3) {
+					unit.liftStatus('immune');
+				}
+			}
+		},
 		offGuard: {
 			name: "Off Guard",
 			beginTurn: function(unit, data) {
