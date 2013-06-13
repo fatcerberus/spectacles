@@ -117,6 +117,11 @@ BattleUnit.prototype.addStatus = function(statusID)
 	if (this.hasStatus(statusID)) {
 		return;
 	}
+	for (var i = 0; i < this.statuses.length; ++i) {
+		if (this.statuses[i].overrules(statusID)) {
+			return;
+		}
+	}
 	var eventData = { statusID: statusID };
 	this.raiseEvent('afflicted', eventData);
 	if (eventData.statusID === null) {
