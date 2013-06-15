@@ -137,7 +137,7 @@ Game = {
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-				return (level + userInfo.baseStats.mag) * baseCost / 100;
+				return baseCost * (level + userInfo.baseStats.mag) / 50;
 			}
 		},
 		retreatChance: function(enemyUnitsInfo) {
@@ -583,7 +583,7 @@ Game = {
 			name: "Electrocute",
 			category: 'magic',
 			targetType: 'single',
-			baseMPCost: 80,
+			baseMPCost: 50,
 			actions: [
 				{
 					announceAs: "Electrocute",
