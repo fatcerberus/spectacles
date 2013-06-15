@@ -21,6 +21,7 @@ function BattleActor(name, position, row, isEnemy)
 		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 20, easing: 'easeOutQuad', duration: 1.0, delay: 0.25 }
 	};
 	
+	this.damages = [];
 	this.hasEntered = false;
 	this.isEnemy = isEnemy;
 	this.isVisible = true;
@@ -96,12 +97,36 @@ BattleActor.prototype.render = function()
 	OutlinedRectangle(this.x, this.y, 16, 32, CreateColor(0, 0, 0, 255));
 	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 	drawText(this.messageFont, this.x + 5, this.y + 17, this.name[0], 0, CreateColor(128, 128, 128, 255));
+	for (var i = 0; i < this.damages.length; ++i) {
+		var y = this.y + this.damages[i].y;
+		DrawTextEx(this.messageFont, this.x + 8, y, this.damages[i].amount, CreateColor(255, 255, 255, 255), 1, 'center');
+	}
 	for (var i = 0; i < this.messages.length; ++i) {
 		var message = this.messages[i];
 		var x = this.x + 8 - this.messageFont.getStringWidth(message.text) / 2;
 		var y = this.y + 20 - message.height;
 		drawText(this.messageFont, x, y, message.text, 1, message.color);
 	}
+};
+
+// .showDamage() method
+// Displays an amount of damage taken.
+// Arguments:
+//     amount: The number of hit points lost.
+BattleActor.prototype.showDamage = function(amount)
+{
+	var finalY = 20 - 11 * this.damages.length;
+	var data = {
+		amount: amount,
+		finalY: finalY,
+		y: finalY - 20,
+		yOld: finalY - 20,
+		endTime: GetTime() + 250
+	}
+	data.scene = new Scenario()
+		.tween(data, 0.5, 'easeOutBounce', { y: finalY })
+		.run();
+	this.damages.push(data);
 };
 
 // .showMessage() method
@@ -133,6 +158,26 @@ BattleActor.prototype.showMessage = function(text, styleName)
 // Updates the entity's state for the next frame.
 BattleActor.prototype.update = function()
 {
+	for (var i = 0; i < this.damages.length; ++i) {
+		var data = this.damages[i];
+		var finalY = 20 - 11 * i;
+		if (data.finalY != finalY) {
+			data.scene.stop();
+			data.finalY = finalY;
+			data.scene = new Scenario()
+				.tween(data, 0.5, 'easeOutBounce', { y: finalY })
+				.run();
+			data.endTime = GetTime() + 250;
+		}
+		if (data.y != data.yOld) {
+			data.endTime = GetTime() + 250;
+			data.yOld = data.y;
+		}
+		if (GetTime() >= data.endTime) {
+			this.damages.splice(i, 1);
+			--i;
+		}
+	}
 	for (var i = 0; i < this.messages.length; ++i) {
 		--this.messages[i].framesLeft;
 		if (this.messages[i].framesLeft <= 0) {

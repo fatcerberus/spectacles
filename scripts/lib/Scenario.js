@@ -470,7 +470,10 @@ Scenario.prototype.run = function(waitUntilDone)
 };
 
 // .stop() method
-// Immediately stops executing the scenario.
+// Immediately halts execution of the scene. Has no effect if the scene isn't running.
+// Remarks:
+//     After calling this method, calling run() afterwards will start the scene over from the
+//     beginning.
 Scenario.prototype.stop = function()
 {
 	this.killThread(this.mainThread);

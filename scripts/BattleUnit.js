@@ -405,7 +405,7 @@ BattleUnit.prototype.takeDamage = function(amount, tag, isPriority)
 	if (amount > 0) {
 		this.hp = Math.max(this.hp - amount, 0);
 		Console.writeLine(this.name + " took " + amount + " HP damage - remaining: " + this.hp);
-		this.actor.showMessage(amount, 'damage');
+		this.actor.showDamage(amount);
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		this.lazarusFlag = suppressKO;
 		if (this.hp <= 0) {
