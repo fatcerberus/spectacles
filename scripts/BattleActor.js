@@ -14,19 +14,12 @@
 //               right.
 function BattleActor(name, position, row, isEnemy)
 {
-	this.messageStyles = {
-		afflict: { color: CreateColor(255, 255, 128, 255), yStart: 4, yEnd: 20, easing: 'easeOutBack', duration: 1.0, delay: 0.5 },
-		damage: { color: CreateColor(255, 255, 255, 255), yStart: 20, yEnd: 0, easing: 'easeOutBounce', duration: 0.5, delay: 0.25 },
-		evade: { color: CreateColor(192, 192, 160, 255), yStart: 20, yEnd: 10, easing: 'easeOutElastic', duration: 0.5, delay: 0.25 },
-		heal: { color: CreateColor(64, 255, 128, 255), yStart: 4, yEnd: 20, easing: 'easeOutQuad', duration: 1.0, delay: 0.25 }
-	};
-	
 	this.damages = [];
 	this.hasEntered = false;
+	this.healings = [];
 	this.isEnemy = isEnemy;
 	this.isVisible = true;
 	this.messageFont = GetSystemFont();
-	this.messages = [];
 	this.name = name;
 	this.position = isEnemy ? position : 2 - position;
 	this.row = row;
@@ -91,26 +84,24 @@ BattleActor.prototype.render = function()
 		font.drawText(x, y, text);
 	}
 	
-	if (!this.isVisible && this.messages.length == 0) {
+	if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0) {
 		return;
 	}
 	OutlinedRectangle(this.x, this.y, 16, 32, CreateColor(0, 0, 0, 255));
 	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
-	drawText(this.messageFont, this.x + 5, this.y + 17, this.name[0], 0, CreateColor(128, 128, 128, 255));
+	DrawTextEx(this.messageFont, this.x + 5, this.y + 17, this.name[0], CreateColor(128, 128, 128, 255));
 	for (var i = 0; i < this.damages.length; ++i) {
 		var y = this.y + this.damages[i].y;
 		DrawTextEx(this.messageFont, this.x + 8, y, this.damages[i].amount, CreateColor(255, 255, 255, 255), 1, 'center');
 	}
-	for (var i = 0; i < this.messages.length; ++i) {
-		var message = this.messages[i];
-		var x = this.x + 8 - this.messageFont.getStringWidth(message.text) / 2;
-		var y = this.y + 20 - message.height;
-		drawText(this.messageFont, x, y, message.text, 1, message.color);
+	for (var i = 0; i < this.healings.length; ++i) {
+		var y = this.y + this.healings[i].y;
+		DrawTextEx(this.messageFont, this.x + 8, y, this.healings[i].amount, CreateColor(64, 255, 128, this.healings[i].alpha), 1, 'center');
 	}
 };
 
 // .showDamage() method
-// Displays an amount of damage taken.
+// Displays damage taken.
 // Arguments:
 //     amount: The number of hit points lost.
 BattleActor.prototype.showDamage = function(amount)
@@ -119,39 +110,31 @@ BattleActor.prototype.showDamage = function(amount)
 	var data = {
 		amount: amount,
 		finalY: finalY,
-		y: finalY - 20,
-		yOld: finalY - 20,
-		endTime: GetTime() + 250
+		y: finalY - 20
 	}
 	data.scene = new Scenario()
 		.tween(data, 0.5, 'easeOutBounce', { y: finalY })
-		.run();
+		.pause(0.25);
+	data.scene.run();
 	this.damages.push(data);
 };
 
-// .showMessage() method
-// Displays a message over the sprite.
+// .showHealing() method
+// Displays recovered HP.
 // Arguments:
-//     text:          The text to display.
-//     styleName:     The name of the message style to use. Can be one of the following:
-//                        'afflict': Used to display a newly acquired status effect.
-//                        'damage': Used to display HP lost as damage.
-//                        'dispel': Used to display a newly lost status effect.
-//                        'heal': Used to display HP regained.
-//                        'evade': Used to display evasion messages (miss, immune, etc.).
-BattleActor.prototype.showMessage = function(text, styleName)
+//     amount: The number of hit points recovered.
+BattleActor.prototype.showHealing = function(amount)
 {
-	style = this.messageStyles[styleName];
-	var message = {
-		text: text,
-		color: style.color,
-		height: style.yStart,
-		framesLeft: (style.duration + style.delay) * Engine.frameRate
+	var data = {
+		amount: amount,
+		y: 20,
+		alpha: 255
 	};
-	this.messages.push(message);
-	new Scenario()
-		.tween(message, style.duration, style.easing, { height: style.yEnd })
-		.run();
+	data.scene = new Scenario()
+		.tween(data, 1.0, 'easeOutExpo', { y: 0 })
+		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
+	data.scene.run();
+	this.healings.push(data);
 };
 
 // .update() method
@@ -166,22 +149,18 @@ BattleActor.prototype.update = function()
 			data.finalY = finalY;
 			data.scene = new Scenario()
 				.tween(data, 0.5, 'easeOutBounce', { y: finalY })
-				.run();
-			data.endTime = GetTime() + 250;
+				.pause(0.25);
+			data.scene.run();
 		}
-		if (data.y != data.yOld) {
-			data.endTime = GetTime() + 250;
-			data.yOld = data.y;
-		}
-		if (GetTime() >= data.endTime) {
+		if (!data.scene.isRunning()) {
 			this.damages.splice(i, 1);
 			--i;
 		}
 	}
-	for (var i = 0; i < this.messages.length; ++i) {
-		--this.messages[i].framesLeft;
-		if (this.messages[i].framesLeft <= 0) {
-			this.messages.splice(i, 1);
+	for (var i = 0; i < this.healings.length; ++i) {
+		if (!this.healings[i].scene.isRunning()) {
+			this.healings.splice(i, 1);
+			--i;
 		}
 	}
 	return true;

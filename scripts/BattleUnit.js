@@ -129,7 +129,6 @@ BattleUnit.prototype.addStatus = function(statusID)
 	}
 	var effect = new StatusContext(eventData.statusID, this);
 	this.statuses.push(effect);
-	this.actor.showMessage(effect.name, 'afflict');
 	Console.writeLine(this.name + " afflicted with status " + effect.name);
 };
 
@@ -166,7 +165,7 @@ BattleUnit.prototype.die = function()
 //     attacker: The BattleUnit whose attack was evaded.
 BattleUnit.prototype.evade = function(attacker)
 {
-	this.actor.showMessage("miss", 'evade');
+	this.actor.showDamage("miss");
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
 };
 
@@ -294,7 +293,7 @@ BattleUnit.prototype.heal = function(amount, tag, isPriority)
 	}
 	if (amount > 0) {
 		this.hp = Math.min(this.hp + amount, this.maxHP);
-		this.actor.showMessage(amount, 'heal');
+		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		Console.writeLine(this.name + " healed for " + amount + " HP");
 	} else if (amount < 0) {

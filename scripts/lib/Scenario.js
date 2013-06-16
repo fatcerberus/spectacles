@@ -741,10 +741,12 @@ Scenario.defineCommand('panTo',
 Scenario.defineCommand('pause',
 {
 	start: function(scene, state, duration) {
-		state.endTime = GetTime() + duration * 1000;
+		state.duration = duration;
+		state.elapsed = 0;
 	},
 	update: function(scene, state) {
-		return GetTime() < state.endTime;
+		state.elapsed += 1.0 / scene.frameRate;
+		return state.elapsed < state.duration;
 	}
 });
 
