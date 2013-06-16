@@ -254,6 +254,21 @@ Game = {
 				]
 			}
 		},
+		powerTonic: {
+			name: "Power Tonic",
+			type: 'drink',
+			uses: 2,
+			action: {
+				announceAs: "Power Tonic",
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverHP',
+						strength: 70
+					}
+				]
+			}
+		},
 		tonic: {
 			name: "Tonic",
 			type: 'drink',
@@ -311,6 +326,7 @@ Game = {
 	statuses: {
 		crackdown: {
 			name: "Crackdown",
+			category: 'debuff',
 			initialize: function(unit) {
 				this.lastSkillType = null;
 				this.multiplier = 1.0;
@@ -331,12 +347,14 @@ Game = {
 		},
 		disarray: {
 			name: "Disarray",
+			category: 'debuff',
 			acting: function(unit, data) {
 				data.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
 		},
 		drunk: {
 			name: "Drunk",
+			category: 'special',
 			statModifiers: {
 				foc: 0.5
 			},
@@ -352,6 +370,7 @@ Game = {
 		},
 		frostbite: {
 			name: "Frostbite",
+			category: 'affliction',
 			overrules: [ 'ignite' ],
 			initialize: function(unit, data) {
 				this.multiplier = 1.0;
@@ -363,6 +382,7 @@ Game = {
 		},
 		ignite: {
 			name: "Ignite",
+			category: 'affliction',
 			overrules: [ 'frostbite' ],
 			initialize: function(unit, data) {
 				this.multiplier = 1.0;
@@ -374,6 +394,7 @@ Game = {
 		},
 		immune: {
 			name: "Immune",
+			category: 'buff',
 			initialize: function(unit) {
 				this.turnsTaken = 0;
 			},
@@ -395,6 +416,7 @@ Game = {
 		},
 		offGuard: {
 			name: "Off Guard",
+			category: 'special',
 			beginTurn: function(unit, data) {
 				unit.liftStatus('offGuard');
 			},
@@ -406,6 +428,7 @@ Game = {
 		},
 		protect: {
 			name: "Protect",
+			category: 'buff',
 			damaged: function(unit, data) {
 				if (data.tag != "status") {
 					data.amount = Math.floor(data.amount * 0.5);
@@ -414,12 +437,14 @@ Game = {
 		},
 		reGen: {
 			name: "ReGen",
+			category: 'buff',
 			beginCycle: function(unit, data) {
 				unit.heal(unit.maxHP * 0.01);
 			}
 		},
 		skeleton: {
 			name: "Skeleton",
+			category: 'undead',
 			overrules: [ 'zombie' ],
 			beginCycle: function(unit, data) {
 				if (data.battlerInfo.health <= 0) {
@@ -442,6 +467,7 @@ Game = {
 		},
 		zombie: {
 			name: "Zombie",
+			category: 'undead',
 			healed: function(unit, data) {
 				data.amount = -Math.abs(data.amount);
 			}

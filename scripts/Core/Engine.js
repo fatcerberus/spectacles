@@ -4,7 +4,7 @@
 ***/
 
 // Engine object
-// Represents the Specs Engine game engine.
+// Represents the Spectacles game engine.
 Engine = new (function()
 {
 	// .initialize() method

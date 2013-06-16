@@ -71,19 +71,6 @@ BattleActor.prototype.enter = function(isImmediate)
 // Renders the BattleActor in its current state.
 BattleActor.prototype.render = function()
 {
-	function drawText(font, x, y, text, shadowDistance, color)
-	{
-		shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
-		color = color !== void null ? color : CreateColor(255, 255, 255, 255);
-		
-		if (shadowDistance != 0) {
-			font.setColorMask(CreateColor(0, 0, 0, 255));
-			font.drawText(x + shadowDistance, y + shadowDistance, text);
-		}
-		font.setColorMask(color);
-		font.drawText(x, y, text);
-	}
-	
 	if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0) {
 		return;
 	}
@@ -107,11 +94,7 @@ BattleActor.prototype.render = function()
 BattleActor.prototype.showDamage = function(amount)
 {
 	var finalY = 20 - 11 * this.damages.length;
-	var data = {
-		amount: amount,
-		finalY: finalY,
-		y: finalY - 20
-	}
+	var data = { amount: amount, finalY: finalY, y: finalY - 20 };
 	data.scene = new Scenario()
 		.tween(data, 0.5, 'easeOutBounce', { y: finalY })
 		.pause(0.25);
@@ -125,11 +108,7 @@ BattleActor.prototype.showDamage = function(amount)
 //     amount: The number of hit points recovered.
 BattleActor.prototype.showHealing = function(amount)
 {
-	var data = {
-		amount: amount,
-		y: 20,
-		alpha: 255
-	};
+	var data = { amount: amount, y: 20, alpha: 255 };
 	data.scene = new Scenario()
 		.tween(data, 1.0, 'easeOutExpo', { y: 0 })
 		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
