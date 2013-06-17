@@ -212,9 +212,11 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.drawers = [
-		{ name: "Attack", contents: this.unit.skills },
-		{ name: "Item", contents: this.unit.items },
-		{ name: "Defend", contents: [] }
+		{ name: "Atk", contents: this.unit.skills },
+		{ name: "Mag", contents: this.unit.skills },
+		{ name: "Stg", contents: this.unit.skills },
+		{ name: "Itm", contents: this.unit.items },
+		{ name: "Def", contents: [] }
 	];
 	for (var i = 0; i < this.drawers.length; ++i) {
 		this.drawers[i].cursor = 0;

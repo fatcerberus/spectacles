@@ -77,13 +77,13 @@ Game = {
 				return power * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
 			},
 			magic: function(userInfo, targetInfo, power) {
-				return power * (userInfo.level + Math.floor((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)) / targetInfo.stats.foc;
+				return power * (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3) / targetInfo.stats.foc;
 			},
 			pistol: function(userInfo, targetInfo, power) {
 				return power * userInfo.weapon.level * 2 / targetInfo.stats.def;
 			},
 			physical: function(userInfo, targetInfo, power) {
-				return power * (userInfo.level + userInfo.stats.str) / Math.floor((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
+				return power * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
 			sword: function(userInfo, targetInfo, power) {
 				return power * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
@@ -107,37 +107,37 @@ Game = {
 		},
 		hp: {
 			enemy: function(enemyInfo, level) {
-				var statAverage = Math.floor((enemyInfo.baseStats.vit * 10
+				var statAverage = Math.round((enemyInfo.baseStats.vit * 10
 					+ enemyInfo.baseStats.str
 					+ enemyInfo.baseStats.def
 					+ enemyInfo.baseStats.foc
 					+ enemyInfo.baseStats.mag
 					+ enemyInfo.baseStats.agi) / 15);
-				return Math.floor(75 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
+				return 75 * (50 + statAverage / 2) * (10 + level) / 110;
 			},
 			partyMember: function(characterInfo, level) {
-				var statAverage = Math.floor((characterInfo.baseStats.vit * 10
+				var statAverage = Math.round((characterInfo.baseStats.vit * 10
 					+ characterInfo.baseStats.str
 					+ characterInfo.baseStats.def
 					+ characterInfo.baseStats.foc
 					+ characterInfo.baseStats.mag
 					+ characterInfo.baseStats.agi) / 15);
-				return Math.floor(15 * (50 + Math.floor(statAverage / 2)) * (10 + level) / 110);
+				return 15 * (50 + Math.round(statAverage / 2)) * (10 + level) / 110;
 			}
 		},
 		mp: {
 			capacity: function(battlerInfo) {
-				var statAverage = Math.floor((battlerInfo.baseStats.mag * 10
+				var statAverage = Math.round((battlerInfo.baseStats.mag * 10
 					+ battlerInfo.baseStats.vit
 					+ battlerInfo.baseStats.str
 					+ battlerInfo.baseStats.def
 					+ battlerInfo.baseStats.foc
 					+ battlerInfo.baseStats.agi) / 15);
-				return Math.floor(25 * (50 + Math.floor(statAverage / 2)) * (10 + battlerInfo.level) / 110);
+				return 25 * (50 + Math.round(statAverage / 2)) * (10 + battlerInfo.level) / 110;
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-				return baseCost * (level + userInfo.baseStats.mag) / 50;
+				return baseCost * (level + userInfo.baseStats.mag) / 100;
 			}
 		},
 		retreatChance: function(enemyUnitsInfo) {
@@ -151,7 +151,7 @@ Game = {
 			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
-			return Math.floor(Math.max((50 + Math.floor(baseStat / 2)) * (10 + level) / 110, 1));
+			return (50 + Math.round(baseStat / 2)) * (10 + level) / 110;
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
 			return Math.ceil(rank * 10000 / unitInfo.stats.agi);
@@ -176,6 +176,7 @@ Game = {
 				'quickstrike',
 				'chargeSlash',
 				'necromancy',
+				'crackdown',
 				'flare',
 				'chill',
 				'lightning',
@@ -316,7 +317,7 @@ Game = {
 			}
 		},
 		generalDisarray: {
-			name: "G.Disarray",
+			name: "G. Disarray",
 			actionTaken: function(battle, eventData) {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
@@ -407,7 +408,7 @@ Game = {
 				}
 				eventData.statusID = null;
 			},
-			endTurn: function(unit, eventData) {
+			beginTurn: function(unit, eventData) {
 				++this.turnsTaken;
 				if (this.turnsTaken > 3) {
 					unit.liftStatus('immune');
@@ -417,21 +418,21 @@ Game = {
 		offGuard: {
 			name: "Off Guard",
 			category: 'special',
-			beginTurn: function(unit, data) {
+			beginTurn: function(unit, eventData) {
 				unit.liftStatus('offGuard');
 			},
-			damaged: function(unit, data) {
-				if (data.tag != "status") {
-					data.amount = Math.ceil(data.amount * 1.5);
+			damaged: function(unit, eventData) {
+				if (eventData.tag != "status") {
+					eventData.amount *= 1.5;
 				}
 			}
 		},
 		protect: {
 			name: "Protect",
 			category: 'buff',
-			damaged: function(unit, data) {
-				if (data.tag != "status") {
-					data.amount = Math.floor(data.amount * 0.5);
+			damaged: function(unit, eventData) {
+				if (eventData.tag != 'special') {
+					eventData.amount *= 0.5;
 				}
 			}
 		},
@@ -1128,7 +1129,7 @@ Game = {
 										this.useSkill('swordSlash');
 										this.data.isComboStarted = false;
 									} else {
-										var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+										var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 										this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 									}
 								}
@@ -1168,7 +1169,7 @@ Game = {
 										}
 									}
 								} else {
-									var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+									var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 									this.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 								}
 							}

@@ -54,7 +54,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.partyMember = basis;
 		this.id = this.partyMember.characterID;
 		this.character = Game.characters[this.partyMember.characterID];
-		this.maxHP = Math.floor(Math.max(Game.math.hp.partyMember(this.character, this.partyMember.getLevel()), 1));
+		this.maxHP = Math.round(Math.max(Game.math.hp.partyMember(this.character, this.partyMember.getLevel()), 1));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		this.fullName = this.partyMember.fullName;
@@ -85,7 +85,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.maxHP = Math.floor(Math.max(Game.math.hp.enemy(this.enemyInfo, battle.getLevel()), 1));
+		this.maxHP = Math.round(Math.max(Game.math.hp.enemy(this.enemyInfo, battle.getLevel()), 1));
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
@@ -94,7 +94,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	}
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
-		: new MPPool(Math.floor(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
+		: new MPPool(Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -143,8 +143,8 @@ BattleUnit.prototype.beginCycle = function()
 	var eventData = { battlerInfo: this.battlerInfo };
 	this.raiseEvent('beginCycle', eventData);
 	for (var stat in Game.namedStats) {
-		this.battlerInfo.baseStats[stat] = Math.floor(this.battlerInfo.baseStats[stat]);
-		this.battlerInfo.stats[stat] = Math.floor(this.battlerInfo.stats[stat]);
+		this.battlerInfo.baseStats[stat] = Math.round(this.battlerInfo.baseStats[stat]);
+		this.battlerInfo.stats[stat] = Math.round(this.battlerInfo.stats[stat]);
 	}
 };
 
@@ -287,9 +287,9 @@ BattleUnit.prototype.heal = function(amount, tag, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	if (!isPriority) {
-		var eventData = { amount: Math.floor(amount), tag: tag };
+		var eventData = { amount: Math.round(amount), tag: tag };
 		this.raiseEvent('healed', eventData);
-		amount = Math.floor(eventData.amount);
+		amount = Math.round(eventData.amount);
 	}
 	if (amount > 0) {
 		this.hp = Math.min(this.hp + amount, this.maxHP);
@@ -393,12 +393,12 @@ BattleUnit.prototype.takeDamage = function(amount, tag, isPriority)
 	tag = tag !== void null ? tag : null;
 	isPriority = isPriority !== void null ? isPriority : false;
 	
-	amount = Math.floor(amount);
+	amount = Math.round(amount);
 	var suppressKO = false;
 	if (!isPriority) {
 		var eventData = { amount: amount, tag: tag, suppressKO: false };
 		this.raiseEvent('damaged', eventData);
-		amount = Math.floor(eventData.amount);
+		amount = Math.round(eventData.amount);
 		suppressKO = eventData.suppressKO;
 	}
 	if (amount > 0) {
