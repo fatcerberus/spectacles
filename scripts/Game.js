@@ -27,11 +27,10 @@ Game = {
 	},
 	
 	elements: {
-		fire: "Fire",
-		ice: "Ice",
-		lightning: "Lightning",
-		earth: "Earth",
-		fat: "Fat"
+		fire: { name: "Fire", color: CreateColor(255, 0, 0, 255) },
+		ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
+		lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
+		earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) }
 	},
 	
 	weaponTypes: {

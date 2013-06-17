@@ -19,7 +19,7 @@ function TitleScreen(themeTrack)
 			case 'transitionIn':
 				if (!this.transition.isRunning()) {
 					this.mode = 'idle';
-					this.choice = new MenuStrip("Tech Demo", false, [ "Start Demo" ]).open();
+					this.choice = new MenuStrip("Battle Demo", false, [ "Start Demo" ]).open();
 					this.transition = new Scenario()
 						.fork()
 							.adjustBGMVolume(0.0, 2.0)

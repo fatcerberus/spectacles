@@ -14,7 +14,6 @@ function MoveMenu(unit, battle)
 {
 	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
 	this.moveRankColor = CreateColor(255, 255, 255, 255);
-	this.moveRankBoxColor = CreateColor(48, 48, 48, 255);
 	this.normalCursorColor = CreateColor(0, 72, 144, 255);
 	this.textColor = CreateColor(255, 255, 255, 255);
 	this.usageTextColor = CreateColor(255, 192, 0, 255);
@@ -101,15 +100,15 @@ function MoveMenu(unit, battle)
 	this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 	{
 		var alpha = 255 * this.fadeness * this.expansion;
-		var isEnabled = item.isAllowed;
+		var isEnabled = item.isEnabled;
 		var textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
 		var usageTextColor = isSelected ? this.usageTextColor : CreateColor(128, 128, 128, alpha);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		Rectangle(x + 133, y + 2, 22, 14, this.moveRankBoxColor);
-		OutlinedRectangle(x + 133, y + 2, 22, 14, CreateColor(0, 0, 0, this.moveRankBoxColor.alpha / 2));
-		DrawTextEx(this.font, x + 144, y + 3, item.rank, textColor, 1, 'center');
+		Rectangle(x + 143, y + 2, 12, 14, item.idColor);
+		OutlinedRectangle(x + 143, y + 2, 12, 14, CreateColor(0, 0, 0, item.idColor.alpha / 2));
+		DrawTextEx(this.font, x + 149, y + 3, item.rank, CreateColor(0, 0, 0, textColor.alpha), 0, 'center');
 		DrawTextEx(this.font, x + 33, y + 3, item.name, textColor, 1 * isEnabled);
 		if (item.mpCost > 0) {
 			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost, 'right');
@@ -165,20 +164,31 @@ MoveMenu.prototype.getInput = function()
 			var usables = this.drawers[this.topCursor].contents;
 			this.moveMenu = [];
 			for (var i = 0; i < usables.length; ++i) {
-				this.moveMenu.push({
+				var menuItem = {
 					name: usables[i].name,
-					rank: usables[i].getRank().toFixed(1),
+					idColor: CreateColor(64, 64, 64, 255),
+					isEnabled: usables[i].isUsable(this.unit),
 					mpCost: usables[i].mpCost(this.unit),
-					usable: usables[i],
-					isAllowed: usables[i].isUsable(this.unit)
-				});
+					rank: usables[i].getRank(),
+					usable: usables[i]
+				};
+				var actions = menuItem.usable.peekActions();
+				for (var i2 = 0; i2 < actions.length; ++i2) {
+					for (var i3 = 0; i3 < actions[i2].effects.length; ++i3) {
+						if ('element' in actions[i2].effects[i3]) {
+							var color = Game.elements[actions[i2].effects[i3].element].color;
+							menuItem.idColor = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
+						}
+					}
+				}
+				this.moveMenu.push(menuItem);
 			}
 			this.moveCursor = this.drawers[this.topCursor].cursor;
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
 			this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
-		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isAllowed) {
+		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isEnabled) {
 			this.selection = this.moveMenu[this.moveCursor].usable;
 			this.showMoveList.stop();
 			this.chooseMove.run();
@@ -212,11 +222,9 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.drawers = [
-		{ name: "Atk", contents: this.unit.skills },
-		{ name: "Mag", contents: this.unit.skills },
-		{ name: "Stg", contents: this.unit.skills },
-		{ name: "Itm", contents: this.unit.items },
-		{ name: "Def", contents: [] }
+		{ name: "Skill", contents: this.unit.skills },
+		{ name: "Item", contents: this.unit.items },
+		{ name: "Defend", contents: [] }
 	];
 	for (var i = 0; i < this.drawers.length; ++i) {
 		this.drawers[i].cursor = 0;
