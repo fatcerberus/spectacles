@@ -40,20 +40,20 @@ BGM = new (function()
 	// .adjustVolume() method
 	// Smoothly adjusts the volume of the BGM.
 	// Arguments:
-	//     newVolume:  The new volume level, between 0.0 and 1.0 inclusive.
-	//     fadeLength: Optional. The amount of time, in seconds, over which to perform the adjustment.
-	//                 (default: 1.0).
-	this.adjustVolume = function(newVolume, fadeDuration)
+	//     newVolume: The new volume level, between 0.0 and 1.0 inclusive.
+	//     duration:  Optional. The length of time, in seconds, over which to perform the adjustment.
+	//                (default: 0.0).
+	this.adjustVolume = function(newVolume, duration)
 	{
-		if (fadeDuration === void null) { fadeDuration = 0.25; }
+		duration = duration !== void null ? duration : 0.0;
 		
 		newVolume = Math.min(Math.max(newVolume, 0.0), 1.0);
 		if (this.adjuster != null && this.adjuster.isRunning()) {
 			this.adjuster.stop();
 		}
-		if (fadeDuration > 0.0) {
+		if (duration > 0.0) {
 			this.adjuster = new Scenario()
-				.tween(this, fadeDuration, 'linear', { volume: newVolume })
+				.tween(this, duration, 'linear', { volume: newVolume })
 				.run();
 		} else {
 			this.volume = newVolume;

@@ -20,6 +20,9 @@ function TitleScreen(themeTrack)
 				if (!this.transition.isRunning()) {
 					this.mode = 'idle';
 					this.choice = new MenuStrip("Battle Demo", false, [ "Start Demo" ]).open();
+					if (DBG_DISABLE_TRANSITIONS) {
+						this.fadeness = 1.0;
+					}
 					this.transition = new Scenario()
 						.fork()
 							.adjustBGMVolume(0.0, 2.0)
@@ -47,6 +50,9 @@ TitleScreen.prototype.show = function()
 	}
 	this.choice = null;
 	this.mode = 'transitionIn';
+	if (DBG_DISABLE_TRANSITIONS) {
+		this.fadeness = 0.0;
+	}
 	this.transition = new Scenario()
 		.adjustBGMVolume(1.0)
 		.changeBGM(this.themeTrack)

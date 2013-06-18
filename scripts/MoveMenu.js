@@ -102,13 +102,14 @@ function MoveMenu(unit, battle)
 		var alpha = 255 * this.fadeness * this.expansion;
 		var isEnabled = item.isEnabled;
 		var textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
-		var usageTextColor = isSelected ? this.usageTextColor : CreateColor(128, 128, 128, alpha);
+		var usageTextColor = isSelected ? this.usageTextColor : BlendColors(this.usageTextColor, CreateColor(0, 0, 0, this.usageTextColor.alpha));
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		Rectangle(x + 143, y + 2, 12, 14, item.idColor);
-		OutlinedRectangle(x + 143, y + 2, 12, 14, CreateColor(0, 0, 0, item.idColor.alpha / 2));
-		DrawTextEx(this.font, x + 149, y + 3, item.rank, CreateColor(0, 0, 0, textColor.alpha), 0, 'center');
+		var rankBoxColor = BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha));
+		Rectangle(x + 143, y + 2, 12, 14, rankBoxColor);
+		OutlinedRectangle(x + 143, y + 2, 12, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
+		DrawTextEx(this.font, x + 149, y + 3, item.rank, item.idColor, 1, 'center');
 		DrawTextEx(this.font, x + 33, y + 3, item.name, textColor, 1 * isEnabled);
 		if (item.mpCost > 0) {
 			this.drawText(this.font, x + 28, y + 3, isEnabled, usageTextColor, item.mpCost, 'right');
@@ -166,7 +167,7 @@ MoveMenu.prototype.getInput = function()
 			for (var i = 0; i < usables.length; ++i) {
 				var menuItem = {
 					name: usables[i].name,
-					idColor: CreateColor(64, 64, 64, 255),
+					idColor: CreateColor(128, 128, 128, 255),
 					isEnabled: usables[i].isUsable(this.unit),
 					mpCost: usables[i].mpCost(this.unit),
 					rank: usables[i].getRank(),
@@ -176,8 +177,7 @@ MoveMenu.prototype.getInput = function()
 				for (var i2 = 0; i2 < actions.length; ++i2) {
 					for (var i3 = 0; i3 < actions[i2].effects.length; ++i3) {
 						if ('element' in actions[i2].effects[i3]) {
-							var color = Game.elements[actions[i2].effects[i3].element].color;
-							menuItem.idColor = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
+							menuItem.idColor = Game.elements[actions[i2].effects[i3].element].color;
 						}
 					}
 				}

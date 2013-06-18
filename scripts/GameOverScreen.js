@@ -13,8 +13,9 @@ GameOverAction =
 
 function GameOverScreen()
 {
+	this.fadeScene = null;
 	this.fadeness = 1.0;
-	this.image = LoadImage("TitleScreen.png");
+	this.image = LoadImage("GameOverScreen.png");
 }
 
 GameOverScreen.prototype.render = function()
@@ -27,7 +28,10 @@ GameOverScreen.prototype.show = function()
 {
 	this.action = null;
 	this.mode = 'transitionIn';
-	this.transition = new Scenario()
+	if (DBG_DISABLE_TRANSITIONS) {
+		this.fadeness = 0.0;
+	}
+	this.fadeScene = new Scenario()
 		.changeBGM("GameOver")
 		.adjustBGMVolume(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
@@ -44,12 +48,15 @@ GameOverScreen.prototype.update = function()
 		case 'idle':
 			return true;
 		case 'transitionIn':
-			if (!this.transition.isRunning()) {
+			if (!this.fadeScene.isRunning()) {
 				this.mode = 'idle';
 				var menu = new MenuStrip("Game Over", false);
 				menu.addItem("Retry Battle", GameOverAction.retry);
 				menu.addItem("Title Screen", GameOverAction.quit);
 				this.action = menu.open();
+				if (DBG_DISABLE_TRANSITIONS) {
+					this.fadeness = 1.0;
+				}
 				this.transition = new Scenario()
 					.fork()
 						.adjustBGMVolume(0.0, 2.0)

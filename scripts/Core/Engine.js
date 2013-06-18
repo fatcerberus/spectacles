@@ -25,13 +25,15 @@ Engine = new (function()
 	{
 		var titleCard = LoadImage("Logos/" + imageName + ".png");
 		var fadeLevel = 1.0;
-		while (fadeLevel > 0.0) {
-			Threads.renderAll();
-			titleCard.blit(0, 0);
-			Rectangle(0, 0, 320, 240, CreateColor(0, 0, 0, fadeLevel * 255));
-			FlipScreen();
-			Threads.updateAll();
-			fadeLevel = Math.max(fadeLevel - 1.0 / this.frameRate, 0.0);
+		if (!DBG_DISABLE_TRANSITIONS) {
+			while (fadeLevel > 0.0) {
+				Threads.renderAll();
+				titleCard.blit(0, 0);
+				Rectangle(0, 0, 320, 240, CreateColor(0, 0, 0, fadeLevel * 255));
+				FlipScreen();
+				Threads.updateAll();
+				fadeLevel = Math.max(fadeLevel - 1.0 / this.frameRate, 0.0);
+			}
 		}
 		for (var i = 0; i < duration; ++i) {
 			Threads.renderAll();
@@ -39,13 +41,15 @@ Engine = new (function()
 			FlipScreen();
 			Threads.updateAll();
 		}
-		while (fadeLevel < 1.0) {
-			Threads.renderAll();
-			titleCard.blit(0, 0);
-			Rectangle(0, 0, 320, 240, CreateColor(0, 0, 0, fadeLevel * 255));
-			FlipScreen();
-			Threads.updateAll();
-			fadeLevel = Math.min(fadeLevel + 1.0 / this.frameRate, 1.0);
+		if (!DBG_DISABLE_TRANSITIONS) {
+			while (fadeLevel < 1.0) {
+				Threads.renderAll();
+				titleCard.blit(0, 0);
+				Rectangle(0, 0, 320, 240, CreateColor(0, 0, 0, fadeLevel * 255));
+				FlipScreen();
+				Threads.updateAll();
+				fadeLevel = Math.min(fadeLevel + 1.0 / this.frameRate, 1.0);
+			}
 		}
 	};
 })();
