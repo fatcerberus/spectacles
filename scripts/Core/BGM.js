@@ -42,7 +42,7 @@ BGM = new (function()
 	// Arguments:
 	//     newVolume:  The new volume level, between 0.0 and 1.0 inclusive.
 	//     fadeLength: Optional. The amount of time, in seconds, over which to perform the adjustment.
-	//                 Defaults to 1 second (1.0).
+	//                 (default: 1.0).
 	this.adjustVolume = function(newVolume, fadeDuration)
 	{
 		if (fadeDuration === void null) { fadeDuration = 0.25; }

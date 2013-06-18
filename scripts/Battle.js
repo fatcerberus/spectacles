@@ -361,10 +361,14 @@ Battle.prototype.tick = function()
 			}
 		}
 		if (this.playerUnits.length == 0) {
+			BGM.adjustVolume(0.0, 2.0);
+			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
 			return;
 		}
 		if (this.enemyUnits.length == 0) {
+			BGM.adjustVolume(0.0, 1.0);
+			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
 			return;
 		}

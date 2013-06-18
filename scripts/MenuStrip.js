@@ -37,10 +37,10 @@ function MenuStrip(title, isCancelable, items)
 }
 
 // .addItem() method
-// Adds a tagged item to the menu strip.
+// Adds an item to the menu strip.
 // Arguments:
 //     text: The text to display on the menu strip when the item is selected.
-//     tag:  Optional. An object to associate with the menu item. If this argument is not provided,
+//     tag:  Optional. An object or value to associate with the menu item. If this argument is not provided,
 //           the item text is used as the tag.
 MenuStrip.prototype.addItem = function(text, tag)
 {
@@ -117,7 +117,8 @@ MenuStrip.prototype.open = function()
 
 // .render() method
 // Renders the MenuStrip to the screen in its current state.
-MenuStrip.prototype.render = function() {
+MenuStrip.prototype.render = function()
+{
 	var height = this.font.getHeight() + 10;
 	var menuY = GetScreenHeight() - height * this.openness;
 	var normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
@@ -170,7 +171,8 @@ MenuStrip.prototype.render = function() {
 
 // .update() method
 // Updates the MenuStrip for the next frame.
-MenuStrip.prototype.update = function() {
+MenuStrip.prototype.update = function()
+{
 	switch (this.mode) {
 		case 'idle':
 			return true;

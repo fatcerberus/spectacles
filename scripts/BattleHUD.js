@@ -85,6 +85,7 @@ function BattleHUD(partyMaxMP)
 // Frees all outstanding resources held by this object.
 BattleHUD.prototype.dispose = function()
 {
+	this.turnPreview.dispose();
 	Threads.kill(this.thread);
 };
 

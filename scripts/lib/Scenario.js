@@ -544,9 +544,8 @@ Scenario.defineCommand('fadeTo',
 	start: function(scene, state, color, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
-		var colorInfo = { red:color.red, green:color.green, blue:color.blue, alpha:color.alpha };
 		state.fader = new Scenario()
-			.tween(Scenario.screenMask, duration, 'linear', colorInfo)
+			.tween(Scenario.screenMask, duration, 'linear', color)
 			.run();
 	},
 	update: function(scene, state) {

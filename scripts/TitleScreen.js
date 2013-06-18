@@ -48,6 +48,7 @@ TitleScreen.prototype.show = function()
 	this.choice = null;
 	this.mode = 'transitionIn';
 	this.transition = new Scenario()
+		.adjustBGMVolume(1.0)
 		.changeBGM(this.themeTrack)
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();

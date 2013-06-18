@@ -24,6 +24,7 @@ RequireScript('Core/Console.js');
 RequireScript('Core/Threads.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
+RequireScript('GameOverScreen.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
@@ -36,6 +37,8 @@ RequireScript('TitleScreen.js');
 	
 	Scenario.prototype.run = function(waitUntilDone)
 	{
+		waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
+		
 		value = old_Scenario_run.call(this, false);
 		if (waitUntilDone) {
 			Threads.waitFor(Threads.doWith(this, function() {
@@ -133,7 +136,7 @@ function game()
 	Threads.initialize();
 	BGM.initialize();
 	Scenario.initialize();
-	Threads.doWith(Scenario,
+	var sceneThread = Threads.doWith(Scenario,
 		function() { this.updateAll(); return true; },
 		function() { this.renderAll(); }, 99
 	);
@@ -147,25 +150,26 @@ function game()
 		BGM.change("SpectaclesTheme");
 		Engine.showLogo("TitleCard", 150);
 	}
-	var session = new TitleScreen("SpectaclesTheme").show();
-	var world = persist.getWorldState();
-	world.currentSession = session;
 	
-	/*ALPHA*/
-	session.party.members.scott.items.push(new ItemUsable('alcohol'));
-	session.party.members.scott.items.push(new ItemUsable('tonic'));
-	session.party.members.scott.items.push(new ItemUsable('powerTonic'));
-	session.party.members.scott.items.push(new ItemUsable('holyWater'));
-	session.party.members.scott.items.push(new ItemUsable('vaccine'));
-	var battleResult = new Battle(world.currentSession, 'robert2').go();
-	if (battleResult == BattleResult.enemyWon) {
-		Abort("You lost...\n\nOh well, have fun in Terminus! Say hello to Scott Temple for me, okay? :o)");
-	} else if (battleResult == BattleResult.partyWon) {
-		Abort("Yay! You win!\n\nWait a minute... you didn't cheat, did you...? I'm on to you!");
-	} else if (battleResult == BattleResult.partyRetreated) {
-		Abort("You coward! You suck!");
-	} else {
-		Abort("Um... what's going on here? That was a really strange battle...");
+	while (true) {
+		var session = new TitleScreen("SpectaclesTheme").show();
+		var world = persist.getWorldState();
+		world.currentSession = session;
+		session.party.members.scott.items.push(new ItemUsable('alcohol'));
+		session.party.members.scott.items.push(new ItemUsable('tonic'));
+		session.party.members.scott.items.push(new ItemUsable('powerTonic'));
+		session.party.members.scott.items.push(new ItemUsable('holyWater'));
+		session.party.members.scott.items.push(new ItemUsable('vaccine'));
+		var doOver = false;
+		do {
+			var battleResult = new Battle(world.currentSession, 'robert2').go();
+			if (battleResult == BattleResult.enemyWon) {
+				var action = new GameOverScreen().show();
+				doOver = action == GameOverAction.retry;
+			} else {
+				doOver = false;
+			}
+		} while (doOver);
 	}
 	
 	MapEngine("main.rmp", Engine.frameRate);

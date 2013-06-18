@@ -144,9 +144,8 @@ Threads.kill = function(threadID)
 {
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (threadID == this.threads[i].id) {
-			this.threads.splice(i,1);
+			this.threads.splice(i, 1);
 			--i;
-			continue;
 		}
 	}
 };
@@ -182,6 +181,7 @@ Threads.synchronize = function(threadIDs)
 // Updates all active threads for the next frame.
 Threads.updateAll = function()
 {
+	var threadsEnding = [];
 	for (var i = 0; i < this.threads.length; ++i) {
 		var thread = this.threads[i];
 		var stillRunning = true;
@@ -194,10 +194,11 @@ Threads.updateAll = function()
 			thread.isUpdating = false;
 		}
 		if (!stillRunning) {
-			this.threads.splice(i, 1);
-			--i;
-			continue;
+			threadsEnding.push(thread.id);
 		}
+	}
+	for (var i = 0; i < threadsEnding.length; ++i) {
+		this.kill(threadsEnding[i]);
 	}
 	this.hasUpdated = true;
 };

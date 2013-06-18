@@ -105,6 +105,26 @@ BattleScreen.prototype.createActor = function(name, position, row, alignment, al
 	return actor;
 };
 
+// .fadeOut() method
+// Fades out of the battle screen.
+// Arguments:
+//     duration: Optional. The duration, in seconds, of the fade out.
+// Remarks:
+//     This method calls dispose() internally. As when dispose() is called directly, you should avoid doing
+//     anything else with the BattleScreen object afterwards.
+BattleScreen.prototype.fadeOut = function(duration)
+{
+	if (DBG_DISABLE_TRANSITIONS) {
+		this.dispose();
+		return;
+	}
+	new Scenario()
+		.fadeTo(CreateColor(0, 0, 0, 255), duration)
+		.call(delegate(this, this.dispose))
+		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+		.run(true);
+};
+
 // .go() method
 // Transitions to the battle screen.
 // Arguments:
@@ -123,11 +143,8 @@ BattleScreen.prototype.go = function(title)
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 		.call(delegate(this, this.startRunning))
-		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
-		.run();
-	Threads.waitFor(Threads.doWith(transition,
-		function() { return this.isRunning(); }
-	));
+		.fadeTo(CreateColor(0, 0, 0, 0), 1.0);
+	transition.run(true);
 };
 
 // .render() method
