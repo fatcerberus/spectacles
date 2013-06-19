@@ -37,6 +37,7 @@ function Battle(session, battleID)
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
+	Console.writeLine("");
 	Console.writeLine("Battle session prepared");
 	Console.append("battle def: " + this.battleID);
 }
@@ -169,6 +170,24 @@ Battle.prototype.hasCondition = function(conditionID)
 	}
 	return false;
 };
+
+// .areEnemies() method
+// Determines whether two battle units are of different alignments.
+// Arguments:
+//     unit1: The first battle unit to be compared.
+//     unit2: The second battle unit to be compared.
+// Returns:
+//     true if the unit1 and unit2 are of different alignments; false otherwise.
+Battle.prototype.areEnemies = function(unit1, unit2)
+{
+	var enemyList = this.enemiesOf(unit1);
+	for (var i = 0; i < enemyList.length; ++i) {
+		if (unit2 === enemyList[i]) {
+			return true;
+		}
+	}
+	return false;
+}
 
 // .liftCondition() method
 // Removes a battle condition from play.

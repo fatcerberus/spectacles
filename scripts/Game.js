@@ -98,17 +98,10 @@ Game = {
 				}
 				var levelAverage = Math.round(levelSum / targetsInfo.length);
 				var statAverage = Math.round(statSum / targetsInfo.length);
-				return levelAverage * statAverage / 2;
+				return levelAverage * statAverage;
 			},
-			targetStat: function(unit, statID, action, proficiency) {
-				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
-				var base = 'baseExperience' in action && 'target' in action.baseExperience && statID in action.baseExperience.target ? action.baseExperience.target[statID] : 0;
-				return base * proficiency * growthRate;
-			},
-			userStat: function(unit, statID, action, proficiency) {
-				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;
-				var base = 'baseExperience' in action && 'user' in action.baseExperience && statID in action.baseExperience.user ? action.baseExperience.user[statID] : 0;
-				return base * proficiency * growthRate;
+			stat: function(statID, enemyUnitInfo) {
+				return enemyUnitInfo.level * enemyUnitInfo.baseStats[statID];
 			}
 		},
 		hp: {
@@ -498,7 +491,7 @@ Game = {
 		},
 		devour: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				if (!targets[i].isPartyMember) {
+				if (!targets[i].isPartyMember()) {
 					var munchData = targets[i].enemyInfo.munchData;
 					actor.growSkill(munchData.skill, munchData.experience);
 				}
@@ -551,15 +544,6 @@ Game = {
 					announceAs: "Charge Slash",
 					rank: 2,
 					accuracyType: 'sword',
-					baseExperience: {
-						user: {
-							str: 3,
-							agi: 2
-						},
-						target: {
-							def: 5
-						}
-					},
 					effects: [
 						{
 							targetHint: 'selected',
@@ -841,11 +825,6 @@ Game = {
 					announceAs: "Quickstrike",
 					rank: 1,
 					accuracyType: 'sword',
-					baseExperience: {
-						user: {
-							str: 1
-						}
-					},
 					effects: [
 						{
 							targetHint: 'selected',
@@ -909,14 +888,6 @@ Game = {
 					announceAs: "Sword Slash",
 					rank: 2,
 					accuracyType: 'sword',
-					baseExperience: {
-						user: {
-							str: 1
-						},
-						target: {
-							def: 1
-						}
-					},
 					effects: [
 						{
 							targetHint: 'selected',

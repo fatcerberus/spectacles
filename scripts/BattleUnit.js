@@ -195,49 +195,6 @@ BattleUnit.prototype.getLevel = function()
 	}
 };
 
-// .growAsAttacker() method
-// Grants the unit battle experience for successfully performing an attack.
-// Arguments:
-//     action:    The action performed by the unit.
-//     skillUsed: The skill used in performing the action.
-BattleUnit.prototype.growAsAttacker = function(action, skillUsed)
-{
-	if (!this.isPartyMember()) {
-		return;
-	}
-	var proficiency = Math.floor(skillUsed.getLevel() * this.getLevel() / 100);
-	for (var stat in Game.namedStats) {
-		var experience = Math.max(Game.math.experience.userStat(this, stat, action, proficiency), 0);
-		if (experience > 0) {
-			this.stats[stat].grow(experience);
-			Console.writeLine(this.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-			Console.append("statVal: " + this.stats[stat].getValue());
-		}
-	}
-};
-
-// .growAsDefender() method
-// Grants the unit battle experience for surviving an attack.
-// Arguments:
-//     action:    The action performed by the attacking unit.
-//     skillUsed: The skill used in performing the action.
-//     user:      The unit originating the attack.
-BattleUnit.prototype.growAsDefender = function(action, skillUsed, user)
-{
-	if (!this.isPartyMember()) {
-		return;
-	}
-	var proficiency = Math.floor(skillUsed.getLevel() * user.getLevel() / 100);
-	for (var stat in Game.namedStats) {
-		var experience = Math.max(Game.math.experience.targetStat(this, stat, action, proficiency), 0);
-		if (experience > 0) {
-			this.stats[stat].grow(experience);
-			Console.writeLine(this.name + " got " + experience + " EXP for " + Game.namedStats[stat]);
-			Console.append("statVal: " + this.stats[stat].getValue());
-		}
-	}
-};
-
 // .growSkill() method
 // Adds experience to a party unit's existing skill or teaches it a new one.
 // Arguments:
@@ -416,7 +373,7 @@ BattleUnit.prototype.takeDamage = function(amount, tag, isPriority)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		this.lazarusFlag = suppressKO;
 		if (this.hp <= 0) {
-			Console.writeLine(this.name + " killed due to lack of HP");
+			Console.writeLine(this.name + " dying due to lack of HP");
 			if (!suppressKO) {
 				this.die();
 			} else {
@@ -471,9 +428,16 @@ BattleUnit.prototype.tick = function()
 			this.raiseEvent('acting', eventData);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (unitsHit.length > 0 && this.skillUsed != null) {
-				this.growAsAttacker(action, this.skillUsed);
+				var allEnemies = this.battle.enemiesOf(this);
 				for (var i = 0; i < unitsHit.length; ++i) {
-					unitsHit[i].growAsDefender(action, this.skillUsed, this);
+					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
+						for (var id in Game.namedStats) {
+							var experience = Game.math.experience.stat(id, unitsHit[i].battlerInfo);
+							this.stats[id].grow(experience);
+							Console.writeLine(this.name + " got " + experience + " EXP for " + Game.namedStats[id]);
+							Console.append("value: " + this.stats[id].getValue());
+						}
+					}
 				}
 			}
 			this.resetCounter(action.rank);
