@@ -89,9 +89,16 @@ Game = {
 			}
 		},
 		experience: {
-			skill: function(actor, skillInfo) {
-				var growthRate = 'growthRate' in skillInfo ? skillInfo.growthRate : 1.0;
-				return actor.getLevel() * growthRate;
+			skill: function(skillInfo, userInfo, targetsInfo) {
+				var levelSum = 0;
+				var statSum = 0;
+				for (var i = 0; i < targetsInfo.length; ++i) {
+					levelSum += targetsInfo[i].level;
+					statSum += targetsInfo[i].baseStatAverage;
+				}
+				var levelAverage = Math.round(levelSum / targetsInfo.length);
+				var statAverage = Math.round(statSum / targetsInfo.length);
+				return levelAverage * statAverage / 2;
 			},
 			targetStat: function(unit, statID, action, proficiency) {
 				var growthRate = 'growthRate' in unit.character && statID in unit.character.growthRate ? unit.character.growthRate[statID] : 1.0;

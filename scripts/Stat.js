@@ -6,34 +6,35 @@
 // Stat() constructor
 // Creates an object representing a battler statistic.
 // Arguments:
-//     baseValue:    Required. The value of the statistic at 100% growth.
-//     initialLevel: The starting growth level for the statistic.
-//                   Defaults to 1.
-//     enableGrowth: If true, the stat will increase in value as it accumulates experience.
-//                   Defaults to true.
-//     growthRate:   The growth rate, which determines how fast the stat improves.
-function Stat(baseValue, initialLevel, enableGrowth, growthRate)
+//     baseValue:    The base value of the statistic. The exact meaning of this value depends on
+//                   how the gamedef interprets it.
+//     level:        Optional. The starting growth level for the statistic. (default: 1)
+//     enableGrowth: Optional. Specifies whether the stat's level will increase as it accumulates
+//                   experience. (default: true)
+//     growthRate:   Optional. The growth rate, which determines how fast the stat improves.
+//                   (default: 1.0)
+function Stat(baseValue, level, enableGrowth, growthRate)
 {
-	if (initialLevel === undefined) { initialLevel = 1; }
-	if (enableGrowth === undefined) { enableGrowth = true; }
-	if (growthRate === undefined) { growthRate = 1.0; }
+	level = level !== void null ? level : 1;
+	enableGrowth = enableGrowth !== void null ? enableGrowth : true;
+	growthRate = growthRate !== void null ? growthRate : 1.0;
 	
 	this.baseValue = baseValue;
-	this.levelUpExperience = [];
-	for (var level = 1; level <= 100; ++level) {
-		var required = Math.ceil(level > 1 ? Math.pow(level, 3) / growthRate : 0);
-		this.levelUpExperience[level] = required;
+	this.levelUpTable = [];
+	for (var i = 1; i <= 100; ++i) {
+		var xpNeeded = Math.ceil(i > 1 ? Math.pow(i, 3) / growthRate : 0);
+		this.levelUpTable[i] = xpNeeded;
 	}
-	this.experience = this.levelUpExperience[initialLevel];
+	this.experience = this.levelUpTable[level];
 	this.isGrowable = enableGrowth;
 }
 
 // .getLevel() method
-// Returns the stat's current growth level.
+// Gets the stat's current level.
 Stat.prototype.getLevel = function()
 {
 	for (var level = 100; level >= 2; --level) {
-		if (this.experience >= this.levelUpExperience[level]) {
+		if (this.experience >= this.levelUpTable[level]) {
 			return level;
 		}
 	}
@@ -41,20 +42,19 @@ Stat.prototype.getLevel = function()
 };
 
 // .getValue() method
-// Returns the stat's current value.
+// Get the stat's current value.
 Stat.prototype.getValue = function()
 {
 	return Game.math.statValue(this.baseValue, this.getLevel());
 };
 
 // .grow() method
-// Adds experience to the stat, potentially raising its value.
+// Adds experience to the stat, potentially raising its level.
+// Arguments:
+//     experience: The number of experience points to be added.
 Stat.prototype.grow = function(experience)
 {
-	if (!this.isGrowable) {
-		Abort("Stat.grow(): Can't grow a fixed stat!");
-	}
 	var previousLevel = this.getLevel();
-	this.experience = Math.min(Math.max(this.experience + experience, 0), this.levelUpExperience[100]);
+	this.experience = Math.min(Math.max(this.experience + experience, 0), this.levelUpTable[100]);
 	var newLevel = this.getLevel();
 };

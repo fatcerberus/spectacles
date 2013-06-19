@@ -142,10 +142,18 @@ BattleUnit.prototype.beginCycle = function()
 	}
 	var eventData = { battlerInfo: this.battlerInfo };
 	this.raiseEvent('beginCycle', eventData);
+	var baseStatSum = 0;
+	var statSum = 0;
+	var numStats = 0;
 	for (var stat in Game.namedStats) {
-		this.battlerInfo.baseStats[stat] = Math.round(this.battlerInfo.baseStats[stat]);
+		++numStats;
 		this.battlerInfo.stats[stat] = Math.round(this.battlerInfo.stats[stat]);
+		statSum += this.battlerInfo.stats[stat];
+		this.battlerInfo.baseStats[stat] = Math.round(this.battlerInfo.baseStats[stat]);
+		baseStatSum += this.battlerInfo.baseStats[stat];
 	}
+	this.battlerInfo.statAverage = Math.round(statSum / numStats);
+	this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
 };
 
 // .die() method
@@ -448,7 +456,7 @@ BattleUnit.prototype.tick = function()
 			}
 			
 			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
-			var nextActions = this.moveUsed.usable.use(this);
+			var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];
 			for (var i = 1; i < nextActions.length; ++i) {

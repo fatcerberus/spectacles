@@ -6,10 +6,10 @@
 RequireScript("Stat.js");
 
 // SkillUsable() constructor
-// Creates an object representing a usable battler skill.
+// Creates an object representing a learned battler skill.
 // Arguments:
 //     skillID: The ID of the skill as defined in the gamedef.
-//     level:   Optional. The starting level for the skill. (default: 1)
+//     level:   Optional. The starting proficiency level for the skill. (default: 1)
 function SkillUsable(skillID, level)
 {
 	level = level !== void null ? level : 1;
@@ -77,11 +77,12 @@ SkillUsable.prototype.peekActions = function()
 // .use() method
 // Utilizes the skill.
 // Arguments:
-//     unit: The battler using the skill.
+//     unit:    The battler using the skill.
+//     targets: An array of battler(s) to be targeted by the skill.
 // Returns:
 //     An array of battle actions to be executed. Unlike with peekActions(), the contents of the array may
-//     be freely modified without changing the skill definition.
-SkillUsable.prototype.use = function(unit)
+//     be safely modified without affecting the underlying skill definition.
+SkillUsable.prototype.use = function(unit, targets)
 {
 	if (!this.isUsable(unit)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
@@ -92,7 +93,11 @@ SkillUsable.prototype.use = function(unit)
 	}
 	unit.mpPool.use(this.mpCost(unit));
 	var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
-	var experience = Game.math.experience.skill(unit, this.skillInfo);
+	var targetInfos = [];
+	for (var i = 0; i < targets.length; ++i) {
+		targetInfos.push(targets[i].battlerInfo);
+	}
+	var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 	this.levelStat.grow(experience);
 	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
 	Console.append("level: " + this.levelStat.getValue());
