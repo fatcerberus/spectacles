@@ -412,7 +412,6 @@ BattleUnit.prototype.tick = function()
 				this.moveUsed = this.ai.getNextMove();
 			}
 			
-			this.skillUsed = this.moveUsed.usable instanceof SkillUsable ? this.moveUsed.usable : null;
 			var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];
@@ -427,17 +426,23 @@ BattleUnit.prototype.tick = function()
 			var eventData = { action: action };
 			this.raiseEvent('acting', eventData);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
-			if (unitsHit.length > 0 && this.skillUsed != null) {
+			if (this.moveUsed.usable.givesExperience && unitsHit.length > 0) {
 				var allEnemies = this.battle.enemiesOf(this);
+				var experience = {};
 				for (var i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-						for (var id in Game.namedStats) {
-							var experience = Game.math.experience.stat(id, unitsHit[i].battlerInfo);
-							this.stats[id].grow(experience);
-							Console.writeLine(this.name + " got " + experience + " EXP for " + Game.namedStats[id]);
-							Console.append("value: " + this.stats[id].getValue());
+						for (var statID in Game.namedStats) {
+							if (!(statID in experience)) {
+								experience[statID] = 0;
+							}
+							experience[statID] += Game.math.experience.stat(statID, unitsHit[i].battlerInfo);
 						}
 					}
+				}
+				for (var statID in experience) {
+					this.stats[statID].grow(experience[statID]);
+					Console.writeLine(this.name + " got " + experience[statID] + " EXP for " + Game.namedStats[statID]);
+					Console.append("value: " + this.stats[statID].getValue());
 				}
 			}
 			this.resetCounter(action.rank);

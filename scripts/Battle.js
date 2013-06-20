@@ -152,6 +152,7 @@ Battle.prototype.go = function()
 	this.ui.showTitle();
 	this.resume();
 	Threads.waitFor(battleThread);
+	Console.writeLine("Battle engine shutting down");
 	this.ui.dispose();
 	BGM.reset();
 	return this.result;
@@ -383,12 +384,14 @@ Battle.prototype.tick = function()
 			BGM.adjustVolume(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
+			Console.writeLine("All active party members have been killed");
 			return;
 		}
 		if (this.enemyUnits.length == 0) {
 			BGM.adjustVolume(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
+			Console.writeLine("All enemies have been killed");
 			return;
 		}
 	}

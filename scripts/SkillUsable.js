@@ -17,6 +17,7 @@ function SkillUsable(skillID, level)
 	if (!(skillID in Game.skills)) {
 		Abort("SkillUsable(): The skill definition '" + skillID + "' doesn't exist.");
 	}
+	this.givesExperience = true;
 	this.levelStat = new Stat(100, level);
 	this.name = Game.skills[skillID].name;
 	this.skillInfo = Game.skills[skillID];
@@ -87,7 +88,7 @@ SkillUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
 	}
-	Console.writeLine(unit.name + " using skill " + this.name);
+	Console.writeLine(unit.name + " is using skill " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {
 		Console.append("weapLv: " + unit.weapon.level);
 	}

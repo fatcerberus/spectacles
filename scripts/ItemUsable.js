@@ -12,6 +12,7 @@ function ItemUsable(itemID)
 	if (!(itemID in Game.items)) {
 		Abort("ItemUsable(): The item definition '" + itemID + "' doesn't exist.");
 	}
+	this.givesExperience = false;
 	this.isUnlimited = false;
 	this.itemDef = Game.items[itemID];
 	this.itemID = itemID;
@@ -73,7 +74,7 @@ ItemUsable.prototype.use = function(unit)
 	if (!this.isUsable(unit)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
-	Console.writeLine(unit.name + " using item " + this.name);
+	Console.writeLine(unit.name + " is using item " + this.name);
 	--this.usesLeft;
 	Console.append("usesLeft: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };

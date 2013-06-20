@@ -331,25 +331,25 @@ Game = {
 				this.lastSkillType = null;
 				this.multiplier = 1.0;
 			},
-			acting: function(unit, data) {
-				for (var i = 0; i < data.action.effects.length; ++i) {
-					var effect = data.action.effects[i];
+			acting: function(unit, eventData) {
+				for (var i = 0; i < eventData.action.effects.length; ++i) {
+					var effect = eventData.action.effects[i];
 					if (effect.type == 'damage') {
 						effect.power = Math.ceil(effect.power * this.multiplier);
 					}
 				}
 			},
-			useSkill: function(unit, data) {
-				this.multiplier = data.skill.category != this.lastSkillType ? 1.0
+			useSkill: function(unit, eventData) {
+				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
 					: this.multiplier * 0.75;
-				this.lastSkillType = data.skill.category;
+				this.lastSkillType = eventData.skill.category;
 			}
 		},
 		disarray: {
 			name: "Disarray",
 			category: 'debuff',
-			acting: function(unit, data) {
-				data.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+			acting: function(unit, eventData) {
+				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
 		},
 		drunk: {

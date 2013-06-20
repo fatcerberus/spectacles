@@ -25,7 +25,7 @@ Console = new (function()
 Console.initialize = function(numLines)
 {
 	this.numLines = numLines;
-	this.thread = Threads.createEntityThread(this, 100);
+	this.thread = Threads.createEntityThread(this, 101);
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2013 Power-Command");
 	this.writeLine("");

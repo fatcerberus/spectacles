@@ -26,6 +26,7 @@ GameOverScreen.prototype.render = function()
 
 GameOverScreen.prototype.show = function()
 {
+	Console.writeLine("Showing game over screen");
 	this.action = null;
 	this.mode = 'transitionIn';
 	if (DBG_DISABLE_TRANSITIONS) {
