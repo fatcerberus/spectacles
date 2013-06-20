@@ -11,7 +11,7 @@ RequireScript('lib/Scenario.js');
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TITLE_CARD = false;
+var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = false;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_SHOW_CONSOLE = false;
@@ -28,6 +28,52 @@ RequireScript('GameOverScreen.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
+
+// game() function
+// This is called by Sphere when the game is launched.
+function game()
+{
+	Engine.initialize(60);
+	Threads.initialize();
+	BGM.initialize();
+	Scenario.initialize();
+	var sceneThread = Threads.doWith(Scenario,
+		function() { this.updateAll(); return true; },
+		function() { this.renderAll(); }, 99
+	);
+	persist.init();
+	Console.initialize(19);
+	
+	if (DBG_SHOW_CONSOLE) {
+		Console.show();
+	}
+	if (!DBG_DISABLE_TITLE_CARD) {
+		BGM.change("SpectaclesTheme");
+		Engine.showLogo("TitleCard", 150);
+	}
+	while (true) {
+		var session = new TitleScreen("SpectaclesTheme").show();
+		var world = persist.getWorldState();
+		world.currentSession = session;
+		session.party.members.scott.items.push(new ItemUsable('alcohol'));
+		session.party.members.scott.items.push(new ItemUsable('tonic'));
+		session.party.members.scott.items.push(new ItemUsable('powerTonic'));
+		session.party.members.scott.items.push(new ItemUsable('holyWater'));
+		session.party.members.scott.items.push(new ItemUsable('vaccine'));
+		var doOver = false;
+		do {
+			var battleResult = new Battle(world.currentSession, 'headlessHorse').go();
+			if (battleResult == BattleResult.enemyWon) {
+				var action = new GameOverScreen().show();
+				doOver = action == GameOverAction.retry;
+			} else {
+				doOver = false;
+			}
+		} while (doOver);
+	}
+	
+	MapEngine("main.rmp", Engine.frameRate);
+}
 
 // PATCH! - Scenario.run() method
 // Scenario's built-in wait loop locks the Specs threader under most circumstances.
@@ -126,51 +172,4 @@ function delegate(o, method)
 	} else {
 		return null;
 	}
-}
-
-// game() function
-// This is called by Sphere when the game is launched.
-function game()
-{
-	Engine.initialize(60);
-	Threads.initialize();
-	BGM.initialize();
-	Scenario.initialize();
-	var sceneThread = Threads.doWith(Scenario,
-		function() { this.updateAll(); return true; },
-		function() { this.renderAll(); }, 99
-	);
-	persist.init();
-	Console.initialize(19);
-	
-	if (DBG_SHOW_CONSOLE) {
-		Console.show();
-	}
-	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.change("SpectaclesTheme");
-		Engine.showLogo("TitleCard", 150);
-	}
-	
-	while (true) {
-		var session = new TitleScreen("SpectaclesTheme").show();
-		var world = persist.getWorldState();
-		world.currentSession = session;
-		session.party.members.scott.items.push(new ItemUsable('alcohol'));
-		session.party.members.scott.items.push(new ItemUsable('tonic'));
-		session.party.members.scott.items.push(new ItemUsable('powerTonic'));
-		session.party.members.scott.items.push(new ItemUsable('holyWater'));
-		session.party.members.scott.items.push(new ItemUsable('vaccine'));
-		var doOver = false;
-		do {
-			var battleResult = new Battle(world.currentSession, 'robert2').go();
-			if (battleResult == BattleResult.enemyWon) {
-				var action = new GameOverScreen().show();
-				doOver = action == GameOverAction.retry;
-			} else {
-				doOver = false;
-			}
-		} while (doOver);
-	}
-	
-	MapEngine("main.rmp", Engine.frameRate);
 }

@@ -93,25 +93,29 @@ Threads.createEntityThread = function(entity, priority)
 // .doWith() method
 // Creates an improvised thread running in the context of a specified object.
 // Arguments:
-//     o:        The object to pass as 'this' to the updater/renderer.
-//     updater:  The update function for the new thread.
-//     renderer: Optional. The render function for the new thread.
-//     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
-//               later in a frame ("closer to the screen") than lower-priority ones. (Default: 0)
-Threads.doWith = function(o, updater, renderer, priority)
+//     o:            The object to pass as 'this' to the updater/renderer.
+//     updater:      The update function for the new thread.
+//     renderer:     Optional. The render function for the new thread.
+//     priority:     Optional. The render priority for the new thread. Higher-priority threads are rendered
+//                   later in a frame (closer to the player) than lower-priority ones. (default: 0)
+//     inputHandler: Optional. The input handler for the new thread.
+Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 {
-	if (renderer === void null) { renderer = null; }
-	if (priority === void null) { priority = 0; }
+	renderer = renderer !== void null ? renderer : null;
+	priority = priority !== void null ? priority : 0;
+	inputHandler = inputHandler !== void null ? inputHandler : null;
 	
 	updater = delegate(o, updater);
 	renderer = delegate(o, renderer);
+	inputHandler = delegate(o, inputHandler);
 	var newThread = {
 		id: this.nextThreadID,
-		updater: updater,
-		renderer: renderer,
-		inputHandler: null,
+		contextObject: o,
+		inputHandler: inputHandler,
+		isUpdating: false,
 		priority: priority,
-		isUpdating: false
+		renderer: renderer,
+		updater: updater
 	};
 	this.threads.push(newThread);
 	this.threads.sort(function(a, b) { return a.priority - b.priority; });

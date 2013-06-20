@@ -29,8 +29,10 @@ function StatusContext(statusID, unit)
 }
 
 // .beginCycle() method
-// Applies static effects defined for the status, such as stat modifiers. This method should
-// be called at the beginning of every CTB cycle.
+// Applies static effects defined for the status, such as stat modifiers.
+// Remarks:
+//     This method should be called at the beginning of every CTB cycle, after
+//     building the subject's battler info.
 StatusContext.prototype.beginCycle = function()
 {
 	if ('statModifiers' in this.statusDef) {

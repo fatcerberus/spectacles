@@ -33,6 +33,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
 	this.actionQueue = [];
 	this.actor = null;
+	this.affinities = [];
 	this.ai = null;
 	this.battle = battle;
 	this.battlerInfo = {};
@@ -72,6 +73,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
 		}
 		this.enemyInfo = Game.enemies[basis];
+		this.affinities = this.enemyInfo.damageModifiers;
 		this.ai = new BattleAI(this, battle, this.enemyInfo.strategize);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
@@ -195,6 +197,16 @@ BattleUnit.prototype.getLevel = function()
 	}
 };
 
+// .getStat() method
+// Gets the current value of one of the unit's stats, including buffs
+// and debuffs.
+// Arguments:
+//     statID: The ID of the stat, as defined in the gamedef.
+BattleUnit.prototype.getStat = function(statID)
+{
+	
+};
+
 // .growSkill() method
 // Adds experience to a party unit's existing skill or teaches it a new one.
 // Arguments:
@@ -302,7 +314,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 //     data:    An object containing data for the event.
 // Remarks:
 //     Event handlers can change the objects referenced in the data object, for example to change the effects of
-//     an action taken by the battler. If you pass in any objects from the gamedef, they should be cloned first to prevent
+//     an action taken by a battler. If you pass in any objects from the gamedef, they should be cloned first to prevent
 //     the event from inadvertantly modifying the original definition.
 BattleUnit.prototype.raiseEvent = function(eventID, data)
 {
@@ -318,6 +330,7 @@ BattleUnit.prototype.raiseEvent = function(eventID, data)
 BattleUnit.prototype.refreshInfo = function()
 {
 	this.battlerInfo.name = this.name;
+	this.battlerInfo.affinities = clone(this.affinities);
 	this.battlerInfo.health = Math.ceil(100 * this.hp / this.maxHP);
 	this.battlerInfo.level = this.getLevel();
 	this.battlerInfo.weapon = clone(this.weapon);

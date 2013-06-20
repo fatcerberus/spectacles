@@ -8,13 +8,15 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 50,
+	basePartyLevel: 8,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'maggie',
+		'bruce'
 	],
 	
 	namedStats: {
@@ -30,7 +32,8 @@ Game = {
 		fire: { name: "Fire", color: CreateColor(255, 0, 0, 255) },
 		ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
 		lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
-		earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) }
+		earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
+		fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) }
 	},
 	
 	weaponTypes: {
@@ -372,22 +375,32 @@ Game = {
 			name: "Frostbite",
 			category: 'affliction',
 			overrules: [ 'ignite' ],
-			initialize: function(unit, data) {
+			initialize: function(unit) {
 				this.multiplier = 1.0;
 			},
-			endTurn: function(unit, data) {
+			endTurn: function(unit, eventData) {
 				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
 				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
+			}
+		},
+		ghost: {
+			name: "Ghost",
+			category: 'affliction',
+			damaged: function(unit, eventData) {
+				// TODO: implement me!
+			},
+			takeAction: function(unit, eventData) {
+				// TODO: implement me!
 			}
 		},
 		ignite: {
 			name: "Ignite",
 			category: 'affliction',
 			overrules: [ 'frostbite' ],
-			initialize: function(unit, data) {
+			initialize: function(unit) {
 				this.multiplier = 1.0;
 			},
-			beginCycle: function(unit, data) {
+			beginCycle: function(unit, eventData) {
 				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
 				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
@@ -485,7 +498,14 @@ Game = {
 			var userInfo = actor.battlerInfo;
 			for (var i = 0; i < targets.length; ++i) {
 				var targetInfo = targets[i].battlerInfo;
-				var damage = Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power) / reducer;
+				var modifier = 1.0;
+				if (effect.damageType in targetInfo.affinities) {
+					modifier *= targetInfo.affinities[effect.damageType];
+				}
+				if ('element' in effect && effect.element in targetInfo.affinities) {
+					modifier *= targetInfo.affinities[effect.element];
+				}
+				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)) * modifier / reducer;
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), effect.damageType);
 			}
 		},
@@ -1009,6 +1029,7 @@ Game = {
 				agi: 70
 			},
 			damageModifiers: {
+				fire: 0.5,
 				ice: 2.0
 			},
 			immunities: [],
@@ -1033,6 +1054,9 @@ Game = {
 				agi: 75
 			},
 			immunities: [],
+			damageModifiers: {
+				fire: 2.0
+			},
 			weapon: 'rsbSword',
 			munchData: {
 				technique: 'omni',
@@ -1204,10 +1228,12 @@ Game = {
 			],
 			onStart: function() {
 				new Scenario()
-					.talk("Robert", 2.0, "Bruce's death changed nothing. If anything, it's made you far more reckless. Look around, "
+					.talk("Robert", 2.0,
+						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
 						+ "brazen as to face me alone?")
-					.talk("Scott", 2.0, "I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
+					.talk("Scott", 2.0,
+						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(1.0)
 					.adjustBGMVolume(0.0, 1.0)

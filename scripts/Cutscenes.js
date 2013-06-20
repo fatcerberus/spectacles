@@ -82,7 +82,9 @@ Scenario.defineCommand('talk',
 			.tween(state, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		state.mode = "fadein";
-		if (DBG_DISABLE_TEXTBOXES) state.mode = "finish";
+		if (DBG_DISABLE_TEXTBOXES) {
+			state.mode = "finish";
+		}
 		return true;
 	},
 	render: function(sceneState, state) {
