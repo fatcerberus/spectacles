@@ -8,7 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 51,
+	basePartyLevel: 8,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
@@ -384,8 +384,16 @@ Game = {
 		ghost: {
 			name: "Ghost",
 			category: 'affliction',
-			damaged: function(unit, eventData) {
-				// TODO: implement me!
+			attacked: function(unit, eventData) {
+				for (var i = 0; i < eventData.action.effects.length; ++i) {
+					var effect = eventData.action.effects[i];
+					if (effect.type !== 'damage' || effect.damageType === 'magic') {
+						continue;
+					}
+					if (eventData.actingUnitInfo.statuses.indexOf('ghost') === -1) {
+						eventData.action.accuracyRate = 0.0;
+					}
+				}
 			},
 			takeAction: function(unit, eventData) {
 				// TODO: implement me!
@@ -914,6 +922,26 @@ Game = {
 				}
 			]
 		},
+		trample: {
+			name: "Trample",
+			category: 'physical',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Trample",
+					rank: 2,
+					accuracyType: 'physical',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'physical',
+							power: 50
+						}
+					]
+				}
+			]
+		},
 		upheaval: {
 			name: "Upheaval",
 			category: 'magic',
@@ -1212,6 +1240,7 @@ Game = {
 					.talk("Scott", 2.0, "Barbequed... littermates?")
 					.talk("Elysia", 2.0, "Focus, guys!")
 					.run(true);
+				this.playerUnits[0].addStatus('ghost');
 			}
 		},
 		robert2: {

@@ -16,11 +16,11 @@ function Session()
 	}
 }
 
-// Session.load() constructor
+// Session.fromFile() constructor
 // Loads a session-in-progress from a file.
 // Arguments:
 //     file: The name of the savefile to load the session from.
-Session.load = function(file)
+Session.fromFile = function(file)
 {
 	//TODO: implement me!
 };

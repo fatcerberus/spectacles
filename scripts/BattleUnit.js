@@ -197,16 +197,6 @@ BattleUnit.prototype.getLevel = function()
 	}
 };
 
-// .getStat() method
-// Gets the current value of one of the unit's stats, including buffs
-// and debuffs.
-// Arguments:
-//     statID: The ID of the stat, as defined in the gamedef.
-BattleUnit.prototype.getStat = function(statID)
-{
-	
-};
-
 // .growSkill() method
 // Adds experience to a party unit's existing skill or teaches it a new one.
 // Arguments:
@@ -338,6 +328,10 @@ BattleUnit.prototype.refreshInfo = function()
 			this.character.baseStats[stat] :
 			this.enemyInfo.baseStats[stat];
 		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
+	}
+	this.battlerInfo.statuses = [];
+	for (var i = 0; i < this.statuses.length; ++i) {
+		this.battlerInfo.statuses.push(this.statuses[i].statusID);
 	}
 };
 

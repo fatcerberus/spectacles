@@ -293,25 +293,29 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
+	for (var i = 0; i < targetUnits.length; ++i) {
+		var eventData = {
+			actingUnitInfo: actingUnit.battlerInfo,
+			action: action
+		};
+		targetUnits[i].raiseEvent('attacked', eventData);
+	}
 	if (action.effects === null) {
 		return [];
 	}
 	var targetsHit = [];
-	if ('accuracyType' in action) {
-		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
-		for (var i = 0; i < targetUnits.length; ++i) {
-			var odds = Math.min(Math.max(Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) * accuracyRate, 0.0), 1.0);
-			Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
-			if (Math.random() < odds) {
-				Console.append("hit");
-				targetsHit.push(targetUnits[i]);
-			} else {
-				Console.append("miss");
-				targetUnits[i].evade(actingUnit);
-			}
+	var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
+	for (var i = 0; i < targetUnits.length; ++i) {
+		var baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
+		var odds = Math.min(Math.max(baseOdds * accuracyRate, 0.0), 1.0);
+		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
+		if (Math.random() < odds) {
+			Console.append("hit");
+			targetsHit.push(targetUnits[i]);
+		} else {
+			Console.append("miss");
+			targetUnits[i].evade(actingUnit);
 		}
-	} else {
-		targetsHit = targetUnits;
 	}
 	if (targetsHit.length == 0) {
 		return [];
