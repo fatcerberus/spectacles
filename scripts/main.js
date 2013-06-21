@@ -3,6 +3,8 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
+RequireScript('lib/JS.js');
+
 RequireScript('lib/json2.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/persist.js');
@@ -12,7 +14,7 @@ var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
-var DBG_DISABLE_TITLE_SCREEN = false;
+var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_SHOW_CONSOLE = false;
 

@@ -15,8 +15,8 @@ Game = {
 	
 	initialPartyMembers: [
 		'scott',
-		'maggie',
-		'bruce'
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -379,7 +379,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			endTurn: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'special' ]);
 				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
 			}
 		},
@@ -401,7 +401,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, "special");
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'special' ]);
 				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
 		},
@@ -434,7 +434,7 @@ Game = {
 				unit.liftStatus('offGuard');
 			},
 			damaged: function(unit, eventData) {
-				if (eventData.tag != "status") {
+				if (eventData.tags.indexOf('special') == -1) {
 					eventData.amount *= 1.5;
 				}
 			}
@@ -443,7 +443,7 @@ Game = {
 			name: "Protect",
 			category: 'buff',
 			damaged: function(unit, eventData) {
-				if (eventData.tag != 'special') {
+				if (eventData.tags.indexOf('special') == -1) {
 					eventData.amount *= 0.5;
 				}
 			}
@@ -464,10 +464,10 @@ Game = {
 					data.battlerInfo.stats.str /= 2;
 					data.battlerInfo.stats.mag /= 2;
 				}
-				unit.takeDamage(0.025 * unit.maxHP, "special");
+				unit.takeDamage(0.025 * unit.maxHP, [ 'special' ]);
 			},
-			damaged: function(unit, data) {
-				data.suppressKO = data.tag != 'physical' && data.tag != 'sword';
+			damaged: function(unit, eventData) {
+				eventData.suppressKO = eventData.tags.indexOf('physical') == -1 && eventData.tags.indexOf('sword') == -1;
 			},
 			healed: function(unit, data) {
 				data.amount = -Math.abs(data.amount);
@@ -498,15 +498,12 @@ Game = {
 			var userInfo = actor.battlerInfo;
 			for (var i = 0; i < targets.length; ++i) {
 				var targetInfo = targets[i].battlerInfo;
-				var modifier = 1.0;
-				if (effect.damageType in targetInfo.affinities) {
-					modifier *= targetInfo.affinities[effect.damageType];
+				var damageTags = [ effect.damageType ];
+				if ('element' in effect) {
+					damageTags.push(effect.element);
 				}
-				if ('element' in effect && effect.element in targetInfo.affinities) {
-					modifier *= targetInfo.affinities[effect.element];
-				}
-				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)) * modifier / reducer;
-				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), effect.damageType);
+				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)) / reducer;
+				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), damageTags);
 			}
 		},
 		devour: function(actor, targets, effect) {
@@ -523,7 +520,7 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(targets[i].maxHP);
+				targets[i].takeDamage(targets[i].maxHP, 'deathblow');
 			}
 		},
 		liftStatus: function(actor, targets, effect) {

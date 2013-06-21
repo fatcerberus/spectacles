@@ -254,17 +254,14 @@ BattleUnit.prototype.hasStatus = function(statusID)
 // Restores a specified amount of the battler's HP.
 // Arguments:
 //     amount:     The number of hit points to restore.
-//     tag:        Optional. An additional piece of data that statuses can check to determine how to
-//                 respond to the healing.
 //     isPriority: Optional. If true, specifies priority healing. Priority healing is unconditional;
 //                 statuses are not allowed to act on it and as such no event will be raised. (default: false)
-BattleUnit.prototype.heal = function(amount, tag, isPriority)
+BattleUnit.prototype.heal = function(amount, isPriority)
 {
-	tag = tag !== void null ? tag : null;
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	if (!isPriority) {
-		var eventData = { amount: Math.round(amount), tag: tag };
+		var eventData = { amount: Math.round(amount) };
 		this.raiseEvent('healed', eventData);
 		amount = Math.round(eventData.amount);
 	}
@@ -361,20 +358,27 @@ BattleUnit.prototype.resetCounter = function(rank)
 // Inflicts damage on the battler.
 // Arguments:
 //     amount:     The amount of damage to inflict.
-//     tag:        Optional. An additional piece of data that statuses can check to determine how to
-//                 respond to the damage.
+//     tags:       Optional. An array of tags to associate with the damage event. The damage output
+//                 will change if any of the tags are found in the unit's list of affinities.
 //     isPriority: Optional. If true, specifies priority damage. Priority damage is unconditional;
 //                 statuses are not allowed to act on it and as such no 'damaged' event will be raised.
 //                 (default: false)
-BattleUnit.prototype.takeDamage = function(amount, tag, isPriority)
+BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 {
-	tag = tag !== void null ? tag : null;
+	tags = tags !== void null ? tags : [];
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
+	var multiplier = 1.0;
+	for (var i = 0; i < tags.length; ++i) {
+		if (tags[i] in this.affinities) {
+			multiplier *= this.affinities[tags[i]];
+		}
+	}
+	amount = Math.round(Math.max(amount * multiplier, 1));
 	var suppressKO = false;
 	if (!isPriority) {
-		var eventData = { amount: amount, tag: tag, suppressKO: false };
+		var eventData = { amount: amount, tags: tags, suppressKO: false };
 		this.raiseEvent('damaged', eventData);
 		amount = Math.round(eventData.amount);
 		suppressKO = eventData.suppressKO;
