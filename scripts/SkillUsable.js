@@ -17,8 +17,13 @@ function SkillUsable(skillID, level)
 	if (!(skillID in Game.skills)) {
 		Abort("SkillUsable(): The skill definition '" + skillID + "' doesn't exist.");
 	}
+	this.levelUpTable = [];
+	for (var i = 1; i <= 100; ++i) {
+		var xpNeeded = Math.ceil(i > 1 ? Math.pow(i, 3) : 0);
+		this.levelUpTable[i] = xpNeeded;
+	}
+	this.experience = this.levelUpTable[level];
 	this.givesExperience = true;
-	this.levelStat = new Stat(100, level);
 	this.name = Game.skills[skillID].name;
 	this.skillInfo = Game.skills[skillID];
 	this.skillID = skillID;
@@ -28,7 +33,12 @@ function SkillUsable(skillID, level)
 // Returns the skill's current growth level.
 SkillUsable.prototype.getLevel = function()
 {
-	return this.levelStat.getValue();
+	for (var level = 100; level >= 2; --level) {
+		if (this.experience >= this.levelUpTable[level]) {
+			return level;
+		}
+	}
+	return 1;
 };
 
 // .getRank() method
@@ -99,9 +109,9 @@ SkillUsable.prototype.use = function(unit, targets)
 		targetInfos.push(targets[i].battlerInfo);
 	}
 	var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
-	this.levelStat.grow(experience);
+	this.experience = Math.min(this.experience + experience, this.levelUpTable[100]);
 	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
-	Console.append("lv: " + this.levelStat.getValue());
+	Console.append("lv: " + this.getLevel());
 	var eventData = { skill: clone(this.skillInfo) };
 	unit.raiseEvent('useSkill', eventData);
 	return eventData.skill.actions;

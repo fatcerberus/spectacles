@@ -866,7 +866,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'pistol',
-							power: 40
+							power: 20
 						}
 					]
 				}
