@@ -101,7 +101,7 @@ SkillUsable.prototype.use = function(unit, targets)
 	var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 	this.levelStat.grow(experience);
 	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
-	Console.append("level: " + this.levelStat.getValue());
+	Console.append("lv: " + this.levelStat.getValue());
 	var eventData = { skill: clone(this.skillInfo) };
 	unit.raiseEvent('useSkill', eventData);
 	return eventData.skill.actions;

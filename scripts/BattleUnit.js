@@ -131,7 +131,7 @@ BattleUnit.prototype.addStatus = function(statusID)
 	}
 	var effect = new StatusContext(eventData.statusID, this);
 	this.statuses.push(effect);
-	Console.writeLine(this.name + " afflicted with status " + effect.name);
+	Console.writeLine(this.name + " took on status " + effect.name);
 };
 
 // .beginCycle() method
@@ -271,7 +271,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		Console.writeLine(this.name + " healed for " + amount + " HP");
 	} else if (amount < 0) {
-		this.takeDamage(-amount, null, true);
+		this.takeDamage(-amount, [], true);
 	}
 };
 
@@ -290,14 +290,14 @@ BattleUnit.prototype.isPartyMember = function()
 };
 
 // .liftStatus() method
-// Nullifies a status effects's influence on the battler.
+// Removes a status effect from the battle unit.
 // Arguments:
 //     statusID: The status ID of the status effect to remove.
 BattleUnit.prototype.liftStatus = function(statusID)
 {
 	for (var i = 0; i < this.statuses.length; ++i) {
 		if (statusID == this.statuses[i].statusID) {
-			Console.writeLine(this.name + " stripped of status " + this.statuses[i].name);
+			Console.writeLine(this.name + " lost status " + this.statuses[i].name);
 			this.statuses.splice(i, 1);
 			--i; continue;
 		}

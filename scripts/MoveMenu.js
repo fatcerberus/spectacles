@@ -191,6 +191,7 @@ MoveMenu.prototype.getInput = function()
 			this.showMoveList.run();
 			this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
 		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isEnabled) {
+			this.drawers[this.topCursor].cursor = this.moveCursor;
 			this.selection = this.moveMenu[this.moveCursor].usable;
 			this.showMoveList.stop();
 			this.chooseMove.run();
@@ -224,13 +225,10 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.drawers = [
-		{ name: "Skill", contents: this.unit.skills },
-		{ name: "Item", contents: this.unit.items },
-		{ name: "Defend", contents: [] }
+		{ name: "Skill", contents: this.unit.skills, cursor: 0 },
+		{ name: "Item", contents: this.unit.items, cursor: 0 },
+		{ name: "Defend", contents: [], cursor: 0 }
 	];
-	for (var i = 0; i < this.drawers.length; ++i) {
-		this.drawers[i].cursor = 0;
-	}
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;

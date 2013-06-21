@@ -39,7 +39,7 @@ function Battle(session, battleID)
 	this.timer = 0;
 	Console.writeLine("");
 	Console.writeLine("Battle session prepared");
-	Console.append("battle def: " + this.battleID);
+	Console.append("battleID: " + this.battleID);
 }
 
 // .addCondition() method
@@ -100,7 +100,8 @@ Battle.prototype.go = function()
 	if (DBG_DISABLE_BATTLES) {
 		return BattleResult.playerWon;
 	}
-	Console.writeLine("Starting battle '" + this.battleID + "'");
+	Console.writeLine("Starting battle engine");
+	Console.append("battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();

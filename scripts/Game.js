@@ -8,15 +8,13 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 8,
+	basePartyLevel: 51,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -379,7 +377,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			endTurn: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'special' ]);
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'ice', 'special' ]);
 				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
 			}
 		},
@@ -401,7 +399,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'special' ]);
+				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'fire', 'special' ]);
 				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
 			}
 		},
@@ -520,7 +518,7 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(targets[i].maxHP, 'deathblow');
+				targets[i].takeDamage(targets[i].maxHP, [ 'deathblow' ]);
 			}
 		},
 		liftStatus: function(actor, targets, effect) {

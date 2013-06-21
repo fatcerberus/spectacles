@@ -62,7 +62,7 @@ StatusContext.prototype.invoke = function(eventID, data)
 		return;
 	}
 	Console.writeLine("Invoking " + this.unit.name + "->" + this.name);
-	Console.append("event: " + eventID);
+	Console.append("evt: " + eventID);
 	this.statusDef[eventID].call(this.context, this.unit, data);
 };
 
