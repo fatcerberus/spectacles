@@ -479,14 +479,15 @@ Game = {
 				this.turnsTaken = 0;
 			},
 			beginTurn: function(unit, eventData) {
-				++this.turnsTaken;
-				eventData.skip = true;
-				if (Math.random() < this.turnsTaken / 100) {
+				if (Math.random() < 5 * this.turnsTaken / 100) {
 					unit.liftStatus('sleep');
+				} else {
+					eventData.skip = true;
 				}
+				++this.turnsTaken;
 			},
 			damaged: function(unit, eventData) {
-				if (Math.random() < 5 * this.turnsTaken / 100
+				if (Math.random() < 10 * this.turnsTaken / 100
 				    && eventData.tags.indexOf('magic') === -1
 				    && eventData.tags.indexOf('special') === -1)
 				{
@@ -1299,7 +1300,6 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
-				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}

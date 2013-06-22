@@ -414,8 +414,10 @@ BattleUnit.prototype.tick = function()
 			return true;
 		}
 		if (eventData.skip) {
-			this.actionQueue = [];
-			Console.writeLine("Cleared " + this.name + "'s action queue");
+			if (this.actionQueue.length > 0) {
+				this.actionQueue = [];
+				Console.writeLine("Cleared " + this.name + "'s action queue");
+			}
 			Console.writeLine(this.name + "'s turn was skipped");
 			this.resetCounter(Game.defaultMoveRank);
 			this.battle.resume();
