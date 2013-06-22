@@ -384,6 +384,17 @@ Game = {
 		ghost: {
 			name: "Ghost",
 			category: 'affliction',
+			aiming: function(unit, eventData) {
+				for (var i = 0; i < eventData.action.effects.length; ++i) {
+					var effect = eventData.action.effects[i];
+					if (effect.type !== 'damage' || effect.damageType === 'magic') {
+						continue;
+					}
+					if (eventData.targetInfo.statuses.indexOf('ghost') === -1) {
+						eventData.accuracyRate = 0.0;
+					}
+				}
+			},
 			attacked: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
 					var effect = eventData.action.effects[i];
@@ -395,9 +406,6 @@ Game = {
 					}
 				}
 			},
-			takeAction: function(unit, eventData) {
-				// TODO: implement me!
-			}
 		},
 		ignite: {
 			name: "Ignite",

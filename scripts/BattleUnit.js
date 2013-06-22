@@ -434,7 +434,10 @@ BattleUnit.prototype.tick = function()
 			}
 		}
 		if (this.isAlive()) {
-			var eventData = { action: action };
+			var eventData = { action: action, targetsInfo: [] };
+			for (var i = 0; i < this.moveUsed.targets.length; ++i) {
+				eventData.targetsInfo.push(this.moveUsed.targets[i].battlerInfo);
+			}
 			this.raiseEvent('acting', eventData);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (this.moveUsed.usable.givesExperience && unitsHit.length > 0) {
