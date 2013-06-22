@@ -407,9 +407,19 @@ BattleUnit.prototype.tick = function()
 	if (this.counter == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
-		this.raiseEvent('beginTurn');
+		var eventData = { skip: false };
+		this.raiseEvent('beginTurn', eventData);
 		if (!this.isAlive()) {
-			return false;
+			this.battle.resume();
+			return true;
+		}
+		if (eventData.skip) {
+			this.actionQueue = [];
+			Console.writeLine("Cleared " + this.name + "'s action queue");
+			Console.writeLine(this.name + "'s turn was skipped");
+			this.resetCounter(Game.defaultMoveRank);
+			this.battle.resume();
+			return true;
 		}
 		var action = null;
 		if (this.actionQueue.length > 0) {
@@ -422,7 +432,6 @@ BattleUnit.prototype.tick = function()
 			} else {
 				this.moveUsed = this.ai.getNextMove();
 			}
-			
 			var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 			var action = nextActions[0];

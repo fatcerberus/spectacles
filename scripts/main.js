@@ -64,7 +64,7 @@ function game()
 		session.party.members.scott.items.push(new ItemUsable('vaccine'));
 		var doOver = false;
 		do {
-			var battleResult = new Battle(world.currentSession, 'headlessHorse').go();
+			var battleResult = new Battle(world.currentSession, 'robert2').go();
 			if (battleResult == BattleResult.enemyWon) {
 				var action = new GameOverScreen().show();
 				doOver = action == GameOverAction.retry;

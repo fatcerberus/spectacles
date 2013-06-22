@@ -8,7 +8,7 @@ RequireScript('TurnPreview.js');
 RequireScript('lib/kh2Bar.js');
 
 // BattleHUD() constructor
-// Creates an object representing the battle screen heads-up display (HUD).
+// Creates an object representing the in-battle heads-up display (HUD).
 // Arguments:
 //     partyMaxMP: The party's current MP capacity.
 function BattleHUD(partyMaxMP)

@@ -8,7 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 8,
+	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
@@ -472,6 +472,28 @@ Game = {
 				unit.heal(unit.maxHP * 0.01);
 			}
 		},
+		sleep: {
+			name: "Sleep",
+			category: 'affliction',
+			initialize: function(unit) {
+				this.turnsTaken = 0;
+			},
+			beginTurn: function(unit, eventData) {
+				++this.turnsTaken;
+				eventData.skip = true;
+				if (Math.random() < this.turnsTaken / 100) {
+					unit.liftStatus('sleep');
+				}
+			},
+			damaged: function(unit, eventData) {
+				if (Math.random() < 5 * this.turnsTaken / 100
+				    && eventData.tags.indexOf('magic') === -1
+				    && eventData.tags.indexOf('special') === -1)
+				{
+					unit.liftStatus('sleep');
+				}
+			}
+		},
 		skeleton: {
 			name: "Skeleton",
 			category: 'undead',
@@ -484,7 +506,8 @@ Game = {
 				unit.takeDamage(0.025 * unit.maxHP, [ 'special' ]);
 			},
 			damaged: function(unit, eventData) {
-				eventData.suppressKO = eventData.tags.indexOf('physical') == -1 && eventData.tags.indexOf('sword') == -1;
+				eventData.suppressKO = eventData.tags.indexOf('physical') == -1
+					&& eventData.tags.indexOf('sword') == -1;
 			},
 			healed: function(unit, data) {
 				data.amount = -Math.abs(data.amount);
@@ -1251,7 +1274,6 @@ Game = {
 					.talk("Scott", 2.0, "Barbequed... littermates?")
 					.talk("Elysia", 2.0, "Focus, guys!")
 					.run(true);
-				this.playerUnits[0].addStatus('ghost');
 			}
 		},
 		robert2: {
@@ -1277,6 +1299,7 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
+				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}

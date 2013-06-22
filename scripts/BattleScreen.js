@@ -7,7 +7,7 @@ RequireScript('BattleActor.js');
 RequireScript('BattleHUD.js');
 
 // BattleScreen() constructor
-// Creates an object representing a battle screen.
+// Creates an object representing the battle screen.
 // Arguments:
 //     partyMaxMP:  The party's current MP capacity.
 function BattleScreen(partyMaxMP)
