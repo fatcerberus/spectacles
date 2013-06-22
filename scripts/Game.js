@@ -362,8 +362,11 @@ Game = {
 			initialize: function(unit) {
 				this.turnsTaken = 0;
 			},
-			acting: function(unit, data) {
-				data.action.rank = Math.max(data.action.rank + 1, 1);
+			acting: function(unit, eventData) {
+				eventData.action.rank = eventData.action.rank + 1;
+			},
+			aiming: function(unit, eventData) {
+				eventData.accuracyRate /= 1.5;
 			},
 			endTurn: function(unit, eventData) {
 				++this.turnsTaken;
