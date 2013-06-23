@@ -363,7 +363,8 @@ Game = {
 				this.turnsTaken = 0;
 			},
 			acting: function(unit, eventData) {
-				eventData.action.rank = eventData.action.rank + 1;
+				var rankOffset = Math.min(Math.floor(Math.random() * 3), 2) - 1;
+				eventData.action.rank += rankOffset;
 			},
 			aiming: function(unit, eventData) {
 				eventData.accuracyRate /= 1.5;
@@ -1302,7 +1303,6 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
-				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}
