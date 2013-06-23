@@ -404,7 +404,7 @@ BattleUnit.prototype.tick = function()
 		return false;
 	}
 	--this.counter;
-	if (this.counter == 0) {
+	if (this.counter <= 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
 		var eventData = { skip: false };
@@ -450,6 +450,7 @@ BattleUnit.prototype.tick = function()
 				eventData.targetsInfo.push(this.moveUsed.targets[i].battlerInfo);
 			}
 			this.raiseEvent('acting', eventData);
+			eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
 			if (this.moveUsed.usable.givesExperience && unitsHit.length > 0) {
 				var allEnemies = this.battle.enemiesOf(this);
