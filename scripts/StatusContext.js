@@ -18,6 +18,7 @@ function StatusContext(statusID, unit)
 	this.statusDef = Game.statuses[statusID];
 	this.statusID = statusID;
 	this.unit = unit;
+	Console.writeLine("Initializing status context " + unit.name + "->" + this.name);
 	if ('overrules' in this.statusDef) {
 		for (var i = 0; i < this.statusDef.overrules.length; ++i) {
 			this.unit.liftStatus(this.statusDef.overrules[i]);

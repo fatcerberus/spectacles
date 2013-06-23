@@ -476,22 +476,24 @@ Game = {
 			name: "Sleep",
 			category: 'affliction',
 			initialize: function(unit) {
-				this.turnsTaken = 0;
+				unit.resetCounter(Infinity);
+				this.wakeChance = 0.0;
 			},
-			beginTurn: function(unit, eventData) {
-				if (Math.random() < 5 * this.turnsTaken / 100) {
+			beginCycle: function(unit, eventData) {
+				if (Math.random() < this.wakeChance) {
 					unit.liftStatus('sleep');
-				} else {
-					eventData.skip = true;
+					unit.resetCounter(Game.defaultMoveRank);
 				}
-				++this.turnsTaken;
+				this.wakeChance += 0.05;
 			},
 			damaged: function(unit, eventData) {
-				if (Math.random() < 10 * this.turnsTaken / 100
+				var healthLost = 100 * eventData.amount / unit.maxHP;
+				if (Math.random() < healthLost * this.wakeChance
 				    && eventData.tags.indexOf('magic') === -1
 				    && eventData.tags.indexOf('special') === -1)
 				{
 					unit.liftStatus('sleep');
+					unit.resetCounter(Game.defaultMoveRank);
 				}
 			}
 		},
@@ -1300,6 +1302,7 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
+				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}

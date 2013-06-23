@@ -105,7 +105,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.actor.enter(true);
 	}
 	this.resetCounter(Game.defaultMoveRank);
-	var unitType = this.partyMember != null ? "party" : "AI";
+	var unitType = this.partyMember != null ? "player" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 }

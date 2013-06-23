@@ -227,7 +227,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	
 	var forecast = [];
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	for (var turnIndex = 0; turnIndex < 7; ++turnIndex) {
+	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
 				var unit = unitLists[iList][i];
