@@ -105,7 +105,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.actor.enter(true);
 	}
 	this.resetCounter(Game.defaultMoveRank);
-	var unitType = this.partyMember != null ? "player" : "AI";
+	var unitType = this.ai === null ? "player" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("maxHP: " + this.maxHP);
 }
@@ -343,7 +343,7 @@ BattleUnit.prototype.refreshInfo = function()
 //           wait for its next turn.
 BattleUnit.prototype.resetCounter = function(rank)
 {
-	this.counter = Game.math.timeUntilNextTurn(this.battlerInfo, rank);
+	this.counter = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 0);
 	Console.writeLine(this.name + "'s CV reset to " + this.counter);
 	Console.append("rank: " + rank);
 };
@@ -508,7 +508,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 		if (nextActions !== null && i <= nextActions.length) {
 			rank = nextActions[i - 1].rank;
 		}
-		timeLeft += Game.math.timeUntilNextTurn(this.battlerInfo, rank);
+		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 0);
 	}
 	return timeLeft;
 }

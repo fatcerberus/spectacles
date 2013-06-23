@@ -485,11 +485,11 @@ Game = {
 					unit.liftStatus('sleep');
 					unit.resetCounter(Game.defaultMoveRank);
 				}
-				this.wakeChance += 0.05;
+				this.wakeChance += 0.01;
 			},
 			damaged: function(unit, eventData) {
 				var healthLost = 100 * eventData.amount / unit.maxHP;
-				if (Math.random() < healthLost * this.wakeChance
+				if (Math.random() < healthLost * 5 * this.wakeChance
 				    && eventData.tags.indexOf('magic') === -1
 				    && eventData.tags.indexOf('special') === -1)
 				{
@@ -1303,6 +1303,8 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
+				this.playerUnits[0].addStatus('drunk');
+				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}
