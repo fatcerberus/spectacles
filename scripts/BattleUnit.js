@@ -343,7 +343,7 @@ BattleUnit.prototype.refreshInfo = function()
 //           wait for its next turn.
 BattleUnit.prototype.resetCounter = function(rank)
 {
-	this.counter = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 0);
+	this.counter = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
 	Console.writeLine(this.name + "'s CV reset to " + this.counter);
 	Console.append("rank: " + rank);
 };
@@ -404,7 +404,7 @@ BattleUnit.prototype.tick = function()
 		return false;
 	}
 	--this.counter;
-	if (this.counter <= 0) {
+	if (this.counter == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
 		var eventData = { skip: false };
@@ -508,7 +508,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 		if (nextActions !== null && i <= nextActions.length) {
 			rank = nextActions[i - 1].rank;
 		}
-		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 0);
+		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
 	}
 	return timeLeft;
 }

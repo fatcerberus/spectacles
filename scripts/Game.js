@@ -360,7 +360,7 @@ Game = {
 				foc: 0.5
 			},
 			initialize: function(unit) {
-				this.turnsTaken = 0;
+				this.sleepChance = 0.0;
 			},
 			acting: function(unit, eventData) {
 				var rankOffset = Math.min(Math.floor(Math.random() * 3), 2) - 1;
@@ -370,7 +370,11 @@ Game = {
 				eventData.accuracyRate /= 1.5;
 			},
 			endTurn: function(unit, eventData) {
-				++this.turnsTaken;
+				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
+				if (Math.random() < this.sleepChance) {
+					unit.addStatus('sleep');
+					unit.liftStatus('drunk');
+				}
 			}
 		},
 		frostbite: {
