@@ -373,7 +373,6 @@ Game = {
 				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
 				if (Math.random() < this.sleepChance) {
 					unit.addStatus('sleep');
-					unit.liftStatus('drunk');
 				}
 			}
 		},
@@ -480,8 +479,9 @@ Game = {
 		sleep: {
 			name: "Sleep",
 			category: 'affliction',
+			overrules: [ 'drunk' ],
 			initialize: function(unit) {
-				unit.actor.animate('snore');
+				unit.actor.animate('sleep');
 				this.wakeChance = 0.0;
 			},
 			beginCycle: function(unit, eventData) {

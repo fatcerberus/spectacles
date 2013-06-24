@@ -64,7 +64,9 @@ StatusContext.prototype.invoke = function(eventID, data)
 	}
 	Console.writeLine("Invoking " + this.unit.name + "->" + this.name);
 	Console.append("evt: " + eventID);
+	this.unit.battle.suspend();
 	this.statusDef[eventID].call(this.context, this.unit, data);
+	this.unit.battle.resume();
 };
 
 // .overrules() method

@@ -33,8 +33,16 @@ function BattleActor(name, position, row, isEnemy)
 //     animationID: The ID of the animation to perform.
 BattleActor.prototype.animate = function(animationID)
 {
-	if (animationID == 'die') {
-		this.isVisible = false;
+	// TODO: implement me!
+	switch (animationID) {
+		case 'die':
+			this.isVisible = false;
+			break;
+		case 'sleep':
+			new Scenario()
+				.talk("maggie", 2.0, this.name + " fell asleep! Hey, does that mean I get to eat him now?")
+				.run(true);
+			break;
 	}
 };
 
