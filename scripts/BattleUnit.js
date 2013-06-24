@@ -407,13 +407,13 @@ BattleUnit.prototype.tick = function()
 	if (this.counter == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
-		var eventData = { skip: false };
+		var eventData = { skipTurn: false };
 		this.raiseEvent('beginTurn', eventData);
 		if (!this.isAlive()) {
 			this.battle.resume();
 			return true;
 		}
-		if (eventData.skip) {
+		if (eventData.skipTurn) {
 			if (this.actionQueue.length > 0) {
 				this.actionQueue = [];
 				Console.writeLine("Cleared " + this.name + "'s action queue");

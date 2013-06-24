@@ -367,7 +367,7 @@ Game = {
 				eventData.action.rank += rankOffset;
 			},
 			aiming: function(unit, eventData) {
-				eventData.accuracyRate /= 1.5;
+				eventData.aimRate /= 1.5;
 			},
 			endTurn: function(unit, eventData) {
 				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
@@ -399,7 +399,7 @@ Game = {
 						continue;
 					}
 					if (eventData.targetInfo.statuses.indexOf('ghost') === -1) {
-						eventData.accuracyRate = 0.0;
+						eventData.aimRate = 0.0;
 					}
 				}
 			},
@@ -413,7 +413,7 @@ Game = {
 						eventData.action.accuracyRate = 0.0;
 					}
 				}
-			},
+			}
 		},
 		ignite: {
 			name: "Ignite",
@@ -473,7 +473,7 @@ Game = {
 		reGen: {
 			name: "ReGen",
 			category: 'buff',
-			beginCycle: function(unit, data) {
+			beginCycle: function(unit, eventData) {
 				unit.heal(unit.maxHP * 0.01);
 			}
 		},
@@ -481,15 +481,17 @@ Game = {
 			name: "Sleep",
 			category: 'affliction',
 			initialize: function(unit) {
-				unit.resetCounter(Infinity);
 				this.wakeChance = 0.0;
 			},
 			beginCycle: function(unit, eventData) {
 				if (Math.random() < this.wakeChance) {
 					unit.liftStatus('sleep');
-					unit.resetCounter(Game.defaultMoveRank);
 				}
 				this.wakeChance += 0.01;
+			},
+			beginTurn: function(unit, eventData) {
+				eventData.skipTurn = true;
+				unit.actor.animate("snore");
 			},
 			damaged: function(unit, eventData) {
 				var healthLost = 100 * eventData.amount / unit.maxHP;
@@ -498,7 +500,6 @@ Game = {
 				    && eventData.tags.indexOf('special') === -1)
 				{
 					unit.liftStatus('sleep');
-					unit.resetCounter(Game.defaultMoveRank);
 				}
 			}
 		},
@@ -506,31 +507,32 @@ Game = {
 			name: "Skeleton",
 			category: 'undead',
 			overrules: [ 'zombie' ],
-			beginCycle: function(unit, data) {
-				if (data.battlerInfo.health <= 0) {
-					data.battlerInfo.stats.str /= 2;
-					data.battlerInfo.stats.mag /= 2;
+			beginCycle: function(unit, eventData) {
+				if (eventData.battlerInfo.health <= 0) {
+					eventData.battlerInfo.stats.str /= 2;
+					eventData.battlerInfo.stats.mag /= 2;
 				}
 				unit.takeDamage(0.025 * unit.maxHP, [ 'special' ]);
 			},
 			damaged: function(unit, eventData) {
-				eventData.suppressKO = eventData.tags.indexOf('physical') == -1
+				eventData.suppressKO =
+					eventData.tags.indexOf('physical') == -1
 					&& eventData.tags.indexOf('sword') == -1;
 			},
-			healed: function(unit, data) {
-				data.amount = -Math.abs(data.amount);
+			healed: function(unit, eventData) {
+				eventData.amount = -Math.abs(eventData.amount);
 			},
-			useItem: function(unit, data) {
-				if (data.item.type == 'drink' && data.item.name != "Holy Water") {
-					data.item.action.effects = null;
+			useItem: function(unit, eventData) {
+				if (eventData.item.type == 'drink' && eventData.item.name != "Holy Water") {
+					eventData.item.action.effects = null;
 				}
 			}
 		},
 		zombie: {
 			name: "Zombie",
 			category: 'undead',
-			healed: function(unit, data) {
-				data.amount = -Math.abs(data.amount);
+			healed: function(unit, eventData) {
+				eventData.amount = -Math.abs(eventData.amount);
 			}
 		}
 	},

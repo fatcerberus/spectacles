@@ -307,9 +307,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 	var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 	for (var i = 0; i < targetUnits.length; ++i) {
 		var baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
-		var eventData = { targetInfo: clone(targetUnits[i].battlerInfo), action: clone(action), accuracyRate: 1.0 };
+		var eventData = { targetInfo: clone(targetUnits[i].battlerInfo), action: clone(action), aimRate: 1.0 };
 		actingUnit.raiseEvent('aiming', eventData);
-		var odds = Math.min(Math.max(baseOdds * accuracyRate * eventData.accuracyRate, 0.0), 1.0);
+		var odds = Math.min(Math.max(baseOdds * accuracyRate * eventData.aimRate, 0.0), 1.0);
 		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 		if (Math.random() < odds) {
 			Console.append("hit");
