@@ -367,7 +367,7 @@ Game = {
 				eventData.action.rank += rankOffset;
 			},
 			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.5;
+				eventData.aimRate /= 1.5 + this.sleepChance;
 			},
 			endTurn: function(unit, eventData) {
 				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
@@ -481,6 +481,7 @@ Game = {
 			name: "Sleep",
 			category: 'affliction',
 			initialize: function(unit) {
+				unit.actor.animate('snore');
 				this.wakeChance = 0.0;
 			},
 			beginCycle: function(unit, eventData) {
@@ -491,7 +492,7 @@ Game = {
 			},
 			beginTurn: function(unit, eventData) {
 				eventData.skipTurn = true;
-				unit.actor.animate("snore");
+				unit.actor.animate('snore');
 			},
 			damaged: function(unit, eventData) {
 				var healthLost = 100 * eventData.amount / unit.maxHP;

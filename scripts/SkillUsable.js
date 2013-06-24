@@ -27,6 +27,7 @@ function SkillUsable(skillID, level)
 	this.name = Game.skills[skillID].name;
 	this.skillInfo = Game.skills[skillID];
 	this.skillID = skillID;
+	this.useAiming = true;
 }
 
 // .getLevel() method

@@ -17,6 +17,7 @@ function ItemUsable(itemID)
 	this.itemDef = Game.items[itemID];
 	this.itemID = itemID;
 	this.name = Game.items[itemID].name;
+	this.useAiming = false;
 	this.usesLeft = 1;
 	
 	if ('uses' in this.itemDef) {

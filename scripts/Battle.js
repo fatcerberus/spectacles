@@ -282,10 +282,15 @@ Battle.prototype.resume = function()
 //     action:      The battle action to be executed.
 //     actingUnit:  The battler performing the action.
 //     targetUnits: An array specifying the battlers, if any, targetted by the action.
+//     useAiming:   Optional. If set to true, an 'aiming' event will be raised for the acting unit to enable
+//                  its statuses to modify the accuracy rate per target. If set to false, only the action's
+//                  accuracy rate is taken into account. (default: true)
 // Returns:
 //     An array of references to all units affected by the action.
-Battle.prototype.runAction = function(action, actingUnit, targetUnits)
+Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming)
 {
+	useAiming = useAiming !== void null ? useAiming : true;
+	
 	var eventData = { action: action, targets: targetUnits };
 	this.raiseEvent('actionTaken', eventData);
 	targetUnits = eventData.targets;
@@ -307,9 +312,16 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits)
 	var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 	for (var i = 0; i < targetUnits.length; ++i) {
 		var baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
-		var eventData = { targetInfo: clone(targetUnits[i].battlerInfo), action: clone(action), aimRate: 1.0 };
-		actingUnit.raiseEvent('aiming', eventData);
-		var odds = Math.min(Math.max(baseOdds * accuracyRate * eventData.aimRate, 0.0), 1.0);
+		if (useAiming) {
+			var eventData = {
+				action: clone(action),
+				aimRate: 1.0,
+				targetInfo: clone(targetUnits[i].battlerInfo)
+			};
+			actingUnit.raiseEvent('aiming', eventData);
+			accuracyRate *= eventData.aimRate;
+		}
+		var odds = Math.min(Math.max(baseOdds * accuracyRate, 0.0), 1.0);
 		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 		if (Math.random() < odds) {
 			Console.append("hit");

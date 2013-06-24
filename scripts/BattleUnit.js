@@ -451,7 +451,7 @@ BattleUnit.prototype.tick = function()
 			}
 			this.raiseEvent('acting', eventData);
 			eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
-			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets);
+			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets, this.moveUsed.usable.useAiming);
 			if (this.moveUsed.usable.givesExperience && unitsHit.length > 0) {
 				var allEnemies = this.battle.enemiesOf(this);
 				var experience = {};
