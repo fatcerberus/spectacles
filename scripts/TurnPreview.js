@@ -72,6 +72,8 @@ TurnPreview.prototype.ensureEntries = function(unit)
 //     prediction: The upcoming turn prediction, as returned by Battle.predictTurns().
 TurnPreview.prototype.set = function(prediction)
 {
+	var moveEasing = 'easeInOutExpo';
+	var moveTime = 0.25;
 	if (this.lastPrediction !== null) {
 		for (var i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
 			var unit = this.lastPrediction[i].unit;
@@ -81,7 +83,7 @@ TurnPreview.prototype.set = function(prediction)
 				turnBox.tween.stop();
 			}
 			turnBox.tween = new Scenario()
-				.tween(turnBox, 0.125, 'easeInOutSine', { x: 160 });
+				.tween(turnBox, moveTime, moveEasing, { x: 160 });
 			turnBox.tween.run();
 		}
 	}
@@ -95,7 +97,7 @@ TurnPreview.prototype.set = function(prediction)
 			turnBox.tween.stop();
 		}
 		turnBox.tween = new Scenario()
-			.tween(turnBox, 0.125, 'easeInOutSine', { x: 48 + i * 16 });
+			.tween(turnBox, moveTime, moveEasing, { x: 48 + i * 16 });
 		turnBox.tween.run();
 	}
 };
