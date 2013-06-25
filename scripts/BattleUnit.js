@@ -73,7 +73,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
 		}
 		this.enemyInfo = Game.enemies[basis];
-		this.affinities = this.enemyInfo.damageModifiers;
+		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];
 		this.ai = new BattleAI(this, battle, this.enemyInfo.strategize);
 		this.id = basis;
 		this.name = this.enemyInfo.name;

@@ -1098,7 +1098,8 @@ Game = {
 			},
 			damageModifiers: {
 				fire: 0.5,
-				ice: 2.0
+				ice: 2.0,
+				fat: 1.5
 			},
 			immunities: [],
 			munchData: {
@@ -1122,9 +1123,6 @@ Game = {
 				agi: 75
 			},
 			immunities: [],
-			damageModifiers: {
-				fire: 2.0
-			},
 			weapon: 'rsbSword',
 			munchData: {
 				technique: 'omni',
@@ -1310,8 +1308,6 @@ Game = {
 					.adjustBGMVolume(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
-				this.playerUnits[0].addStatus('drunk');
-				this.enemyUnits[0].addStatus('sleep');
 			}
 		}
 	}

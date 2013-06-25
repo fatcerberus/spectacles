@@ -7,9 +7,10 @@
 // Creates an object representing an in-battle turn preview.
 function TurnPreview()
 {
+	this.entries = {};	
 	this.fadeness = 1.0;
 	this.font = GetSystemFont();
-	this.nextUp = null;
+	this.lastPrediction = null;
 	this.thread = Threads.createEntityThread(this, 20);
 };
 
@@ -26,21 +27,42 @@ TurnPreview.prototype.render = function()
 {
 	var alpha = 255 * (1.0 - this.fadeness);
 	var y = -16 * this.fadeness;
+	SetClippingRectangle(0, y, 160, 16);
 	Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
 	OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
-	DrawTextEx(this.font, 24, y + 2, "next", CreateColor(128, 128, 128, alpha), 1, 'center');
-	if (this.nextUp !== null) {
-		for (var i = 0; i < Math.min(this.nextUp.length, 7); ++i) {
-			var actor = this.nextUp[i].actor;
-			var x = 48 + i * 16;
-			var pictureColor = actor.isEnemy ? CreateColor(96, 48, 48, alpha) : CreateColor(64, 80, 96, alpha);
-			Rectangle(x, y, 16, 16, pictureColor);
-			OutlinedRectangle(x, y, 16, 16, CreateColor(0, 0, 0, 64 * alpha / 255));
-			DrawTextEx(this.font, x + 4, y + 2, actor.name[0], CreateColor(255, 255, 255, 128 * alpha / 255), 1);
+	DrawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
+	Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
+	OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
+	for (var id in this.entries) {
+		var entry = this.entries[id];
+		for (var i = 0; i < entry.turnBoxes.length; ++i) {
+			var turnBox = entry.turnBoxes[i];
+			var pictureColor = CreateColor(entry.color.red, entry.color.green, entry.color.blue, entry.color.alpha * alpha / 255);
+			Rectangle(turnBox.x, y, 16, 16, pictureColor);
+			OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, 64 * alpha / 255));
+			DrawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], CreateColor(255, 255, 255, 128 * alpha / 255), 1);
 		}
-	} else {
-		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
-		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
+	}
+	SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
+};
+
+// .ensureEntries() method
+// Ensures that turn entries for a specified unit exist and creates them if
+// they don't.
+// Arguments:
+//     unit: The battle unit to check for.
+TurnPreview.prototype.ensureEntries = function(unit)
+{
+	if (!(unit.id in this.entries)) {
+		var entry = {
+			color: unit.isPartyMember() ? CreateColor(64, 80, 96, 255) : CreateColor(96, 48, 48, 255),
+			name: unit.name,
+			turnBoxes: []
+		};
+		for (var i = 0; i < 7; ++i) {
+			entry.turnBoxes[i] = { x: 160, tween: null };
+		}
+		this.entries[unit.id] = entry;
 	}
 };
 
@@ -50,12 +72,31 @@ TurnPreview.prototype.render = function()
 //     prediction: The upcoming turn prediction, as returned by Battle.predictTurns().
 TurnPreview.prototype.set = function(prediction)
 {
-	this.nextUp = [];
+	if (this.lastPrediction !== null) {
+		for (var i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
+			var unit = this.lastPrediction[i].unit;
+			var turnIndex = this.lastPrediction[i].turnIndex;
+			var turnBox = this.entries[unit.id].turnBoxes[turnIndex];
+			if (turnBox.tween !== null) {
+				turnBox.tween.stop();
+			}
+			turnBox.tween = new Scenario()
+				.tween(turnBox, 0.125, 'easeInOutSine', { x: 160 });
+			turnBox.tween.run();
+		}
+	}
+	this.lastPrediction = prediction;
 	for (var i = 0; i < Math.min(prediction.length, 7); ++i) {
-		this.nextUp.push({
-			actor: prediction[i].unit.actor,
-			turnIndex: prediction[i].turnIndex
-		});
+		var unit = prediction[i].unit;
+		var turnIndex = prediction[i].turnIndex;
+		this.ensureEntries(unit);
+		var turnBox = this.entries[unit.id].turnBoxes[turnIndex];
+		if (turnBox.tween !== null) {
+			turnBox.tween.stop();
+		}
+		turnBox.tween = new Scenario()
+			.tween(turnBox, 0.125, 'easeInOutSine', { x: 48 + i * 16 });
+		turnBox.tween.run();
 	}
 };
 
