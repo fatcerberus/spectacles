@@ -4,7 +4,7 @@
 ***/
 
 // TurnPreview() constructor
-// Creates an object representing an in-battle turn preview.
+// Creates an object representing the in-battle turn order preview.
 function TurnPreview()
 {
 	this.entries = {};	
