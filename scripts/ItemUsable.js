@@ -25,6 +25,17 @@ function ItemUsable(itemID)
 	}
 }
 
+// .defaultTargets() method
+// Determines the default targets for the item.
+// Arguments:
+//     user: The battle unit which will use the item.
+// Returns:
+//     An array of battle unit references specifying the default targets.
+ItemUsable.prototype.defaultTargets = function(user)
+{
+	return [ user ];
+};
+
 // .getRank() method
 // Calculates the move rank of using the item.
 ItemUsable.prototype.getRank = function()

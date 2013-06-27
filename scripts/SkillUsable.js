@@ -30,6 +30,28 @@ function SkillUsable(skillID, level)
 	this.useAiming = true;
 }
 
+// .defaultTargets() method
+// Determines the default targets for the skill.
+// Arguments:
+//     user: The battle unit which will use the skill.
+// Returns:
+//     An array of battle unit references specifying the default targets.
+SkillUsable.prototype.defaultTargets = function(user)
+{
+	switch (this.skillInfo.targetType) {
+		case 'single':
+			return [ user.battle.enemiesOf(user)[0] ];
+		case 'ally':
+			return user;
+		case 'allEnemies':
+			return user.battle.enemiesOf(user);
+		case 'allAllies':
+			return user.battle.alliesOf(user);
+		default:
+			return user;
+	}
+};
+
 // .getLevel() method
 // Returns the skill's current growth level.
 SkillUsable.prototype.getLevel = function()

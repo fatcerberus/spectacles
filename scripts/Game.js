@@ -55,6 +55,9 @@ Game = {
 			bow: function(userInfo, target) {
 				return 1.0;
 			},
+			breath: function(userInfo, targetInfo) {
+				return 1.0;
+			},
 			devour: function(userInfo, targetInfo) {
 				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
 			},
@@ -661,6 +664,28 @@ Game = {
 							targetHint: 'selected',
 							type: 'addStatus',
 							status: 'crackdown'
+						}
+					],
+				}
+			]
+		},
+		dragonflame: {
+			name: "Dragonflame",
+			category: 'magic',
+			targetType: 'allEnemies',
+			baseMPCost: 25,
+			actions: [
+				{
+					announceAs: "Dragonflame",
+					rank: 4,
+					accuracyType: 'breath',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'breath',
+							power: 40,
+							element: 'fire'
 						}
 					],
 				}

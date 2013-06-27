@@ -16,6 +16,7 @@ function TargetMenu(unit, battle, usable)
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
+	this.multiTarget = false;
 	this.statusInfo = null;
 	this.cursorFont = GetSystemFont();
 	this.infoFont = GetSystemFont();
@@ -120,11 +121,19 @@ TargetMenu.prototype.getInput = function()
 			this.moveCursor(1);
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
-			this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
+			if (!this.multiTarget) {
+				this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
+			} else {
+				this.targets = this.battle.enemiesOf(this.unit);
+			}
 			this.updateInfo();
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
-			this.targets = [ this.unit ];
+			if (!this.multiTarget) {
+				this.targets = [ this.unit ];
+			} else {
+				this.targets = this.battle.alliesOf(this.unit);
+			}
 			this.updateInfo();
 			break;
 	}
@@ -137,7 +146,7 @@ TargetMenu.prototype.getInput = function()
 TargetMenu.prototype.open = function()
 {
 	this.isChoiceMade = false;
-	this.targets = this.usable instanceof SkillUsable ? [ this.battle.enemiesOf(this.unit)[0] ] : [ this.unit ];
+	this.targets = this.usable.defaultTargets(this.unit);
 	this.updateInfo();
 	while (AreKeysLeft()) { GetKey(); }
 	Threads.waitFor(Threads.createEntityThread(this, 10));

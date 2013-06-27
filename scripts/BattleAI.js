@@ -117,7 +117,7 @@ BattleAI.prototype.useItem = function(itemID)
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 	this.moveQueue.push({
 		usable: itemToUse,
-		targets: [ this.unit ]
+		targets: itemToUse.defaultTargets(this.unit)
 	});
 };
 
@@ -144,6 +144,6 @@ BattleAI.prototype.useSkill = function(skillID)
 	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
 	this.moveQueue.push({
 		usable: skillToUse,
-		targets: [ this.battle.enemiesOf(this.unit)[0] ]
+		targets: skillToUse.defaultTargets(this.unit)
 	});
 };
