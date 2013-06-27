@@ -215,7 +215,6 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 		if (skillID == this.skills[i].skillID) {
 			hasSkill = true;
 			this.skills[i].grow(experience);
-			Console.writeLine(this.name + "'s " + this.skills[i].name + " gained " + experience + " EXP");
 		}
 	}
 	if (!hasSkill) {

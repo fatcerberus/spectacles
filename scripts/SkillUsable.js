@@ -71,6 +71,18 @@ SkillUsable.prototype.getRank = function()
 	return Game.math.skillRank(this.skillInfo);
 };
 
+// .grow() method
+// Applies experience to the skill.
+// Arguments:
+//     amount: The number of experience points to apply.
+SkillUsable.prototype.grow = function(amount)
+{
+	amount = Math.max(Math.round(amount), 0);
+	this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
+	Console.writeLine("Skill " + this.name + " gained " + amount + " EXP");
+	Console.append("lv: " + this.getLevel());
+};
+
 // .isUsable() method
 // Determines whether the skill can be used by a specified battler.
 // Arguments:
@@ -132,9 +144,7 @@ SkillUsable.prototype.use = function(unit, targets)
 		targetInfos.push(targets[i].battlerInfo);
 	}
 	var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
-	this.experience = Math.min(this.experience + experience, this.levelUpTable[100]);
-	Console.writeLine(unit.name + " got " + experience + " EXP for " + this.name);
-	Console.append("lv: " + this.getLevel());
+	this.grow(experience);
 	var eventData = { skill: clone(this.skillInfo) };
 	unit.raiseEvent('useSkill', eventData);
 	return eventData.skill.actions;

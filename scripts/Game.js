@@ -568,7 +568,8 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				if (!targets[i].isPartyMember()) {
 					var munchData = targets[i].enemyInfo.munchData;
-					actor.growSkill(munchData.skill, munchData.experience);
+					var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
+					actor.growSkill(munchData.skill, experience);
 				}
 				targets[i].die();
 				new Scenario()
@@ -1133,7 +1134,6 @@ Game = {
 			immunities: [],
 			munchData: {
 				skill: 'dragonflame',
-				experience: 25
 			},
 			strategize: function(me, nextUp) {
 				this.useSkill('dragonflame');
@@ -1155,7 +1155,6 @@ Game = {
 			weapon: 'rsbSword',
 			munchData: {
 				skill: 'omni',
-				experience: 1000
 			},
 			items: [
 				'alcohol'
