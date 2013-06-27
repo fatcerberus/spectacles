@@ -8,7 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 8,
+	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
@@ -59,7 +59,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
-				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
+				return 1.0; //(userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
 			},
 			instaKill: function(userInfo, targetInfo) {
 				return 1.0;
@@ -80,6 +80,9 @@ Game = {
 		damage: {
 			bow: function(userInfo, targetInfo, power) {
 				return power * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
+			},
+			breath: function(userInfo, targetInfo, power) {
+				return power * (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3) / targetInfo.stats.vit;
 			},
 			magic: function(userInfo, targetInfo, power) {
 				return power * (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3) / targetInfo.stats.foc;
@@ -213,7 +216,7 @@ Game = {
 				def: 85,
 				foc: 65,
 				mag: 30,
-				agi: 40
+				agi: 100
 			},
 			skills: [
 				'munch',
@@ -550,7 +553,6 @@ Game = {
 			}
 		},
 		damage: function(actor, targets, effect) {
-			var reducer = targets.length;
 			var userInfo = actor.battlerInfo;
 			for (var i = 0; i < targets.length; ++i) {
 				var targetInfo = targets[i].battlerInfo;
@@ -558,7 +560,7 @@ Game = {
 				if ('element' in effect) {
 					damageTags.push(effect.element);
 				}
-				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)) / reducer;
+				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power));
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), damageTags);
 			}
 		},
@@ -1130,11 +1132,11 @@ Game = {
 			},
 			immunities: [],
 			munchData: {
-				skill: 'Dragonflame',
+				skill: 'dragonflame',
 				experience: 25
 			},
 			strategize: function(me, nextUp) {
-				this.useSkill('flare');
+				this.useSkill('dragonflame');
 			}
 		},
 		robert2: {
@@ -1152,7 +1154,7 @@ Game = {
 			immunities: [],
 			weapon: 'rsbSword',
 			munchData: {
-				technique: 'omni',
+				skill: 'omni',
 				experience: 1000
 			},
 			items: [
@@ -1300,13 +1302,15 @@ Game = {
 			bgm: 'ManorBoss',
 			battleLevel: 8,
 			enemies: [
+				'headlessHorse',
+				'headlessHorse',
 				'headlessHorse'
 			],
 			onStart: function() {
 				new Scenario()
 					.talk("maggie", 2.0,
 						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!",
-						"Mmm, barbequed Littermates... tastes like chicken!")
+						"Barbequed Littermates... tastes like chicken!")
 					.talk("Scott", 2.0, "Barbequed... littermates?")
 					.talk("Elysia", 2.0, "Focus, guys!")
 					.run(true);

@@ -88,7 +88,7 @@ ItemUsable.prototype.use = function(unit)
 	}
 	Console.writeLine(unit.name + " is using item " + this.name);
 	--this.usesLeft;
-	Console.append("usesLeft: " + this.usesLeft);
+	Console.append("left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };
 	eventData.item.action.rank = 'rank' in eventData.item.action ? eventData.item.action.rank : Game.defaultItemRank;
 	unit.raiseEvent('useItem', eventData);
