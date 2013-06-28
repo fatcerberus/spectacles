@@ -133,7 +133,7 @@ SkillUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
 	}
-	Console.writeLine(unit.name + " is using skill " + this.name);
+	Console.writeLine(unit.name + " is using " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {
 		Console.append("weapLv: " + unit.weapon.level);
 	}

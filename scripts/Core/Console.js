@@ -30,6 +30,7 @@ Console.initialize = function(numLines)
 	this.append("(c)2013 Power-Command");
 	this.writeLine("");
 	this.writeLine("Initialized console");
+	this.writeLine("");
 };
 
 // .append() method

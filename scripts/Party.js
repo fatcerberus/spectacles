@@ -6,10 +6,11 @@
 RequireScript('PartyMember.js');
 
 // Party() constructor
-// Creates an object representing a travelling party.
+// Creates an object representing a party of player characters.
 function Party()
 {
 	this.members = {};
+	Console.writeLine("Created party manager");
 }
 
 // .add() method
@@ -20,6 +21,7 @@ Party.prototype.add = function(characterID)
 {
 	var newMember = new PartyMember(characterID, this.getLevel());
 	this.members[characterID] = newMember;
+	Console.writeLine("Added PC " + newMember.name + " to party");
 };
 
 // .getLevel() method

@@ -8,15 +8,13 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 50,
+	basePartyLevel: 1,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -178,17 +176,9 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
-			startingWeapon: 'templeSword',
+			startingWeapon: 'heirloom',
 			skills: [
-				'swordSlash',
-				'quickstrike',
-				'chargeSlash',
-				'necromancy',
-				'crackdown',
-				'flare',
-				'chill',
-				'lightning',
-				'quake'
+				'swordSlash'
 			]
 		},
 		bruce: {
@@ -1077,7 +1067,7 @@ Game = {
 		heirloom: {
 			name: "Heirloom",
 			type: 'sword',
-			level: 10,
+			level: 5,
 			techniques: [
 				'swordSlash',
 				'quickstrike',
@@ -1136,7 +1126,13 @@ Game = {
 				skill: 'dragonflame',
 			},
 			strategize: function(me, nextUp) {
-				this.useSkill('dragonflame');
+				if (this.turnsTaken == 0) {
+					this.useSkill('flare');
+				} else if (this.turnsTaken == 1) {
+					// TODO: implement me!
+				} else {
+					// TODO: implement me!
+				}
 			}
 		},
 		robert2: {
@@ -1302,8 +1298,7 @@ Game = {
 			battleLevel: 8,
 			enemies: [
 				'headlessHorse',
-				'headlessHorse',
-				'headlessHorse'
+				'robert2'
 			],
 			onStart: function() {
 				new Scenario()

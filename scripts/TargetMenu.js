@@ -147,6 +147,7 @@ TargetMenu.prototype.open = function()
 {
 	this.isChoiceMade = false;
 	this.targets = this.usable.defaultTargets(this.unit);
+	this.multiTarget = this.targets.length > 1;
 	this.updateInfo();
 	while (AreKeysLeft()) { GetKey(); }
 	Threads.waitFor(Threads.createEntityThread(this, 10));

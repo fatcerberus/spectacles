@@ -86,7 +86,7 @@ ItemUsable.prototype.use = function(unit)
 	if (!this.isUsable(unit)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
-	Console.writeLine(unit.name + " is using item " + this.name);
+	Console.writeLine(unit.name + " is using " + this.name);
 	--this.usesLeft;
 	Console.append("left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };

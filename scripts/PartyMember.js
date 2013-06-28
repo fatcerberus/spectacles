@@ -43,6 +43,8 @@ function PartyMember(characterID, level)
 	for (var name in Game.namedStats) {
 		this.stats[name] = new Stat(character.baseStats[name], level, true, 1.0);
 	}
+	Console.writeLine("Created new PC " + this.name);
+	Console.append("lvl: " + this.getLevel());
 	for (var i = 0; i < character.skills.length; ++i) {
 		this.learnSkill(character.skills[i]);
 	}
@@ -95,9 +97,10 @@ PartyMember.prototype.getUsableSkills = function()
 //     A reference to a SkillUsable object representing the newly learned skill.
 PartyMember.prototype.learnSkill = function(skillID)
 {
-	var skill = new SkillUsable(skillID, 100);
+	var skill = new SkillUsable(skillID);
 	this.skillList.push(skill);
 	this.refreshSkills();
+	Console.writeLine("PC " + this.name + " learned skill " + skill.name);
 	return skill;
 };
 

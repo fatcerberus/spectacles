@@ -12,7 +12,7 @@ RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = true;
@@ -53,23 +53,9 @@ function game()
 		BGM.change("SpectaclesTheme");
 		Engine.showLogo("TitleCard", 150);
 	}
-	while (true) {
-		var session = new TitleScreen("SpectaclesTheme").show();
-		var world = persist.getWorldState();
-		world.currentSession = session;
-		session.party.members.scott.items.push(new ItemUsable('tonic'));
-		var doOver = false;
-		do {
-			var battleResult = new Battle(world.currentSession, 'headlessHorse').go();
-			if (battleResult == BattleResult.enemyWon) {
-				var action = new GameOverScreen().show();
-				doOver = action == GameOverAction.retry;
-			} else {
-				doOver = false;
-			}
-		} while (doOver);
-	}
-	
+	var session = new TitleScreen("SpectaclesTheme").show();
+	var world = persist.getWorldState();
+	world.currentSession = session;
 	MapEngine("main.rmp", Engine.frameRate);
 }
 
