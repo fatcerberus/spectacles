@@ -4,10 +4,9 @@
 ***/
 
 RequireScript('lib/JS.js');
-
+RequireScript('lib/analogue.js');
 RequireScript('lib/json2.js');
 RequireScript('lib/MultiDelegate.js');
-RequireScript('lib/persist.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
@@ -43,7 +42,7 @@ function game()
 		function() { this.updateAll(); return true; },
 		function() { this.renderAll(); }, 99
 	);
-	persist.init();
+	analogue.init();
 	Console.initialize(19);
 	
 	if (DBG_SHOW_CONSOLE) {
@@ -54,8 +53,7 @@ function game()
 		Engine.showLogo("TitleCard", 150);
 	}
 	var session = new TitleScreen("SpectaclesTheme").show();
-	var world = persist.getWorldState();
-	world.currentSession = session;
+	analogue.world.currentSession = session;
 	MapEngine("main.rmp", Engine.frameRate);
 }
 
