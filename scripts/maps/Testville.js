@@ -1,0 +1,5 @@
+({
+	enter: function(map, world)
+	{
+	}
+})
