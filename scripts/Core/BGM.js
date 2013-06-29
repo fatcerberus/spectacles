@@ -9,13 +9,13 @@ RequireScript('Core/Threads.js');
 // Represents the background music manager.
 BGM = new (function()
 {
+	this.adjuster = null;
 	this.currentTrack = null;
 	this.defaultTrack = null;
 	this.isOverridden = false;
 	this.oldStream = null;
 	this.stream = null;
 	this.volume = 1.0;
-	this.volumeTween = null;
 	
 	this.playTrack = function(trackName) {
 		if (this.stream !== null) {
@@ -93,7 +93,7 @@ BGM = new (function()
 	//     true if the volume level is actively being adjusted; false otherwise.
 	this.isAdjusting = function()
 	{
-		return this.volumeTween != null && !this.volumeTween.isFinished();
+		return this.adjuster != null && this.adjuster.isRunning();
 	};
 	
 	// .override() method
