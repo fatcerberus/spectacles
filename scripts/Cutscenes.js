@@ -7,12 +7,12 @@ RequireScript('Battle.js');
 
 Scenario.defineCommand('adjustBGMVolume',
 {
-	start: function(sceneState, state, volume, duration) {
+	start: function(scene, state, volume, duration) {
 		duration = duration !== void null ? duration : 0.0;
 		
 		BGM.adjustVolume(volume, duration);
 	},
-	update: function(sceneState, state) {
+	update: function(scene, state) {
 		return BGM.isAdjusting();
 	}
 });
@@ -23,7 +23,7 @@ Scenario.defineCommand('adjustBGMVolume',
 //     battleID: The ID of the battle definition to use to initialize the fight.
 Scenario.defineCommand('battle',
 {
-	start: function(sceneState, state, battleID) {
+	start: function(scene, state, battleID) {
 		var world = persist.getWorldState();
 		new Battle(world.currentSession, battleID).run();
 	}
@@ -38,29 +38,30 @@ Scenario.defineCommand('changeBGM',
 
 Scenario.defineCommand('overrideBGM',
 {
-	start: function(sceneState, state, trackName) {
+	start: function(scene, state, trackName) {
 		BGM.override(trackName);
 	}
 });
 
 Scenario.defineCommand('resetBGM',
 {
-	start: function(sceneState, state) {
+	start: function(scene, state) {
 		BGM.reset();
 	}
 });
 
 Scenario.defineCommand('talk',
 {
-	start: function(sceneState, state, speaker, textSpeed /*...pages*/) {
+	start: function(scene, state, speaker, showSpeaker, textSpeed /*...pages*/) {
 		state.speakerName = speaker;
 		state.speakerText = state.speakerName != null ? state.speakerName + ":" : null;
+		state.showSpeaker = showSpeaker;
 		state.textSpeed = textSpeed;
 		state.font = GetSystemFont();
 		state.text = [];
 		var speakerTextWidth = state.font.getStringWidth(state.speakerText);
 		var textAreaWidth = GetScreenWidth() - 16;
-		for (i = 4; i < arguments.length; ++i) {
+		for (i = 5; i < arguments.length; ++i) {
 			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = state.font.wordWrapString(arguments[i], lineWidth);
 			var page = state.text.push([]) - 1;
@@ -87,7 +88,7 @@ Scenario.defineCommand('talk',
 		}
 		return true;
 	},
-	render: function(sceneState, state) {
+	render: function(scene, state) {
 		var lineHeight = state.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
 		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
@@ -124,7 +125,7 @@ Scenario.defineCommand('talk',
 					state.textSurface.setBlendMode(BLEND);
 				}
 			}
-			if (state.speakerName != null && state.currentPage == 0 && trueLine == 0) {
+			if (state.showSpeaker && state.speakerName != null && state.currentPage == 0 && trueLine == 0) {
 				state.font.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
 				state.textSurface.drawText(state.font, 1, textY + 1, state.speakerText);
 				state.font.setColorMask(CreateColor(255, 192, 0, state.textVisibility * state.nameVisibility * 255));
@@ -133,7 +134,7 @@ Scenario.defineCommand('talk',
 		}
 		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 5);
 	},
-	update: function(sceneState, state) {
+	update: function(scene, state) {
 		switch (state.mode) {
 			case "fadein":
 				if (!state.transition.isRunning()) {
@@ -211,7 +212,7 @@ Scenario.defineCommand('talk',
 		}
 		return true;
 	},
-	getInput: function(sceneState, state) {
+	getInput: function(scene, state) {
 		if (state.mode != "idle") return;
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			if (state.topLine + 3 >= state.text[state.currentPage].length) {
@@ -231,7 +232,7 @@ Scenario.defineCommand('talk',
 
 Scenario.defineCommand('teleport',
 {
-	start: function(sceneState, state, map, x, y) {
+	start: function(scene, state, map, x, y) {
 		ChangeMap(map + ".rmp");
 		SetPersonXYFloat("*0", x, y);
 	}

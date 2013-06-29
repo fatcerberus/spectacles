@@ -29,7 +29,9 @@ var analogue = (function() {
                         {fn:'generator', event:SCRIPT_COMMAND_GENERATOR}];
 						
 	var scriptPath = "../scripts/maps/";
-	var world = {};
+	var worlds = [{}];
+	var cur_world = 0;
+	var world = worlds[cur_world];
 	
 	/* Script Layer */
 	
@@ -146,9 +148,10 @@ var analogue = (function() {
 	}
 	
 	function SetWorld(data) {
-		world = {};
+		worlds[cur_world] = {};
+		world = worlds[cur_world];
 		
-		// since we don't have maps in maps, we can load those that were
+		// since we don't have maps in maps, we can reload those that were
 		// touched by the old saved data:
 		for (var i in data) {
 			if (i.indexOf(".rmp") >= 0) GetMap(i);
@@ -157,18 +160,35 @@ var analogue = (function() {
 		Absorb(world, data);
 	}
 	
-	function GetThisMap() {
-		return GetMap(GetCurrentMap());
+	function GetNamedMap(mapname) {
+		if (!mapname) mapname = GetCurrentMap();
+		return GetMap(mapname);
+	}
+	
+	function GetNamedPerson(name, mapname) {
+		if (!mapname) mapname = GetCurrentMap();
+		if (mapname in world && name in world[mapname])
+			return world[mapname][name];
+		else
+			return ({});
+	}
+	
+	// 0...inf
+	function ChangeWorld(number) {
+		if (worlds[number] == undefined) worlds[number] = {};
+		cur_world = number;
+		world = worlds[number];
 	}
 	
 	return ({
 		get world() { return world; },
-		set world(o) { SetWorld(o); },
 		setWorld: SetWorld,
+		changeWorld: ChangeWorld,
 		runMapEvent: RunMapEvent,
 		runPersonEvent: RunPersonEvent,
 		init: Init,
 		initMap: InitMap,
-		map: GetThisMap,
+		map: GetNamedMap,
+		person: GetNamedPerson
 	});
 }());

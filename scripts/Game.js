@@ -1158,15 +1158,15 @@ Game = {
 			strategize: function(me, nextUp) {
 				if ('maggie' in this.enemies && this.turnsTaken == 0) {
 					new Scenario()
-						.talk("Robert", 2.0, "Wait, hold on... what in Hades' name is SHE doing here?")
-						.talk("maggie", 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
+						.talk("Robert", true, 2.0, "Wait, hold on... what in Hades' name is SHE doing here?")
+						.talk("maggie", true, 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
 						.call(function() { me.takeDamage(me.maxHP - 1); })
 						.playSound('Munch.wav')
-						.talk("Robert", 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
-						.talk("maggie", 2.0,
+						.talk("Robert", true, 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
+						.talk("maggie", true, 2.0,
 							"Tastes like chicken!",
 							"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even the regular, uncooked, feathery kind...")
-						.talk("Robert", 2.0, "...")
+						.talk("Robert", true, 2.0, "...")
 						.run(true);
 					this.useItem('alcohol');
 				}
@@ -1302,11 +1302,9 @@ Game = {
 			],
 			onStart: function() {
 				new Scenario()
-					.talk("maggie", 2.0,
+					.talk("maggie", true, 2.0,
 						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!",
-						"Barbequed Littermates... tastes like chicken!")
-					.talk("Scott", 2.0, "Barbequed... littermates?")
-					.talk("Elysia", 2.0, "Focus, guys!")
+						"Mm... barbequed Littermates... tastes like chicken!")
 					.run(true);
 			}
 		},
