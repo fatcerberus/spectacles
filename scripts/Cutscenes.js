@@ -233,7 +233,7 @@ Scenario.defineCommand('talk',
 Scenario.defineCommand('teleport',
 {
 	start: function(scene, state, map, x, y) {
-		ChangeMap(map + ".rmp");
-		SetPersonXYFloat("*0", x, y);
+		ChangeMap(map);
+		SetPersonXYFloat('hero', x, y);
 	}
 });
