@@ -1297,8 +1297,7 @@ Game = {
 			bgm: 'ManorBoss',
 			battleLevel: 8,
 			enemies: [
-				'headlessHorse',
-				'robert2'
+				'headlessHorse'
 			],
 			onStart: function() {
 				new Scenario()

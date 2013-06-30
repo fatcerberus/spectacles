@@ -24,8 +24,7 @@ Scenario.defineCommand('adjustBGMVolume',
 Scenario.defineCommand('battle',
 {
 	start: function(scene, state, battleID) {
-		var world = persist.getWorldState();
-		new Battle(world.currentSession, battleID).run();
+		new Battle(analogue.world.currentSession, battleID).go();
 	}
 });
 

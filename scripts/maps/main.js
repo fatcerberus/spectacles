@@ -49,14 +49,14 @@
 			.end()
 			.fadeTo(CreateColor(0, 0, 0, 255), 2.0)
 			.talk("Bruce", false, 1.0, "...is that it all began with a promise.")
-			.pause(5.0)
+			.pause(2.0)
+			.battle('robert2')
 			.run(true);
 		AttachInput('hero');
 	},
 	
 	enter: function(map, world)
 	{
-		this.isOpeningDone = true;
 		CreatePerson('hero', 'invisible.rss', false);
 		AttachCamera('hero');
 		SetDelayScript(0, 'analogue.map().showOpening();');
