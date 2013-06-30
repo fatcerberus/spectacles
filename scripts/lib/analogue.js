@@ -68,7 +68,7 @@ var analogue = (function() {
 		return false;
 	}
 	
-	function EvalMapScript(mapfile) {
+	function GetMapScript(mapfile) {
 		var scriptfile = GetScriptName(mapfile);
 		
 		if (!PathExists(scriptfile)) return "({})";
@@ -83,14 +83,14 @@ var analogue = (function() {
 			file.close();
 		}
 		
-		return eval(CreateStringFromByteArray(bytearray));
+		return CreateStringFromByteArray(bytearray);
 	}
 
 	/* Map Layer */
 
 	function GetMap(mapfile) {
 		if (mapfile in world) return world[mapfile];
-		world[mapfile] = EvalMapScript(mapfile);
+		world[mapfile] = eval(GetMapScript(mapfile));
 		return world[mapfile];
 	}
 	

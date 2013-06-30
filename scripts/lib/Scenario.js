@@ -50,11 +50,11 @@ Scenario.initialize = function()
 // Renders all active scenarios.
 Scenario.renderAll = function()
 {
-	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
-		this.activeScenes[i].render();
-	}
 	if (Scenario.screenMask.alpha > 0) {
 		ApplyColorMask(Scenario.screenMask);
+	}
+	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
+		this.activeScenes[i].render();
 	}
 };
 
