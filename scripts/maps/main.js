@@ -1,5 +1,5 @@
 ({
-	openStory: function()
+	showOpening: function()
 	{
 		DetachInput();
 		new Scenario()
@@ -13,7 +13,7 @@
 			.pause(1.0)
 			.talk("Bruce", false, 1.0, "He was.")
 			.pause(2.0)
-			.talk("Bruce", false, 1.0, "Honestly, though? The thing that truly amazes me, even now...")
+			.talk("Bruce", false, 1.0, "But honestly? The thing that truly amazes me, even now...")
 			.pause(1.0)
 			.adjustBGMVolume(0.0, 5.0)
 			.pause(1.0)
@@ -56,8 +56,9 @@
 	
 	enter: function(map, world)
 	{
+		this.isOpeningDone = true;
 		CreatePerson('hero', 'invisible.rss', false);
 		AttachCamera('hero');
-		SetDelayScript(0, 'analogue.world.map(\'main.rmp\').openStory();');
+		SetDelayScript(0, 'analogue.map().showOpening();');
 	}
 })

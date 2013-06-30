@@ -56,7 +56,7 @@ var analogue = (function() {
 	}
 	
 	function PathExists(file) {
-		var parts    = file.replace(/\\/, "/").replace(/../, "~").split("/");
+		var parts    = file.replace(/\\/g, "/").replace(/\.\./, "~").split("/");
 		var filename = parts.pop();
 		var dir      = parts.join("/");
 		var files    = GetFileList(dir);

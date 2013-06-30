@@ -17,8 +17,6 @@ var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_SHOW_CONSOLE = false;
 
-EvaluateScript('Game.js');
-
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
 RequireScript('Core/Console.js');
@@ -29,6 +27,8 @@ RequireScript('GameOverScreen.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
+
+EvaluateScript('Game.js');
 
 // game() function
 // This is called by Sphere when the game is launched.
