@@ -22,6 +22,7 @@ BGM = new (function()
 			this.stream.stop();
 		}
 		if (trackName !== null) {
+			Console.writeLine("Playing BGM track '" + trackName + "'");
 			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
 			this.stream.setVolume(this.volume * 255);
 			if (!DBG_DISABLE_BGM) this.stream.play(true);

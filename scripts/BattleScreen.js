@@ -25,6 +25,7 @@ function BattleScreen(partyMaxMP)
 	
 	this.startRunning = function()
 	{
+		Console.writeLine("Activating battle screen");
 		this.thread = Threads.createEntityThread(this);
 		this.hud.show();
 	};

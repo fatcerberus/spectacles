@@ -15,7 +15,7 @@ var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_SHOW_CONSOLE = false;
+var DBG_SHOW_CONSOLE = true;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
@@ -23,6 +23,7 @@ RequireScript('Core/Console.js');
 RequireScript('Core/Threads.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
+RequireScript('DayNightFilter.js');
 RequireScript('GameOverScreen.js');
 RequireScript('MenuStrip.js');
 RequireScript('Session.js');
@@ -38,10 +39,9 @@ function game()
 	Threads.initialize();
 	BGM.initialize();
 	Scenario.initialize();
-	var sceneThread = Threads.doWith(Scenario,
+	Threads.doWith(Scenario,
 		function() { this.updateAll(); return true; },
-		function() { this.renderAll(); }, 99
-	);
+		function() { this.renderAll(); }, 99);
 	analogue.init();
 	Console.initialize(19);
 	
@@ -54,6 +54,7 @@ function game()
 	}
 	var session = new TitleScreen("SpectaclesTheme").show();
 	analogue.world.currentSession = session;
+	DayNightFilter.initialize();
 	MapEngine("main.rmp", Engine.frameRate);
 }
 

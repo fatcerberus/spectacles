@@ -7,11 +7,11 @@
 // Creates an object representing the in-battle turn order preview.
 function TurnPreview()
 {
-	this.entries = {};	
+	this.entries = {};
 	this.fadeness = 1.0;
 	this.font = GetSystemFont();
 	this.lastPrediction = null;
-	this.thread = Threads.createEntityThread(this, 20);
+	this.thread = null;
 };
 
 // .dispose() method
@@ -106,6 +106,10 @@ TurnPreview.prototype.set = function(prediction)
 // Shows the turn preview.
 TurnPreview.prototype.show = function()
 {
+	if (this.thread === null) {
+		Console.writeLine("Activating in-battle turn preview");
+		this.thread = Threads.createEntityThread(this, 20);
+	}
 	new Scenario()
 		.tween(this, 0.5, 'easeOutExpo', { fadeness: 0.0 })
 		.run();

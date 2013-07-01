@@ -217,6 +217,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
+		Console.writeLine("Activating in-battle HUD");
 		this.thread = Threads.createEntityThread(this, 20);
 	}
 	new Scenario()

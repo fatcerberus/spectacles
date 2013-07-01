@@ -1316,11 +1316,11 @@ Game = {
 			],
 			onStart: function() {
 				new Scenario()
-					.talk("Robert", 2.0,
+					.talk("Robert", true, 2.0,
 						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
 						+ "brazen as to face me alone?")
-					.talk("Scott", 2.0,
+					.talk("Scott", true, 2.0,
 						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(1.0)

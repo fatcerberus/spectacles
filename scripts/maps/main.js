@@ -3,8 +3,10 @@
 	{
 		DetachInput();
 		new Scenario()
+			.pause(1.0)
+			.battle('headlessHorse')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
-			.overrideBGM("BruceTellsHisStory")
+			.overrideBGM('BruceTellsHisStory')
 			.pause(1.0)
 			.talk("Bruce", false, 1.0,
 				"I tried so hard to make him understand, but for so long, he refused to listen...",
@@ -13,11 +15,11 @@
 			.pause(1.0)
 			.talk("Bruce", false, 1.0, "He was.")
 			.pause(2.0)
-			.talk("Bruce", false, 1.0, "But honestly? The thing that truly amazes me, even now...")
+			.talk("Bruce", false, 1.0, "Honestly, though? The thing that truly amazes me, even now...")
 			.pause(1.0)
 			.adjustBGMVolume(0.0, 5.0)
 			.pause(1.0)
-			.teleport("Testville.rmp", 24 * 16, 24 * 16)
+			.teleport('Testville.rmp', 24 * 16, 24 * 16)
 			.fork()
 				.overrideBGM('ThePromise')
 				.adjustBGMVolume(1.0, 2.0)
