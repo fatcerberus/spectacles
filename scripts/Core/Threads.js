@@ -213,6 +213,7 @@ Threads.updateAll = function()
 //     threadID: The ID of the thread to wait for.
 Threads.waitFor = function(threadID)
 {
+	var i = 0;
 	while (this.isRunning(threadID)) {
 		this.doFrame();
 	}

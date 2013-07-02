@@ -30,6 +30,7 @@ function Battle(session, battleID)
 	this.battleID = battleID;
 	this.conditions = [];
 	this.enemyUnits = [];
+	this.mode = null;
 	this.parameters = Game.battles[battleID];
 	this.partyMPPool = null;
 	this.playerUnits = [];
@@ -37,7 +38,6 @@ function Battle(session, battleID)
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
-	Console.writeLine("");
 	Console.writeLine("Battle session prepared");
 	Console.append("battleID: " + this.battleID);
 }
@@ -95,10 +95,13 @@ Battle.prototype.getLevel = function()
 
 // .go() method
 // Starts the battle.
+// Returns:
+//     The thread handle of the thread managing the battle.
 Battle.prototype.go = function()
 {
 	if (DBG_DISABLE_BATTLES) {
-		return BattleResult.playerWon;
+		this.result = BattleResult.playerWon;
+		return null;
 	}
 	Console.writeLine("Starting battle engine");
 	Console.append("battleID: " + this.battleID);
@@ -133,30 +136,9 @@ Battle.prototype.go = function()
 	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
 	this.timer = 0;
+	this.mode = 'setup';
 	var battleThread = Threads.createEntityThread(this);
-	this.suspend();
-	this.ui.go('title' in this.parameters ? this.parameters.title : null);
-	var walkInThreads = [];
-	for (var i = 0; i < this.enemyUnits.length; ++i) {
-		var thread = this.enemyUnits[i].actor.enter();
-		walkInThreads.push(thread);
-	}
-	for (var i = 0; i < this.playerUnits.length; ++i) {
-		var thread = this.playerUnits[i].actor.enter();
-		walkInThreads.push(thread);
-	}
-	this.ui.hud.turnPreview.show();
-	if ('onStart' in this.parameters) {
-		this.parameters.onStart.call(this);
-	}
-	Threads.synchronize(walkInThreads);
-	this.ui.showTitle();
-	this.resume();
-	Threads.waitFor(battleThread);
-	Console.writeLine("Battle engine shutting down");
-	this.ui.dispose();
-	BGM.reset();
-	return this.result;
+	return battleThread;
 };
 
 // .hasCondition() method
@@ -190,6 +172,15 @@ Battle.prototype.areEnemies = function(unit1, unit2)
 	}
 	return false;
 }
+
+// .isActive() method
+// Determines whether the battle is still running.
+// Returns:
+//     true if the battle is still running; false otherwise.
+Battle.prototype.isActive = function()
+{
+	return this.result === null;
+};
 
 // .liftCondition() method
 // Removes a battle condition from play.
@@ -427,6 +418,36 @@ Battle.prototype.tick = function()
 // .update() method
 // Updates the Battle's state for the next frame.
 Battle.prototype.update = function() {
-	this.tick();
-	return this.result == null;
+	switch (this.mode) {
+		case 'setup':
+			this.ui.go('title' in this.parameters ? this.parameters.title : null);
+			var walkInThreads = [];
+			for (var i = 0; i < this.enemyUnits.length; ++i) {
+				var thread = this.enemyUnits[i].actor.enter();
+				walkInThreads.push(thread);
+			}
+			for (var i = 0; i < this.playerUnits.length; ++i) {
+				var thread = this.playerUnits[i].actor.enter();
+				walkInThreads.push(thread);
+			}
+			Threads.synchronize(walkInThreads);
+			this.ui.hud.turnPreview.show();
+			if ('onStart' in this.parameters) {
+				this.parameters.onStart.call(this);
+			}
+			this.ui.showTitle();
+			this.mode = 'battle';
+			break;
+		case 'battle':
+			this.tick();
+			break;
+	}
+	if (this.result !== null) {
+		Console.writeLine("Battle engine shutting down");
+		this.ui.dispose();
+		BGM.reset();
+		return false;
+	} else {
+		return true;
+	}
 };

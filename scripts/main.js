@@ -11,7 +11,7 @@ RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
@@ -40,7 +40,7 @@ function game()
 	BGM.initialize();
 	Scenario.initialize();
 	Threads.doWith(Scenario,
-		function() { this.updateAll(); return true; },
+		function() { return this.updateAll(), true; },
 		function() { this.renderAll(); }, 99);
 	analogue.init();
 	Console.initialize(19);
@@ -49,13 +49,13 @@ function game()
 		Console.show();
 	}
 	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.change("SpectaclesTheme");
-		Engine.showLogo("TitleCard", 150);
+		BGM.change('SpectaclesTheme');
+		Engine.showLogo('TitleCard', 150);
 	}
-	var session = new TitleScreen("SpectaclesTheme").show();
+	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
-	MapEngine("main.rmp", Engine.frameRate);
+	MapEngine('main.rmp', Engine.frameRate);
 }
 
 // PATCH! - Scenario.run() method

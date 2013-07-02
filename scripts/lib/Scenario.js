@@ -304,10 +304,10 @@ Scenario.prototype.end = function()
 		};
 		this.currentQueue = this.queues.pop();
 		this.enqueue(command);
-	} else if (openBlockType = 'branch') {
+	} else if (openBlockType == 'branch') {
 		var jump = this.jumpsToFix.pop();
 		jump.ifFalse = this.currentQueue.length;
-	} else if (openBlockType = 'loop') {
+	} else if (openBlockType == 'loop') {
 		var jump = this.jumpsToFix.pop();
 		jump.ifDone = this.currentQueue.length + 1;
 		var command = {
@@ -319,7 +319,7 @@ Scenario.prototype.end = function()
 		};
 		this.enqueue(command);
 	} else {
-		this.throwError("Scenario.end()", "Internal error", "The type of the block is unknown.");
+		this.throwError("Scenario.end()", "Internal error", "The type of the open block is unknown.");
 	}
 	return this;
 };

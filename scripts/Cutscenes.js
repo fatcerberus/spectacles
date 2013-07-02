@@ -24,7 +24,10 @@ Scenario.defineCommand('adjustBGMVolume',
 Scenario.defineCommand('battle',
 {
 	start: function(scene, state, battleID) {
-		new Battle(analogue.world.currentSession, battleID).go();
+		state.thread = new Battle(analogue.world.currentSession, battleID).go();
+	},
+	update: function(scene, state) {
+		return Threads.isRunning(state.thread);
 	}
 });
 

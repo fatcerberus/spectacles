@@ -3,7 +3,6 @@
 	{
 		DetachInput();
 		new Scenario()
-			.pause(1.0)
 			.battle('headlessHorse')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.overrideBGM('BruceTellsHisStory')
@@ -52,7 +51,6 @@
 			.fadeTo(CreateColor(0, 0, 0, 255), 2.0)
 			.talk("Bruce", false, 1.0, "...is that it all began with a promise.")
 			.pause(2.0)
-			.battle('robert2')
 			.run(true);
 		AttachInput('hero');
 	},
