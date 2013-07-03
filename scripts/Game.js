@@ -1325,7 +1325,7 @@ Game = {
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(1.0)
 					.adjustBGMVolume(0.0, 1.0)
-					.talk("Robert", 1.0, "What makes you so sure you have a choice?")
+					.talk("Robert", true, 1.0, "What makes you so sure you have a choice?")
 					.overrideBGM('MyDreamsButADropOfFuel')
 					.adjustBGMVolume(1.0)
 					.run(true);

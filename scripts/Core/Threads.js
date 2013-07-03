@@ -54,9 +54,9 @@ Threads.create = function(o, updater, renderer, inputHandler, priority)
 	inputHandler = inputHandler !== void null ? inputHandler : null;
 	priority = priority !== void null ? priority : 0;
 	
-	updater = delegate(o, updater);
-	renderer = delegate(o, renderer);
-	inputHandler = delegate(o, inputHandler);
+	updater = updater.bind(o);
+	renderer = renderer !== null ? renderer.bind(o) : null;
+	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
 	var newThread = {
 		id: this.nextThreadID,
 		updater: updater,
@@ -105,9 +105,9 @@ Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 	priority = priority !== void null ? priority : 0;
 	inputHandler = inputHandler !== void null ? inputHandler : null;
 	
-	updater = delegate(o, updater);
-	renderer = delegate(o, renderer);
-	inputHandler = delegate(o, inputHandler);
+	updater = updater.bind(o);
+	renderer = renderer !== null ? renderer.bind(o) : null;
+	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
 	var newThread = {
 		id: this.nextThreadID,
 		contextObject: o,

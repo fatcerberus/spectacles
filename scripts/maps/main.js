@@ -3,7 +3,6 @@
 	{
 		DetachInput();
 		new Scenario()
-			.battle('headlessHorse')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.overrideBGM('BruceTellsHisStory')
 			.pause(1.0)
