@@ -50,6 +50,10 @@
 			.fadeTo(CreateColor(0, 0, 0, 255), 2.0)
 			.talk("Bruce", false, 1.0, "...is that it all began with a promise.")
 			.pause(2.0)
+			.teleport('Portentia.rmp', 42 * 16, 12 * 16)
+			.resetBGM()
+			.adjustBGMVolume(1.0)
+			.fadeTo(CreateColor(0, 0, 0, 0), 5.0)
 			.run(true);
 		AttachInput('hero');
 	},

@@ -43,7 +43,7 @@ function Battle(session, battleID)
 }
 
 // .addCondition() method
-// Instates a new battle condition.
+// Installs a new battle condition.
 // Argument:
 //     conditionID: The ID of the battle condition, as defined in the gamedef.
 Battle.prototype.addCondition = function(conditionID)

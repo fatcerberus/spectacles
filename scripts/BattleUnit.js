@@ -396,7 +396,9 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 };
 
 // .tick() method
-// Decrements the battler's CTB counter.
+// Decrements the unit's CTB counter.
+// Remarks:
+//     If the counter reaches zero, the unit will be allowed to act.
 BattleUnit.prototype.tick = function()
 {
 	if (!this.isAlive()) {
