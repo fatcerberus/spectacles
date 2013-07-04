@@ -3,6 +3,7 @@
 	{
 		DetachInput();
 		new Scenario()
+			.battle('robert2')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.overrideBGM('BruceTellsHisStory')
 			.pause(1.0)
@@ -54,6 +55,11 @@
 			.resetBGM()
 			.adjustBGMVolume(1.0)
 			.fadeTo(CreateColor(0, 0, 0, 0), 5.0)
+			.pause(5.0)
+			.pause(2.0)  // TODO: Scott walks out of his house
+			.talk("Scott", true, 2.0,
+				"The lights are out...",
+				"What's going on?")
 			.run(true);
 		AttachInput('hero');
 	},

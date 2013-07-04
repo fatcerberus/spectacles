@@ -111,9 +111,10 @@ function Scenario(isLooping)
 	
 	this.createThread = function(state, updater, renderer, priority, inputHandler)
 	{
-		if (renderer === undefined) { renderer = null; }
-		if (priority === undefined) { priority = 0; }
-		if (inputHandler === undefined) { inputHandler = null; }
+		renderer = renderer !== void null ? renderer : null;
+		priority = priority !== void null ? priority : 0;
+		inputHandler = inputHandler !== void null ? inputHandler : null;
+		
 		var threadObject = {
 			id:           this.nextThreadID,
 			state:        state,
@@ -134,9 +135,9 @@ function Scenario(isLooping)
 	
 	this.createCommandThread = function(command)
 	{
-		var updater = this.createDelegate(this, command.update);
-		var renderer = this.createDelegate(this, command.render);
-		var inputHandler = this.createDelegate(this, command.getInput);
+		var updater = this.createDelegate(command.state, command.update);
+		var renderer = this.createDelegate(command.state, command.render);
+		var inputHandler = this.createDelegate(command.state, command.getInput);
 		return this.createThread(command.state, updater, renderer, 0, inputHandler);
 	};
 	
@@ -220,7 +221,7 @@ function Scenario(isLooping)
 				for (i = 0; i < command.arguments.length; ++i) {
 					parameters.push(command.arguments[i]);
 				}
-				command.start.apply(command, parameters);
+				command.start.apply(command.state, parameters);
 			}
 			if (command.update != null) {
 				state.currentCommandThread = scene.createCommandThread(command);
@@ -487,10 +488,10 @@ Scenario.prototype.synchronize = function()
 	command.state = {};
 	command.arguments = [ this.currentForkThreadList ];
 	command.start = function(scene, state, subthreads) {
-		state.subthreads = subthreads;
+		this.subthreads = subthreads;
 	};
 	command.update = function(scene, state) {
-		return state.subthreads.length != 0;
+		return this.subthreads.length != 0;
 	};
 	this.enqueue(command);
 	return this;
@@ -544,12 +545,12 @@ Scenario.defineCommand('fadeTo',
 	start: function(scene, state, color, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
-		state.fader = new Scenario()
+		this.fader = new Scenario()
 			.tween(Scenario.screenMask, duration, 'linear', color)
 			.run();
 	},
 	update: function(scene, state) {
-		return state.fader.isRunning();
+		return this.fader.isRunning();
 	}
 });
 
@@ -563,20 +564,21 @@ Scenario.defineCommand('focusOnPerson',
 			.run();
 	},
 	update: function(scene, state) {
-		return state.panner.isRunning();
+		return this.panner.isRunning();
 	}
 });
 
 Scenario.defineCommand('followPerson',
 {
 	start: function(scene, state, person) {
-		state.pan = new Scenario()
+		this.person = person;
+		this.pan = new Scenario()
 			.focusOnPerson(person)
 			.run();
 	},
 	update: function(scene, state) {
-		if (!state.pan.isRunning()) {
-			AttachCamera(state.person);
+		if (!this.pan.isRunning()) {
+			AttachCamera(this.person);
 			return false;
 		} else {
 			return true;
@@ -612,53 +614,54 @@ Scenario.defineCommand('marquee',
 		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
 		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
 		
-		state.text = text;
-		state.color = color;
-		state.background = backgroundColor;
-		state.font = GetSystemFont();
-		state.windowSize = GetScreenWidth() + state.font.getStringWidth(state.text);
-		state.height = state.font.getHeight() + 10;
-		state.textHeight = state.font.getHeight();
-		state.fadeness = 0.0;
-		state.scroll = 0.0;
-		state.animator = new Scenario()
-			.tween(state, 0.25, 'linear', { fadeness: 1.0 })
-			.tween(state, 1.0, 'easeOutExpo', { scroll: 0.5 })
-			.tween(state, 1.0, 'easeInExpo', { scroll: 1.0 })
-			.tween(state, 0.25, 'linear', { fadeness: 0.0 })
+		this.text = text;
+		this.color = color;
+		this.background = backgroundColor;
+		this.font = GetSystemFont();
+		this.windowSize = GetScreenWidth() + this.font.getStringWidth(this.text);
+		this.height = this.font.getHeight() + 10;
+		this.textHeight = this.font.getHeight();
+		this.fadeness = 0.0;
+		this.scroll = 0.0;
+		this.animation = new Scenario()
+			.tween(this, 0.25, 'linear', { fadeness: 1.0 })
+			.tween(this, 1.0, 'easeOutExpo', { scroll: 0.5 })
+			.tween(this, 1.0, 'easeInExpo', { scroll: 1.0 })
+			.tween(this, 0.25, 'linear', { fadeness: 0.0 })
 			.run();
 	},
 	render: function(scene, state) {
-		var boxHeight = state.height * state.fadeness;
+		var boxHeight = this.height * this.fadeness;
 		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
-		var textX = GetScreenWidth() - state.scroll * state.windowSize;
-		var textY = boxY + boxHeight / 2 - state.textHeight / 2;
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, state.background);
-		state.font.setColorMask(CreateColor(0, 0, 0, state.color.alpha));
-		state.font.drawText(textX + 1, textY + 1, state.text);
-		state.font.setColorMask(state.color);
-		state.font.drawText(textX, textY, state.text);
+		var textX = GetScreenWidth() - this.scroll * this.windowSize;
+		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, this.background);
+		this.font.setColorMask(CreateColor(0, 0, 0, this.color.alpha));
+		this.font.drawText(textX + 1, textY + 1, this.text);
+		this.font.setColorMask(this.color);
+		this.font.drawText(textX, textY, this.text);
 	},
 	update: function(scene, state) {
-		return state.animator.isRunning();
+		return this.animation.isRunning();
 	}
 });
 
 Scenario.defineCommand('movePerson',
 {
 	start: function(scene, state, person, direction, distance, speed, faceFirst) {
-		if (faceFirst === undefined) { faceFirst = true };
+		faceFirst = faceFirst !== void null ? faceFirst : true;
+		
 		if (!isNaN(speed)) {
 			speedVector = [ speed, speed ];
 		} else {
 			speedVector = speed;
 		}
-		state.person = person;
-		state.oldSpeedVector = [ GetPersonSpeedX(person), GetPersonSpeedY(person) ];
+		this.person = person;
+		this.oldSpeedVector = [ GetPersonSpeedX(person), GetPersonSpeedY(person) ];
 		if (speedVector != null) {
-			SetPersonSpeedXY(state.person, speedVector[0], speedVector[1]);
+			SetPersonSpeedXY(this.person, speedVector[0], speedVector[1]);
 		} else {
-			speedVector = state.oldSpeedVector;
+			speedVector = this.oldSpeedVector;
 		}
 		var xMovement;
 		var yMovement;
@@ -696,18 +699,18 @@ Scenario.defineCommand('movePerson',
 				stepCount = 0;
 		}
 		if (faceFirst) {
-			QueuePersonCommand(state.person, faceCommand, true);
+			QueuePersonCommand(this.person, faceCommand, true);
 		}
 		for (iStep = 0; iStep < stepCount; ++iStep) {
-			QueuePersonCommand(state.person, xMovement, true);
-			QueuePersonCommand(state.person, yMovement, true);
-			QueuePersonCommand(state.person, COMMAND_WAIT, false);
+			QueuePersonCommand(this.person, xMovement, true);
+			QueuePersonCommand(this.person, yMovement, true);
+			QueuePersonCommand(this.person, COMMAND_WAIT, false);
 		}
 		return true;
 	},
-	update: function(scene,state) {
-		if (IsCommandQueueEmpty(state.person)) {
-			SetPersonSpeedXY(state.person, state.oldSpeedVector[0], state.oldSpeedVector[1]);
+	update: function(scene, state) {
+		if (IsCommandQueueEmpty(this.person)) {
+			SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
 			return false;
 		}
 		return true;
@@ -726,38 +729,38 @@ Scenario.defineCommand('panTo',
 		};
 		this.cameraX = GetCameraX();
 		this.cameraY = GetCameraY();
-		this.panner = new Scenario()
+		this.pan = new Scenario()
 			.tween(this, duration, 'easeOutQuad', targetXY)
 			.run();
 	},
 	update: function(scene, state) {
-		SetCameraX(state.cameraX);
-		SetCameraY(state.cameraY);
-		return state.panner.isRunning();
+		SetCameraX(this.cameraX);
+		SetCameraY(this.cameraY);
+		return this.pan.isRunning();
 	}
 });
 
 Scenario.defineCommand('pause',
 {
 	start: function(scene, state, duration) {
-		state.duration = duration;
-		state.elapsed = 0;
+		this.duration = duration;
+		this.elapsed = 0;
 	},
 	update: function(scene, state) {
-		state.elapsed += 1.0 / scene.frameRate;
-		return state.elapsed < state.duration;
+		this.elapsed += 1.0 / scene.frameRate;
+		return this.elapsed < this.duration;
 	}
 });
 
 Scenario.defineCommand('playSound',
 {
 	start: function(scene, state, file) {
-		state.sound = LoadSound(file);
-		state.sound.play(false);
+		this.sound = LoadSound(file);
+		this.sound.play(false);
 		return true;
 	},
 	update: function(scene, state) {
-		return state.sound.isPlaying();
+		return this.sound.isPlaying();
 	}
 });
 
@@ -779,7 +782,7 @@ Scenario.defineCommand('showPerson',
 Scenario.defineCommand('tween',
 {
 	start: function(scene, state, o, duration, easingType, endValues) {
-		state.easers = {
+		this.easers = {
 			linear: function(t, b, c, d) {
 				return c * t / d + b;
 			},
@@ -908,42 +911,42 @@ Scenario.defineCommand('tween',
 				return this.easeOutBounce(t*2-d, 0, c, d) * .5 + c*.5 + b;
 			}
 		};
-		state.change = {};
-		state.duration = duration;
-		state.elapsed = 0.0;
-		state.object = o;
-		state.startValues = {};
-		state.type = easingType in state.easers ? easingType : 'linear';
+		this.change = {};
+		this.duration = duration;
+		this.elapsed = 0.0;
+		this.object = o;
+		this.startValues = {};
+		this.type = easingType in this.easers ? easingType : 'linear';
 		var isChanged = false;
 		for (var p in endValues) {
-			state.change[p] = endValues[p] - o[p];
-			state.startValues[p] = o[p];
-			isChanged = isChanged || state.change[p] != 0;
+			this.change[p] = endValues[p] - o[p];
+			this.startValues[p] = o[p];
+			isChanged = isChanged || this.change[p] != 0;
 		}
 		var specialProperties = [
 			'red', 'green', 'blue', 'alpha'
 		];
 		for (var i = 0; i < specialProperties.length; ++i) {
 			var p = specialProperties[i];
-			if (!(p in state.change) && p in endValues) {
-				state.change[p] = endValues[p] - o[p];
-				state.startValues[p] = o[p];
-				isChanged = isChanged || state.change[p] != 0;
+			if (!(p in this.change) && p in endValues) {
+				this.change[p] = endValues[p] - o[p];
+				this.startValues[p] = o[p];
+				isChanged = isChanged || this.change[p] != 0;
 			}
 		}
 		if (!isChanged) {
-			state.elapsed = state.duration;
+			this.elapsed = this.duration;
 		}
 	},
 	update: function(scene, state) {
-		state.elapsed += 1.0 / scene.frameRate;
-		for (var p in state.change) {
-			if (state.elapsed < state.duration) {
-				state.object[p] = state.easers[state.type](state.elapsed, state.startValues[p], state.change[p], state.duration);
+		this.elapsed += 1.0 / scene.frameRate;
+		for (var p in this.change) {
+			if (this.elapsed < this.duration) {
+				this.object[p] = this.easers[this.type](this.elapsed, this.startValues[p], this.change[p], this.duration);
 			} else {
-				state.object[p] = state.startValues[p] + state.change[p];
+				this.object[p] = this.startValues[p] + this.change[p];
 			}
 		}
-		return state.elapsed < state.duration;
+		return this.elapsed < this.duration;
 	},
 });

@@ -24,17 +24,10 @@ Scenario.defineCommand('adjustBGMVolume',
 Scenario.defineCommand('battle',
 {
 	start: function(scene, state, battleID) {
-		state.thread = new Battle(analogue.world.currentSession, battleID).go();
+		this.battleThread = new Battle(analogue.world.currentSession, battleID).go();
 	},
 	update: function(scene, state) {
-		return Threads.isRunning(state.thread);
-	}
-});
-
-Scenario.defineCommand('changeBGM',
-{
-	start: function(scene, state, trackName) {
-		BGM.change(trackName);
+		return Threads.isRunning(this.battleThread);
 	}
 });
 
@@ -55,158 +48,158 @@ Scenario.defineCommand('resetBGM',
 Scenario.defineCommand('talk',
 {
 	start: function(scene, state, speaker, showSpeaker, textSpeed /*...pages*/) {
-		state.speakerName = speaker;
-		state.speakerText = state.speakerName != null ? state.speakerName + ":" : null;
-		state.showSpeaker = showSpeaker;
-		state.textSpeed = textSpeed;
-		state.font = GetSystemFont();
-		state.text = [];
-		var speakerTextWidth = state.font.getStringWidth(state.speakerText);
+		this.speakerName = speaker;
+		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
+		this.showSpeaker = showSpeaker;
+		this.textSpeed = textSpeed;
+		this.font = GetSystemFont();
+		this.text = [];
+		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 		var textAreaWidth = GetScreenWidth() - 16;
 		for (i = 5; i < arguments.length; ++i) {
-			var lineWidth = state.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
-			var wrappedText = state.font.wordWrapString(arguments[i], lineWidth);
-			var page = state.text.push([]) - 1;
+			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
+			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
+			var page = this.text.push([]) - 1;
 			for (var iLine = 0; iLine < wrappedText.length; ++iLine) {
-				state.text[page].push(wrappedText[iLine]);
+				this.text[page].push(wrappedText[iLine]);
 			}
 		}
-		state.boxVisibility = 0.0;
-		state.textVisibility = 1.0;
-		state.nameVisibility = 0.0;
-		state.lineVisibility = 0.0;
-		state.scrollOffset = 0.0;
-		state.currentPage = 0;
-		state.numLinesToDraw = 0;
-		state.topLine = 0;
-		state.lineToReveal = 0;
-		state.textSurface = CreateSurface(textAreaWidth, state.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
-		state.transition = new Scenario()
+		this.boxVisibility = 0.0;
+		this.textVisibility = 1.0;
+		this.nameVisibility = 0.0;
+		this.lineVisibility = 0.0;
+		this.scrollOffset = 0.0;
+		this.currentPage = 0;
+		this.numLinesToDraw = 0;
+		this.topLine = 0;
+		this.lineToReveal = 0;
+		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
+		this.transition = new Scenario()
 			.tween(state, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
-		state.mode = "fadein";
+		this.mode = "fadein";
 		if (DBG_DISABLE_TEXTBOXES) {
-			state.mode = "finish";
+			this.mode = "finish";
 		}
 		return true;
 	},
 	render: function(scene, state) {
-		var lineHeight = state.font.getHeight();
+		var lineHeight = this.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
 		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
-		var boxY = finalBoxY + (GetScreenHeight() - finalBoxY) * (1.0 - state.boxVisibility);
-		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * state.boxVisibility));
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * state.boxVisibility));
-		state.textSurface.setBlendMode(REPLACE);
-		state.textSurface.rectangle(0, 0, state.textSurface.width, state.textSurface.height, CreateColor(0, 0, 0, 0));
-		state.textSurface.setBlendMode(BLEND);
-		var lineCount = state.text[state.currentPage].length;
-		var textAreaWidth = state.textSurface.width;
+		var boxY = finalBoxY + (GetScreenHeight() - finalBoxY) * (1.0 - this.boxVisibility);
+		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
+		this.textSurface.setBlendMode(REPLACE);
+		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, CreateColor(0, 0, 0, 0));
+		this.textSurface.setBlendMode(BLEND);
+		var lineCount = this.text[this.currentPage].length;
+		var textAreaWidth = this.textSurface.width;
 		var textX = 0;
-		if (state.speakerName != null) {
-			var speakerTextWidth = state.font.getStringWidth(state.speakerText);
+		if (this.speakerName != null) {
+			var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 			textX = speakerTextWidth + 5;
 		}
 		textAreaWidth -= textX;
-		for (var iLine = Math.min(state.lineToReveal - state.topLine + 1, lineCount - state.topLine, 3) - 1; iLine >= 0; --iLine) {
-			var trueLine = state.topLine + iLine;
-			var textY = iLine * lineHeight - state.scrollOffset * lineHeight;
-			var lineVisibility = iLine == 0 ? 1.0 - state.scrollOffset : 1.0;
-			if (state.lineVisibility > 0.0 || state.lineToReveal != trueLine) {
-				var lineText = state.text[state.currentPage][trueLine];
-				state.font.setColorMask(CreateColor(0, 0, 0, 255 * state.textVisibility * lineVisibility));
-				state.textSurface.drawText(state.font, textX + 1, textY + 1, lineText);
-				state.font.setColorMask(CreateColor(255, 255, 255, 255 * state.textVisibility * lineVisibility));
-				state.textSurface.drawText(state.font, textX, textY, lineText);
-				if (state.lineToReveal == trueLine) {
-					var shownArea = textAreaWidth * state.lineVisibility;
-					state.textSurface.setBlendMode(SUBTRACT);
-					state.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * state.boxVisibility), CreateColor(0, 0, 0, 0));
-					state.textSurface.setBlendMode(REPLACE);
-					state.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
-					state.textSurface.setBlendMode(BLEND);
+		for (var iLine = Math.min(this.lineToReveal - this.topLine + 1, lineCount - this.topLine, 3) - 1; iLine >= 0; --iLine) {
+			var trueLine = this.topLine + iLine;
+			var textY = iLine * lineHeight - this.scrollOffset * lineHeight;
+			var lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
+			if (this.lineVisibility > 0.0 || this.lineToReveal != trueLine) {
+				var lineText = this.text[this.currentPage][trueLine];
+				this.font.setColorMask(CreateColor(0, 0, 0, 255 * this.textVisibility * lineVisibility));
+				this.textSurface.drawText(this.font, textX + 1, textY + 1, lineText);
+				this.font.setColorMask(CreateColor(255, 255, 255, 255 * this.textVisibility * lineVisibility));
+				this.textSurface.drawText(this.font, textX, textY, lineText);
+				if (this.lineToReveal == trueLine) {
+					var shownArea = textAreaWidth * this.lineVisibility;
+					this.textSurface.setBlendMode(SUBTRACT);
+					this.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
+					this.textSurface.setBlendMode(REPLACE);
+					this.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
+					this.textSurface.setBlendMode(BLEND);
 				}
 			}
-			if (state.showSpeaker && state.speakerName != null && state.currentPage == 0 && trueLine == 0) {
-				state.font.setColorMask(CreateColor(0, 0, 0, state.textVisibility * state.nameVisibility * 255));
-				state.textSurface.drawText(state.font, 1, textY + 1, state.speakerText);
-				state.font.setColorMask(CreateColor(255, 192, 0, state.textVisibility * state.nameVisibility * 255));
-				state.textSurface.drawText(state.font, 0, textY, state.speakerText);
+			if (this.showSpeaker && this.speakerName != null && this.currentPage == 0 && trueLine == 0) {
+				this.font.setColorMask(CreateColor(0, 0, 0, this.textVisibility * this.nameVisibility * 255));
+				this.textSurface.drawText(this.font, 1, textY + 1, this.speakerText);
+				this.font.setColorMask(CreateColor(255, 192, 0, this.textVisibility * this.nameVisibility * 255));
+				this.textSurface.drawText(this.font, 0, textY, this.speakerText);
 			}
 		}
-		state.textSurface.blit(GetScreenWidth() / 2 - state.textSurface.width / 2, boxY + 5);
+		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
 	},
 	update: function(scene, state) {
-		switch (state.mode) {
+		switch (this.mode) {
 			case "fadein":
-				if (!state.transition.isRunning()) {
-					state.mode = "write";
+				if (!this.transition.isRunning()) {
+					this.mode = "write";
 				}
 				break;
 			case "write":
-				state.nameVisibility = Math.min(state.nameVisibility + 4.0 / Engine.frameRate, 1.0);
-				if (state.nameVisibility >= 1.0) {
-					state.lineVisibility = Math.min(state.lineVisibility + (0.5 * state.textSpeed) / Engine.frameRate, 1.0);
-					var lineCount = Math.min(3,state.text[state.currentPage].length - state.topLine);
-					var currentLineText = state.text[state.currentPage][state.lineToReveal];
-					var currentLineWidth = state.font.getStringWidth(currentLineText);
-					var textAreaWidth = state.textSurface.width;
-					if (state.speakerName != null) {
-						var speakerTextWidth = state.font.getStringWidth(state.speakerText);
+				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Engine.frameRate, 1.0);
+				if (this.nameVisibility >= 1.0) {
+					this.lineVisibility = Math.min(this.lineVisibility + (0.5 * this.textSpeed) / Engine.frameRate, 1.0);
+					var lineCount = Math.min(3,this.text[this.currentPage].length - this.topLine);
+					var currentLineText = this.text[this.currentPage][this.lineToReveal];
+					var currentLineWidth = this.font.getStringWidth(currentLineText);
+					var textAreaWidth = this.textSurface.width;
+					if (this.speakerName != null) {
+						var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 						textAreaWidth -= speakerTextWidth + 5;
 					}
-					if (state.lineVisibility >= 1.0 || textAreaWidth * state.lineVisibility >= currentLineWidth + 20) {
-						if (state.lineToReveal - state.topLine == lineCount - 1) state.mode = "idle";
-						++state.lineToReveal;
-						++state.numLinesToDraw;
-						if (state.numLinesToDraw < 3 && state.lineToReveal < state.text[state.currentPage].length) {
-							state.mode = "nextline";
+					if (this.lineVisibility >= 1.0 || textAreaWidth * this.lineVisibility >= currentLineWidth + 20) {
+						if (this.lineToReveal - this.topLine == lineCount - 1) this.mode = "idle";
+						++this.lineToReveal;
+						++this.numLinesToDraw;
+						if (this.numLinesToDraw < 3 && this.lineToReveal < this.text[this.currentPage].length) {
+							this.mode = "nextline";
 						} else {
-							state.mode = "idle";
+							this.mode = "idle";
 						}
-						state.lineVisibility = 0.0;
+						this.lineVisibility = 0.0;
 					}
 				}
 				break;
 			case "nextline":
-				if (state.lineToReveal < 3) {
-					state.lineVisibility = 0.0;
-					state.mode = "write";
+				if (this.lineToReveal < 3) {
+					this.lineVisibility = 0.0;
+					this.mode = "write";
 					break;
 				}
-				state.scrollOffset = Math.min(state.scrollOffset + (8.0 * state.textSpeed) / Engine.frameRate, 1.0);
-				if (state.scrollOffset >= 1.0) {
-					state.topLine += 1;
-					state.scrollOffset = 0.0;
-					state.lineVisibility = 0.0;
-					state.textVisibility = 1.0;
-					state.mode = "write";
+				this.scrollOffset = Math.min(this.scrollOffset + (8.0 * this.textSpeed) / Engine.frameRate, 1.0);
+				if (this.scrollOffset >= 1.0) {
+					this.topLine += 1;
+					this.scrollOffset = 0.0;
+					this.lineVisibility = 0.0;
+					this.textVisibility = 1.0;
+					this.mode = "write";
 				}
 				break;
 			case "page":
-				state.textVisibility = Math.max(state.textVisibility - (2.0 * state.textSpeed) / Engine.frameRate, 0.0);
-				if (state.textVisibility <= 0.0) {
-					state.mode = "write";
-					++state.currentPage;
-					state.lineToReveal = 0;
-					state.numLinesToDraw = 0;
-					state.textVisibility = 1.0;
-					state.topLine = 0;
-					state.lineVisibility = 0.0;
+				this.textVisibility = Math.max(this.textVisibility - (2.0 * this.textSpeed) / Engine.frameRate, 0.0);
+				if (this.textVisibility <= 0.0) {
+					this.mode = "write";
+					++this.currentPage;
+					this.lineToReveal = 0;
+					this.numLinesToDraw = 0;
+					this.textVisibility = 1.0;
+					this.topLine = 0;
+					this.lineVisibility = 0.0;
 				}
 				break;
 			case "hidetext":
-				state.textVisibility = Math.max(state.textVisibility - (4.0 * state.textSpeed) / Engine.frameRate, 0.0);
-				if (state.textVisibility <= 0.0) {
-					state.transition = new Scenario()
+				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Engine.frameRate, 0.0);
+				if (this.textVisibility <= 0.0) {
+					this.transition = new Scenario()
 						.tween(state, 0.375, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
-					state.mode = "fadeout";
+					this.mode = "fadeout";
 				}
 				break;
 			case "fadeout":
-				if (!state.transition.isRunning()) {
-					state.mode = "finish";
+				if (!this.transition.isRunning()) {
+					this.mode = "finish";
 				}
 				break;
 			case "finish":
@@ -215,18 +208,18 @@ Scenario.defineCommand('talk',
 		return true;
 	},
 	getInput: function(scene, state) {
-		if (state.mode != "idle") return;
+		if (this.mode != "idle") return;
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
-			if (state.topLine + 3 >= state.text[state.currentPage].length) {
-				if (state.currentPage < state.text.length - 1) {
-					state.mode = "page";
+			if (this.topLine + 3 >= this.text[this.currentPage].length) {
+				if (this.currentPage < this.text.length - 1) {
+					this.mode = "page";
 				} else {
-					state.mode = "hidetext";
+					this.mode = "hidetext";
 				}
 			} else {
-				state.mode = "nextline";
-				state.numLinesToDraw = 0;
-				state.lineVisibility = 0.0;
+				this.mode = "nextline";
+				this.numLinesToDraw = 0;
+				this.lineVisibility = 0.0;
 			}
 		}
 	}
