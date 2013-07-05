@@ -157,15 +157,13 @@ function Scenario(isLooping)
 				command.start.apply(command.context, parameters);
 			}
 			if (command.update != null) {
-				var updateShim = function(updater, finisher) {
-					return function(scene) {
-						var isActive = updater.call(this, scene);
-						if (!isActive && finisher != null) {
-							finisher.call(this, scene);
-						}
-						return isActive;
+				var updateShim = function(scene) {
+					var isActive = command.update.call(this, scene);
+					if (!isActive && command.finish != null) {
+						command.finish.call(this, scene);
 					}
-				}.call(command.context, command.update, command.finish);
+					return isActive;
+				};
 				this.currentCommandThread = scene.createThread(command.context, updateShim, command.render, 0, command.getInput);
 			} else if (command.finish != null) {
 				command.finish.call(command.context, scene);
