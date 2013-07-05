@@ -7,12 +7,12 @@ RequireScript('Battle.js');
 
 Scenario.defineCommand('adjustBGM',
 {
-	start: function(scene, state, volume, duration) {
+	start: function(scene, volume, duration) {
 		duration = duration !== void null ? duration : 0.0;
 		
 		BGM.adjustVolume(volume, duration);
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return BGM.isAdjusting();
 	}
 });
@@ -23,38 +23,38 @@ Scenario.defineCommand('adjustBGM',
 //     battleID: The ID of the battle definition to use to initialize the fight.
 Scenario.defineCommand('battle',
 {
-	start: function(scene, state, battleID) {
+	start: function(scene, battleID) {
 		this.battleThread = new Battle(analogue.world.currentSession, battleID).go();
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return Threads.isRunning(this.battleThread);
 	}
 });
 
 Scenario.defineCommand('changeMap',
 {
-	start: function(scene, state, map) {
+	finish: function(scene, map) {
 		ChangeMap(map);
 	}
 });
 
 Scenario.defineCommand('playBGM',
 {
-	start: function(scene, state, trackName) {
+	start: function(scene, trackName) {
 		BGM.override(trackName);
 	}
 });
 
 Scenario.defineCommand('resetBGM',
 {
-	start: function(scene, state) {
+	start: function(scene) {
 		BGM.reset();
 	}
 });
 
 Scenario.defineCommand('talk',
 {
-	start: function(scene, state, speaker, showSpeaker, textSpeed /*...pages*/) {
+	start: function(scene, speaker, showSpeaker, textSpeed /*...pages*/) {
 		this.speakerName = speaker;
 		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
 		this.showSpeaker = showSpeaker;
@@ -63,7 +63,7 @@ Scenario.defineCommand('talk',
 		this.text = [];
 		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 		var textAreaWidth = GetScreenWidth() - 16;
-		for (i = 5; i < arguments.length; ++i) {
+		for (i = 4; i < arguments.length; ++i) {
 			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
 			var page = this.text.push([]) - 1;
@@ -82,7 +82,7 @@ Scenario.defineCommand('talk',
 		this.lineToReveal = 0;
 		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		this.transition = new Scenario()
-			.tween(state, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
+			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
 		if (DBG_DISABLE_TEXTBOXES) {
@@ -90,7 +90,7 @@ Scenario.defineCommand('talk',
 		}
 		return true;
 	},
-	render: function(scene, state) {
+	render: function(scene) {
 		var lineHeight = this.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
 		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
@@ -136,7 +136,7 @@ Scenario.defineCommand('talk',
 		}
 		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		switch (this.mode) {
 			case "fadein":
 				if (!this.transition.isRunning()) {
@@ -199,7 +199,7 @@ Scenario.defineCommand('talk',
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Engine.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
 					this.transition = new Scenario()
-						.tween(state, 0.375, 'easeInBack', { boxVisibility: 0.0 })
+						.tween(this, 0.375, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					this.mode = "fadeout";
 				}
@@ -214,7 +214,7 @@ Scenario.defineCommand('talk',
 		}
 		return true;
 	},
-	getInput: function(scene, state) {
+	getInput: function(scene) {
 		if (this.mode != "idle") return;
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {

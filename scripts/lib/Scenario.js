@@ -11,16 +11,16 @@ var Scenario = Scenario || {};
 // Arguments:
 //     name: The name of the command. This should be a valid JavaScript identifier (alphanumeric, no spaces).
 //     code: An object defining the command's callback functions:
-//           .start(scene, state, ...): Called when the command begins executing to initialize the state, or for
-//                                      instantaneous commands, perform the necessary action.
-//           .update(scene, state):     Optional. If provided, called once per frame to maintain state variables.
-//                                      If not provided, Scenario immediately moves on to the next command after
-//                                      calling start(). This function should return true to keep the operation running,
-//                                      or false to terminate it.
-//           .render(scene, state):     Optional. If provided, called once per frame to perform any rendering
-//                                      related to the command (e.g. text boxes).
-//           .getInput(scene, state):   Optional. If provided, called once per frame while the command has the input
-//                                      focus to check for player input and update the state accordingly.
+//           .start(scene, ...): Called when the command begins executing to initialize the state, or for
+//                               instantaneous commands, perform the necessary action.
+//           .update(scene):     Optional. If provided, called once per frame to maintain state variables.
+//                               If not provided, Scenario immediately moves on to the next command after
+//                               calling start(). This function should return true to keep the operation running,
+//                               or false to terminate it.
+//           .render(scene):     Optional. If provided, called once per frame to perform any rendering
+//                               related to the command (e.g. text boxes).
+//           .getInput(scene):   Optional. If provided, called once per frame while the command has the input
+//                               focus to check for player input and update the state accordingly.
 Scenario.defineCommand = function(name, code)
 {
 	if (Scenario.prototype[name] != null) {
@@ -28,11 +28,12 @@ Scenario.defineCommand = function(name, code)
 	}
 	Scenario.prototype[name] = function() {
 		var command = {};
-		command.state = {};
+		command.context = {};
 		command.arguments = arguments;
+		command.finish = code.finish;
+		command.render = code.render;
 		command.start = code.start;
 		command.update = code.update;
-		command.render = code.render;
 		command.getInput = code.getInput;
 		this.enqueue(command);
 		return this;
@@ -101,15 +102,7 @@ function Scenario(isLooping)
 	this.threads = [];
 	this.variables = {};
 	
-	this.createDelegate = function(o, method)
-	{
-		if (method == null) {
-			return null;
-		}
-		return function() { return method.apply(o, arguments); };
-	};
-	
-	this.createThread = function(state, updater, renderer, priority, inputHandler)
+	this.createThread = function(context, updater, renderer, priority, inputHandler)
 	{
 		renderer = renderer !== void null ? renderer : null;
 		priority = priority !== void null ? priority : 0;
@@ -117,7 +110,7 @@ function Scenario(isLooping)
 		
 		var threadObject = {
 			id:           this.nextThreadID,
-			state:        state,
+			context:      context,
 			priority:     priority,
 			updater:      updater,
 			renderer:     renderer,
@@ -133,27 +126,57 @@ function Scenario(isLooping)
 		return threadObject.id;
 	};
 	
-	this.createCommandThread = function(command)
-	{
-		var updater = this.createDelegate(command.state, command.update);
-		var renderer = this.createDelegate(command.state, command.render);
-		var inputHandler = this.createDelegate(command.state, command.getInput);
-		return this.createThread(command.state, updater, renderer, 0, inputHandler);
-	};
-	
-	this.createForkThread = function(state)
-	{
-		return this.createThread(state, this.createDelegate(this, this.updateFork));
-	};
-	
 	this.enqueue = function(command)
 	{
 		this.currentQueue.push(command);
 	};
 	
+	this.forkUpdater = function(scene)
+	{
+		for (var i = 0; i < this.forkThreads.length; ++i) {
+			if (!scene.isThreadRunning(this.forkThreads[i])) {
+				this.forkThreads.splice(i, 1);
+				--i; continue;
+			}
+		}
+		if (scene.isThreadRunning(this.currentCommandThread)) {
+			return true;
+		}
+		if (this.counter >= this.commandQueue.length && this.forkThreads.length == 0) {
+			return false;
+		}
+		if (this.counter < this.commandQueue.length) {
+			var command = this.commandQueue[this.counter];
+			++this.counter;
+			if (command.start != null) {
+				var parameters = [];
+				parameters.push(scene);
+				for (i = 0; i < command.arguments.length; ++i) {
+					parameters.push(command.arguments[i]);
+				}
+				command.start.apply(command.context, parameters);
+			}
+			if (command.update != null) {
+				var updateShim = function(updater, finisher) {
+					return function(scene) {
+						var isActive = updater.call(this, scene);
+						if (!isActive && finisher != null) {
+							finisher.call(this, scene);
+						}
+						return isActive;
+					}
+				}.call(command.context, command.update, command.finish);
+				this.currentCommandThread = scene.createThread(command.context, updateShim, command.render, 0, command.getInput);
+			} else if (command.finish != null) {
+				command.finish.call(command.context, scene);
+			}
+		}
+		return true;
+	};
+	
 	this.goTo = function(commandID)
 	{
-		this.activeThread.state.counter = commandID;
+		this.activeThread.context.counter = commandID;
 	};
 	
 	this.isThreadRunning = function(id)
@@ -182,7 +205,7 @@ function Scenario(isLooping)
 	this.testIf = function(op, variableName, value)
 	{
 		var operators = {
-			'=': function(a, b) { return a == b; },
+			'==': function(a, b) { return a == b; },
 			'!=': function(a, b) { return a != b; },
 			'>': function(a, b) { return a > b; },
 			'>=': function(a, b) { return a >= b; },
@@ -197,45 +220,13 @@ function Scenario(isLooping)
 		Abort(component + " - error: " + name + "\n" + message);
 	};
 	
-	this.updateFork = function(scene, state)
-	{
-		for (var i = 0; i < state.forkThreads.length; ++i) {
-			if (!scene.isThreadRunning(state.forkThreads[i])) {
-				state.forkThreads.splice(i, 1);
-				--i; continue;
-			}
-		}
-		if (scene.isThreadRunning(state.currentCommandThread)) {
-			return true;
-		}
-		if (state.counter >= state.commandQueue.length && state.forkThreads.length == 0) {
-			return false;
-		}
-		if (state.counter < state.commandQueue.length) {
-			var command = state.commandQueue[state.counter];
-			++state.counter;
-			if (command.start != null) {
-				var parameters = [];
-				parameters.push(scene);
-				parameters.push(command.state);
-				for (i = 0; i < command.arguments.length; ++i) {
-					parameters.push(command.arguments[i]);
-				}
-				command.start.apply(command.state, parameters);
-			}
-			if (command.update != null) {
-				state.currentCommandThread = scene.createCommandThread(command);
-			}
-		}
-		return true;
-	};
-	
 	this.render = function()
 	{
 		for (var i = 0; i < this.threads.length; ++i) {
 			var renderer = this.threads[i].renderer;
+			var context = this.threads[i].context;
 			if (renderer != null) {
-				renderer(this, this.threads[i].state);
+				renderer.call(context, this);
 			}
 		}
 	};
@@ -247,9 +238,9 @@ function Scenario(isLooping)
 			var id = this.threads[i].id;
 			var updater = this.threads[i].updater;
 			var inputHandler = this.threads[i].inputHandler;
-			var state = this.threads[i].state;
+			var context = this.threads[i].context;
 			if (updater == null) continue;
-			if (!updater(this, state)) {
+			if (!updater.call(context, this)) {
 				if (this.focusThread == id) {
 					this.focusThread = this.focusThreadStack.pop();
 				}
@@ -257,7 +248,7 @@ function Scenario(isLooping)
 				--i; continue;
 			}
 			if (this.focusThread == id) {
-				inputHandler(this, state);
+				inputHandler.call(context, this);
 			}
 		}
 		this.activeThread = null;
@@ -289,17 +280,17 @@ Scenario.prototype.end = function()
 		this.currentForkThreadList = this.forkThreadLists.pop();
 		var parentThreadList = this.currentForkThreadList;
 		var command = {
-			state: {},
+			context: {},
 			arguments: [ parentThreadList, threadList, this.currentQueue ],
-			start: function(scene, state, threads, subthreads, queue) {
-				var forkThreadState = {
+			start: function(scene, threads, subthreads, queue) {
+				var forkContext = {
 					scene:                scene,
 					commandQueue:         queue,
 					currentCommandThread: 0,
 					forkThreads:          subthreads,
 					counter:              0
 				};
-				var thread = scene.createForkThread(forkThreadState);
+				var thread = scene.createThread(forkContext, this.forkUpdater);
 				threads.push(thread);
 			}
 		};
@@ -312,9 +303,9 @@ Scenario.prototype.end = function()
 		var jump = this.jumpsToFix.pop();
 		jump.ifDone = this.currentQueue.length + 1;
 		var command = {
-			state: {},
+			context: {},
 			arguments: [],
-			start: function(scene, state) {
+			start: function(scene) {
 				scene.goTo(jump.loopStart);
 			}
 		};
@@ -347,9 +338,9 @@ Scenario.prototype.doIf = function(op, variableName, value)
 	var jump = { ifFalse: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
-		state: {},
+		context: {},
 		arguments: [ jump ],
-		start: function(scene, state, jump) {
+		start: function(scene, jump) {
 			if (!scene.testIf(variableName, op, value)) {
 				scene.goTo(jump.ifFalse);
 			}
@@ -373,9 +364,9 @@ Scenario.prototype.doUntil = function(op, variableName, value)
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
-		state: {},
+		context: {},
 		arguments: [ jump ],
-		start: function(scene, state, jump) {
+		start: function(scene, jump) {
 			if (scene.testIf(variableName, op, value)) {
 				scene.goTo(jump.ifDone);
 			}
@@ -399,9 +390,9 @@ Scenario.prototype.doWhile = function(op, variableName, value)
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
-		state: {},
+		context: {},
 		arguments: [ jump ],
-		start: function(scene, state, jump) {
+		start: function(scene, jump) {
 			if (!scene.testIf(variableName, op, value)) {
 				scene.goTo(jump.ifDone);
 			}
@@ -436,14 +427,14 @@ Scenario.prototype.run = function(waitUntilDone)
 	if (this.isRunning()) {
 		return;
 	}
-	var mainThreadState = {
+	var mainForkContext = {
 		currentCommandThread: 0,
 		commandQueue:         this.currentQueue,
 		forkThreads:          this.currentForkThreadList,
 		counter:              0
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.mainThread = this.createForkThread(mainThreadState);
+	this.mainThread = this.createThread(mainForkContext, this.forkUpdater);
 	Scenario.activeScenes.push(this);
 	if (waitUntilDone) {
 		var currentFPS = GetFrameRate();
@@ -485,12 +476,12 @@ Scenario.prototype.stop = function()
 Scenario.prototype.synchronize = function()
 {
 	var command = {};
-	command.state = {};
+	command.context = {};
 	command.arguments = [ this.currentForkThreadList ];
-	command.start = function(scene, state, subthreads) {
+	command.start = function(scene, subthreads) {
 		this.subthreads = subthreads;
 	};
-	command.update = function(scene, state) {
+	command.update = function(scene) {
 		return this.subthreads.length != 0;
 	};
 	this.enqueue(command);
@@ -499,14 +490,14 @@ Scenario.prototype.synchronize = function()
 
 // Predefined scene commands
 Scenario.defineCommand('call', {
-	start: function(scene, state, method /*...*/) {
+	start: function(scene, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 3));
 	}
 });
 
 Scenario.defineCommand('facePerson',
 {
-	start: function(scene, state, person, direction) {
+	start: function(scene, person, direction) {
 		var faceCommand;
 		switch (direction.toLowerCase()) {
 			case "n": case "north":
@@ -542,41 +533,41 @@ Scenario.defineCommand('facePerson',
 
 Scenario.defineCommand('fadeTo',
 {
-	start: function(scene, state, color, duration) {
+	start: function(scene, color, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
 		this.fader = new Scenario()
 			.tween(Scenario.screenMask, duration, 'linear', color)
 			.run();
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return this.fader.isRunning();
 	}
 });
 
 Scenario.defineCommand('focusOnPerson',
 {
-	start: function(scene, state, person, duration) {
+	start: function(scene, person, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
 		this.panner = new Scenario()
 			.panTo(GetPersonX(person), GetPersonY(person), duration)
 			.run();
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return this.panner.isRunning();
 	}
 });
 
 Scenario.defineCommand('followPerson',
 {
-	start: function(scene, state, person) {
+	start: function(scene, person) {
 		this.person = person;
 		this.pan = new Scenario()
 			.focusOnPerson(person)
 			.run();
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		if (!this.pan.isRunning()) {
 			AttachCamera(this.person);
 			return false;
@@ -588,7 +579,7 @@ Scenario.defineCommand('followPerson',
 
 Scenario.defineCommand('hidePerson',
 {
-	start: function(scene, state, person) {
+	start: function(scene, person) {
 		SetPersonVisible(person, false);
 		IgnorePersonObstructions(person, true);
 	}
@@ -596,21 +587,21 @@ Scenario.defineCommand('hidePerson',
 
 Scenario.defineCommand('increment',
 {
-	start: function(scene, state, variable) {
+	start: function(scene, variable) {
 		++scene.variables[variable];
 	}
 });
 
 Scenario.defineCommand('killPerson',
 {
-	start: function(scene, state, person) {
+	start: function(scene, person) {
 		DestroyPerson(person);
 	}
 });
 
 Scenario.defineCommand('marquee',
 {
-	start: function(scene, state, text, backgroundColor, color) {
+	start: function(scene, text, backgroundColor, color) {
 		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
 		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
 		
@@ -630,7 +621,7 @@ Scenario.defineCommand('marquee',
 			.tween(this, 0.25, 'linear', { fadeness: 0.0 })
 			.run();
 	},
-	render: function(scene, state) {
+	render: function(scene) {
 		var boxHeight = this.height * this.fadeness;
 		var boxY = GetScreenHeight() / 2 - boxHeight / 2;
 		var textX = GetScreenWidth() - this.scroll * this.windowSize;
@@ -641,14 +632,14 @@ Scenario.defineCommand('marquee',
 		this.font.setColorMask(this.color);
 		this.font.drawText(textX, textY, this.text);
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return this.animation.isRunning();
 	}
 });
 
 Scenario.defineCommand('movePerson',
 {
-	start: function(scene, state, person, direction, distance, speed, faceFirst) {
+	start: function(scene, person, direction, distance, speed, faceFirst) {
 		faceFirst = faceFirst !== void null ? faceFirst : true;
 		
 		if (!isNaN(speed)) {
@@ -708,7 +699,7 @@ Scenario.defineCommand('movePerson',
 		}
 		return true;
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		if (IsCommandQueueEmpty(this.person)) {
 			SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
 			return false;
@@ -719,7 +710,7 @@ Scenario.defineCommand('movePerson',
 
 Scenario.defineCommand('panTo',
 {
-	start: function(scene, state, x, y, duration) {
+	start: function(scene, x, y, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
 		DetachCamera();
@@ -733,7 +724,7 @@ Scenario.defineCommand('panTo',
 			.tween(this, duration, 'easeOutQuad', targetXY)
 			.run();
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		SetCameraX(this.cameraX);
 		SetCameraY(this.cameraY);
 		return this.pan.isRunning();
@@ -742,11 +733,11 @@ Scenario.defineCommand('panTo',
 
 Scenario.defineCommand('pause',
 {
-	start: function(scene, state, duration) {
+	start: function(scene, duration) {
 		this.duration = duration;
 		this.elapsed = 0;
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		this.elapsed += 1.0 / scene.frameRate;
 		return this.elapsed < this.duration;
 	}
@@ -754,26 +745,26 @@ Scenario.defineCommand('pause',
 
 Scenario.defineCommand('playSound',
 {
-	start: function(scene, state, file) {
+	start: function(scene, file) {
 		this.sound = LoadSound(file);
 		this.sound.play(false);
 		return true;
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		return this.sound.isPlaying();
 	}
 });
 
 Scenario.defineCommand('set',
 {
-	start: function(scene, state, variable, value) {
+	start: function(scene, variable, value) {
 		scene.variables[variable] = value;
 	}
 });
 
 Scenario.defineCommand('showPerson',
 {
-	start: function(scene, state, person) {
+	start: function(scene, person) {
 		SetPersonVisible(person, true);
 		IgnorePersonObstructions(person, false);
 	}
@@ -781,7 +772,7 @@ Scenario.defineCommand('showPerson',
 
 Scenario.defineCommand('tween',
 {
-	start: function(scene, state, o, duration, easingType, endValues) {
+	start: function(scene, o, duration, easingType, endValues) {
 		this.easers = {
 			linear: function(t, b, c, d) {
 				return c * t / d + b;
@@ -938,7 +929,7 @@ Scenario.defineCommand('tween',
 			this.elapsed = this.duration;
 		}
 	},
-	update: function(scene, state) {
+	update: function(scene) {
 		this.elapsed += 1.0 / scene.frameRate;
 		for (var p in this.change) {
 			if (this.elapsed < this.duration) {
