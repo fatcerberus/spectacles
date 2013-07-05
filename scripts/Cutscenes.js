@@ -5,7 +5,7 @@
 
 RequireScript('Battle.js');
 
-Scenario.defineCommand('adjustBGMVolume',
+Scenario.defineCommand('adjustBGM',
 {
 	start: function(scene, state, volume, duration) {
 		duration = duration !== void null ? duration : 0.0;
@@ -31,7 +31,14 @@ Scenario.defineCommand('battle',
 	}
 });
 
-Scenario.defineCommand('overrideBGM',
+Scenario.defineCommand('changeMap',
+{
+	start: function(scene, state, map) {
+		ChangeMap(map);
+	}
+});
+
+Scenario.defineCommand('playBGM',
 {
 	start: function(scene, state, trackName) {
 		BGM.override(trackName);
@@ -222,13 +229,5 @@ Scenario.defineCommand('talk',
 				this.lineVisibility = 0.0;
 			}
 		}
-	}
-});
-
-Scenario.defineCommand('teleport',
-{
-	start: function(scene, state, map, x, y) {
-		ChangeMap(map);
-		SetPersonXYFloat('hero', x, y);
 	}
 });
