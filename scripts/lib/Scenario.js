@@ -548,12 +548,12 @@ Scenario.defineCommand('focusOnPerson',
 	start: function(scene, person, duration) {
 		duration = duration !== void null ? duration : 0.25;
 		
-		this.panner = new Scenario()
+		this.pan = new Scenario()
 			.panTo(GetPersonX(person), GetPersonY(person), duration)
 			.run();
 	},
 	update: function(scene) {
-		return this.panner.isRunning();
+		return this.pan.isRunning();
 	}
 });
 
@@ -566,12 +566,10 @@ Scenario.defineCommand('followPerson',
 			.run();
 	},
 	update: function(scene) {
-		if (!this.pan.isRunning()) {
-			AttachCamera(this.person);
-			return false;
-		} else {
-			return true;
-		}
+		return this.pan.isRunning();
+	},
+	finish: function(scene) {
+		AttachCamera(this.person);
 	}
 });
 
@@ -698,11 +696,10 @@ Scenario.defineCommand('movePerson',
 		return true;
 	},
 	update: function(scene) {
-		if (IsCommandQueueEmpty(this.person)) {
-			SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
-			return false;
-		}
-		return true;
+		return !IsCommandQueueEmpty(this.person);
+	},
+	finish: function(scene) {
+		SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
 	}
 });
 
@@ -930,12 +927,13 @@ Scenario.defineCommand('tween',
 	update: function(scene) {
 		this.elapsed += 1.0 / scene.frameRate;
 		for (var p in this.change) {
-			if (this.elapsed < this.duration) {
-				this.object[p] = this.easers[this.type](this.elapsed, this.startValues[p], this.change[p], this.duration);
-			} else {
-				this.object[p] = this.startValues[p] + this.change[p];
-			}
+			this.object[p] = this.easers[this.type](this.elapsed, this.startValues[p], this.change[p], this.duration);
 		}
 		return this.elapsed < this.duration;
 	},
+	finish: function(scene) {
+		for (var p in this.change) {
+			this.object[p] = this.startValues[p] + this.change[p];
+		}
+	}
 });

@@ -33,7 +33,7 @@ Scenario.defineCommand('battle',
 
 Scenario.defineCommand('changeMap',
 {
-	finish: function(scene, map) {
+	start: function(scene, map) {
 		ChangeMap(map);
 	}
 });
