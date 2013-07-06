@@ -1,5 +1,5 @@
 /**
- * Scenario 3.7.1 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.7.2 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -510,7 +510,7 @@ Scenario.defineCommand('decrement',
 
 Scenario.defineCommand('call', {
 	start: function(scene, method /*...*/) {
-		method.apply(null, [].slice.call(arguments, 3));
+		method.apply(null, [].slice.call(arguments, 2));
 	}
 });
 
