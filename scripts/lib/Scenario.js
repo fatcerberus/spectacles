@@ -1,5 +1,5 @@
 /**
- * Scenario 3.7 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.7.1 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -136,7 +136,7 @@ function Scenario(isLooping)
 		for (var i = 0; i < this.forkThreads.length; ++i) {
 			if (!scene.isThreadRunning(this.forkThreads[i])) {
 				this.forkThreads.splice(i, 1);
-				--i; continue;
+				--i;
 			}
 		}
 		if (scene.isThreadRunning(this.currentCommandThread)) {
@@ -288,7 +288,7 @@ Scenario.prototype.end = function()
 					forkThreads:          subthreads,
 					counter:              0
 				};
-				var thread = scene.createThread(forkContext, this.forkUpdater);
+				var thread = scene.createThread(forkContext, scene.forkUpdater);
 				threads.push(thread);
 			}
 		};

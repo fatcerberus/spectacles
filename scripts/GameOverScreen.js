@@ -33,8 +33,8 @@ GameOverScreen.prototype.show = function()
 		this.fadeness = 0.0;
 	}
 	this.fadeScene = new Scenario()
-		.changeBGM("GameOver")
-		.adjustBGMVolume(1.0)
+		.playBGM("GameOver")
+		.adjustBGM(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
 		.run();
 	Threads.waitFor(Threads.createEntityThread(this));
@@ -60,7 +60,7 @@ GameOverScreen.prototype.update = function()
 				}
 				this.transition = new Scenario()
 					.fork()
-						.adjustBGMVolume(0.0, 2.0)
+						.adjustBGM(0.0, 2.0)
 					.end()
 					.tween(this, 2.0, 'linear', { fadeness: 1.0 })
 					.run();
