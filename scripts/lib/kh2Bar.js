@@ -18,10 +18,8 @@ kh2Bar = kh2Bar || {};
 function kh2Bar(capacity, sectorSize, color, maxSectors)
 {
 	if (arguments.length < 1) {
-		Abort(
-			"kh2Bar() - error: Wrong number of arguments\n" +
-			"At least 1 argument was expected; caller passed " + arguments.length + "."
-		);
+		Abort("kh2Bar() - error: Wrong number of arguments\n" +
+			"At least 1 argument was expected; caller passed " + arguments.length + ".");
 	}
 	
 	sectorSize = sectorSize !== void null ? sectorSize : 100;
@@ -68,7 +66,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 
 // .beginCombo() method
 // Begins a combo. Damage displayed on the gauge will accumulate without fading out until
-// kh2Bar.endCombo() is called.
+// the combo is ended by calling .endCombo().
 kh2Bar.prototype.beginCombo = function()
 {
 	++this.numCombosRunning;
@@ -104,10 +102,8 @@ kh2Bar.prototype.changeColor = function(color, duration)
 kh2Bar.prototype.draw = function(x, y, width, height)
 {
 	if (arguments.length < 4) {
-		Abort(
-			"kh2Bar.draw() - error: Wrong number of arguments\n" +
-			"4 arguments were expected; caller passed " + arguments.length + "."
-		);
+		Abort("kh2Bar.draw() - error: Wrong number of arguments\n" +
+			"4 arguments were expected; caller passed " + arguments.length + ".");
 	}
 	
 	if (this.fadeness >= 1.0) {
@@ -196,10 +192,8 @@ kh2Bar.prototype.hide = function(duration)
 kh2Bar.prototype.set = function(value)
 {
 	if (arguments.length < 1) {
-		Abort(
-			"kh2Bar.set() - error: Wrong number of arguments\n" +
-			"1 argument was expected; caller passed " + arguments.length + "."
-		);
+		Abort("kh2Bar.set() - error: Wrong number of arguments\n" +
+			"1 argument was expected; caller passed " + arguments.length + ".");
 	}
 	
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
