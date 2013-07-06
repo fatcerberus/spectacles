@@ -1,5 +1,5 @@
 /**
- * Scenario 4.0 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.7 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -203,12 +203,12 @@ function Scenario(isLooping)
 	this.testIf = function(op, variableName, value)
 	{
 		var operators = {
-			'==': function(a, b) { return a == b; },
-			'!=': function(a, b) { return a != b; },
-			'>': function(a, b) { return a > b; },
-			'>=': function(a, b) { return a >= b; },
-			'<': function(a, b) { return a < b; },
-			'<=': function(a, b) { return a <= b; }
+			'equal': function(a, b) { return a == b; },
+			'notEqual': function(a, b) { return a != b; },
+			'greaterThan': function(a, b) { return a > b; },
+			'greaterThanOrEqual': function(a, b) { return a >= b; },
+			'lessThan': function(a, b) { return a < b; },
+			'lessThanOrEqual': function(a, b) { return a <= b; }
 		};
 		return operators[op](this.variables[variableName], value);
 	};
@@ -270,7 +270,7 @@ Scenario.prototype.fork = function()
 Scenario.prototype.end = function()
 {
 	if (this.openBlocks.length == 0) {
-		this.throwError("Scenario.end()", "Malformed scene", "There are no blocks currently open.");
+		this.throwError("Scenario.end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
 	}
 	var openBlockType = this.openBlocks.pop();
 	if (openBlockType == 'fork') {
@@ -391,7 +391,7 @@ Scenario.prototype.doWhile = function(op, variableName, value)
 		context: {},
 		arguments: [ jump ],
 		start: function(scene, jump) {
-			if (!scene.testIf(variableName, op, value)) {
+			if (!scene.testIf(op, variableName, value)) {
 				scene.goTo(jump.ifDone);
 			}
 		}
@@ -487,6 +487,27 @@ Scenario.prototype.synchronize = function()
 };
 
 // Predefined scene commands
+Scenario.defineCommand('set',
+{
+	start: function(scene, variableName, value) {
+		scene.variables[variableName] = value;
+	}
+});
+
+Scenario.defineCommand('increment',
+{
+	start: function(scene, variableName) {
+		++scene.variables[variableName];
+	}
+});
+
+Scenario.defineCommand('decrement',
+{
+	start: function(scene, variableName) {
+		--scene.variables[variableName];
+	}
+});
+
 Scenario.defineCommand('call', {
 	start: function(scene, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 3));
@@ -578,13 +599,6 @@ Scenario.defineCommand('hidePerson',
 	start: function(scene, person) {
 		SetPersonVisible(person, false);
 		IgnorePersonObstructions(person, true);
-	}
-});
-
-Scenario.defineCommand('increment',
-{
-	start: function(scene, variable) {
-		++scene.variables[variable];
 	}
 });
 
@@ -750,13 +764,6 @@ Scenario.defineCommand('playSound',
 	}
 });
 
-Scenario.defineCommand('set',
-{
-	start: function(scene, variable, value) {
-		scene.variables[variable] = value;
-	}
-});
-
 Scenario.defineCommand('showPerson',
 {
 	start: function(scene, person) {
@@ -909,11 +916,11 @@ Scenario.defineCommand('tween',
 			this.startValues[p] = o[p];
 			isChanged = isChanged || this.change[p] != 0;
 		}
-		var specialProperties = [
+		var specialPropertyNames = [
 			'red', 'green', 'blue', 'alpha'
 		];
-		for (var i = 0; i < specialProperties.length; ++i) {
-			var p = specialProperties[i];
+		for (var i = 0; i < specialPropertyNames.length; ++i) {
+			var p = specialPropertyNames[i];
 			if (!(p in this.change) && p in endValues) {
 				this.change[p] = endValues[p] - o[p];
 				this.startValues[p] = o[p];
@@ -926,10 +933,14 @@ Scenario.defineCommand('tween',
 	},
 	update: function(scene) {
 		this.elapsed += 1.0 / scene.frameRate;
-		for (var p in this.change) {
-			this.object[p] = this.easers[this.type](this.elapsed, this.startValues[p], this.change[p], this.duration);
+		if (this.elapsed < this.duration) {
+			for (var p in this.change) {
+				this.object[p] = this.easers[this.type](this.elapsed, this.startValues[p], this.change[p], this.duration);
+			}
+			return true;
+		} else {
+			return false;
 		}
-		return this.elapsed < this.duration;
 	},
 	finish: function(scene) {
 		for (var p in this.change) {

@@ -3,7 +3,11 @@
 	{
 		DetachInput();
 		new Scenario()
-			.battle('robert2')
+			.set('iterations', 2)
+			.doWhile('greaterThan', 'iterations', 0)
+				.decrement('iterations')
+				.talk("maggie", true, 2.0, "HUNGRY")
+			.end()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)
