@@ -1,5 +1,5 @@
 /**
- * Scenario 3.7.2 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.7.3 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -339,7 +339,7 @@ Scenario.prototype.doIf = function(op, variableName, value)
 		context: {},
 		arguments: [ jump ],
 		start: function(scene, jump) {
-			if (!scene.testIf(variableName, op, value)) {
+			if (!scene.testIf(op, variableName, value)) {
 				scene.goTo(jump.ifFalse);
 			}
 		}
@@ -365,7 +365,7 @@ Scenario.prototype.doUntil = function(op, variableName, value)
 		context: {},
 		arguments: [ jump ],
 		start: function(scene, jump) {
-			if (scene.testIf(variableName, op, value)) {
+			if (scene.testIf(op, variableName, value)) {
 				scene.goTo(jump.ifDone);
 			}
 		}
@@ -487,17 +487,9 @@ Scenario.prototype.synchronize = function()
 };
 
 // Predefined scene commands
-Scenario.defineCommand('set',
-{
-	start: function(scene, variableName, value) {
-		scene.variables[variableName] = value;
-	}
-});
-
-Scenario.defineCommand('increment',
-{
-	start: function(scene, variableName) {
-		++scene.variables[variableName];
+Scenario.defineCommand('call', {
+	start: function(scene, method /*...*/) {
+		method.apply(null, [].slice.call(arguments, 2));
 	}
 });
 
@@ -508,9 +500,17 @@ Scenario.defineCommand('decrement',
 	}
 });
 
-Scenario.defineCommand('call', {
-	start: function(scene, method /*...*/) {
-		method.apply(null, [].slice.call(arguments, 2));
+Scenario.defineCommand('increment',
+{
+	start: function(scene, variableName) {
+		++scene.variables[variableName];
+	}
+});
+
+Scenario.defineCommand('set',
+{
+	start: function(scene, variableName, value) {
+		scene.variables[variableName] = value;
 	}
 });
 
