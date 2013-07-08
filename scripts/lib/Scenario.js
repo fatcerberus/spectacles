@@ -1,5 +1,5 @@
 /**
- * Scenario 3.7.3 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.8 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -238,15 +238,15 @@ function Scenario(isLooping)
 			var inputHandler = this.threads[i].inputHandler;
 			var context = this.threads[i].context;
 			if (updater == null) continue;
+			if (this.focusThread == id) {
+				inputHandler.call(context, this);
+			}
 			if (!updater.call(context, this)) {
 				if (this.focusThread == id) {
 					this.focusThread = this.focusThreadStack.pop();
 				}
 				this.threads.splice(i, 1);
 				--i; continue;
-			}
-			if (this.focusThread == id) {
-				inputHandler.call(context, this);
 			}
 		}
 		this.activeThread = null;
@@ -419,7 +419,7 @@ Scenario.prototype.run = function(waitUntilDone)
 		this.throwError("Scenario.run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
 	}
 	if (this.isLooping && waitUntilDone) {
-		this.throwError("Scenario.run()", "Invalid argument", "Caller attempted to wait for a looping scenario. This would have created an infinite loop and has been prevented.");
+		this.throwError("Scenario.run()", "Invalid argument", "Caller attempted to wait on a looping scene. This would have created an infinite loop and has been prevented.");
 	}
 	
 	if (this.isRunning()) {
@@ -509,8 +509,8 @@ Scenario.defineCommand('increment',
 
 Scenario.defineCommand('set',
 {
-	start: function(scene, variableName, value) {
-		scene.variables[variableName] = value;
+	start: function(scene, variableName, getter) {
+		scene.variables[variableName] = getter();
 	}
 });
 
