@@ -121,7 +121,7 @@ BattleScreen.prototype.fadeOut = function(duration)
 	}
 	new Scenario()
 		.fadeTo(CreateColor(0, 0, 0, 255), duration)
-		.call(delegate(this, this.dispose))
+		.call(this.dispose.bind(this))
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 		.run(true);
 };
@@ -132,7 +132,7 @@ BattleScreen.prototype.fadeOut = function(duration)
 //     title: Optional. A title to display during the battle transiton.
 BattleScreen.prototype.go = function(title)
 {
-	if (title === void null) { title = null; }
+	title = title !== void null ? title : null;
 	
 	this.title = title;
 	if (DBG_DISABLE_TRANSITIONS) {
@@ -143,7 +143,7 @@ BattleScreen.prototype.go = function(title)
 		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-		.call(delegate(this, this.startRunning))
+		.call(this.startRunning.bind(this))
 		.fadeTo(CreateColor(0, 0, 0, 0), 1.0);
 	transition.run(true);
 };

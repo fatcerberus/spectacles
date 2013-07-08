@@ -326,20 +326,18 @@ Scenario.prototype.isRunning = function()
 // .doIf() method
 // During scene execution, executes a block of commands only if a specified condition is met.
 // Arguments:
-//     op:           A string naming the conditional operator. Can be one of the following:
-//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
-//                   <= (less or equal)
-//     variableName: The name of the variable to be tested.
-//     value:        The value to test against.
-Scenario.prototype.doIf = function(op, variableName, value)
+//     conditional:  A function to be called during scene execution to determine whether to run the following
+//                   block. The function should return true to execute the block, or false to skip it. It
+//                   will be called with 'this' set to the invoking scene.
+Scenario.prototype.doIf = function(conditional)
 {
 	var jump = { ifFalse: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
 		context: {},
-		arguments: [ jump ],
-		start: function(scene, jump) {
-			if (!scene.testIf(op, variableName, value)) {
+		arguments: [],
+		start: function(scene) {
+			if (!conditional.call(scene)) {
 				scene.goTo(jump.ifFalse);
 			}
 		}
@@ -349,49 +347,21 @@ Scenario.prototype.doIf = function(op, variableName, value)
 	return this;
 };
 
-// .doUntil() method
-// During scene execution, repeats a block of commands until a specified condition is met.
-// Arguments:
-//     op:           A string naming the conditional operator. Can be one of the following:
-//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
-//                   <= (less or equal)
-//     variableName: The name of the variable to be tested.
-//     value:        The value to test against.
-Scenario.prototype.doUntil = function(op, variableName, value)
-{
-	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
-	this.jumpsToFix.push(jump);
-	var command = {
-		context: {},
-		arguments: [ jump ],
-		start: function(scene, jump) {
-			if (scene.testIf(op, variableName, value)) {
-				scene.goTo(jump.ifDone);
-			}
-		}
-	};
-	this.enqueue(command);
-	this.openBlocks.push('loop');
-	return this;
-};
-
 // .doWhile() method
-// During scene execution, repeats a block of commands until a specified condition is met.
+// During scene execution, repeats a block of commands for as long as a specified condition is met.
 // Arguments:
-//     op:           A string naming the conditional operator. Can be one of the following:
-//                   = (equal), != (not equal), > (greater), >= (greater or equal), < (less),
-//                   <= (less or equal)
-//     variableName: The name of the variable to be tested.
-//     value:        The value to test against.
-Scenario.prototype.doWhile = function(op, variableName, value)
+//     conditional:  A function to be called at each iteration to determine whether to continue the
+//                   loop. The function should return true to continue the loop, or false to
+//                   stop it. It will be called with 'this' set to the invoking Scenario object.
+Scenario.prototype.doWhile = function(conditional)
 {
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
 		context: {},
-		arguments: [ jump ],
-		start: function(scene, jump) {
-			if (!scene.testIf(op, variableName, value)) {
+		arguments: [],
+		start: function(scene) {
+			if (!conditional.call(scene)) {
 				scene.goTo(jump.ifDone);
 			}
 		}

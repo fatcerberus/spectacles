@@ -2,7 +2,11 @@
 	showOpening: function()
 	{
 		DetachInput();
+		var loops = 0;
 		new Scenario()
+			.doWhile(function() { return loops++ < 2; })
+				.talk("maggie", true, 2.0, "I'm hungry! Where's that dumb horse when you need it?")
+			.end()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)

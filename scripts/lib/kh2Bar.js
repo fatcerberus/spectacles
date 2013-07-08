@@ -60,7 +60,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	
 	this.tween = function(start, time, duration, end)
 	{
-		return start + (end - start) * time / duration; 
+		return start + (end - start) * time / duration;
 	}
 }
 
