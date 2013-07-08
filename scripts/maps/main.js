@@ -2,10 +2,16 @@
 	showOpening: function()
 	{
 		DetachInput();
-		var loops = 0;
+		Threads.doWith(null,
+			function() { return true; },
+			function() { ApplyColorMask(CreateColor(0, 128, 0, 255)); })
+		var maggie = 0;
 		new Scenario()
-			.doWhile(function() { return loops++ < 2; })
-				.talk("maggie", true, 2.0, "I'm hungry! Where's that dumb horse when you need it?")
+			.doWhile(function() { return maggie++ < 5; })
+				.fork()
+					.talk("maggie", true, 2.0, "I ate it!")
+				.end()
+				.pause(1.0)
 			.end()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')

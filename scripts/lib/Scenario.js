@@ -28,7 +28,6 @@ Scenario.defineCommand = function(name, code)
 	}
 	Scenario.prototype[name] = function() {
 		var command = {};
-		command.context = {};
 		command.arguments = arguments;
 		command.finish = code.finish;
 		command.render = code.render;
@@ -148,13 +147,14 @@ function Scenario(isLooping)
 		if (this.counter < this.commandQueue.length) {
 			var command = this.commandQueue[this.counter];
 			++this.counter;
+			var commandContext = {};
 			if (command.start != null) {
 				var parameters = [];
 				parameters.push(scene);
 				for (i = 0; i < command.arguments.length; ++i) {
 					parameters.push(command.arguments[i]);
 				}
-				command.start.apply(command.context, parameters);
+				command.start.apply(commandContext, parameters);
 			}
 			if (command.update != null) {
 				var updateShim = function(scene) {
@@ -164,7 +164,7 @@ function Scenario(isLooping)
 					}
 					return isActive;
 				};
-				this.currentCommandThread = scene.createThread(command.context, updateShim, command.render, 0, command.getInput);
+				this.currentCommandThread = scene.createThread(commandContext, updateShim, command.render, 0, command.getInput);
 			} else if (command.finish != null) {
 				command.finish.call(command.context, scene);
 			}
@@ -278,7 +278,6 @@ Scenario.prototype.end = function()
 		this.currentForkThreadList = this.forkThreadLists.pop();
 		var parentThreadList = this.currentForkThreadList;
 		var command = {
-			context: {},
 			arguments: [ parentThreadList, threadList, this.currentQueue ],
 			start: function(scene, threads, subthreads, queue) {
 				var forkContext = {
@@ -301,7 +300,6 @@ Scenario.prototype.end = function()
 		var jump = this.jumpsToFix.pop();
 		jump.ifDone = this.currentQueue.length + 1;
 		var command = {
-			context: {},
 			arguments: [],
 			start: function(scene) {
 				scene.goTo(jump.loopStart);
@@ -334,7 +332,6 @@ Scenario.prototype.doIf = function(conditional)
 	var jump = { ifFalse: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
-		context: {},
 		arguments: [],
 		start: function(scene) {
 			if (!conditional.call(scene)) {
@@ -358,7 +355,6 @@ Scenario.prototype.doWhile = function(conditional)
 	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
 	this.jumpsToFix.push(jump);
 	var command = {
-		context: {},
 		arguments: [],
 		start: function(scene) {
 			if (!conditional.call(scene)) {
@@ -444,7 +440,6 @@ Scenario.prototype.stop = function()
 Scenario.prototype.synchronize = function()
 {
 	var command = {};
-	command.context = {};
 	command.arguments = [ this.currentForkThreadList ];
 	command.start = function(scene, subthreads) {
 		this.subthreads = subthreads;
