@@ -454,6 +454,11 @@ Scenario.defineCommand('set',
 	}
 });
 
+// .facePerson() scenelet
+// Changes the facing direction of a map entity.
+// Arguments:
+//     person:    The name of the entity whose direction to change.
+//     direction: The name of the new direction.
 Scenario.defineCommand('facePerson',
 {
 	start: function(scene, person, direction) {
@@ -490,6 +495,11 @@ Scenario.defineCommand('facePerson',
 	}
 });
 
+// .fadeTo() scenelet
+// Fades the screen mask to a specified color.
+// Arguments:
+//     color:    The new screen mask color.
+//     duration: The length of the fading operation, in seconds.
 Scenario.defineCommand('fadeTo',
 {
 	start: function(scene, color, duration) {
@@ -504,6 +514,12 @@ Scenario.defineCommand('fadeTo',
 	}
 });
 
+// .focusOnPerson() scenelet
+// Pans the camera to a point centered over a specified map entity.
+// Arguments:
+//     person:   The name of the entity to focus on.
+//     duration: Optional. The length of the panning operation, in seconds.
+//               (default: 0.25)
 Scenario.defineCommand('focusOnPerson',
 {
 	start: function(scene, person, duration) {
@@ -518,6 +534,10 @@ Scenario.defineCommand('focusOnPerson',
 	}
 });
 
+// .followPerson() scenelet
+// Pans to and attaches the camera to a specified map entity.
+// Arguments:
+//     person: The name of the entity to follow.
 Scenario.defineCommand('followPerson',
 {
 	start: function(scene, person) {
@@ -534,6 +554,10 @@ Scenario.defineCommand('followPerson',
 	}
 });
 
+// .hidePerson() scenelet
+// Hides a map entity and prevents it from obstructing other entities.
+// Arguments:
+//     person: The name of the entity to hide.
 Scenario.defineCommand('hidePerson',
 {
 	start: function(scene, person) {
@@ -542,6 +566,10 @@ Scenario.defineCommand('hidePerson',
 	}
 });
 
+// .killPerson() scenelet
+// Destroys a map entity.
+// Arguments:
+//     person: The name of the entity to destroy.
 Scenario.defineCommand('killPerson',
 {
 	start: function(scene, person) {
@@ -549,6 +577,12 @@ Scenario.defineCommand('killPerson',
 	}
 });
 
+// .marquee() scenelet
+// Shows a scrolling marquee with the specified text. Useful for announcing boss battles.
+// Arguments:
+//     text:            The text to display.
+//     backgroundColor: The background color of the marquee.
+//     color:           The text color.
 Scenario.defineCommand('marquee',
 {
 	start: function(scene, text, backgroundColor, color) {
@@ -587,6 +621,15 @@ Scenario.defineCommand('marquee',
 	}
 });
 
+// .movePerson() scenelet
+// Instructs a map entity to move a specified distance.
+// Arguments:
+//     person:    The person to move.
+//     direction: The direction in which to move the entity.
+//     distance:  The distance the entity should move.
+//     speed:     The number of pixels per frame the entity should move.
+//     faceFirst: Optional. If this is false, the entity will move without changing its facing
+//                direction. (default: true)
 Scenario.defineCommand('movePerson',
 {
 	start: function(scene, person, direction, distance, speed, faceFirst) {
@@ -657,6 +700,12 @@ Scenario.defineCommand('movePerson',
 	}
 });
 
+// .panTo() scenelet
+// Pans the map camera to center on a specified location on the map.
+// Arguments:
+//     x:        The X coordinate of the location to pan to.
+//     y:        The Y coordinate of the location to pan to.
+//     duration: Optional. The length of the panning operation, in seconds. (default: 0.25)
 Scenario.defineCommand('panTo',
 {
 	start: function(scene, x, y, duration) {
@@ -680,6 +729,10 @@ Scenario.defineCommand('panTo',
 	}
 });
 
+// .pause() scenelet
+// Delays execution of the current timeline for a specified amount of time.
+// Arguments:
+//     duration: The length of the delay, in seconds.
 Scenario.defineCommand('pause',
 {
 	start: function(scene, duration) {
@@ -692,10 +745,13 @@ Scenario.defineCommand('pause',
 	}
 });
 
+// .playSound() scenelet
+// Plays a sound from a file.
+//     fileName: The name of the file to play.
 Scenario.defineCommand('playSound',
 {
-	start: function(scene, file) {
-		this.sound = LoadSound(file);
+	start: function(scene, fileName) {
+		this.sound = LoadSound(fileName);
 		this.sound.play(false);
 		return true;
 	},
@@ -704,6 +760,10 @@ Scenario.defineCommand('playSound',
 	}
 });
 
+// .showPerson() scenelet
+// Makes a map entity visible and enables obstruction.
+// Arguments:
+//     person: The name of the entity to show.
 Scenario.defineCommand('showPerson',
 {
 	start: function(scene, person) {
@@ -712,9 +772,16 @@ Scenario.defineCommand('showPerson',
 	}
 });
 
+// .tween() scenelet
+// Smoothly adjusts numeric properties of an object over a period of time.
+// Arguments:
+//    object:     The object containing the properties to be tweened.
+//    duration:   The length of the tweening operation, in seconds.
+//    easingType: The name of the easing function to use, such as 'linear' or 'easeOutQuad'.
+//    endValues:  An object specifying the properties to tween and their final values.
 Scenario.defineCommand('tween',
 {
-	start: function(scene, o, duration, easingType, endValues) {
+	start: function(scene, object, duration, easingType, endValues) {
 		this.easers = {
 			linear: function(t, b, c, d) {
 				return c * t / d + b;
@@ -847,13 +914,13 @@ Scenario.defineCommand('tween',
 		this.change = {};
 		this.duration = duration;
 		this.elapsed = 0.0;
-		this.object = o;
+		this.object = object;
 		this.startValues = {};
 		this.type = easingType in this.easers ? easingType : 'linear';
 		var isChanged = false;
 		for (var p in endValues) {
-			this.change[p] = endValues[p] - o[p];
-			this.startValues[p] = o[p];
+			this.change[p] = endValues[p] - object[p];
+			this.startValues[p] = object[p];
 			isChanged = isChanged || this.change[p] != 0;
 		}
 		var specialPropertyNames = [
@@ -862,8 +929,8 @@ Scenario.defineCommand('tween',
 		for (var i = 0; i < specialPropertyNames.length; ++i) {
 			var p = specialPropertyNames[i];
 			if (!(p in this.change) && p in endValues) {
-				this.change[p] = endValues[p] - o[p];
-				this.startValues[p] = o[p];
+				this.change[p] = endValues[p] - object[p];
+				this.startValues[p] = object[p];
 				isChanged = isChanged || this.change[p] != 0;
 			}
 		}
