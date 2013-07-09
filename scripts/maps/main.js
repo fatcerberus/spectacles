@@ -13,6 +13,7 @@
 				.end()
 				.pause(1.0)
 			.end()
+			.synchronize()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)

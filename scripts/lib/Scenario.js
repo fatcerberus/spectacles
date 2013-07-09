@@ -88,10 +88,8 @@ function Scenario(isLooping)
 	isLooping = isLooping !== void null ? isLooping : false;
 	
 	this.activeThread = null;
-	this.currentForkThreadList = [];
 	this.focusThreadStack = [];
 	this.focusThread = null;
-	this.forkThreadLists = [];
 	this.forkedQueues = [];
 	this.isLooping = isLooping;
 	this.jumpsToFix = [];
@@ -241,8 +239,6 @@ function Scenario(isLooping)
 // During scene execution, forks the timeline.
 Scenario.prototype.fork = function()
 {
-	this.forkThreadLists.push(this.currentForkThreadList);
-	this.currentForkThreadList = [];
 	this.forkedQueues.push(this.queueToFill);
 	this.queueToFill = [];
 	this.openBlockTypes.push('fork');
@@ -258,20 +254,17 @@ Scenario.prototype.end = function()
 	}
 	var blockType = this.openBlockTypes.pop();
 	if (blockType === 'fork') {
-		var threadList = this.currentForkThreadList;
-		this.currentForkThreadList = this.forkThreadLists.pop();
-		var parentThreadList = this.currentForkThreadList;
 		var command = {
-			arguments: [ parentThreadList, threadList, this.queueToFill ],
-			start: function(scene, threads, subthreads, instructions) {
+			arguments: [ this.queueToFill ],
+			start: function(scene, instructions) {
 				var forkContext = {
 					counter: 0,
 					currentCommandThread: null,
-					forkThreads: subthreads,
+					forkThreads: [],
 					instructions: instructions
 				};
 				var thread = scene.createThread(forkContext, scene.forkUpdater);
-				threads.push(thread);
+				scene.activeThread.context.forkThreads.push(thread);
 			}
 		};
 		this.queueToFill = this.forkedQueues.pop();
@@ -377,7 +370,7 @@ Scenario.prototype.run = function(waitUntilDone)
 	var mainForkContext = {
 		counter: 0,
 		currentCommandThread: null,
-		forkThreads: this.currentForkThreadList,
+		forkThreads: [],
 		instructions: this.queueToFill
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
@@ -423,12 +416,12 @@ Scenario.prototype.stop = function()
 Scenario.prototype.synchronize = function()
 {
 	var command = {};
-	command.arguments = [ this.currentForkThreadList ];
-	command.start = function(scene, subthreads) {
-		this.subthreads = subthreads;
+	command.arguments = [];
+	command.start = function(scene) {
+		this.forkThreads = scene.activeThread.context.forkThreads;
 	};
 	command.update = function(scene) {
-		return this.subthreads.length != 0;
+		return this.forkThreads.length != 0;
 	};
 	this.enqueue(command);
 	return this;
