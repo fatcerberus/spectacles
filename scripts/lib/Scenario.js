@@ -70,7 +70,7 @@ Scenario.updateAll = function()
 				scene.run(false);
 			}
 			this.activeScenes.splice(i, 1);
-			--i; continue;
+			--i;
 		}
 	}
 	Scenario.hasUpdated = true;
@@ -89,34 +89,31 @@ function Scenario(isLooping)
 	
 	this.activeThread = null;
 	this.currentForkThreadList = [];
-	this.currentQueue = [];
 	this.focusThreadStack = [];
-	this.focusThread = 0;
+	this.focusThread = null;
 	this.forkThreadLists = [];
+	this.forkedQueues = [];
 	this.isLooping = isLooping;
 	this.jumpsToFix = [];
 	this.nextThreadID = 1;
-	this.openBlocks = [];
-	this.queues = [];
+	this.openBlockTypes = [];
+	this.queueToFill = [];
 	this.threads = [];
 	this.variables = {};
 	
-	this.createThread = function(context, updater, renderer, priority, inputHandler)
+	this.createThread = function(context, updater, renderer, inputHandler)
 	{
 		renderer = renderer !== void null ? renderer : null;
-		priority = priority !== void null ? priority : 0;
 		inputHandler = inputHandler !== void null ? inputHandler : null;
 		
 		var threadObject = {
-			id:           this.nextThreadID,
-			context:      context,
-			priority:     priority,
-			updater:      updater,
-			renderer:     renderer,
-			inputHandler: inputHandler
+			id: this.nextThreadID,
+			context: context,
+			inputHandler: inputHandler,
+			renderer: renderer,
+			updater: updater
 		};
 		this.threads.push(threadObject);
-		this.threads.sort(function(a, b) { return a.priority - b.priority; });
 		if (inputHandler != null) {
 			this.focusThreadStack.push(this.focusThread);
 			this.focusThread = threadObject.id;
@@ -127,7 +124,7 @@ function Scenario(isLooping)
 	
 	this.enqueue = function(command)
 	{
-		this.currentQueue.push(command);
+		this.queueToFill.push(command);
 	};
 	
 	this.forkUpdater = function(scene)
@@ -141,11 +138,11 @@ function Scenario(isLooping)
 		if (scene.isThreadRunning(this.currentCommandThread)) {
 			return true;
 		}
-		if (this.counter >= this.commandQueue.length && this.forkThreads.length == 0) {
+		if (this.counter >= this.instructions.length && this.forkThreads.length === 0) {
 			return false;
 		}
-		if (this.counter < this.commandQueue.length) {
-			var command = this.commandQueue[this.counter];
+		if (this.counter < this.instructions.length) {
+			var command = this.instructions[this.counter];
 			++this.counter;
 			var commandContext = {};
 			if (command.start != null) {
@@ -164,7 +161,7 @@ function Scenario(isLooping)
 					}
 					return isActive;
 				};
-				this.currentCommandThread = scene.createThread(commandContext, updateShim, command.render, 0, command.getInput);
+				this.currentCommandThread = scene.createThread(commandContext, updateShim, command.render, command.getInput);
 			} else if (command.finish != null) {
 				command.finish.call(command.context, scene);
 			}
@@ -195,27 +192,9 @@ function Scenario(isLooping)
 		for (var i = 0; i < this.threads.length; ++i) {
 			if (id == this.threads[i].id) {
 				this.threads.splice(i, 1);
-				--i; continue;
+				--i;
 			}
 		}
-	};
-	
-	this.testIf = function(op, variableName, value)
-	{
-		var operators = {
-			'equal': function(a, b) { return a == b; },
-			'notEqual': function(a, b) { return a != b; },
-			'greaterThan': function(a, b) { return a > b; },
-			'greaterThanOrEqual': function(a, b) { return a >= b; },
-			'lessThan': function(a, b) { return a < b; },
-			'lessThanOrEqual': function(a, b) { return a <= b; }
-		};
-		return operators[op](this.variables[variableName], value);
-	};
-	
-	this.throwError = function(component, name, message)
-	{
-		Abort(component + " - error: " + name + "\n" + message);
 	};
 	
 	this.render = function()
@@ -227,6 +206,11 @@ function Scenario(isLooping)
 				renderer.call(context, this);
 			}
 		}
+	};
+	
+	this.throwError = function(component, name, message)
+	{
+		Abort(component + " - error: " + name + "\n" + message);
 	};
 	
 	this.update = function()
@@ -246,7 +230,7 @@ function Scenario(isLooping)
 					this.focusThread = this.focusThreadStack.pop();
 				}
 				this.threads.splice(i, 1);
-				--i; continue;
+				--i;
 			}
 		}
 		this.activeThread = null;
@@ -259,9 +243,9 @@ Scenario.prototype.fork = function()
 {
 	this.forkThreadLists.push(this.currentForkThreadList);
 	this.currentForkThreadList = [];
-	this.queues.push(this.currentQueue);
-	this.currentQueue = [];
-	this.openBlocks.push('fork');
+	this.forkedQueues.push(this.queueToFill);
+	this.queueToFill = [];
+	this.openBlockTypes.push('fork');
 	return this;
 };
 
@@ -269,36 +253,35 @@ Scenario.prototype.fork = function()
 // Marks the end of a block of commands.
 Scenario.prototype.end = function()
 {
-	if (this.openBlocks.length == 0) {
+	if (this.openBlockTypes.length == 0) {
 		this.throwError("Scenario.end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
 	}
-	var openBlockType = this.openBlocks.pop();
-	if (openBlockType == 'fork') {
+	var blockType = this.openBlockTypes.pop();
+	if (blockType === 'fork') {
 		var threadList = this.currentForkThreadList;
 		this.currentForkThreadList = this.forkThreadLists.pop();
 		var parentThreadList = this.currentForkThreadList;
 		var command = {
-			arguments: [ parentThreadList, threadList, this.currentQueue ],
-			start: function(scene, threads, subthreads, queue) {
+			arguments: [ parentThreadList, threadList, this.queueToFill ],
+			start: function(scene, threads, subthreads, instructions) {
 				var forkContext = {
-					scene:                scene,
-					commandQueue:         queue,
-					currentCommandThread: 0,
-					forkThreads:          subthreads,
-					counter:              0
+					counter: 0,
+					currentCommandThread: null,
+					forkThreads: subthreads,
+					instructions: instructions
 				};
 				var thread = scene.createThread(forkContext, scene.forkUpdater);
 				threads.push(thread);
 			}
 		};
-		this.currentQueue = this.queues.pop();
+		this.queueToFill = this.forkedQueues.pop();
 		this.enqueue(command);
-	} else if (openBlockType == 'branch') {
+	} else if (blockType === 'branch') {
 		var jump = this.jumpsToFix.pop();
-		jump.ifFalse = this.currentQueue.length;
-	} else if (openBlockType == 'loop') {
+		jump.ifFalse = this.queueToFill.length;
+	} else if (blockType === 'loop') {
 		var jump = this.jumpsToFix.pop();
-		jump.ifDone = this.currentQueue.length + 1;
+		jump.ifDone = this.queueToFill.length + 1;
 		var command = {
 			arguments: [],
 			start: function(scene) {
@@ -329,7 +312,7 @@ Scenario.prototype.isRunning = function()
 //                   will be called with 'this' set to the invoking scene.
 Scenario.prototype.doIf = function(conditional)
 {
-	var jump = { ifFalse: 0 };
+	var jump = { ifFalse: null };
 	this.jumpsToFix.push(jump);
 	var command = {
 		arguments: [],
@@ -340,7 +323,7 @@ Scenario.prototype.doIf = function(conditional)
 		}
 	};
 	this.enqueue(command);
-	this.openBlocks.push('branch');
+	this.openBlockTypes.push('branch');
 	return this;
 };
 
@@ -352,7 +335,7 @@ Scenario.prototype.doIf = function(conditional)
 //                   stop it. It will be called with 'this' set to the invoking Scenario object.
 Scenario.prototype.doWhile = function(conditional)
 {
-	var jump = { loopStart: this.currentQueue.length, ifDone: 0 };
+	var jump = { loopStart: this.queueToFill.length, ifDone: null };
 	this.jumpsToFix.push(jump);
 	var command = {
 		arguments: [],
@@ -363,7 +346,7 @@ Scenario.prototype.doWhile = function(conditional)
 		}
 	};
 	this.enqueue(command);
-	this.openBlocks.push('loop');
+	this.openBlockTypes.push('loop');
 	return this;
 };
 
@@ -381,7 +364,7 @@ Scenario.prototype.run = function(waitUntilDone)
 {
 	waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
 	
-	if (this.openBlocks.length > 0) {
+	if (this.openBlockTypes.length > 0) {
 		this.throwError("Scenario.run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
 	}
 	if (this.isLooping && waitUntilDone) {
@@ -392,10 +375,10 @@ Scenario.prototype.run = function(waitUntilDone)
 		return;
 	}
 	var mainForkContext = {
-		currentCommandThread: 0,
-		commandQueue:         this.currentQueue,
-		forkThreads:          this.currentForkThreadList,
-		counter:              0
+		counter: 0,
+		currentCommandThread: null,
+		forkThreads: this.currentForkThreadList,
+		instructions: this.queueToFill
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
 	this.mainThread = this.createThread(mainForkContext, this.forkUpdater);
