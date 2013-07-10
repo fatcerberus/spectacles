@@ -2,11 +2,8 @@
 	showOpening: function()
 	{
 		DetachInput();
-		Threads.doWith(null,
-			function() { return true; },
-			function() { ApplyColorMask(CreateColor(0, 128, 0, 255)); })
-		var maggie = 0;
 		new Scenario()
+			.battle('robert2')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)

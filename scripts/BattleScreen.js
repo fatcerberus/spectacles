@@ -135,17 +135,17 @@ BattleScreen.prototype.go = function(title)
 	title = title !== void null ? title : null;
 	
 	this.title = title;
-	if (DBG_DISABLE_TRANSITIONS) {
-		this.startRunning();
-		return;
-	}
-	var transition = new Scenario()
-		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
-		.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+	new Scenario()
+		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+		.end()
 		.call(this.startRunning.bind(this))
-		.fadeTo(CreateColor(0, 0, 0, 0), 1.0);
-	transition.run(true);
+		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
+			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+		.end()
+		.run(true);
 };
 
 // .render() method

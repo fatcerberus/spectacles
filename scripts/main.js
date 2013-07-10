@@ -14,7 +14,7 @@ var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = false;
+var DBG_DISABLE_TRANSITIONS = true;
 var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
