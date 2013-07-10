@@ -248,8 +248,8 @@ kh2Bar.prototype.update = function()
 	}
 	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
 	this.drainTimer += 1.0 / frameRate;
-	if (this.newReading != this.reading && this.drainTimer < 0.125) {
-		this.reading = Math.round(this.tween(this.oldReading, this.drainTimer, 0.125, this.newReading));
+	if (this.newReading != this.reading && this.drainTimer < 0.25) {
+		this.reading = Math.round(this.tween(this.oldReading, this.drainTimer, 0.25, this.newReading));
 	} else {
 		this.reading = this.newReading;
 	}
