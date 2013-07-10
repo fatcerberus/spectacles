@@ -7,13 +7,6 @@
 			function() { ApplyColorMask(CreateColor(0, 128, 0, 255)); })
 		var maggie = 0;
 		new Scenario()
-			.doWhile(function() { return maggie++ < 5; })
-				.fork()
-					.talk("maggie", true, 2.0, "I ate it!")
-				.end()
-				.pause(1.0)
-			.end()
-			.synchronize()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)

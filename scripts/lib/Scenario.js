@@ -13,14 +13,14 @@ var Scenario = Scenario || {};
 //     code: An object defining the command's callback functions:
 //           .start(scene, ...): Called when the command begins executing to initialize the state, or for
 //                               instantaneous commands, perform the necessary action.
-//           .update(scene):     Optional. If provided, called once per frame to maintain state variables.
-//                               If not provided, Scenario immediately moves on to the next command after
-//                               calling start(). This function should return true to keep the operation running,
-//                               or false to terminate it.
-//           .render(scene):     Optional. If provided, called once per frame to perform any rendering
+//           .update(scene):     Optional. A function to be called once per frame to update state data. If not
+//                               provided, Scenario immediately moves on to the next command after calling start().
+//                               This function should return true to keep the operation running, or false to
+//                               terminate it.
+//           .render(scene):     Optional. A function to be called once per frame to perform any rendering
 //                               related to the command (e.g. text boxes).
-//           .getInput(scene):   Optional. If provided, called once per frame while the command has the input
-//                               focus to check for player input and update the state accordingly.
+//           .getInput(scene):   Optional. A function to be called once per frame while the command has the input
+//                               focus to check for player input and update state data accordingly.
 Scenario.defineCommand = function(name, code)
 {
 	if (Scenario.prototype[name] != null) {
@@ -44,6 +44,8 @@ Scenario.defineCommand = function(name, code)
 Scenario.initialize = function()
 {
 	this.activeScenes = [];
+	this.hasUpdated = false;
+	this.screenMask = CreateColor(0, 0, 0, 0);
 };
 
 // .renderAll() function
@@ -76,9 +78,6 @@ Scenario.updateAll = function()
 	Scenario.hasUpdated = true;
 };
 
-Scenario.hasUpdated = false;
-Scenario.screenMask = CreateColor(0, 0, 0, 0);
-
 // Scenario() constructor
 // Creates an object representing a scenario (scene definition)
 // Arguments:
@@ -97,7 +96,6 @@ function Scenario(isLooping)
 	this.openBlockTypes = [];
 	this.queueToFill = [];
 	this.threads = [];
-	this.variables = {};
 	
 	this.createThread = function(context, updater, renderer, inputHandler)
 	{
@@ -289,44 +287,49 @@ Scenario.prototype.end = function()
 		this.throwError("Scenario.end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
 	}
 	var blockType = this.openBlockTypes.pop();
-	if (blockType === 'fork') {
-		var command = {
-			arguments: [ this.queueToFill ],
-			start: function(scene, instructions) {
-				var forkContext = {
-					counter: 0,
-					currentCommandThread: null,
-					forkThreads: [],
-					instructions: instructions
-				};
-				var thread = scene.createThread(forkContext, scene.forkUpdater);
-				scene.activeThread.context.forkThreads.push(thread);
-			}
-		};
-		this.queueToFill = this.forkedQueues.pop();
-		this.enqueue(command);
-	} else if (blockType === 'branch') {
-		var jump = this.jumpsToFix.pop();
-		jump.ifFalse = this.queueToFill.length;
-	} else if (blockType === 'loop') {
-		var jump = this.jumpsToFix.pop();
-		jump.ifDone = this.queueToFill.length + 1;
-		var command = {
-			arguments: [],
-			start: function(scene) {
-				scene.goTo(jump.loopStart);
-			}
-		};
-		this.enqueue(command);
-	} else {
-		this.throwError("Scenario.end()", "Internal error", "The type of the open block is unknown.");
+	switch (blockType) {
+		case 'fork':
+			var command = {
+				arguments: [ this.queueToFill ],
+				start: function(scene, instructions) {
+					var forkContext = {
+						counter: 0,
+						currentCommandThread: null,
+						forkThreads: [],
+						instructions: instructions
+					};
+					var thread = scene.createThread(forkContext, scene.forkUpdater);
+					scene.activeThread.context.forkThreads.push(thread);
+				}
+			};
+			this.queueToFill = this.forkedQueues.pop();
+			this.enqueue(command);
+			break;
+		case 'branch':
+			var jump = this.jumpsToFix.pop();
+			jump.ifFalse = this.queueToFill.length;
+			break;
+		case 'loop':
+			var command = {
+				arguments: [],
+				start: function(scene) {
+					scene.goTo(jump.loopStart);
+				}
+			};
+			this.enqueue(command);
+			var jump = this.jumpsToFix.pop();
+			jump.ifDone = this.queueToFill.length;
+			break;
+		default:
+			this.throwError("Scenario.end()", "Internal error", "The type of the open block is unknown.");
+			break;
 	}
 	return this;
 };
 
 // .fork() method
-// During scene execution, forks the timeline, allowing a block of commands to run asynchronously
-// with those after the block.
+// During scene execution, forks the timeline, allowing a block to run simultaneously with
+// the instructions after the block.
 Scenario.prototype.fork = function()
 {
 	this.forkedQueues.push(this.queueToFill);
@@ -439,18 +442,6 @@ Scenario.defineCommand('call',
 {
 	start: function(scene, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 2));
-	}
-});
-
-// .set() scenelet
-// Sets a scene variable during scene execution.
-// Arguments:
-//     variableName: The name of the variable to set.
-//     getter:       A function to be called to get the value.
-Scenario.defineCommand('set',
-{
-	start: function(scene, variableName, getter) {
-		scene.variables[variableName] = getter.call(scene);
 	}
 });
 
@@ -777,7 +768,7 @@ Scenario.defineCommand('showPerson',
 // Arguments:
 //    object:     The object containing the properties to be tweened.
 //    duration:   The length of the tweening operation, in seconds.
-//    easingType: The name of the easing function to use, such as 'linear' or 'easeOutQuad'.
+//    easingType: The name of the easing function to use, e.g. 'linear' or 'easeOutQuad'.
 //    endValues:  An object specifying the properties to tween and their final values.
 Scenario.defineCommand('tween',
 {
