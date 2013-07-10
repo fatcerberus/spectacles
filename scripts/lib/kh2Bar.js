@@ -33,6 +33,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
+	this.drainSpeed = 0.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;
@@ -40,7 +41,10 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.isVisible = true;
 	this.maxSectors = maxSectors;
 	this.newColor = color;
+	this.newReading = this.capacity;
 	this.numCombosRunning = 0;
+	this.oldColor = 
+	this.oldReading = this.capacity;
 	this.reading = this.capacity;
 	this.sectorSize = sectorSize;
 	
@@ -60,7 +64,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	
 	this.tween = function(start, time, duration, end)
 	{
-		return start + (end - start) * time / duration;
+		return -(end - start) / 2 * (Math.cos(Math.PI * time / duration) - 1) + start;
 	}
 }
 
@@ -109,9 +113,10 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	if (this.fadeness >= 1.0) {
 		return;
 	}
+	var damageShown = Math.max(this.damage - (this.reading - this.newReading), 0);
 	var numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
 	var numReservesFilled = Math.max(Math.ceil(this.reading / this.sectorSize - 1), 0);
-	var numReservesDamaged = Math.ceil((this.damage + this.reading) / this.sectorSize - 1);
+	var numReservesDamaged = Math.ceil((damageShown + this.reading) / this.sectorSize - 1);
 	var barInUse = this.sectorSize;
 	if (numReservesFilled == numReserves) {
 		barInUse = this.capacity % this.sectorSize;
@@ -123,7 +128,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	if (barFilled == 0 && this.reading > 0) {
 		barFilled = barInUse;
 	}
-	var barDamaged = Math.min(this.damage, this.sectorSize - barFilled);
+	var barDamaged = Math.min(damageShown, this.sectorSize - barFilled);
 	var barHeight = Math.ceil(height * 0.5 + 0.5);
 	var widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
 	var fillWidth = Math.ceil(widthInUse * barFilled / barInUse);
@@ -204,7 +209,9 @@ kh2Bar.prototype.set = function(value)
 			this.damage = this.reading - value;
 		}
 		this.damageFadeness = 0.0;
-		this.reading = value;
+		this.oldReading = this.reading;
+		this.newReading = value;
+		this.drainTimer = 0.0;
 	}
 };
 
@@ -240,7 +247,13 @@ kh2Bar.prototype.update = function()
 		this.colorFadeDuration = 0.0;
 	}
 	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
-	if (this.numCombosRunning <= 0) {
+	this.drainTimer += 1.0 / frameRate;
+	if (this.newReading != this.reading && this.drainTimer < 0.125) {
+		this.reading = Math.round(this.tween(this.oldReading, this.drainTimer, 0.125, this.newReading));
+	} else {
+		this.reading = this.newReading;
+	}
+	if (this.numCombosRunning <= 0 && this.reading == this.newReading) {
 		this.damageFadeness += 1.0 / frameRate;
 		if (this.damageFadeness >= 1.0) {
 			this.damage = 0;

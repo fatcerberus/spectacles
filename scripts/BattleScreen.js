@@ -172,10 +172,9 @@ BattleScreen.prototype.showTitle = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		return;
 	}
-	var titleScene = new Scenario()
+	new Scenario()
 		.marquee("Boss Battle: " + this.title, CreateColor(0, 0, 0, 128))
-		.run();
-	Threads.waitFor(Threads.doWith(titleScene, function() { return this.isRunning(); }))
+		.run(true);
 };
 
 // .update() method
