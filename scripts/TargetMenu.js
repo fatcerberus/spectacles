@@ -79,7 +79,7 @@ function TargetMenu(unit, battle, usable)
 			.end()
 			.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
 			.synchronize()
-			.call(delegate(this, function() { this.unitToShowInfo = unit; }))
+			.call(function() { this.unitToShowInfo = unit; }.bind(this))
 			.fork()
 				.tween(this, 0.25, 'easeOutBack', { infoBoxFadeness: 0.0 })
 			.end()	
@@ -100,7 +100,7 @@ TargetMenu.prototype.getInput = function()
 				.end()
 				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
 				.synchronize()
-				.call(delegate(this, function() { this.isChoiceMade = true; }))
+				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
@@ -111,7 +111,7 @@ TargetMenu.prototype.getInput = function()
 				.end()
 				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
 				.synchronize()
-				.call(delegate(this, function() { this.isChoiceMade = true; }))
+				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_UP):

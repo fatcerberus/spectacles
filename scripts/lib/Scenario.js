@@ -1,5 +1,5 @@
 /**
- * Scenario 3.8 for Sphere - (c) 2008-2013 Bruce Pascoe
+ * Scenario 3.8.1 for Sphere - (c) 2008-2013 Bruce Pascoe
  * An advanced scene manager that allows you to coordinate complex sequences using multiple
  * timelines and cooperative threading.
 **/
@@ -27,14 +27,14 @@ Scenario.defineCommand = function(name, code)
 		Abort("Scenario.defineCommand(): The instruction name '" + name + "' is already in use!");
 	}
 	Scenario.prototype[name] = function() {
-		var command = {};
-		command.arguments = arguments;
-		command.finish = code.finish;
-		command.render = code.render;
-		command.start = code.start;
-		command.update = code.update;
-		command.getInput = code.getInput;
-		this.enqueue(command);
+		this.enqueue({
+			arguments: arguments,
+			start: code.start,
+			getInput: code.getInput,
+			update: code.update,
+			render: code.render,
+			finish: code.finish
+		});
 		return this;
 	};
 };
@@ -96,6 +96,7 @@ function Scenario(isLooping)
 	this.openBlockTypes = [];
 	this.queueToFill = [];
 	this.threads = [];
+	this.vars = {};
 	
 	this.createThread = function(context, updater, renderer, inputHandler)
 	{

@@ -10,10 +10,10 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
-var DBG_DISABLE_TITLE_SCREEN = false;
+var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_SHOW_CONSOLE = false;
 
@@ -136,23 +136,3 @@ function clone(o)
 		return o;
 	}
 };
-
-// delegate() function
-// Creates a method delegate from an object and function. When the delegate is called, control is
-// handed over to the function, with the object set as 'this'.
-// Arguments:
-//     o:      The object to pass as 'this' to the method.
-//     method: The function to invoke when the delegate is called.
-// Returns:
-//     A function that, when called, invokes the method with the specified object as 'this'.
-//     Note that if method is null, delegate() also returns null.
-function delegate(o, method)
-{
-	if (method !== null) {
-		return function(/*...*/) {
-			return method.apply(o, arguments);
-		};
-	} else {
-		return null;
-	}
-}
