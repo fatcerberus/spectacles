@@ -9,9 +9,6 @@ RequireScript("Core/Threads.js");
 // Represents the Specs Engine text console.
 Console = new (function()
 {
-	this.showStyle = { easing: 'easeOutBack', duration: 1.0 };
-	this.hideStyle = { easing: 'easeInBack', duration: 1.0 };
-	
 	this.buffer = [];
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
@@ -52,7 +49,7 @@ Console.append = function(text)
 Console.hide = function()
 {
 	new Scenario()
-		.tween(this, this.hideStyle.duration, this.hideStyle.easing, { fadeness: 0.0 })
+		.tween(this, 1.0, 'easeInBack', { fadeness: 0.0 })
 		.run();
 }
 
@@ -83,7 +80,7 @@ Console.render = function() {
 Console.show = function()
 {
 	new Scenario()
-		.tween(this, this.showStyle.duration, this.showStyle.easing, { fadeness: 1.0 })
+		.tween(this, 1.0, 'easeOutBack', { fadeness: 1.0 })
 		.run();
 }
 

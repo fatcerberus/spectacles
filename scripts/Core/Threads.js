@@ -10,24 +10,6 @@ Threads = new (function()
 	this.hasUpdated = false;
 	this.nextThreadID = 1;
 	this.threads = [];
-	
-	this.doFrame = function() {
-		if (IsMapEngineRunning()) {
-			RenderMap();
-		} else {
-			this.renderAll();
-		}
-		FlipScreen();
-		if (IsMapEngineRunning()) {
-			this.hasUpdated = false;
-			UpdateMapEngine();
-			if (!this.hasUpdated) {
-				this.updateAll();
-			}
-		} else {
-			this.updateAll();
-		}
-	};
 })();
 
 // .initialize() method
@@ -88,6 +70,27 @@ Threads.createEntityThread = function(entity, priority)
 	var renderer = (typeof entity.render === 'function') ? entity.render : null;
 	var inputHandler = (typeof entity.getInput === 'function') ? entity.getInput : null;
 	return this.create(entity, updater, renderer, inputHandler, priority);
+};
+
+// .doFrame() method
+// Performs update and render processing for a single frame.
+Threads.doFrame = function()
+{
+	if (IsMapEngineRunning()) {
+		RenderMap();
+	} else {
+		this.renderAll();
+	}
+	FlipScreen();
+	if (IsMapEngineRunning()) {
+		this.hasUpdated = false;
+		UpdateMapEngine();
+		if (!this.hasUpdated) {
+			this.updateAll();
+		}
+	} else {
+		this.updateAll();
+	}
 };
 
 // .doWith() method

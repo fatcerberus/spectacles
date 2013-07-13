@@ -8,14 +8,13 @@ RequireScript("SkillUsable.js");
 // BattleAI() constructor
 // Creates an object representing an AI to control a battle unit.
 // Arguments:
-//     unit:     The battle unit whose actions are to be managed.
+//     unit:     The unit whose actions are to be managed.
 //     battle:   The battle session the unit is taking part in.
 //     strategy: A function to be called by the AI when it needs to know what action(s)
 //               should be taken next. The function will be called with 'this' set to the
 //               BattleAI object, and takes the following arguments:
 //                   me:     The BattleUnit for which actions are being determined.
 //                   nextUp: The upcoming turn prediction, as returned by Battle.predictTurns().
-
 function BattleAI(unit, battle, strategy)
 {
 	this.battle = battle;
@@ -23,9 +22,8 @@ function BattleAI(unit, battle, strategy)
 	this.moveQueue = [];
 	this.strategy = strategy;
 	this.targets = [];
-	this.unit = unit;
-	
 	this.turnsTaken = 0;
+	this.unit = unit;
 }
 
 // .getNextMove() method
