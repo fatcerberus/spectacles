@@ -57,7 +57,6 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 		color: bannerColor,
 		font: GetSystemFont(),
 		fadeness: 1.0,
-		endTime: 2000 + GetTime(),
 		render: function() {
 			var width = this.font.getStringWidth(this.text) + 20;
 			var height = this.font.getHeight() + 10;
@@ -70,15 +69,16 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			DrawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 		},
 		update: function() {
-			return GetTime() < this.endTime;
+			return true;
 		}
 	};
-	Threads.createEntityThread(announcement, 10);
+	var thread = Threads.createEntityThread(announcement, 10);
 	new Scenario()
 		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 0.0 })
 		.pause(0.75)
 		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 1.0 })
 		.run(true);
+	Threads.kill(thread);
 };
 
 // .createActor() method

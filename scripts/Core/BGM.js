@@ -109,9 +109,14 @@ BGM = new (function()
 			if (this.oldStream !== null) {
 				this.oldStream.pause();
 			}
+			this.currentTrack = trackName;
+			this.playTrack(this.currentTrack);
+		} else {
+			if (this.currentTrack !== trackName) {
+				this.currentTrack = trackName;
+				this.playTrack(this.currentTrack);
+			}
 		}
-		this.currentTrack = trackName;
-		this.playTrack(this.currentTrack);
 	};
 	
 	// .reset() method
