@@ -59,7 +59,7 @@ TitleScreen.prototype.show = function()
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();
 	Threads.waitFor(Threads.createEntityThread(this));
-	BGM.change(null);
+	BGM.reset();
 	BGM.adjustVolume(1.0);
 	return new Session();
 };
