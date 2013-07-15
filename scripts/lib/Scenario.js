@@ -17,10 +17,12 @@ var Scenario = Scenario || {};
 //                               provided, Scenario immediately moves on to the next command after calling start().
 //                               This function should return true to keep the operation running, or false to
 //                               terminate it.
-//           .render(scene):     Optional. A function to be called once per frame to perform any rendering
-//                               related to the command (e.g. text boxes).
 //           .getInput(scene):   Optional. A function to be called once per frame while the command has the input
 //                               focus to check for player input and update state data accordingly.
+//           .render(scene):     Optional. A function to be called once per frame to perform any rendering
+//                               related to the command (e.g. text boxes).
+//           .finish(scene):     Optional. Called after command execution ends, just before Scenario executes
+//                               the next instruction in the queue.
 Scenario.defineCommand = function(name, code)
 {
 	if (Scenario.prototype[name] != null) {
