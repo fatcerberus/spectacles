@@ -17,19 +17,6 @@ BGM = new (function()
 	this.stream = null;
 	this.volume = 1.0;
 	
-	this.playTrack = function(trackName) {
-		if (this.stream !== null) {
-			this.stream.stop();
-		}
-		if (trackName !== null) {
-			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
-			this.stream.setVolume(this.volume * 255);
-			if (!DBG_DISABLE_BGM) this.stream.play(true);
-		} else {
-			this.stream = null;
-		}
-	};
-	
 	// .initialize() method
 	// Starts up the BGM manager.
 	this.initialize = function()
@@ -119,6 +106,27 @@ BGM = new (function()
 		}
 	};
 	
+	// .playTrack() method
+	// Loads and plays a specified BGM track.
+	// Arguments:
+	//     trackName: The file name, minus extension, of the BGM to play.
+	// Remarks:
+	//     The track to play must be in Ogg Vorbis format and stored in the
+	//     sounds/BGM subdirectory.
+	this.playTrack = function(trackName)
+	{
+		if (this.stream !== null) {
+			this.stream.stop();
+		}
+		if (trackName !== null) {
+			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
+			this.stream.setVolume(this.volume * 255);
+			if (!DBG_DISABLE_BGM) this.stream.play(true);
+		} else {
+			this.stream = null;
+		}
+	};
+	
 	// .reset() method
 	// Restarts the default BGM after an override.
 	this.reset = function()
@@ -138,7 +146,7 @@ BGM = new (function()
 	};
 	
 	// .update() method
-	// Advances the BGM manager's internal state by one frame.
+	// Updates the BGM manager for the next frame.
 	this.update = function()
 	{
 		if (this.stream != null) {
