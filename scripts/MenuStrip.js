@@ -6,21 +6,18 @@
 // MenuStrip() constructor
 // Creates an object representing a menu strip.
 // Arguments:
-//     title:        The menu title, which is displayed on the left side of the strip. Specify null or an empty string
-//                   for an untitled menu.
-//     isCancelable: true to allow the menu to be canceled without making a selection; false otherwise.
-//     items:        Optional. A list of strings specifying names of items in the menu. This is useful for a basic impromptu
+//     title:        Optional. The menu title, which is displayed on the left side of the strip. Specify null or an
+//                   empty string for an untitled menu.
+//     isCancelable: Optional. true to allow the menu to be canceled without making a selection; false otherwise.
+//                   (default: true)
+//     items:        Optional. A list of strings specifying names of items in the menu. This is useful for a quick on-demand
 //                   menu, but for more flexibility, you should omit this parameter and use the .addItem() method to populate the
 //                   menu instead.
 function MenuStrip(title, isCancelable, items)
 {
-	this.flashStyle = { easing: 'linear', duration: 0.125 };
-	this.hideStyle = { easing: 'easeInQuad', duration: 0.25 };
-	this.scrollStyle = { easing: 'linear', duration: 0.25 };
-	this.showStyle = { easing: 'easeOutQuad', duration: 0.25 };
-	
-	items = items !== void null ? items : null;
 	title = title !== void null ? title : "";
+	isCancelable = isCancelable !== void null ? isCancelable : true;
+	items = items !== void null ? items : null;
 	
 	this.carouselSurface = null;
 	this.font = GetSystemFont();
@@ -28,7 +25,6 @@ function MenuStrip(title, isCancelable, items)
 	this.menuItems = [];
 	this.selectedItem = 0;
 	this.title = title;
-	
 	if (items != null) {
 		for (var i = 0; i < items.length; ++i) {
 			this.addItem(items[i]);
@@ -63,28 +59,28 @@ MenuStrip.prototype.getInput = function() {
 		this.chosenItem = this.selectedItem;
 		this.animation = new Scenario()
 			.fork()
-				.tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 1.0 })
-				.tween(this, this.flashStyle.duration, this.flashStyle.easing, { brightness: 0.0 })
+				.tween(this, 0.125, 'easeInOutSine', { brightness: 1.0 })
+				.tween(this, 0.125, 'easeInOutSine', { brightness: 0.0 })
 			.end()
-			.tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 })
+			.tween(this, 0.25, 'easeInQuad', { openness: 0.0 })
 			.run();
 		this.mode = 'close';
 	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) && this.isCancelable) {
 		this.chosenItem = null;
 		this.animation = new Scenario()
-			.tween(this, this.hideStyle.duration, this.hideStyle.easing, { openness: 0.0 })
+			.tween(this, 0.25, 'easeInQuad', { openness: 0.0 })
 			.run();
 		this.mode = 'close';
 	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
 		this.scrollDirection = -1;
 		this.animation = new Scenario()
-			.tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 })
+			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
 			.run();
 		this.mode = 'changeItem';
 	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
 		this.scrollDirection = 1;
 		this.animation = new Scenario()
-			.tween(this, this.scrollStyle.duration, this.scrollStyle.easing, { scrollProgress: 1.0 })
+			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
 			.run();
 		this.mode = 'changeItem';
 	}
@@ -109,7 +105,7 @@ MenuStrip.prototype.open = function()
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 	var menuThread = Threads.createEntityThread(this, 100);
 	this.animation = new Scenario()
-		.tween(this, this.showStyle.duration, this.showStyle.easing, { openness: 1.0 })
+		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })
 		.run();
 	Threads.waitFor(menuThread);
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;

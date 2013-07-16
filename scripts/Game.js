@@ -57,7 +57,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
-				return 1.0; //(userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
+				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
 			},
 			instaKill: function(userInfo, targetInfo) {
 				return 1.0;
@@ -392,7 +392,7 @@ Game = {
 			aiming: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
 					var effect = eventData.action.effects[i];
-					if (effect.type !== 'damage' || effect.damageType === 'magic') {
+					if (effect.type != 'damage' || effect.damageType == 'magic') {
 						continue;
 					}
 					if (eventData.targetInfo.statuses.indexOf('ghost') === -1) {
@@ -403,7 +403,7 @@ Game = {
 			attacked: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
 					var effect = eventData.action.effects[i];
-					if (effect.type !== 'damage' || effect.damageType === 'magic') {
+					if (effect.type != 'damage' || effect.damageType == 'magic') {
 						continue;
 					}
 					if (eventData.actingUnitInfo.statuses.indexOf('ghost') === -1) {
