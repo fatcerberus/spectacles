@@ -13,9 +13,9 @@ GameOverAction =
 
 function GameOverScreen()
 {
-	this.fadeScene = null;
 	this.fadeness = 1.0;
 	this.image = LoadImage("GameOverScreen.png");
+	this.transition = null;
 }
 
 GameOverScreen.prototype.render = function()
@@ -32,15 +32,13 @@ GameOverScreen.prototype.show = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		this.fadeness = 0.0;
 	}
-	this.fadeScene = new Scenario()
+	BGM.change(null);
+	this.transition = new Scenario()
 		.playBGM("GameOver")
 		.adjustBGM(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
 		.run();
-	Threads.waitFor(Threads.createEntityThread(this));
-	BGM.change(null);
-	BGM.adjustVolume(1.0);
-	return this.action;
+	return Threads.createEntityThread(this);
 };
 
 GameOverScreen.prototype.update = function()
@@ -49,7 +47,7 @@ GameOverScreen.prototype.update = function()
 		case 'idle':
 			return true;
 		case 'transitionIn':
-			if (!this.fadeScene.isRunning()) {
+			if (!this.transition.isRunning()) {
 				this.mode = 'idle';
 				var menu = new MenuStrip("Game Over", false);
 				menu.addItem("Retry Battle", GameOverAction.retry);
@@ -68,6 +66,10 @@ GameOverScreen.prototype.update = function()
 			}
 			break;
 		case 'transitionOut':
+			if (!this.transition.isRunning()) {
+				BGM.reset();
+				BGM.adjustVolume(1.0);
+			}
 			return this.transition.isRunning();
 	}
 	return true;

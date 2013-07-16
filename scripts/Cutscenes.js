@@ -24,10 +24,35 @@ Scenario.defineCommand('adjustBGM',
 Scenario.defineCommand('battle',
 {
 	start: function(scene, battleID) {
-		this.battleThread = new Battle(analogue.world.currentSession, battleID).go();
+		this.mode = 'battle';
+		this.battle = new Battle(analogue.world.currentSession, battleID);
+		this.battleThread = this.battle.go();
 	},
 	update: function(scene) {
-		return Threads.isRunning(this.battleThread);
+		switch (this.mode) {
+			case 'battle':
+				if (!Threads.isRunning(this.battleThread)) {
+					if (this.battle.result == BattleResult.enemyWon) {
+						this.mode = 'gameOver';
+						this.gameOver = new GameOverScreen();
+						this.gameOverThread = this.gameOver.show();
+					} else {
+						return false;
+					}
+				}
+				break;
+			case 'gameOver':
+				if (!Threads.isRunning(this.gameOverThread)) {
+					if (this.gameOver.action === GameOverAction.retry) {
+						this.mode = 'battle';
+						this.battleThread = this.battle.go();
+					} else {
+						return false;
+					}
+				}
+				break;
+		}
+		return true;
 	}
 });
 

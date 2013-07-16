@@ -8,40 +8,16 @@ RequireScript("Session.js");
 
 function TitleScreen(themeTrack)
 {
-	this.render = function() {
-		this.image.blit(0, 0);
-		ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
-	};
-	this.update = function() {
-		switch (this.mode) {
-			case 'idle':
-				return true;
-			case 'transitionIn':
-				if (!this.transition.isRunning()) {
-					this.mode = 'idle';
-					this.choice = new MenuStrip("Battle Demo", false, [ "Start Demo" ]).open();
-					if (DBG_DISABLE_TRANSITIONS) {
-						this.fadeness = 1.0;
-					}
-					this.transition = new Scenario()
-						.fork()
-							.adjustBGM(0.0, 2.0)
-						.end()
-						.tween(this, 2.0, 'linear', { fadeness: 1.0 })
-						.run();
-					this.mode = 'transitionOut';
-				}
-				break;
-			case 'transitionOut':
-				return this.transition.isRunning();
-		}
-		return true;
-	};
-	
 	this.fadeness = 1.0;
 	this.image = LoadImage("TitleScreen.png");
 	this.themeTrack = themeTrack;
 }
+
+TitleScreen.prototype.render = function()
+{
+	this.image.blit(0, 0);
+	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
+};
 
 TitleScreen.prototype.show = function()
 {
@@ -62,4 +38,31 @@ TitleScreen.prototype.show = function()
 	BGM.reset();
 	BGM.adjustVolume(1.0);
 	return new Session();
+};
+
+TitleScreen.prototype.update = function()
+{
+	switch (this.mode) {
+		case 'idle':
+			return true;
+		case 'transitionIn':
+			if (!this.transition.isRunning()) {
+				this.mode = 'idle';
+				this.choice = new MenuStrip("Battle Demo", false, [ "Start Demo" ]).open();
+				if (DBG_DISABLE_TRANSITIONS) {
+					this.fadeness = 1.0;
+				}
+				this.transition = new Scenario()
+					.fork()
+						.adjustBGM(0.0, 2.0)
+					.end()
+					.tween(this, 2.0, 'linear', { fadeness: 1.0 })
+					.run();
+				this.mode = 'transitionOut';
+			}
+			break;
+		case 'transitionOut':
+			return this.transition.isRunning();
+	}
+	return true;
 };
