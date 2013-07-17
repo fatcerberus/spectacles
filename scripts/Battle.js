@@ -34,7 +34,6 @@ function Battle(session, battleID)
 	this.parameters = Game.battles[battleID];
 	this.partyMPPool = null;
 	this.playerUnits = [];
-	this.result = null;
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
@@ -135,6 +134,7 @@ Battle.prototype.go = function()
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
+	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
 	var battleThread = Threads.createEntityThread(this);
