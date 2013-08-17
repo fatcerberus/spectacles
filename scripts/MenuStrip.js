@@ -170,8 +170,6 @@ MenuStrip.prototype.render = function()
 MenuStrip.prototype.update = function()
 {
 	switch (this.mode) {
-		case 'idle':
-			return true;
 		case 'open':
 			if (!this.animation.isRunning()) {
 				this.mode = "idle";

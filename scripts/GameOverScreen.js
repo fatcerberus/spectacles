@@ -5,12 +5,16 @@
 
 RequireScript("MenuStrip.js");
 
+// GameOverAction enumeration
+// Specifies the action to take following a Game Over event.
 GameOverAction =
 {
-	retry: 1,
-	quit: 2
+	retry: 1,  // retry: Try the last battle again with full health and magic.
+	quit: 2    // quit:  Return to the title screen.
 };
 
+// GameOverScreen() constructor
+// Creates an object representing the Game Over screen.
 function GameOverScreen()
 {
 	this.fadeness = 1.0;
@@ -18,12 +22,17 @@ function GameOverScreen()
 	this.transition = null;
 }
 
+// .render() method
+// Renders the Game Over screen.
 GameOverScreen.prototype.render = function()
 {
 	this.image.blit(0, 0);
 	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
 };
 
+// .show() method
+// Activates the Game Over screen and allows the player to choose a course
+// of action.
 GameOverScreen.prototype.show = function()
 {
 	Console.writeLine("Showing game over screen");
@@ -41,6 +50,8 @@ GameOverScreen.prototype.show = function()
 	return Threads.createEntityThread(this);
 };
 
+// .update() method
+// Updates the Game Over screen for the next frame.
 GameOverScreen.prototype.update = function()
 {
 	switch (this.mode) {

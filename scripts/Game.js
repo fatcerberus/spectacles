@@ -8,7 +8,7 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 1,
+	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
@@ -176,9 +176,17 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
-			startingWeapon: 'heirloom',
+			startingWeapon: 'templeSword',
 			skills: [
-				'swordSlash'
+				'swordSlash',
+				'quickstrike',
+				'chargeSlash',
+				'necromancy',
+				'crackdown',
+				'flare',
+				'chill',
+				'lightning',
+				'quake'
 			]
 		},
 		bruce: {

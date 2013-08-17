@@ -13,18 +13,6 @@ RequireScript('Stat.js');
 //     level:       Optional. The party member's initial level. (default: 1)
 function PartyMember(characterID, level)
 {
-	this.refreshSkills = function() {
-		var heldWeaponType = this.weaponID !== null ? Game.weapons[this.weaponID].type : null;
-		this.usableSkills = [];
-		for (var i = 0; i < this.skillList.length; ++i) {
-			var skillInfo = this.skillList[i].skillInfo;
-			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType) {
-				continue;
-			}
-			this.usableSkills.push(this.skillList[i]);
-		}
-	}
-	
 	level = level !== void null ? level : 1;
 	
 	this.characterDef = Game.characters[characterID];
@@ -102,6 +90,25 @@ PartyMember.prototype.learnSkill = function(skillID)
 	this.refreshSkills();
 	Console.writeLine("PC " + this.name + " learned skill " + skill.name);
 	return skill;
+};
+
+// .refreshSkills() method
+// Builds the list of skills currently usable by the party member.
+// Remarks:
+//     This method will be called internally any time a change is made
+//     that affects the skills the party member is able to use, for instance
+//     when learning a new skill or changing weapons.
+PartyMember.prototype.refreshSkills = function()
+{
+	var heldWeaponType = this.weaponID !== null ? Game.weapons[this.weaponID].type : null;
+	this.usableSkills = [];
+	for (var i = 0; i < this.skillList.length; ++i) {
+		var skillInfo = this.skillList[i].skillInfo;
+		if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType) {
+			continue;
+		}
+		this.usableSkills.push(this.skillList[i]);
+	}
 };
 
 // .setWeapon() method

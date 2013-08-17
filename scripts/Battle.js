@@ -280,9 +280,9 @@ Battle.prototype.resume = function()
 //     action:      The battle action to be executed.
 //     actingUnit:  The battler performing the action.
 //     targetUnits: An array specifying the battlers, if any, targetted by the action.
-//     useAiming:   Optional. If set to true, an 'aiming' event will be raised for the acting unit to enable
-//                  its statuses to modify the accuracy rate per target. If set to false, only the action's
-//                  accuracy rate is taken into account. (default: true)
+//     useAiming:   Optional. If set to true, one or more 'aiming' events will be raised on behalf of the
+//                  acting unit to enable its statuses to modify the accuracy rate per target. If set to false,
+//                  only the action's accuracy rate will be taken into account. (default: true)
 // Returns:
 //     An array of references to all units affected by the action.
 Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming)
@@ -433,6 +433,7 @@ Battle.prototype.update = function() {
 			Threads.synchronize(walkInThreads);
 			this.ui.hud.turnPreview.show();
 			if ('onStart' in this.parameters) {
+				Console.writeLine("Calling onStart handler for battle '" + this.battleID + "'")
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();

@@ -6,6 +6,11 @@
 RequireScript("MenuStrip.js");
 RequireScript("Session.js");
 
+// TitleScreen() constructor
+// Creates an object representing the title screen.
+// Arguments:
+//     themeTrack: The name of the BGM track to be played when the title screen
+//                 is active.
 function TitleScreen(themeTrack)
 {
 	this.fadeness = 1.0;
@@ -13,12 +18,16 @@ function TitleScreen(themeTrack)
 	this.themeTrack = themeTrack;
 }
 
+// .render() method
+// Renders the title screen
 TitleScreen.prototype.render = function()
 {
 	this.image.blit(0, 0);
 	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
 };
 
+// .show() method
+// Activates the title screen and waits for the player to choose an action to take.
 TitleScreen.prototype.show = function()
 {
 	if (DBG_DISABLE_TITLE_SCREEN) {
@@ -40,6 +49,8 @@ TitleScreen.prototype.show = function()
 	return new Session();
 };
 
+// .update() method
+// Updates the title screen for the next frame.
 TitleScreen.prototype.update = function()
 {
 	switch (this.mode) {
