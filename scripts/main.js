@@ -5,7 +5,7 @@
 
 RequireScript('lib/JS.js');
 RequireScript('lib/analogue.js');
-RequireScript('lib/json2.js');
+RequireScript('lib/json3.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 

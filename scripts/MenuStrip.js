@@ -51,7 +51,8 @@ MenuStrip.prototype.addItem = function(text, tag)
 
 // .getInput() method
 // Checks for player input and updates state accordingly.
-MenuStrip.prototype.getInput = function() {
+MenuStrip.prototype.getInput = function()
+{
 	if (this.mode != 'idle') {
 		return;
 	}

@@ -239,9 +239,9 @@ function Scenario(isLooping)
 // .doIf() method
 // During scene execution, executes a block of commands only if a specified condition is met.
 // Arguments:
-//     conditional:  A function to be called during scene execution to determine whether to run the following
-//                   block. The function should return true to execute the block, or false to skip it. It
-//                   will be called with 'this' set to the invoking scene.
+//     conditional: A function to be called during scene execution to determine whether to run the following
+//                  block. The function should return true to execute the block, or false to skip it. It
+//                  will be called with 'this' set to the invoking scene.
 Scenario.prototype.doIf = function(conditional)
 {
 	var jump = { ifFalse: null };
@@ -262,9 +262,9 @@ Scenario.prototype.doIf = function(conditional)
 // .doWhile() method
 // During scene execution, repeats a block of commands for as long as a specified condition is met.
 // Arguments:
-//     conditional:  A function to be called at each iteration to determine whether to continue the
-//                   loop. The function should return true to continue the loop, or false to
-//                   stop it. It will be called with 'this' set to the invoking Scenario object.
+//     conditional: A function to be called at each iteration to determine whether to continue the
+//                  loop. The function should return true to continue the loop, or false to
+//                  stop it. It will be called with 'this' set to the invoking Scenario object.
 Scenario.prototype.doWhile = function(conditional)
 {
 	var jump = { loopStart: this.queueToFill.length, ifDone: null };

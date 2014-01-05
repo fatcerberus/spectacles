@@ -19,7 +19,7 @@ function MPPool(capacity, availableMP)
 	this.capacity = capacity;
 	
 	// .gainedMP event
-	// Occurs when MP is restored to the pool.
+	// Occurs when MP is returned to the pool.
 	// Arguments (for event handler):
 	//     pool:        The MPPool object raising the event.
 	//     availableMP: The amount of MP available for use.

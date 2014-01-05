@@ -15,7 +15,7 @@ DayNightFilter = new (function()
 	// Initializes and activates the day/night filter.
 	this.initialize = function()
 	{
-		Console.writeLine("Starting time-of-day manager");
+		Console.writeLine("Initializing time-of-day manager");
 		Threads.createEntityThread(this, 1);
 		var time = this.timeInLucida();
 		Console.writeLine("Time in Lucida is " + time.hours + "h:" + time.minutes + "m:" + time.seconds + "s");

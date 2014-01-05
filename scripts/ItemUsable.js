@@ -18,11 +18,7 @@ function ItemUsable(itemID)
 	this.itemID = itemID;
 	this.name = Game.items[itemID].name;
 	this.useAiming = false;
-	this.usesLeft = 1;
-	
-	if ('uses' in this.itemDef) {
-		this.usesLeft = this.itemDef.uses;
-	}
+	this.usesLeft = 'uses' in this.itemDef ? this.itemDef.uses : 1;
 }
 
 // .defaultTargets() method
@@ -40,8 +36,8 @@ ItemUsable.prototype.defaultTargets = function(user)
 // Calculates the move rank of using the item.
 ItemUsable.prototype.getRank = function()
 {
-	return !('rank' in this.itemDef.action) ? Game.defaultItemRank
-		: this.itemDef.action.rank;
+	return 'rank' in this.itemDef.action ? this.itemDef.action.rank
+		: Game.defaultItemRank;
 };
 
 // .isUsable() method
