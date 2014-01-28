@@ -6,6 +6,7 @@
 RequireScript('lib/JS.js');
 RequireScript('lib/analogue.js');
 RequireScript('lib/json3.js');
+RequireScript('lib/link.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
@@ -15,7 +16,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_SHOW_CONSOLE = false;
+var DBG_SHOW_CONSOLE = true;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');

@@ -378,15 +378,17 @@ Battle.prototype.tick = function()
 	++this.timer;
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	var actionTaken = false;
-	for (var iList = 0; iList < unitLists.length; ++iList) {
+	Link(unitLists).expand().invoke('beginCycle');
+	/*for (var iList = 0; iList < unitLists.length; ++iList) {
 		for (var i = 0; i < unitLists[iList].length; ++i) {
 			var unit = unitLists[iList][i];
 			unit.beginCycle();
 		}
-	}
-	for (var i = 0; i < this.conditions.length; ++i) {
+	}*/
+	Link(this.conditions).invoke('beginCycle');
+	/*for (var i = 0; i < this.conditions.length; ++i) {
 		this.conditions[i].beginCycle();
-	}
+	}*/
 	while (!actionTaken) {
 		for (var iList = 0; iList < unitLists.length; ++iList) {
 			for (var i = 0; i < unitLists[iList].length; ++i) {
@@ -420,6 +422,7 @@ Battle.prototype.tick = function()
 Battle.prototype.update = function() {
 	switch (this.mode) {
 		case 'setup':
+			this.addCondition('generalDisarray');
 			this.ui.go('title' in this.parameters ? this.parameters.title : null);
 			var walkInThreads = [];
 			for (var i = 0; i < this.enemyUnits.length; ++i) {
@@ -433,7 +436,7 @@ Battle.prototype.update = function() {
 			Threads.synchronize(walkInThreads);
 			this.ui.hud.turnPreview.show();
 			if ('onStart' in this.parameters) {
-				Console.writeLine("Calling onStart handler for battle '" + this.battleID + "'")
+				Console.writeLine("Calling onStart handler for battleID '" + this.battleID + "'")
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
