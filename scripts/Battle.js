@@ -220,22 +220,19 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
 		var bias = 0;
-		for (var iList = 0; iList < unitLists.length; ++iList) {
-			for (var i = 0; i < unitLists[iList].length; ++i) {
-				++bias;
-				var unit = unitLists[iList][i];
-				if (unit === actingUnit && turnIndex == 0) {
-					continue;
-				}
-				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
-				forecast.push({
-					bias: bias,
-					remainingTime: timeUntilUp,
-					turnIndex: turnIndex,
-					unit: unit
-				});
-			}
-		}
+		Link(unitLists).unroll()
+			.reject(function(it) { return it === actingUnit && turnIndex == 0; })
+			.each(function(unit)
+		{
+			++bias;
+			var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
+			forecast.push({
+				bias: bias,
+				remainingTime: timeUntilUp,
+				turnIndex: turnIndex,
+				unit: unit
+			});
+		});
 	}
 	forecast.sort(function(a, b) {
 		var sortOrder = a.remainingTime - b.remainingTime;
@@ -377,14 +374,14 @@ Battle.prototype.tick = function()
 	Console.writeLine("Beginning new CTB cycle");
 	++this.timer;
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	Link(unitLists).expand().invoke('beginCycle');
+	Link(unitLists).unroll().invoke('beginCycle');
 	Link(this.conditions).invoke('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
-		Link(unitLists).expand().each(function(unit) {
+		Link(unitLists).unroll().each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
-		var isUnitAlive = function(it) { return it.isAlive(); };
+		var isUnitAlive = function(unit) { return unit.isAlive(); };
 		this.playerUnits = Link(this.playerUnits).where(isUnitAlive).toArray();
 		this.enemyUnits = Link(this.enemyUnits).where(isUnitAlive).toArray();
 		if (this.playerUnits.length == 0) {

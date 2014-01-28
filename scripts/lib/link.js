@@ -840,6 +840,7 @@ var Link = (function() {
 		type      : Type,
 		uniq      : Uniq,
 		unique    : Uniq,
+		unroll    : Expand,
 		where     : Where,
 		whereBy   : FilterBy,
 		zip       : Zip,
