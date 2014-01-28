@@ -377,29 +377,16 @@ Battle.prototype.tick = function()
 	Console.writeLine("Beginning new CTB cycle");
 	++this.timer;
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	var actionTaken = false;
 	Link(unitLists).expand().invoke('beginCycle');
-	/*for (var iList = 0; iList < unitLists.length; ++iList) {
-		for (var i = 0; i < unitLists[iList].length; ++i) {
-			var unit = unitLists[iList][i];
-			unit.beginCycle();
-		}
-	}*/
 	Link(this.conditions).invoke('beginCycle');
-	/*for (var i = 0; i < this.conditions.length; ++i) {
-		this.conditions[i].beginCycle();
-	}*/
+	var actionTaken = false;
 	while (!actionTaken) {
-		for (var iList = 0; iList < unitLists.length; ++iList) {
-			for (var i = 0; i < unitLists[iList].length; ++i) {
-				var unit = unitLists[iList][i];
-				actionTaken = unit.tick() || actionTaken;
-				if (!unit.isAlive()) {
-					unitLists[iList].splice(i, 1);
-					--i; continue;
-				}
-			}
-		}
+		Link(unitLists).expand().each(function(unit) {
+			actionTaken = unit.tick() || actionTaken;
+		});
+		var isUnitAlive = function(it) { return it.isAlive(); };
+		this.playerUnits = Link(this.playerUnits).where(isUnitAlive).toArray();
+		this.enemyUnits = Link(this.enemyUnits).where(isUnitAlive).toArray();
 		if (this.playerUnits.length == 0) {
 			BGM.adjustVolume(0.0, 2.0);
 			this.ui.fadeOut(2.0);

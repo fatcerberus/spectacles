@@ -36,7 +36,6 @@ function ConditionContext(conditionID, battle)
 //     made to the units' battler info here will be overwritten.
 ConditionContext.prototype.beginCycle = function()
 {
-	Console.writeLine("maggie needs a hug");
 	// TODO: implement me? maybe?
 };
 
