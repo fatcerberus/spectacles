@@ -217,10 +217,9 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	nextActions = nextActions !== void null ? nextActions : null;
 	
 	var forecast = [];
-	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
 		var bias = 0;
-		Link(unitLists).unroll()
+		Link(this.enemyUnits, this.playerUnits)
 			.reject(function(it) { return it === actingUnit && turnIndex == 0; })
 			.each(function(unit)
 		{
@@ -409,14 +408,12 @@ Battle.prototype.update = function() {
 			this.addCondition('generalDisarray');
 			this.ui.go('title' in this.parameters ? this.parameters.title : null);
 			var walkInThreads = [];
-			for (var i = 0; i < this.enemyUnits.length; ++i) {
-				var thread = this.enemyUnits[i].actor.enter();
+			Link(this.enemyUnits, this.playerUnits)
+				.each(function(unit)
+			{
+				var thread = unit.actor.enter();
 				walkInThreads.push(thread);
-			}
-			for (var i = 0; i < this.playerUnits.length; ++i) {
-				var thread = this.playerUnits[i].actor.enter();
-				walkInThreads.push(thread);
-			}
+			});
 			Threads.synchronize(walkInThreads);
 			this.ui.hud.turnPreview.show();
 			if ('onStart' in this.parameters) {
