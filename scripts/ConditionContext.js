@@ -54,7 +54,7 @@ ConditionContext.prototype.invoke = function(eventID, data)
 	if (!(eventID in this.conditionDef)) {
 		return;
 	}
-	Console.writeLine("Invoking b.c. " + this.name);
-	Console.append("event: " + eventID);
+	Console.writeLine("Invoking B.C. " + this.name);
+	Console.append("evt: " + eventID);
 	this.conditionDef[eventID].call(this.context, this.battle, data);
 };

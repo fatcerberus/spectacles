@@ -431,6 +431,7 @@ BattleUnit.prototype.tick = function()
 		} else {
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
+				Console.writeLine("Asking player for " + this.name + "'s next move");
 				this.moveUsed = this.moveMenu.open();
 			} else {
 				this.moveUsed = this.ai.getNextMove();
