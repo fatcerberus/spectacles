@@ -128,7 +128,7 @@ Game = {
 					+ characterInfo.baseStats.foc
 					+ characterInfo.baseStats.mag
 					+ characterInfo.baseStats.agi) / 15);
-				return 15 * (50 + Math.round(statAverage / 2)) * (10 + level) / 110;
+				return 15 * (50 + statAverage / 2) * (10 + level) / 110;
 			}
 		},
 		mp: {
@@ -139,7 +139,7 @@ Game = {
 					+ battlerInfo.baseStats.def
 					+ battlerInfo.baseStats.foc
 					+ battlerInfo.baseStats.agi) / 15);
-				return 25 * (50 + Math.round(statAverage / 2)) * (10 + battlerInfo.level) / 110;
+				return 25 * (50 + statAverage / 2) * (10 + battlerInfo.level) / 110;
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
@@ -157,7 +157,7 @@ Game = {
 			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
-			return (50 + Math.round(baseStat / 2)) * (10 + level) / 110;
+			return (50 + baseStat / 2) * (10 + level) / 110;
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
 			return Math.ceil(rank * 10000 / unitInfo.stats.agi);
@@ -440,12 +440,9 @@ Game = {
 			},
 			afflicted: function(unit, eventData) {
 				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
-				for (var i = 0; i < exemptions.length; ++i) {
-					if (eventData.statusID == exemptions[i]) {
-						return;
-					}
+				if (!Link(exemptions).contains(eventData.statusID)) {
+					eventData.statusID = null;
 				}
-				eventData.statusID = null;
 			},
 			beginTurn: function(unit, eventData) {
 				++this.turnsTaken;

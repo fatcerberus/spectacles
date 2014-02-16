@@ -134,6 +134,7 @@ Battle.prototype.go = function()
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
+	this.addCondition('blackout');
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
@@ -147,12 +148,7 @@ Battle.prototype.go = function()
 //     conditionID: The ID of the battle condition to test for, as defined in the gamedef.
 Battle.prototype.hasCondition = function(conditionID)
 {
-	for (var i = 0; i < this.conditions.length; ++i) {
-		if (conditionID == this.conditions[i].conditionID) {
-			return true;
-		}
-	}
-	return false;
+	return Link(this.conditions).pluck('conditionID').contains(conditionID);
 };
 
 // .areEnemies() method

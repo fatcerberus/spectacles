@@ -27,7 +27,7 @@ var BattleRow =
 //     basis:       The party member or enemy class to use as a basis for the unit.
 //     position:    The position of the unit in the party order.
 //     startingRow: The row the unit starts in.
-//     mpPool:      Optional. The MP pool the battler should draw from. If not provided, a designated
+//     mpPool:      Optional. The MP pool the battler should draw from. If not provided, a dedicated
 //                  MP pool will be created for the battler.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
@@ -231,12 +231,7 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 //     statusID: The ID of the status to test for, as defined in the gamedef.
 BattleUnit.prototype.hasStatus = function(statusID)
 {
-	for (var i = 0; i < this.statuses.length; ++i) {
-		if (statusID == this.statuses[i].statusID) {
-			return true;
-		}
-	}
-	return false;
+	return Link(this.statuses).pluck('statusID').contains(statusID);
 };
 
 // .heal() method

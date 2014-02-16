@@ -19,6 +19,7 @@ function BattleAI(unit, battle, strategy)
 {
 	this.battle = battle;
 	this.data = {};
+	this.defaultSkillID = null;
 	this.moveQueue = [];
 	this.strategy = strategy;
 	this.targets = [];
@@ -51,7 +52,11 @@ BattleAI.prototype.getNextMove = function()
 		this.targets = null;
 		this.strategy.call(this, this.unit, null);
 		if (this.moveQueue.length == 0) {
-			Abort("BattleAI.getNextAction(): The strategy function for " + this.unit.name + " didn't queue any moves.");
+			if (this.defaultSkillID !== null) {
+				this.useSkill(this.defaultSkillID);
+			} else {
+				Abort("BattleAI.getNextAction(): No default skill has been set and the strategy function for " + this.unit.name + " didn't queue any moves.");
+			}
 		}
 	}
 	++this.turnsTaken;
@@ -65,6 +70,28 @@ BattleAI.prototype.getNextMove = function()
 BattleAI.prototype.hasStatus = function(statusID)
 {
 	return this.unit.hasStatus(statusID);
+};
+
+// .setDefaultSkill() method
+// Sets the skill to be used when no specific moves are queued.
+// Arguments:
+//     skillID: The ID of the skill to use, as defined in the gamedef.
+// Remarks:
+//     If no target has been set (as by calling .setTarget()) at the time this skill is
+//     used, a random target will be selected.
+BattleAI.prototype.setDefaultSkill = function(skillID)
+{
+	this.defaultSkillID = skillID;
+	Console.writeLine(this.unit.name + " default skill set to " + Game.skills[skillID].name);
+};
+
+// .setTarget() method
+// Sets the battler to be targetted by the AI's actions.
+// Arguments:
+//     targetIDs: The enemy or character ID of the unit to target.
+BattleAI.prototype.setTarget = function(targetIDs)
+{
+	// TODO: implement me!
 };
 
 // .turnForecast() method
@@ -81,15 +108,6 @@ BattleAI.prototype.turnForecast = function(skillID)
 	Console.writeLine(this.unit.name + " considering " + Game.skills[skillID].name);
 	Console.append("next: " + forecast[0].unit.name);
 	return forecast;
-};
-
-// .setTarget() method
-// Sets the battler to be targetted by the AI's actions.
-// Arguments:
-//     targetIDs: The enemy or character ID of the unit to target.
-BattleAI.prototype.setTarget = function(targetIDs)
-{
-	// TODO: implement me!
 };
 
 // .useItem() method

@@ -905,12 +905,14 @@ var Link = (function() {
 		var args = arguments,
 			stop = args.length - 1,
 			v    = args[stop],
-			isFn = (typeof v == "function");
+			isFn = (typeof v == "function"),
+			indices = [];
 
 		function CreateArray(n, i0) {
-			if (n == stop) return (isFn) ? v(i0) : v;
+			if (n == stop) return (isFn) ? v.apply(this, indices) : v;
 			var a = [], l = args[n], n = n + 1;
 			for (var i = 0; i < l; ++i) {
+				indices[n - 1] = i;
 				a[i] = CreateArray(n, i);
 			}
 			return a;

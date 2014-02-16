@@ -18,6 +18,7 @@ function ConditionContext(conditionID, battle)
 	this.name = Game.conditions[conditionID].name;
 	this.conditionDef = Game.conditions[conditionID];
 	this.conditionID = conditionID;
+	Console.writeLine("Initializing B.C. context " + this.name);
 	if ('overrules' in this.conditionDef) {
 		for (var i = 0; i < this.conditionDef.overrules.length; ++i) {
 			this.battle.liftCondition(this.conditionDef.overrules[i]);
