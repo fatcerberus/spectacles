@@ -131,12 +131,13 @@ SkillUsable.prototype.peekActions = function()
 SkillUsable.prototype.use = function(unit, targets)
 {
 	if (!this.isUsable(unit)) {
-		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (likely due to insufficient MP).");
+		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (this is usually due to insufficient MP).");
 	}
 	Console.writeLine(unit.name + " is using " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {
-		Console.append("weapLv: " + unit.weapon.level);
+		Console.append("wLv: " + unit.weapon.level);
 	}
+	Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	unit.mpPool.use(this.mpCost(unit));
 	var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
 	var targetInfos = [];

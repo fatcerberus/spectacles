@@ -12,12 +12,21 @@ RequireScript('Stat.js');
 RequireScript('StatusContext.js');
 
 // BattleRow enumeration
-// Specifies a BattleUnit's relative distance from its opponents.
+// Specifies a battler's relative distance from its opponents.
 var BattleRow =
 {
 	front: -1,
 	middle: 0,
 	rear: 1
+};
+
+// BattleStance enumeration
+// Specifies a battler's current defensive stance.
+var BattleStance =
+{
+	attack: 0,  // normal attacking stance
+	defend: 1,  // defending; cuts damage by 50%
+	counter: 2  // counterattack when damaged
 };
 
 // BattleUnit() constructor
@@ -37,8 +46,10 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.ai = null;
 	this.battle = battle;
 	this.battlerInfo = {};
-	this.counter = 0;
+	this.counterUsable = null;
+	this.cv = 0;
 	this.hp = 0;
+	this.lastAttacker = null;
 	this.lazarusFlag = false;
 	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
@@ -47,6 +58,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.partyMember = null;
 	this.row = startingRow;
 	this.skills = [];
+	this.stance = BattleStance.attack;
 	this.stats = {};
 	this.statuses = [];
 	this.weapon = null;
@@ -288,6 +300,24 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	}
 };
 
+// .queueMove() method
+// Queues up actions for a move.
+// Arguments:
+//     usable:  The Usable representing the move to be performed.
+//     targets: An array of BattleUnit references specifying the units targeted by the move.
+BattleUnit.prototype.queueMove = function(usable, targets)
+{
+	this.moveUsed = { usable: usable, targets: targets };
+	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
+	this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
+	for (var i = 0; i < nextActions.length; ++i) {
+		this.actionQueue.push(nextActions[i]);
+	}
+	if (this.actionQueue.length > 0) {
+		Console.writeLine("Queued " + this.actionQueue.length + " action(s) for " + this.name);
+	}
+};
+
 // .raiseEvent() method
 // Triggers a status event, allowing the unit's status effects to act on it.
 // Arguments:
@@ -337,8 +367,8 @@ BattleUnit.prototype.refreshInfo = function()
 //           wait for its next turn.
 BattleUnit.prototype.resetCounter = function(rank)
 {
-	this.counter = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
-	Console.writeLine(this.name + "'s CV reset to " + this.counter);
+	this.cv = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
+	Console.writeLine(this.name + "'s CV reset to " + this.cv);
 	Console.append("rank: " + rank);
 };
 
@@ -351,13 +381,16 @@ BattleUnit.prototype.resetCounter = function(rank)
 //     isPriority: Optional. If true, specifies priority damage. Priority damage is unconditional;
 //                 statuses are not allowed to act on it and as such no 'damaged' event will be raised.
 //                 (default: false)
+// Remarks:
+//     If, after all processing is complete, the final damage output is negative, the unit will be healed
+//     instead. If it is exactly zero, it will be set to 1.
 BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 {
 	tags = tags !== void null ? tags : [];
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
-	var multiplier = 1.0;
+	var multiplier = this.stance == BattleStance.defend ? 0.5 : 1.0;
 	for (var i = 0; i < tags.length; ++i) {
 		if (tags[i] in this.affinities) {
 			multiplier *= this.affinities[tags[i]];
@@ -372,8 +405,19 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		suppressKO = eventData.suppressKO;
 	}
 	if (amount > 0) {
+		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
+			this.counterTargets = [ this.lastAttacker ];
+			this.counterReady = true;
+			Console.writeLine(this.name + " to counter with " + this.counterUsable.name);
+			Console.append("target: " + this.counterTargets[0].name);
+		} else if (this.stance == BattleStance.defend) {
+			this.stance = BattleStance.attack;
+			Console.writeLine(this.name + "'s defensive stance was broken");
+			this.resetCounter(Game.defenseBreakRank);
+		}
 		this.hp = Math.max(this.hp - amount, 0);
-		Console.writeLine(this.name + " took " + amount + " HP damage - remaining: " + this.hp);
+		Console.writeLine(this.name + " took " + amount + " HP damage");
+		Console.append("left: " + this.hp);
 		this.actor.showDamage(amount);
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		this.lazarusFlag = suppressKO;
@@ -386,21 +430,48 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			}
 		}
 	} else if (amount < 0) {
-		this.heal(-amount, null, true);
+		this.heal(-amount, true);
 	}
 };
 
+// .takeHit() method
+// Performs processing when the unit is hit by a move.
+// Arguments:
+//     actingUnit: The unit performing the move.
+//     action:     The action being performed.
+BattleUnit.prototype.takeHit = function(actingUnit, action)
+{
+	this.lastAttacker = actingUnit;
+	var eventData = {
+		actingUnitInfo: actingUnit.battlerInfo,
+		action: action
+	};
+	this.raiseEvent('attacked', eventData);
+};
+
 // .tick() method
-// Decrements the unit's CTB counter.
+// Decrements the unit's CTB counter value (CV).
+// Returns:
+//     true if the unit performed an action during this tick; false otherwise.
 // Remarks:
-//     If the counter reaches zero, the unit will be allowed to act.
+//     The unit will be allowed to act when its CV reaches zero.
 BattleUnit.prototype.tick = function()
 {
 	if (!this.isAlive()) {
 		return false;
 	}
-	--this.counter;
-	if (this.counter == 0) {
+	if (this.stance != BattleStance.attack) {
+		if (this.stance == BattleStance.counter && this.counterReady) {
+			Console.writeLine(this.name + " countering with " + this.counterUsable.name);
+			this.stance = BattleStance.attack;
+			this.queueMove(this.counterUsable, this.counterTargets);
+			this.cv = 1;
+		} else {
+			return false;
+		}
+	}
+	--this.cv;
+	if (this.cv == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
 		var eventData = { skipTurn: false };
@@ -424,22 +495,16 @@ BattleUnit.prototype.tick = function()
 			Console.writeLine(this.name + " still has " + this.actionQueue.length + " action(s) pending");
 			action = this.actionQueue.shift();
 		} else {
+			var chosenMove = null;
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				Console.writeLine("Asking player for " + this.name + "'s next move");
-				this.moveUsed = this.moveMenu.open();
+				chosenMove = this.moveMenu.open();
 			} else {
-				this.moveUsed = this.ai.getNextMove();
+				chosenMove = this.ai.getNextMove();
 			}
-			var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
-			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
-			var action = nextActions[0];
-			for (var i = 1; i < nextActions.length; ++i) {
-				this.actionQueue.push(nextActions[i]);
-			}
-			if (this.actionQueue.length > 0) {
-				Console.writeLine("Queued " + this.actionQueue.length + " additional action(s) for " + this.name);
-			}
+			this.queueMove(chosenMove.usable, chosenMove.targets);
+			action = this.actionQueue.shift();
 		}
 		if (this.isAlive()) {
 			var eventData = { action: action, targetsInfo: [] };
@@ -482,7 +547,7 @@ BattleUnit.prototype.tick = function()
 // Gets the number of ticks until the battler can act.
 BattleUnit.prototype.timeUntilNextTurn = function()
 {
-	return this.counter;
+	return this.cv;
 };
 
 // .timeUntilTurn() method
@@ -499,7 +564,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	assumedRank = assumedRank !== void null ? assumedRank : Game.defaultMoveRank;
 	nextActions = nextActions !== void null ? nextActions : null;
 	
-	var timeLeft = this.counter;
+	var timeLeft = this.cv;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
 		if (nextActions !== null && i <= nextActions.length) {
@@ -508,4 +573,4 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
 	}
 	return timeLeft;
-}
+};

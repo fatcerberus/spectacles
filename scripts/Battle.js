@@ -134,7 +134,6 @@ Battle.prototype.go = function()
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
 	BGM.override(battleBGMTrack);
-	this.addCondition('blackout');
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
@@ -289,11 +288,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
 	for (var i = 0; i < targetUnits.length; ++i) {
-		var eventData = {
-			actingUnitInfo: actingUnit.battlerInfo,
-			action: action
-		};
-		targetUnits[i].raiseEvent('attacked', eventData);
+		targetUnits[i].takeHit(actingUnit, action);
 	}
 	if (action.effects === null) {
 		return [];

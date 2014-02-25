@@ -73,16 +73,18 @@ ItemUsable.prototype.peekActions = function()
 // .use() method
 // Utilizes the item, consuming one of its uses.
 // Arguments:
-//     unit: The battler using the item.
+//     unit:    The battler using the item.
+//     targets: An array of BattleUnit references specifying the battler(s) to use the item on.
 // Returns:
 //     An array of battle actions to be executed. Unlike with peekActions(), the contents of the array may
 //     be freely modified without changing the item definition.
-ItemUsable.prototype.use = function(unit)
+ItemUsable.prototype.use = function(unit, targets)
 {
 	if (!this.isUsable(unit)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
 	Console.writeLine(unit.name + " is using " + this.name);
+	Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	--this.usesLeft;
 	Console.append("left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };

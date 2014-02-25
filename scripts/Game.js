@@ -12,6 +12,7 @@ Game = {
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
+	defenseBreakRank: 3,
 	
 	initialPartyMembers: [
 		'scott'
