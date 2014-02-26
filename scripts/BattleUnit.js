@@ -46,7 +46,6 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.ai = null;
 	this.battle = battle;
 	this.battlerInfo = {};
-	this.counterUsable = null;
 	this.cv = 0;
 	this.hp = 0;
 	this.lastAttacker = null;
@@ -150,6 +149,19 @@ BattleUnit.prototype.addStatus = function(statusID)
 // Prepares the unit for a new CTB cycle.
 BattleUnit.prototype.beginCycle = function()
 {
+	if (!this.isAlive()) {
+		return;
+	}
+	if (this.stance == BattleStance.counter && this.isCounterReady) {
+		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
+		this.stance = BattleStance.attack;
+		this.queueMove(this.counterMove);
+		var action = this.getNextAction();
+		while (action != null) {
+			performAction(action, this.counterMove);
+			action = this.getNextAction();
+		}
+	}
 	this.refreshInfo();
 	for (var i = 0; i < this.statuses.length; ++i) {
 		this.statuses[i].beginCycle();
@@ -271,6 +283,20 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 	}
 };
 
+// .getNextAction() method
+// Retrieves the next battle action, if any, in the unit's action queue.
+// Returns:
+//     The next action in the unit's action queue. If the action queue is empty, returns null.
+BattleUnit.prototype.getNextAction = function()
+{
+	if (this.actionQueue.length > 0) {
+		Console.writeLine(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
+		return this.actionQueue.shift();
+	} else {
+		return null;
+	}
+}
+
 // .isAlive() method
 // Determines whether the unit is still able to battle.
 BattleUnit.prototype.isAlive = function()
@@ -300,21 +326,59 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	}
 };
 
+// .performAction() method
+// Instructs the unit to perform a battle action.
+// Arguments:
+//     action:  The action to perform.
+//     move:    The move associated with the action, as returned by MoveMenu.open()
+//              or BattleAI.getNextMove().
+BattleUnit.prototype.performAction = function(action, move)
+{
+	var eventData = { action: action, targetsInfo: [] };
+	for (var i = 0; i < move.targets.length; ++i) {
+		eventData.targetsInfo.push(move.targets[i].battlerInfo);
+	}
+	this.raiseEvent('acting', eventData);
+	eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
+	if (this.isAlive()) {
+		var unitsHit = this.battle.runAction(action, this, move.targets, move.usable.useAiming);
+		if (move.usable.givesExperience && unitsHit.length > 0) {
+			var allEnemies = this.battle.enemiesOf(this);
+			var experience = {};
+			for (var i = 0; i < unitsHit.length; ++i) {
+				if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
+					for (var statID in Game.namedStats) {
+						if (!(statID in experience)) {
+							experience[statID] = 0;
+						}
+						experience[statID] += Game.math.experience.stat(statID, unitsHit[i].battlerInfo);
+					}
+				}
+			}
+			for (var statID in experience) {
+				this.stats[statID].grow(experience[statID]);
+				Console.writeLine(this.name + " got " + experience[statID] + " EXP for " + Game.namedStats[statID]);
+				Console.append("value: " + this.stats[statID].getValue());
+			}
+		}
+		this.resetCounter(action.rank);
+	}
+};
+
 // .queueMove() method
 // Queues up actions for a move.
 // Arguments:
-//     usable:  The Usable representing the move to be performed.
-//     targets: An array of BattleUnit references specifying the units targeted by the move.
-BattleUnit.prototype.queueMove = function(usable, targets)
+//     move: The move to be queued, as returned by MoveMenu.open() or BattleAI.getNextMove().
+BattleUnit.prototype.queueMove = function(move)
 {
-	this.moveUsed = { usable: usable, targets: targets };
+	this.moveUsed = move;
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 	this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 	for (var i = 0; i < nextActions.length; ++i) {
 		this.actionQueue.push(nextActions[i]);
 	}
 	if (this.actionQueue.length > 0) {
-		Console.writeLine("Queued " + this.actionQueue.length + " action(s) for " + this.name);
+		Console.writeLine(this.moveUsed.usable.name + " requires " + this.actionQueue.length + " turn(s) to execute");
 	}
 };
 
@@ -406,9 +470,9 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount > 0) {
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
-			this.counterTargets = [ this.lastAttacker ];
-			this.counterReady = true;
-			Console.writeLine(this.name + " to counter with " + this.counterUsable.name);
+			this.counterMove.targets = [ this.lastAttacker ];
+			this.isCounterReady = true;
+			Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
 			Console.append("target: " + this.counterTargets[0].name);
 		} else if (this.stance == BattleStance.defend) {
 			this.stance = BattleStance.attack;
@@ -461,14 +525,7 @@ BattleUnit.prototype.tick = function()
 		return false;
 	}
 	if (this.stance != BattleStance.attack) {
-		if (this.stance == BattleStance.counter && this.counterReady) {
-			Console.writeLine(this.name + " countering with " + this.counterUsable.name);
-			this.stance = BattleStance.attack;
-			this.queueMove(this.counterUsable, this.counterTargets);
-			this.cv = 1;
-		} else {
-			return false;
-		}
+		return false;
 	}
 	--this.cv;
 	if (this.cv == 0) {
@@ -490,11 +547,8 @@ BattleUnit.prototype.tick = function()
 			this.battle.resume();
 			return true;
 		}
-		var action = null;
-		if (this.actionQueue.length > 0) {
-			Console.writeLine(this.name + " still has " + this.actionQueue.length + " action(s) pending");
-			action = this.actionQueue.shift();
-		} else {
+		var action = this.getNextAction();
+		if (action == null) {
 			var chosenMove = null;
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
@@ -503,37 +557,11 @@ BattleUnit.prototype.tick = function()
 			} else {
 				chosenMove = this.ai.getNextMove();
 			}
-			this.queueMove(chosenMove.usable, chosenMove.targets);
-			action = this.actionQueue.shift();
+			this.queueMove(chosenMove);
+			action = this.getNextAction();
 		}
 		if (this.isAlive()) {
-			var eventData = { action: action, targetsInfo: [] };
-			for (var i = 0; i < this.moveUsed.targets.length; ++i) {
-				eventData.targetsInfo.push(this.moveUsed.targets[i].battlerInfo);
-			}
-			this.raiseEvent('acting', eventData);
-			eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
-			var unitsHit = this.battle.runAction(action, this, this.moveUsed.targets, this.moveUsed.usable.useAiming);
-			if (this.moveUsed.usable.givesExperience && unitsHit.length > 0) {
-				var allEnemies = this.battle.enemiesOf(this);
-				var experience = {};
-				for (var i = 0; i < unitsHit.length; ++i) {
-					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-						for (var statID in Game.namedStats) {
-							if (!(statID in experience)) {
-								experience[statID] = 0;
-							}
-							experience[statID] += Game.math.experience.stat(statID, unitsHit[i].battlerInfo);
-						}
-					}
-				}
-				for (var statID in experience) {
-					this.stats[statID].grow(experience[statID]);
-					Console.writeLine(this.name + " got " + experience[statID] + " EXP for " + Game.namedStats[statID]);
-					Console.append("value: " + this.stats[statID].getValue());
-				}
-			}
-			this.resetCounter(action.rank);
+			this.performAction(action, this.moveUsed);
 			this.raiseEvent('endTurn');
 		}
 		this.battle.resume();

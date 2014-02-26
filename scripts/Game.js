@@ -459,7 +459,7 @@ Game = {
 				unit.liftStatus('offGuard');
 			},
 			damaged: function(unit, eventData) {
-				if (eventData.tags.indexOf('special') == -1) {
+				if (!Link(eventData.tags).contains('special')) {
 					eventData.amount *= 1.5;
 				}
 			}
@@ -478,34 +478,6 @@ Game = {
 			category: 'buff',
 			beginCycle: function(unit, eventData) {
 				unit.heal(unit.maxHP * 0.01);
-			}
-		},
-		sleep: {
-			name: "Sleep",
-			category: 'affliction',
-			overrules: [ 'drunk' ],
-			initialize: function(unit) {
-				unit.actor.animate('sleep');
-				this.wakeChance = 0.0;
-			},
-			beginCycle: function(unit, eventData) {
-				if (Math.random() < this.wakeChance) {
-					unit.liftStatus('sleep');
-				}
-				this.wakeChance += 0.01;
-			},
-			beginTurn: function(unit, eventData) {
-				eventData.skipTurn = true;
-				unit.actor.animate('snore');
-			},
-			damaged: function(unit, eventData) {
-				var healthLost = 100 * eventData.amount / unit.maxHP;
-				if (Math.random() < healthLost * 5 * this.wakeChance
-				    && eventData.tags.indexOf('magic') === -1
-				    && eventData.tags.indexOf('special') === -1)
-				{
-					unit.liftStatus('sleep');
-				}
 			}
 		},
 		skeleton: {
@@ -530,6 +502,34 @@ Game = {
 			useItem: function(unit, eventData) {
 				if (eventData.item.type == 'drink' && eventData.item.name != "Holy Water") {
 					eventData.item.action.effects = null;
+				}
+			}
+		},
+		sleep: {
+			name: "Sleep",
+			category: 'affliction',
+			overrules: [ 'drunk', 'offGuard' ],
+			initialize: function(unit) {
+				unit.actor.animate('sleep');
+				this.wakeChance = 0.0;
+			},
+			beginCycle: function(unit, eventData) {
+				if (Math.random() < this.wakeChance) {
+					unit.liftStatus('sleep');
+				}
+				this.wakeChance += 0.01;
+			},
+			beginTurn: function(unit, eventData) {
+				eventData.skipTurn = true;
+				unit.actor.animate('snore');
+			},
+			damaged: function(unit, eventData) {
+				var healthLost = 100 * eventData.amount / unit.maxHP;
+				if (Math.random() < healthLost * 5 * this.wakeChance
+				    && eventData.tags.indexOf('magic') === -1
+				    && eventData.tags.indexOf('special') === -1)
+				{
+					unit.liftStatus('sleep');
 				}
 			}
 		},
