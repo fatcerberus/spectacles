@@ -1,6 +1,6 @@
 author=Power-Command
 description=
 name=Spectacles: Bruce's Story
-screen_height=240
-screen_width=320
+screen_height=360
+screen_width=640
 script=main.js
