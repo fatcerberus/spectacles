@@ -10,6 +10,7 @@ RequireScript("Core/Threads.js");
 Console = new (function()
 {
 	this.buffer = [];
+	this.commands = [];
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.nextLine = 0;
@@ -27,7 +28,6 @@ Console.initialize = function(numLines)
 	this.append("(c)2013 Power-Command");
 	this.writeLine("");
 	this.writeLine("Initialized console");
-	this.writeLine("");
 };
 
 // .append() method
@@ -51,7 +51,18 @@ Console.hide = function()
 	new Scenario()
 		.tween(this, 1.0, 'easeInBack', { fadeness: 0.0 })
 		.run();
-}
+};
+
+// .registerEntity() method
+// Registers a named entity with the console.
+// Arguments:
+//     handle:  The name of the entity. Ideally, this should not contain spaces.
+//     methods: An associative array of functions, keyed by name, defining the valid operations
+//              for this entity.
+Console.registerEntity = function(handle, methods)
+{
+	this.commands[handle] = clone(methods);
+};
 
 // .render() method
 // Renders the console in its current state.

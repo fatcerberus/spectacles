@@ -8,7 +8,6 @@
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
-	basePartyLevel: 50,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 3,
@@ -215,7 +214,7 @@ Game = {
 				def: 85,
 				foc: 65,
 				mag: 30,
-				agi: 100
+				agi: 35
 			},
 			skills: [
 				'munch',
@@ -356,6 +355,15 @@ Game = {
 		disarray: {
 			name: "Disarray",
 			category: 'debuff',
+			initialize: function(unit) {
+				this.severity = 1.0;
+			},
+			beginCycle: function(unit, eventData) {
+				this.severity -= 0.2;
+				if (this.severity <= 0.0) {
+					unit.liftStatus('disarray');
+				}
+			},
 			acting: function(unit, eventData) {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
@@ -392,7 +400,7 @@ Game = {
 			},
 			endTurn: function(unit, eventData) {
 				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.01, 2.0);
+				this.multiplier = Math.min(this.multiplier + 0.02, 2.0);
 			}
 		},
 		ghost: {
@@ -450,6 +458,13 @@ Game = {
 				if (this.turnsTaken > 3) {
 					unit.liftStatus('immune');
 				}
+			}
+		},
+		lockstep: {
+			name: "Lockstep",
+			category: 'debuff',
+			afflicted: function(unit, eventData) {
+				
 			}
 		},
 		offGuard: {
@@ -1129,11 +1144,11 @@ Game = {
 			},
 			immunities: [],
 			munchData: {
-				skill: 'dragonflame',
+				skill: 'dragonflame'
 			},
 			strategize: function(me, nextUp) {
 				if (this.turnsTaken == 0) {
-					this.useSkill('flare');
+					this.setDefaultSkill('flare');
 				} else if (this.turnsTaken == 1) {
 					// TODO: implement me!
 				} else {
@@ -1156,7 +1171,7 @@ Game = {
 			immunities: [],
 			weapon: 'rsbSword',
 			munchData: {
-				skill: 'omni',
+				skill: 'omni'
 			},
 			items: [
 				'alcohol'
@@ -1330,8 +1345,11 @@ Game = {
 						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(1.0)
-					.adjustBGM(0.0, 1.0)
+					.fork()
+						.adjustBGM(0.0, 5.0)
+					.end()
 					.talk("Robert", true, 1.0, "What makes you so sure you have a choice?")
+					.synchronize()
 					.playBGM('MyDreamsButADropOfFuel')
 					.adjustBGM(1.0)
 					.run(true);

@@ -16,7 +16,7 @@ var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = true;
-var DBG_SHOW_CONSOLE = true;
+var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');

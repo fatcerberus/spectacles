@@ -1,5 +1,5 @@
 /**
- * kh2Bar 2.0 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 2.0.1 for Sphere - (c) 2013 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
@@ -33,7 +33,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
-	this.drainSpeed = 0.0;
+	this.drainSpeed = 1.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;
@@ -51,7 +51,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.drawSegment = function(x, y, width, height, color)
 	{
 		var halfHeight = Math.ceil(height / 2);
-		var dimColor = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
+		var dimColor = BlendColorsWeighted(color, CreateColor(0, 0, 0, color.alpha), 66, 33);
 		var yHalf = y + Math.floor(height / 2);
 		GradientRectangle(x, y, width, halfHeight, dimColor, dimColor, color, color);
 		GradientRectangle(x, yHalf, width, halfHeight, color, color, dimColor, dimColor);
@@ -148,7 +148,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	this.drawSegment(barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 	this.drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 	var slotYSize = height - barHeight + 1;
-	var slotXSize = this.maxSectors !== null ? Math.ceil(width / (this.maxSectors - 1)) : slotYSize + 1;
+	var slotXSize = this.maxSectors !== null ? Math.ceil(width / (this.maxSectors - 1)) : Math.round(slotYSize * 1.25);
 	var slotX;
 	var slotY = y + height - slotYSize;
 	for (i = 0; i < numReserves; ++i) {
@@ -247,7 +247,7 @@ kh2Bar.prototype.update = function()
 		this.colorFadeDuration = 0.0;
 	}
 	this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / frameRate, 0.0), 1.0);
-	this.drainTimer += 1.0 / frameRate;
+	this.drainTimer += 1.0 / this.drainSpeed / frameRate;
 	if (this.newReading != this.reading && this.drainTimer < 0.25) {
 		this.reading = Math.round(this.tween(this.oldReading, this.drainTimer, 0.25, this.newReading));
 	} else {

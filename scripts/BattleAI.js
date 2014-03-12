@@ -52,10 +52,11 @@ BattleAI.prototype.getNextMove = function()
 		this.targets = null;
 		this.strategy.call(this, this.unit, null);
 		if (this.moveQueue.length == 0) {
+			Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
 			if (this.defaultSkillID !== null) {
 				this.useSkill(this.defaultSkillID);
 			} else {
-				Abort("BattleAI.getNextAction(): No default skill has been set and the strategy function for " + this.unit.name + " didn't queue any moves.");
+				Abort("BattleAI.getNextAction(): No moves were queued and there is no default skill set.");
 			}
 		}
 	}
@@ -82,7 +83,7 @@ BattleAI.prototype.hasStatus = function(statusID)
 BattleAI.prototype.setDefaultSkill = function(skillID)
 {
 	this.defaultSkillID = skillID;
-	Console.writeLine(this.unit.name + " default skill set to " + Game.skills[skillID].name);
+	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
 };
 
 // .setTarget() method
