@@ -1,8 +1,8 @@
 /**
-* Script: link.js
-* Written by: Radnen
-* Updated: Feb/1/2014
-* Version: 0.2.9
+* Script: Link.js
+* Written by: Andrew Helenius
+* Updated: Mar/19/2014
+* Version: 0.2.10
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -888,7 +888,7 @@ var Link = (function() {
 	}
 	
 	function Retarget(a) {
-		this.target = [];
+		this.target = a;
 		return this;
 	}
 	
@@ -955,19 +955,19 @@ var Link = (function() {
 		zip       : Zip,
 	}
 	
-	var _splice = [].splice;
+	var _slice = [].slice;
 	
 	function Link(arr, test) {
 		if (!test)
 			return new Chain(arr);
 		else {
-			var a = _splice.call(arguments, 0, arguments.length);
+			var a = _slice.call(arguments, 0);
 			return (new Chain(a)).unroll();
 		}
 	}
 	
 	Link.create = function() {
-		var args = [].slice.apply(arguments),
+		var args = _slice.call(arguments, 0),
 			stop = args.length - 1,
 			v    = args[stop],
 			isFn = (typeof v == "function"),
