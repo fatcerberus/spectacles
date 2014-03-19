@@ -2,7 +2,7 @@
 * Script: link.js
 * Written by: Radnen
 * Updated: Feb/1/2014
-* Version: 0.2.8b
+* Version: 0.2.9
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -13,7 +13,7 @@ var Link = (function() {
 	
 	/** Point Layer **/
 
-	function WherePoint(fn, reject) {
+	function WherePoint(fn) {
 		this.next = null;
 		this.env  = null;
 		this.func = fn;
@@ -32,7 +32,7 @@ var Link = (function() {
 			while (i < l) { if (f(a[i])) n.exec(a[i]); i++; }
 	}
 
-	function RejectPoint(fn, reject) {
+	function RejectPoint(fn) {
 		this.next = null;
 		this.env  = null;
 		this.func = fn;
@@ -51,11 +51,11 @@ var Link = (function() {
 			while (i < l) { if (!f(a[i])) n.exec(a[i]); i++; }
 	}
 	
-	function FilterByPoint(k, v) {
+	function FilterByPoint(key, val) {
 		this.next = null;
 		this.env  = null;
-		this.key  = k;
-		this.val  = v;
+		this.key  = key;
+		this.val  = val;
 	}
 	
 	FilterByPoint.prototype.exec = function(item) {
@@ -88,6 +88,39 @@ var Link = (function() {
 			while (i < l && !e.stop) { n.exec(a[i][k]); i++; }
 		else
 			while (i < l) { n.exec(a[i][k]); i++; }
+	}
+	
+	function SelectPoint(args) {
+		this.next = null;
+		this.env  = null;
+		this.args = args;
+	}
+	
+	SelectPoint.prototype.exec = function(item) {
+		var obj = { }, i = this.args.length;
+		while (i--) {
+			obj[this.args[i]] = item[this.args[i]];
+		}
+		this.next.exec(obj);
+	}
+	
+	function JoinPoint(other, cond) {
+		this.next  = null;
+		this.env   = null;
+		this.other = other;
+		this.cond  = cond;
+	}
+	
+	JoinPoint.prototype.exec = function(item) {
+		for (var i = 0, l = this.other.length; i < l; ++i) {
+			var other = this.other[i];
+			if (this.cond(item, other)) {
+				var obj = { };
+				for (var j in other) obj[j] = other[j];
+				for (var j in item) obj[j] = item[j];
+				this.next.exec(obj);
+			}
+		}
 	}
 
 	function MapPoint(fn) {
@@ -268,6 +301,17 @@ var Link = (function() {
 	FirstCountPoint.prototype.exec = function(item) {
 		if (++this.i == this.num) this.env.stop = true;
 		this.next.exec(item);
+	}
+	
+	function UpdatePoint(prop, value) { // end point
+		this.next = null;
+		this.env  = null;
+		this.prop = prop;
+		this.val  = value;
+	}
+	
+	UpdatePoint.prototype.exec = function(item) {
+		item[this.prop] = this.val;
 	}
 	
 	function IsPoint(inst) {
@@ -636,6 +680,10 @@ var Link = (function() {
 		return point.pass;
 	}
 	
+	function Update(prop, value) {
+		this.run(new UpdatePoint(prop, value));
+	}
+	
 	function IndexOf(p, v) {
 		this.env.take = true;
 		var point;
@@ -698,14 +746,18 @@ var Link = (function() {
 		return this;
 	}
 		
-	function Where(func) {
+	function Where(propOrFn, value) {
+		if (value !== undefined) {
+			this.pushPoint(new FilterByPoint(propOrFn, value));
+			return this;
+		}
 		var last = this.points[this.points.length - 1];
 		if (last instanceof WherePoint)
-			this.replaceEnd(new Where2Point(last.func, func));
+			this.replaceEnd(new Where2Point(last.func, propOrFn));
 		else if (last instanceof MapPoint)
-			this.replaceEnd(new MapWherePoint(last.func, func));
+			this.replaceEnd(new MapWherePoint(last.func, propOrFn));
 		else
-			this.pushPoint(new WherePoint(func));
+			this.pushPoint(new WherePoint(propOrFn));
 		return this;
 	}
 	
@@ -801,6 +853,16 @@ var Link = (function() {
 		return samples;
 	}
 	
+	function Select() {
+		this.pushPoint(new SelectPoint([].slice.apply(arguments)));
+		return this;
+	}
+	
+	function Join(other, func) {
+		this.pushPoint(new JoinPoint(other, func));
+		return this;
+	}
+	
 	function Take(n) {
 		this.env.take = true;
 		this.pushPoint(new TakePoint(n));
@@ -862,6 +924,7 @@ var Link = (function() {
 		indexOf   : IndexOf,
 		invoke    : Invoke,
 		is        : Is,
+		join      : Join,
 		last      : Last,
 		length    : Length,
 		map       : Map,
@@ -873,6 +936,7 @@ var Link = (function() {
 		reduce    : Reduce,
 		reject    : Reject,
 		sample    : Random,
+		select    : Select,
 		size      : Length,
 		skip      : Skip,
 		slice     : Slice,
@@ -885,6 +949,7 @@ var Link = (function() {
 		uniq      : Uniq,
 		unique    : Uniq,
 		unroll    : Expand,
+		update    : Update,
 		where     : Where,
 		whereBy   : FilterBy,
 		zip       : Zip,
@@ -902,12 +967,12 @@ var Link = (function() {
 	}
 	
 	Link.create = function() {
-		var args = arguments,
+		var args = [].slice.apply(arguments),
 			stop = args.length - 1,
 			v    = args[stop],
 			isFn = (typeof v == "function"),
 			indices = [];
-
+		
 		function CreateArray(n, i0) {
 			if (n == stop) return (isFn) ? v.apply(this, indices) : v;
 			var a = [], l = args[n], n = n + 1;
