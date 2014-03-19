@@ -186,7 +186,11 @@ Game = {
 				'flare',
 				'chill',
 				'lightning',
-				'quake'
+				'quake',
+				'hellfire',
+				'windchill',
+				'electrocute',
+				'upheaval'
 			]
 		},
 		bruce: {
@@ -399,7 +403,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			endTurn: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'ice', 'special' ]);
+				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'ice', 'special' ]);
 				this.multiplier = Math.min(this.multiplier + 0.02, 2.0);
 			}
 		},
@@ -437,8 +441,11 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.05 * unit.maxHP, [ 'fire', 'special' ]);
-				this.multiplier = Math.max(this.multiplier - 0.01, 0.5);
+				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'fire', 'special' ]);
+				this.multiplier -= 0.10;
+				if (this.multiplier <= 0.0) {
+					unit.liftStatus('ignite');
+				}
 			}
 		},
 		immune: {

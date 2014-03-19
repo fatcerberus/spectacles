@@ -3,7 +3,7 @@
 	{
 		DetachInput();
 		new Scenario()
-			.battle('robert2')
+			.battle('headlessHorse')
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)

@@ -5,10 +5,26 @@
 
 RequireScript('Party.js');
 
+// GameDifficulty enumeration
+// Specifies the difficulty level of the game.
+GameDifficulty =
+{
+	beginner: 0,  // Beginner mode (easy)
+	standard: 1,  // Standard mode (normal)
+	proud:    2,  // Proud mode (hard)
+	critical: 3   // Critical mode (unforgiving)
+};
+
 // Session() constructor
 // Creates an object representing a game session.
-function Session()
+// Arguments:
+//     difficulty: Optional. A member of the GameDifficulty enumeration specifying the difficulty
+//                 level for the new session. (default: standard)
+function Session(difficulty)
 {
+	difficulty = difficulty !== void null ? difficulty : GameDifficulty.standard;
+	
+	this.difficulty = difficulty;
 	this.party = new Party();
 	for (var i = 0; i < Game.initialPartyMembers.length; ++i) {
 		var name = Game.initialPartyMembers[i];
@@ -17,10 +33,10 @@ function Session()
 }
 
 // Session.fromFile() constructor
-// Loads a session-in-progress from a file.
+// Loads a session in progress from a save file.
 // Arguments:
-//     file: The name of the savefile to load the session from.
-Session.fromFile = function(file)
+//     fileName: The name of the save file to load the session from.
+Session.fromFile = function(fileName)
 {
 	//TODO: implement me!
 };

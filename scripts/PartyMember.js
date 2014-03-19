@@ -111,6 +111,13 @@ PartyMember.prototype.refreshSkills = function()
 	}
 };
 
+// .render() method
+// Renders character growth pop-ups for this party member.
+PartyMember.prototype.render = function()
+{
+	
+};
+
 // .setWeapon() method
 // Sets the weapon that the party member uses in battle.
 PartyMember.prototype.setWeapon = function(weaponID)
