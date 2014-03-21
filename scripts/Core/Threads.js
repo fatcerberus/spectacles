@@ -108,22 +108,7 @@ Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 	priority = priority !== void null ? priority : 0;
 	inputHandler = inputHandler !== void null ? inputHandler : null;
 	
-	updater = updater.bind(o);
-	renderer = renderer !== null ? renderer.bind(o) : null;
-	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
-	var newThread = {
-		id: this.nextThreadID,
-		contextObject: o,
-		inputHandler: inputHandler,
-		isUpdating: false,
-		priority: priority,
-		renderer: renderer,
-		updater: updater
-	};
-	this.threads.push(newThread);
-	this.threads.sort(function(a, b) { return a.priority - b.priority; });
-	++this.nextThreadID;
-	return newThread.id;
+	return this.create(o, updater, renderer, inputHandler, priority);
 };
 
 // .isRunning() method

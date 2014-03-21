@@ -14,7 +14,9 @@ Game = {
 	defenseBreakRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
