@@ -33,7 +33,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
-	this.drainSpeed = 1.0;
+	this.drainSpeed = 2.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;
@@ -117,12 +117,14 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	var numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
 	var numReservesFilled = Math.max(Math.ceil(this.reading / this.sectorSize - 1), 0);
 	var numReservesDamaged = Math.ceil((damageShown + this.reading) / this.sectorSize - 1);
-	var barInUse = this.sectorSize;
+	var barInUse;
 	if (numReservesFilled == numReserves) {
 		barInUse = this.capacity % this.sectorSize;
 		if (barInUse == 0) {
 			barInUse = this.sectorSize;
 		}
+	} else {
+		barInUse = this.sectorSize;
 	}
 	var barFilled = this.reading % this.sectorSize;
 	if (barFilled == 0 && this.reading > 0) {
@@ -138,7 +140,7 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	var fillColor = this.fadeColor(this.hpColor, this.fadeness);
 	var emptyColor = this.fadeColor(this.emptyColor, this.fadeness);
 	var usageColor = BlendColorsWeighted(emptyColor, this.fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
-	if (barInUse < this.sectorSize && numReserves > 0) {
+	if (barInUse < this.sectorSize && numReservesFilled > 0) {
 		OutlinedRectangle(x, y, width, barHeight, BlendColorsWeighted(borderColor, CreateColor(0, 0, 0, 0), 33, 66));
 		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColorsWeighted(fillColor, CreateColor(0, 0, 0, 0), 33, 66));
 	}

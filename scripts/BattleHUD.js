@@ -202,7 +202,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	var hpGauge = new kh2Bar(maxHP, 150, this.partyHPGaugeColor, 10);
+	var hpGauge = new kh2Bar(maxHP, 250, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
 		name: name,

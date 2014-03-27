@@ -14,9 +14,7 @@ Game = {
 	defenseBreakRank: 3,
 	
 	initialPartyMembers: [
-		'scott',
-		'bruce',
-		'maggie'
+		'scott'
 	],
 	
 	namedStats: {
@@ -113,7 +111,16 @@ Game = {
 				return enemyUnitInfo.level * enemyUnitInfo.baseStats[statID];
 			}
 		},
-		hp: {
+		hp: function(unitInfo, level, tier) {
+			var statAverage = Math.round((unitInfo.baseStats.vit * 10
+				+ unitInfo.baseStats.str
+				+ unitInfo.baseStats.def
+				+ unitInfo.baseStats.foc
+				+ unitInfo.baseStats.mag
+				+ unitInfo.baseStats.agi) / 15);
+			return 25 * tier * (50 + statAverage / 2) * (10 + level) / 110;
+		},
+		/*hp: {
 			enemy: function(enemyInfo, level) {
 				var statAverage = Math.round((enemyInfo.baseStats.vit * 10
 					+ enemyInfo.baseStats.str
@@ -121,7 +128,7 @@ Game = {
 					+ enemyInfo.baseStats.foc
 					+ enemyInfo.baseStats.mag
 					+ enemyInfo.baseStats.agi) / 15);
-				return 75 * (50 + statAverage / 2) * (10 + level) / 110;
+				return 100 * (50 + statAverage / 2) * (10 + level) / 110;
 			},
 			partyMember: function(characterInfo, level) {
 				var statAverage = Math.round((characterInfo.baseStats.vit * 10
@@ -132,7 +139,7 @@ Game = {
 					+ characterInfo.baseStats.agi) / 15);
 				return 15 * (50 + statAverage / 2) * (10 + level) / 110;
 			}
-		},
+		},*/
 		mp: {
 			capacity: function(battlerInfo) {
 				var statAverage = Math.round((battlerInfo.baseStats.mag * 10
@@ -141,7 +148,7 @@ Game = {
 					+ battlerInfo.baseStats.def
 					+ battlerInfo.baseStats.foc
 					+ battlerInfo.baseStats.agi) / 15);
-				return 25 * (50 + statAverage / 2) * (10 + battlerInfo.level) / 110;
+				return 10 * battlerInfo.tier * (50 + statAverage / 2) * (10 + battlerInfo.level) / 110;
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
@@ -404,9 +411,23 @@ Game = {
 			initialize: function(unit) {
 				this.multiplier = 1.0;
 			},
+			attacked: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
+					.each(function(effect)
+				{
+					effect.type = null;
+				});
+			},
+			damaged: function(unit, eventData) {
+				if (Link(eventData.tags).contains('fire')) {
+					eventData.amount *= 1.5;
+					unit.liftStatus('frostbite');
+				}
+			},
 			endTurn: function(unit, eventData) {
 				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.02, 2.0);
+				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
 			}
 		},
 		ghost: {
@@ -446,6 +467,20 @@ Game = {
 				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'fire', 'special' ]);
 				this.multiplier -= 0.10;
 				if (this.multiplier <= 0.0) {
+					unit.liftStatus('ignite');
+				}
+			},
+			attacked: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
+					.each(function(effect)
+				{
+					effect.type = null;
+				});
+			},
+			damaged: function(unit, eventData) {
+				if (Link(eventData.tags).contains('ice')) {
+					eventData.amount *= 1.5;
 					unit.liftStatus('ignite');
 				}
 			}
@@ -491,9 +526,16 @@ Game = {
 		protect: {
 			name: "Protect",
 			category: 'buff',
+			initialize: function(unit) {
+				this.multiplier = 0.5;
+			},
 			damaged: function(unit, eventData) {
 				if (eventData.tags.indexOf('special') == -1) {
-					eventData.amount *= 0.5;
+					eventData.amount *= this.multiplier;
+					this.multiplier += 0.05;
+					if (this.multiplier >= 1.0) {
+						unit.liftStatus('protect');
+					}
 				}
 			}
 		},
@@ -666,7 +708,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 35,
+							power: 25,
 							element: 'ice'
 						}
 					],
@@ -707,8 +749,13 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'breath',
-							power: 40,
+							power: 35,
 							element: 'fire'
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'ignite'
 						}
 					],
 				}
@@ -729,7 +776,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 80,
+							power: 50,
 							element: 'lightning'
 						},
 						{
@@ -777,7 +824,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 35,
+							power: 25,
 							element: 'fire'
 						}
 					],
@@ -799,7 +846,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 80,
+							power: 50,
 							element: 'fire'
 						},
 						{
@@ -826,7 +873,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 35,
+							power: 25,
 							element: 'lightning'
 						}
 					],
@@ -926,7 +973,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 35,
+							power: 25,
 							element: 'earth'
 						}
 					],
@@ -1011,7 +1058,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
-							power: 10
+							power: 15
 						}
 					]
 				}
@@ -1052,7 +1099,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 80,
+							power: 50,
 							element: 'earth'
 						},
 						{
@@ -1079,7 +1126,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 80,
+							power: 50,
 							element: 'ice'
 						},
 						{
@@ -1138,6 +1185,7 @@ Game = {
 			name: "H. Horse",
 			fullName: "Headless Horse",
 			hasLifeBar: true,
+			tier: 3,
 			baseStats: {
 				vit: 50,
 				str: 10,
@@ -1169,6 +1217,7 @@ Game = {
 			name: "Robert",
 			fullName: "Robert Spellbinder",
 			hasLifeBar: true,
+			tier: 3,
 			baseStats: {
 				vit: 75,
 				str: 75,

@@ -66,7 +66,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.partyMember = basis;
 		this.id = this.partyMember.characterID;
 		this.character = Game.characters[this.partyMember.characterID];
-		this.maxHP = Math.round(Math.max(Game.math.hp.partyMember(this.character, this.partyMember.getLevel()), 1));
+		this.tier = 1;
+		this.maxHP = Math.round(Math.max(Game.math.hp(this.character, this.partyMember.getLevel(), this.tier), 1));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		this.fullName = this.partyMember.fullName;
@@ -98,7 +99,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.maxHP = Math.round(Math.max(Game.math.hp.enemy(this.enemyInfo, battle.getLevel()), 1));
+		this.tier = this.enemyInfo.tier;
+		this.maxHP = Math.round(Math.max(Game.math.hp(this.enemyInfo, battle.getLevel(), this.tier), 1));
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
@@ -409,6 +411,7 @@ BattleUnit.prototype.refreshInfo = function()
 	this.battlerInfo.health = Math.ceil(100 * this.hp / this.maxHP);
 	this.battlerInfo.level = this.getLevel();
 	this.battlerInfo.weapon = clone(this.weapon);
+	this.battlerInfo.tier = this.tier;
 	this.battlerInfo.baseStats = {};
 	this.battlerInfo.stats = {};
 	for (var stat in Game.namedStats) {

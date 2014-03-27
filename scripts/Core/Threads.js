@@ -26,11 +26,10 @@ Threads.initialize = function()
 //     o:            The object to pass as 'this' to the updater/renderer/input handler. May be null.
 //     updater:      The update function for the new thread.
 //     renderer:     Optional. The render function for the new thread.
-//     inputHandler: Optional. The input handler for the new thread.
 //     priority:     Optional. The render priority for the new thread. Higher-priority threads are rendered
-//                   later in a frame than lower-priority ones.
-//                   (Defaults to 0. Ignored if no renderer is provided.)
-Threads.create = function(o, updater, renderer, inputHandler, priority)
+//                   later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
+//     inputHandler: Optional. The input handler for the new thread.
+Threads.create = function(o, updater, renderer, priority, inputHandler)
 {
 	renderer = renderer !== void null ? renderer : null;
 	inputHandler = inputHandler !== void null ? inputHandler : null;
@@ -41,14 +40,17 @@ Threads.create = function(o, updater, renderer, inputHandler, priority)
 	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
 	var newThread = {
 		id: this.nextThreadID,
-		updater: updater,
-		renderer: renderer,
 		inputHandler: inputHandler,
+		isUpdating: false,
 		priority: priority,
-		isUpdating: false
+		renderer: renderer,
+		updater: updater
 	};
 	this.threads.push(newThread);
-	this.threads.sort(function(a, b) { return a.priority - b.priority; });
+	this.threads.sort(function(a, b) {
+		return a.priority != b.priority ? a.priority - b.priority
+			: a.id - b.id;
+	});
 	++this.nextThreadID;
 	return newThread.id;
 };
@@ -60,16 +62,15 @@ Threads.create = function(o, updater, renderer, inputHandler, priority)
 //               optionally, .render() and .getInput() methods. Each of these will be called once
 //               per frame until the thread either finishes (entity.update() returns false) or is terminated.
 //     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
-//               later in a frame than lower-priority ones.
-//               (Defaults to 0. Ignored if no renderer is provided.)
+//               later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
 Threads.createEntityThread = function(entity, priority)
 {
-	if (priority === undefined) { priority = 0; }
+	priority = priority !== void null ? priority : 0;
 	
 	var updater = entity.update;
 	var renderer = (typeof entity.render === 'function') ? entity.render : null;
 	var inputHandler = (typeof entity.getInput === 'function') ? entity.getInput : null;
-	return this.create(entity, updater, renderer, inputHandler, priority);
+	return this.create(entity, updater, renderer, priority, inputHandler);
 };
 
 // .doFrame() method
@@ -104,11 +105,7 @@ Threads.doFrame = function()
 //     inputHandler: Optional. The input handler for the new thread.
 Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 {
-	renderer = renderer !== void null ? renderer : null;
-	priority = priority !== void null ? priority : 0;
-	inputHandler = inputHandler !== void null ? inputHandler : null;
-	
-	return this.create(o, updater, renderer, inputHandler, priority);
+	return this.create(o, updater, renderer, priority, inputHandler);
 };
 
 // .isRunning() method

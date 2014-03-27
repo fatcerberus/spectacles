@@ -107,7 +107,7 @@ Battle.prototype.go = function()
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
-		partyMaxMP += Math.floor(Game.math.mp.capacity(battlerInfo));
+		partyMaxMP += Math.round(Game.math.mp.capacity(battlerInfo));
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool(Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -320,18 +320,21 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
-	for (var i = 0; i < action.effects.length; ++i) {
+	Link(action.effects)
+		.where(function(effect) { return effect.type != null; })
+		.each(function(effect)
+	{
 		var effectTargets = null;
-		if (action.effects[i].targetHint == 'selected') {
+		if (effect.targetHint == 'selected') {
 			effectTargets = targetsHit;
-		} else if (action.effects[i].targetHint == 'user') {
+		} else if (effect.targetHint == 'user') {
 			effectTargets = [ actingUnit ];
 		}
-		var effectHandler = Game.effects[action.effects[i].type];
-		Console.writeLine("Applying effect '" + action.effects[i].type + "'");
-		Console.append("retarget: " + action.effects[i].targetHint);
-		effectHandler(actingUnit, effectTargets, action.effects[i]);
-	}
+		var effectHandler = Game.effects[effect.type];
+		Console.writeLine("Applying effect '" + effect.type + "'");
+		Console.append("retarg: " + effect.targetHint);
+		effectHandler(actingUnit, effectTargets, effect);
+	});
 	return targetsHit;
 };
 

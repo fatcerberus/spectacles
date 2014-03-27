@@ -46,7 +46,8 @@ PartyMember.prototype.getInfo = function()
 {
 	var info = {
 		characterID: this.characterID,
-		level: this.getLevel()
+		level: this.getLevel(),
+		tier: 1
 	}
 	info.baseStats = {};
 	info.stats = {};
@@ -85,7 +86,7 @@ PartyMember.prototype.getUsableSkills = function()
 //     A reference to a SkillUsable object representing the newly learned skill.
 PartyMember.prototype.learnSkill = function(skillID)
 {
-	var skill = new SkillUsable(skillID);
+	var skill = new SkillUsable(skillID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
 	Console.writeLine("P.C. " + this.name + " learned skill " + skill.name);
