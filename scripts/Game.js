@@ -14,7 +14,9 @@ Game = {
 	defenseBreakRank: 3,
 	
 	initialPartyMembers: [
-		'scott'
+		'scott',
+		'bruce',
+		'maggie'
 	],
 	
 	namedStats: {
@@ -189,17 +191,17 @@ Game = {
 			skills: [
 				'swordSlash',
 				'quickstrike',
-				'chargeSlash',
+				/*'chargeSlash',
 				'necromancy',
-				'crackdown',
+				'crackdown',*/
 				'flare',
 				'chill',
 				'lightning',
 				'quake',
-				'hellfire',
+				/*'hellfire',
 				'windchill',
 				'electrocute',
-				'upheaval'
+				'upheaval'*/
 			]
 		},
 		bruce: {
@@ -708,7 +710,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'ice'
 						}
 					],
@@ -749,7 +751,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'breath',
-							power: 35,
+							power: 30,
 							element: 'fire'
 						},
 						{
@@ -824,7 +826,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'fire'
 						}
 					],
@@ -873,7 +875,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'lightning'
 						}
 					],
@@ -942,7 +944,7 @@ Game = {
 		protectiveAura: {
 			name: "Protective Aura",
 			category: 'strategy',
-			targetType: 'single',
+			targetType: 'ally',
 			baseMPCost: 200,
 			actions: [
 				{
@@ -973,7 +975,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'earth'
 						}
 					],
@@ -1154,7 +1156,7 @@ Game = {
 		templeSword: {
 			name: "Temple Sword",
 			type: 'sword',
-			level: 75,
+			level: 5,
 			techniques: [
 				'swordSlash',
 				'quickstrike',
@@ -1206,8 +1208,7 @@ Game = {
 			strategize: function(me, nextUp) {
 				if (this.turnsTaken == 0) {
 					this.setDefaultSkill('flare');
-				} else if (this.turnsTaken == 1) {
-					// TODO: implement me!
+					this.useSkill('dragonflame');
 				} else {
 					// TODO: implement me!
 				}
@@ -1381,8 +1382,7 @@ Game = {
 			onStart: function() {
 				new Scenario()
 					.talk("maggie", true, 2.0,
-						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!",
-						"Mm... barbequed Littermates... tastes like chicken!")
+						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!")
 					.run(true);
 			}
 		},

@@ -1,8 +1,8 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Mar/19/2014
-* Version: 0.2.10
+* Updated: Mar/26/2014
+* Version: 0.2.11
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -973,17 +973,22 @@ var Link = (function() {
 			isFn = (typeof v == "function"),
 			indices = [];
 		
-		function CreateArray(n, i0) {
+		function CreateArray(n) {
 			if (n == stop) return (isFn) ? v.apply(this, indices) : v;
 			var a = [], l = args[n], n = n + 1;
 			for (var i = 0; i < l; ++i) {
 				indices[n - 1] = i;
-				a[i] = CreateArray(n, i);
+				a[i] = CreateArray(n);
 			}
 			return a;
 		}
 		
-		return CreateArray(0, 0);
+		return CreateArray(0);
+	}
+	
+	Link.alias = function(from, to) {
+		Chain.prototype[to] = Chain.prototype[from];
+		return this;
 	}
 	
 	return Link;

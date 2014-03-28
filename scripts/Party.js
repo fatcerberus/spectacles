@@ -38,7 +38,7 @@ Party.prototype.getLevel = function()
 		}
 		return Math.floor(total / memberCount);
 	} else {
-		return 50;
+		return 8;
 	}
 }
 

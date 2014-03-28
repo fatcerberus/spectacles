@@ -36,13 +36,19 @@ function SkillUsable(skillID, level)
 //     user: The battle unit which will use the skill.
 // Returns:
 //     An array of battle unit references specifying the default targets.
+// Remarks:
+//     For skills targeting a single enemy, this function will choose a random unit
+//     on the opposing side. For skills targeting a single ally, the default target is
+//     always the user.
 SkillUsable.prototype.defaultTargets = function(user)
 {
 	switch (this.skillInfo.targetType) {
 		case 'single':
-			return [ user.battle.enemiesOf(user)[0] ];
+			var enemies = user.battle.enemiesOf(user);
+			var index = Math.min(Math.floor(Math.random() * enemies.length), enemies.length - 1);
+			return [ enemies[index] ];
 		case 'ally':
-			return user;
+			return [ user ];
 		case 'allEnemies':
 			return user.battle.enemiesOf(user);
 		case 'allAllies':

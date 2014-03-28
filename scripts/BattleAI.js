@@ -87,12 +87,13 @@ BattleAI.prototype.setDefaultSkill = function(skillID)
 };
 
 // .setTarget() method
-// Sets the battler to be targetted by the AI's actions.
+// Sets the battler to be targeted by the AI's actions.
 // Arguments:
-//     targetIDs: The enemy or character ID of the unit to target.
-BattleAI.prototype.setTarget = function(targetIDs)
+//     targetID: The enemy or character ID of the unit to target.
+BattleAI.prototype.setTarget = function(targetID)
 {
-	// TODO: implement me!
+	var unit = this.battle.findUnit(targetID);
+	this.targets = unit !== null ? [ unit ] : null;
 };
 
 // .turnForecast() method
@@ -132,9 +133,10 @@ BattleAI.prototype.useItem = function(itemID)
 		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an item it didn't have");
 	}
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
+	var targets = this.targets !== null ? this.targets : itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
-		targets: itemToUse.defaultTargets(this.unit)
+		targets: targets
 	});
 };
 
@@ -159,8 +161,9 @@ BattleAI.prototype.useSkill = function(skillID)
 		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
 	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
+	var targets = this.targets !== null ? this.targets : skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
-		targets: skillToUse.defaultTargets(this.unit)
+		targets: targets
 	});
 };

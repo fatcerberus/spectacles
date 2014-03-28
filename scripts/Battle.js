@@ -85,6 +85,20 @@ Battle.prototype.enemiesOf = function(unit)
 	}
 };
 
+// .findUnit() method
+// Finds the BattleUnit corresponding to a specified enemy or character ID.
+// Arguments:
+//     The enemy or character ID of the unit to find.
+// Returns:
+//     The BattleUnit corresponding to the specified ID, or null if no such unit
+//     exists.
+Battle.prototype.findUnit = function(unitID)
+{
+	return Link(this.enemyUnits, this.playerUnits).first(function(unit) {
+		return unit.id == unitID;
+	});
+};
+
 // .getLevel() method
 // Gets the enemy battle level for the battle.
 Battle.prototype.getLevel = function()
