@@ -79,22 +79,22 @@ Game = {
 		},
 		damage: {
 			bow: function(userInfo, targetInfo, power) {
-				return power * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
+				return power * Math.pow(2, userInfo.tier - 1) * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
 			},
 			breath: function(userInfo, targetInfo, power) {
-				return power * (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3) / targetInfo.stats.vit;
+				return power * Math.pow(2, userInfo.tier - 1) * (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3) / targetInfo.stats.vit;
 			},
 			magic: function(userInfo, targetInfo, power) {
-				return power * (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3) / targetInfo.stats.foc;
+				return power * Math.pow(2, userInfo.tier - 1) * (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3) / targetInfo.stats.foc;
 			},
 			pistol: function(userInfo, targetInfo, power) {
-				return power * userInfo.weapon.level * 2 / targetInfo.stats.def;
+				return power * Math.pow(2, userInfo.tier - 1) * userInfo.weapon.level * 2 / targetInfo.stats.def;
 			},
 			physical: function(userInfo, targetInfo, power) {
-				return power * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
+				return power * Math.pow(2, userInfo.tier - 1) * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
 			sword: function(userInfo, targetInfo, power) {
-				return power * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
+				return power * Math.pow(2, userInfo.tier - 1) * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
 			}
 		},
 		experience: {
@@ -428,7 +428,7 @@ Game = {
 				}
 			},
 			endTurn: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'ice', 'special' ]);
+				unit.takeDamage(0.02 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
 				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
 			}
 		},
@@ -466,7 +466,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
-				unit.takeDamage(this.multiplier * 0.01 * unit.maxHP, [ 'fire', 'special' ]);
+				unit.takeDamage(0.02 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
 				this.multiplier -= 0.10;
 				if (this.multiplier <= 0.0) {
 					unit.liftStatus('ignite');
@@ -710,7 +710,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'ice'
 						}
 					],
@@ -826,7 +826,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'fire'
 						}
 					],
@@ -875,7 +875,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'lightning'
 						}
 					],
@@ -975,7 +975,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'earth'
 						}
 					],
