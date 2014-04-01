@@ -56,7 +56,8 @@ MenuStrip.prototype.getInput = function()
 	if (this.mode != 'idle') {
 		return;
 	}
-	if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
+	var key = AreKeysLeft() ? GetKey() : null;
+	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		this.chosenItem = this.selectedItem;
 		this.animation = new Scenario()
 			.fork()
@@ -66,19 +67,19 @@ MenuStrip.prototype.getInput = function()
 			.tween(this, 0.25, 'easeInQuad', { openness: 0.0 })
 			.run();
 		this.mode = 'close';
-	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) && this.isCancelable) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
 		this.chosenItem = null;
 		this.animation = new Scenario()
 			.tween(this, 0.25, 'easeInQuad', { openness: 0.0 })
 			.run();
 		this.mode = 'close';
-	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		this.scrollDirection = -1;
 		this.animation = new Scenario()
 			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
 			.run();
 		this.mode = 'changeItem';
-	} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 		this.scrollDirection = 1;
 		this.animation = new Scenario()
 			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
@@ -104,6 +105,9 @@ MenuStrip.prototype.open = function()
 		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 	}
 	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
+	while (AreKeysLeft()) {
+		GetKey();
+	}
 	var menuThread = Threads.createEntityThread(this, 100);
 	this.animation = new Scenario()
 		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })

@@ -149,7 +149,9 @@ TargetMenu.prototype.open = function()
 	this.targets = this.usable.defaultTargets(this.unit);
 	this.multiTarget = this.targets.length > 1;
 	this.updateInfo();
-	while (AreKeysLeft()) { GetKey(); }
+	while (AreKeysLeft()) {
+		GetKey();
+	}
 	Threads.waitFor(Threads.createEntityThread(this, 10));
 	return this.targets;
 };

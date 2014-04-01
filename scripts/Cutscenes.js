@@ -110,6 +110,9 @@ Scenario.defineCommand('talk',
 			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
+		while (AreKeysLeft()) {
+			GetKey();
+		}
 		if (DBG_DISABLE_TEXTBOXES) {
 			this.mode = "finish";
 		}
@@ -241,7 +244,8 @@ Scenario.defineCommand('talk',
 	},
 	getInput: function(scene) {
 		if (this.mode != "idle") return;
-		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A))) {
+		var key = AreKeysLeft() ? GetKey() : null;
+		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
 				if (this.currentPage < this.text.length - 1) {
 					this.mode = "page";

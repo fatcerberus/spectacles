@@ -3,6 +3,8 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
+RequireScript('AI/HHorseAI.js');
+
 // Game object
 // Represents the game.
 Game = {
@@ -93,6 +95,9 @@ Game = {
 			physical: function(userInfo, targetInfo, power) {
 				return power * userInfo.tier * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
+			physicalRecoil: function(userInfo, targetInfo, power) {
+				return power * targetInfo.tier * (userInfo.level + targetInfo.stats.str) / userInfo.stats.str;
+			},
 			sword: function(userInfo, targetInfo, power) {
 				return power * userInfo.tier * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
 			}
@@ -122,26 +127,6 @@ Game = {
 				+ unitInfo.baseStats.agi) / 15);
 			return 25 * tier * (50 + statAverage / 2) * (10 + level) / 110;
 		},
-		/*hp: {
-			enemy: function(enemyInfo, level) {
-				var statAverage = Math.round((enemyInfo.baseStats.vit * 10
-					+ enemyInfo.baseStats.str
-					+ enemyInfo.baseStats.def
-					+ enemyInfo.baseStats.foc
-					+ enemyInfo.baseStats.mag
-					+ enemyInfo.baseStats.agi) / 15);
-				return 100 * (50 + statAverage / 2) * (10 + level) / 110;
-			},
-			partyMember: function(characterInfo, level) {
-				var statAverage = Math.round((characterInfo.baseStats.vit * 10
-					+ characterInfo.baseStats.str
-					+ characterInfo.baseStats.def
-					+ characterInfo.baseStats.foc
-					+ characterInfo.baseStats.mag
-					+ characterInfo.baseStats.agi) / 15);
-				return 15 * (50 + statAverage / 2) * (10 + level) / 110;
-			}
-		},*/
 		mp: {
 			capacity: function(battlerInfo) {
 				var statAverage = Math.round((battlerInfo.baseStats.mag * 10
@@ -191,8 +176,8 @@ Game = {
 			skills: [
 				'swordSlash',
 				'quickstrike',
-				/*'chargeSlash',
-				'necromancy',
+				'chargeSlash',
+				/*'necromancy',
 				'crackdown',*/
 				'flare',
 				'chill',
@@ -487,19 +472,11 @@ Game = {
 		immune: {
 			name: "Immune",
 			category: 'buff',
-			initialize: function(unit) {
-				this.turnsTaken = 0;
-			},
 			afflicted: function(unit, eventData) {
 				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					eventData.statusID = null;
-				}
-			},
-			beginTurn: function(unit, eventData) {
-				++this.turnsTaken;
-				if (this.turnsTaken > 3) {
-					unit.liftStatus('immune');
+					unit.litStatus('immune');
 				}
 			}
 		},
@@ -543,6 +520,20 @@ Game = {
 			category: 'buff',
 			beginCycle: function(unit, eventData) {
 				unit.heal(unit.maxHP * 0.01);
+			}
+		},
+		rearing: {
+			name: "Rearing",
+			category: 'special',
+			beginTurn: function(unit, eventData) {
+				unit.liftStatus('rearing');
+			},
+			damaged: function(unit, eventData) {
+				if (Link(eventData.tags).contains('physical')) {
+					unit.clearQueue();
+					unit.liftStatus('rearing');
+					unit.resetCounter(0);
+				}
 			}
 		},
 		skeleton: {
@@ -623,6 +614,11 @@ Game = {
 				}
 				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power));
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), damageTags);
+				var recoilFunction = effect.damageType + "Recoil";
+				if (recoilFunction in Game.math.damage) {
+					var recoil = Math.round(Game.math.damage[recoilFunction](userInfo, targetInfo, effect.power));
+					actor.takeDamage(Math.max(recoil + recoil * 0.2 * (Math.random() - 0.5), 1), [ 'recoil' ], true);
+				}
 			}
 		},
 		devour: function(actor, targets, effect) {
@@ -707,7 +703,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'ice'
 						}
 					],
@@ -728,33 +724,6 @@ Game = {
 							targetHint: 'selected',
 							type: 'addStatus',
 							status: 'crackdown'
-						}
-					],
-				}
-			]
-		},
-		dragonflame: {
-			name: "Flame Breath",
-			category: 'magic',
-			targetType: 'allEnemies',
-			baseMPCost: 25,
-			actions: [
-				{
-					announceAs: "Flame Breath",
-					rank: 3,
-					accuracyType: 'breath',
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'damage',
-							damageType: 'breath',
-							power: 30,
-							element: 'fire'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'ignite'
 						}
 					],
 				}
@@ -808,6 +777,33 @@ Game = {
 				}
 			]
 		},
+		flameBreath: {
+			name: "Flame Breath",
+			category: 'magic',
+			targetType: 'allEnemies',
+			baseMPCost: 25,
+			actions: [
+				{
+					announceAs: "Flame Breath",
+					rank: 3,
+					accuracyType: 'breath',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'breath',
+							power: 20,
+							element: 'fire'
+						},
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'ignite'
+						}
+					],
+				}
+			]
+		},
 		flare: {
 			name: "Flare",
 			category: 'magic',
@@ -823,7 +819,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'fire'
 						}
 					],
@@ -872,7 +868,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'lightning'
 						}
 					],
@@ -909,7 +905,7 @@ Game = {
 					rank: 3,
 					effects: [
 						{
-							targetHint: "selected",
+							targetHint: 'selected',
 							type: 'addStatus',
 							status: 'zombie'
 						}
@@ -972,7 +968,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 25,
+							power: 15,
 							element: 'earth'
 						}
 					],
@@ -995,6 +991,41 @@ Game = {
 							type: 'damage',
 							damageType: 'sword',
 							power: 5
+						}
+					]
+				}
+			]
+		},
+		rearingKick: {
+			name: "Rearing Kick",
+			category: 'attack',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Rear Up",
+					rank: 1,
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'addStatus',
+							status: 'rearing'
+						}
+					]
+				},
+				{
+					announceAs: "Rearing Kick",
+					rank: 2,
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'liftStatus',
+							status: 'Ghost'
+						},
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'physical',
+							power: 25
 						}
 					]
 				}
@@ -1025,7 +1056,7 @@ Game = {
 			name: "Shootout",
 			category: 'attack',
 			weaponType: 'pistol',
-			targetType: 'multiple',
+			targetType: 'allEnemies',
 			actions: [
 				{
 					announceAs: "Shootout",
@@ -1036,6 +1067,60 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'pistol',
+							power: 50
+						}
+					]
+				}
+			]
+		},
+		spectralDraw: {
+			name: "Spectral Draw",
+			category: 'strategy',
+			targetType: 'allEnemies',
+			baseMPCost: 100,
+			actions: [
+				{
+					announceAs: "Spectral Draw",
+					rank: 3,
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'ghost'
+						}
+					]
+				}
+			]
+		},
+		spectralKick: {
+			name: "Spectral Kick",
+			category: 'attack',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Rear Up",
+					rank: 1,
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'addStatus',
+							status: 'rearing'
+						}
+					]
+				},
+				{
+					announceAs: "Spectral Kick",
+					rank: 2,
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'addStatus',
+							status: 'Ghost'
+						},
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'physical',
 							power: 50
 						}
 					]
@@ -1200,14 +1285,33 @@ Game = {
 			},
 			immunities: [],
 			munchData: {
-				skill: 'dragonflame'
+				skill: 'spectralDraw'
 			},
-			strategize: function(me, nextUp) {
+			aiClass: HHorseAI,
+			strategy: function(me, nextUp) {
 				this.setDefaultSkill('flare');
-				if (this.turnsTaken % 3 == 0) {
-					this.useSkill('dragonflame');
-				} else {
-					// TODO: implement me!
+				if (this.turnsTaken == 0) {
+					this.data.phase = 1;
+					this.data.ghostifiedParty = false;
+				}
+				var phaseToEnter = me.getHealth() > 50 ? 1 : 2;
+				this.data.phase = this.data.phase > phaseToEnter ? this.data.phase : phaseToEnter;
+				if (this.data.phase == 1) {
+					if (this.turnsTaken % 5 == 0) {
+						if (this.turnsTaken == 0) {
+							this.useSkill('rearingKick', 'maggie');
+						}
+						this.useSkill('flameBreath');
+					} else {
+						this.useSkill('flare');
+					}
+				} else if (this.data.phase == 2) {
+					if (!this.data.ghostifiedParty) {
+						this.data.ghostifiedParty = true;
+						this.useSkill('spectralDraw');
+					} else {
+						
+					}
 				}
 			}
 		},

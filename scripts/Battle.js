@@ -325,6 +325,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 		if (Math.random() < odds) {
 			Console.append("hit");
+			targetUnits[i].targeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
 			Console.append("miss");
@@ -438,6 +439,7 @@ Battle.prototype.update = function() {
 		Console.writeLine("Battle engine shutting down");
 		this.ui.dispose();
 		BGM.reset();
+		BGM.adjustVolume(1.0, 0.0);
 		return false;
 	} else {
 		return true;

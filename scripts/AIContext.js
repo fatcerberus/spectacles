@@ -5,33 +5,33 @@
 
 RequireScript("SkillUsable.js");
 
-// BattleAI() constructor
-// Creates an object representing an AI to control a battle unit.
+// AIContext() constructor
+// Creates an object representing a context for an enemy AI.
 // Arguments:
-//     unit:     The unit whose actions are to be managed.
+//     unit:     The unit whose actions are to be managed by the AI.
 //     battle:   The battle session the unit is taking part in.
-//     strategy: A function to be called by the AI when it needs to know what action(s)
+//     strategy: A function to be called by the AI context when it needs to know what action(s)
 //               should be taken next. The function will be called with 'this' set to the
-//               BattleAI object, and takes the following arguments:
+//               AIContext object, and takes the following arguments:
 //                   me:     The BattleUnit for which actions are being determined.
 //                   nextUp: The upcoming turn prediction, as returned by Battle.predictTurns().
-function BattleAI(unit, battle, strategy)
+function AIContext(unit, battle, aiClass)
 {
 	this.battle = battle;
 	this.data = {};
 	this.defaultSkillID = null;
 	this.moveQueue = [];
-	this.strategy = strategy;
 	this.targets = [];
 	this.turnsTaken = 0;
 	this.unit = unit;
+	this.ai = new aiClass(this);
 }
 
 // .getNextMove() method
 // Gets the next skill to be executed or item to be used by the AI.
 // Returns:
 //     An object with properties specifying the AI's next move.
-BattleAI.prototype.getNextMove = function()
+AIContext.prototype.getNextMove = function()
 {
 	if (this.moveQueue.length == 0) {
 		Console.writeLine("Deferring to AI for " + this.unit.name + "'s next move");
@@ -50,13 +50,13 @@ BattleAI.prototype.getNextMove = function()
 			this.allies[ally.id] = ally;
 		}
 		this.targets = null;
-		this.strategy.call(this, this.unit, null);
+		this.ai.strategize();
 		if (this.moveQueue.length == 0) {
 			Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
 			if (this.defaultSkillID !== null) {
 				this.useSkill(this.defaultSkillID);
 			} else {
-				Abort("BattleAI.getNextAction(): No moves were queued and there is no default skill set.");
+				Abort("AIContext.getNextAction(): No moves were queued and there is no default skill set.");
 			}
 		}
 	}
@@ -68,9 +68,18 @@ BattleAI.prototype.getNextMove = function()
 // Determines whether the unit being controlled is afflicted with a specified status.
 // Arguments:
 //     statusID: The ID of the status to test for, as defined in the gamedef.
-BattleAI.prototype.hasStatus = function(statusID)
+AIContext.prototype.hasStatus = function(statusID)
 {
 	return this.unit.hasStatus(statusID);
+};
+
+// .setCounter() method
+// Instructs the AI to put the unit into counterattacking stance.
+// Arguments:
+//     skillID: The ID of the skill to counter with, as defined in the gamedef.
+AIContext.prototype.setCounter = function(skillID)
+{
+	
 };
 
 // .setDefaultSkill() method
@@ -80,7 +89,7 @@ BattleAI.prototype.hasStatus = function(statusID)
 // Remarks:
 //     If no target has been set (as by calling .setTarget()) at the time this skill is
 //     used, a random target will be selected.
-BattleAI.prototype.setDefaultSkill = function(skillID)
+AIContext.prototype.setDefaultSkill = function(skillID)
 {
 	this.defaultSkillID = skillID;
 	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
@@ -90,7 +99,7 @@ BattleAI.prototype.setDefaultSkill = function(skillID)
 // Sets the battler to be targeted by the AI's actions.
 // Arguments:
 //     targetID: The enemy or character ID of the unit to target.
-BattleAI.prototype.setTarget = function(targetID)
+AIContext.prototype.setTarget = function(targetID)
 {
 	var unit = this.battle.findUnit(targetID);
 	this.targets = unit !== null ? [ unit ] : null;
@@ -101,10 +110,10 @@ BattleAI.prototype.setTarget = function(targetID)
 // Arguments:
 //     skillID: The ID, as defined in the gamedef, of the skill whose effects on
 //              the turn order are to be tested.
-BattleAI.prototype.turnForecast = function(skillID)
+AIContext.prototype.turnForecast = function(skillID)
 {
 	if (!(skillID in Game.skills)) {
-		Abort("BattleAI.turnForecast(): The skill '" + skillID + "' doesn't exist!");
+		Abort("AIContext.turnForecast(): The skill '" + skillID + "' doesn't exist!");
 	}
 	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
 	Console.writeLine(this.unit.name + " considering " + Game.skills[skillID].name);
@@ -116,11 +125,15 @@ BattleAI.prototype.turnForecast = function(skillID)
 // Adds the use of an item to the AI's move queue.
 // Arguments:
 //     itemID: The item ID of the item to use.
+//     unitID: Optional. The ID of the unit to use the item on. If not provided or null, a
+//             default target (usually the user) will be chosen.
 // Remarks:
 //     If no target has been set (as by calling .setTarget()), a random target will be
 //     selected.
-BattleAI.prototype.useItem = function(itemID)
+AIContext.prototype.useItem = function(itemID, unitID)
 {
+	unitID = unitID !== void null ? unitID : null;
+	
 	var itemToUse = null;
 	for (var i = 0; i < this.unit.items.length; ++i) {
 		var item = this.unit.items[i];
@@ -130,10 +143,12 @@ BattleAI.prototype.useItem = function(itemID)
 		}
 	}
 	if (itemToUse == null) {
-		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an item it didn't have");
+		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an item it didn't have");
 	}
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
-	var targets = this.targets !== null ? this.targets : itemToUse.defaultTargets(this.unit);
+	var targets = this.targets !== null ? this.targets :
+		unitID !== null ? [ this.battle.findUnit(unitID) ] :
+		itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
 		targets: targets
@@ -144,11 +159,15 @@ BattleAI.prototype.useItem = function(itemID)
 // Adds the use of a skill to the AI's move queue.
 // Arguments:
 //     skillID: The ID of the skill to use, as defined in the gamedef.
+//     unitID:  Optional. The ID of the unit to use the skill on. If not provided or null, a
+//              default target (usually random) will be chosen.
 // Remarks:
 //     If no target has been set (as by calling .setTarget()), a random target will be
 //     selected.
-BattleAI.prototype.useSkill = function(skillID)
+AIContext.prototype.useSkill = function(skillID, unitID)
 {
+	unitID = unitID !== void null ? unitID : null;
+	
 	var skillToUse = new SkillUsable(skillID, 100);
 	/*for (var i = 0; i < this.unit.skills.length; ++i) {
 		var skill = this.unit.skills[i];
@@ -158,10 +177,12 @@ BattleAI.prototype.useSkill = function(skillID)
 		}
 	}
 	if (skillToUse == null) {
-		Abort("BattleAI.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
+		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
 	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
-	var targets = this.targets !== null ? this.targets : skillToUse.defaultTargets(this.unit);
+	var targets = this.targets !== null ? this.targets :
+		unitID !== null ? [ this.battle.findUnit(unitID) ] :
+		skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
 		targets: targets

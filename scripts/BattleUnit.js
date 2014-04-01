@@ -3,7 +3,7 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('BattleAI.js');
+RequireScript('AIContext.js');
 RequireScript('ItemUsable.js');
 RequireScript('MoveMenu.js');
 RequireScript('MPPool.js');
@@ -40,6 +40,14 @@ var BattleStance =
 //                  MP pool will be created for the battler.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
+	// .targeted event
+	// Occurs when the unit is successfully targeted by an action.
+	// Arguments (for event handler):
+	//     unit:       The BattleUnit targeted by the action.
+	//     action:     The action being performed.
+	//     actingUnit: The BattleUnit performing the action.
+	this.targeted = new MultiDelegate();
+	
 	this.actionQueue = [];
 	this.actor = null;
 	this.affinities = [];
@@ -86,7 +94,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.enemyInfo = Game.enemies[basis];
 		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];
-		this.ai = new BattleAI(this, battle, this.enemyInfo.strategize);
+		this.ai = new AIContext(this, battle, this.enemyInfo.aiClass);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
@@ -182,6 +190,16 @@ BattleUnit.prototype.beginCycle = function()
 	}
 	this.battlerInfo.statAverage = Math.round(statSum / numStats);
 	this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
+};
+
+// .clearQueue() method
+// Clears the unit's action queue without executing any queued actions.
+BattleUnit.prototype.clearQueue = function()
+{
+	if (this.actionQueue.length > 0) {
+		this.actionQueue = [];
+		Console.writeLine("Cleared " + this.name + "'s action queue");
+	}
 };
 
 // .die() method
@@ -541,10 +559,7 @@ BattleUnit.prototype.tick = function()
 			return true;
 		}
 		if (eventData.skipTurn) {
-			if (this.actionQueue.length > 0) {
-				this.actionQueue = [];
-				Console.writeLine("Cleared " + this.name + "'s action queue");
-			}
+			this.clearQueue();
 			Console.writeLine(this.name + "'s turn was skipped");
 			this.resetCounter(Game.defaultMoveRank);
 			this.battle.resume();
