@@ -543,6 +543,9 @@ Game = {
 			name: "Skeleton",
 			category: 'undead',
 			overrules: [ 'zombie' ],
+			initialize: function(unit) {
+				this.allowDeath = false;
+			},
 			beginCycle: function(unit, eventData) {
 				if (eventData.battlerInfo.health <= 0) {
 					eventData.battlerInfo.stats.str /= 2;
@@ -551,9 +554,12 @@ Game = {
 				unit.takeDamage(0.025 * unit.maxHP, [ 'special' ]);
 			},
 			damaged: function(unit, eventData) {
-				eventData.suppressKO =
-					eventData.tags.indexOf('physical') == -1
-					&& eventData.tags.indexOf('sword') == -1;
+				this.allowDeath =
+					eventData.tags.indexOf('physical') != -1
+					|| eventData.tags.indexOf('sword') != -1;
+			},
+			dying: function(unit, eventData) {
+				eventData.cancel = !this.allowDeath;
 			},
 			healed: function(unit, eventData) {
 				eventData.amount = -Math.abs(eventData.amount);
@@ -595,6 +601,10 @@ Game = {
 		zombie: {
 			name: "Zombie",
 			category: 'undead',
+			dying: function(unit, eventData) {
+				this.addStatus('skeleton');
+				eventData.cancel = true;
+			},
 			healed: function(unit, eventData) {
 				eventData.amount = -Math.abs(eventData.amount);
 			}
@@ -753,7 +763,7 @@ Game = {
 						{
 							targetHint: 'selected',
 							type: 'addStatus',
-							status: 'skeleton'
+							status: 'zombie'
 						}
 					]
 				}

@@ -475,12 +475,10 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		}
 	}
 	amount = Math.round(Math.max(amount * multiplier, 1));
-	var suppressKO = false;
 	if (!isPriority) {
-		var eventData = { amount: amount, tags: tags, suppressKO: false };
+		var eventData = { amount: amount, tags: tags };
 		this.raiseEvent('damaged', eventData);
 		amount = Math.round(eventData.amount);
-		suppressKO = eventData.suppressKO;
 	}
 	if (amount > 0) {
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
@@ -499,10 +497,12 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		Console.append("left: " + this.hp);
 		this.actor.showDamage(amount);
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		this.lazarusFlag = suppressKO;
 		if (this.hp <= 0) {
 			Console.writeLine(this.name + " dying due to lack of HP");
-			if (!suppressKO) {
+			var eventData = { cancel: false };
+			this.raiseEvent('dying', eventData);
+			this.lazarusFlag = eventData.cancel;
+			if (!this.lazarusFlag) {
 				this.die();
 			} else {
 				Console.writeLine(this.name + "'s death suppressed by status effect");
