@@ -40,14 +40,6 @@ var BattleStance =
 //                  MP pool will be created for the battler.
 function BattleUnit(battle, basis, position, startingRow, mpPool)
 {
-	// .targeted event
-	// Occurs when the unit is successfully targeted by an action.
-	// Arguments (for event handler):
-	//     unit:       The BattleUnit targeted by the action.
-	//     action:     The action being performed.
-	//     actingUnit: The BattleUnit performing the action.
-	this.targeted = new MultiDelegate();
-	
 	this.actionQueue = [];
 	this.actor = null;
 	this.affinities = [];
@@ -297,6 +289,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		this.hp = Math.min(this.hp + amount, this.maxHP);
 		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this.name, this.hp);
+		this.battle.unitHealed.invoke(this, amount);
 		Console.writeLine(this.name + " healed for " + amount + " HP");
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
@@ -494,13 +487,14 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			this.counterMove.targets = [ this.lastAttacker ];
 			this.isCounterReady = true;
 			Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
-			Console.append("target: " + this.counterTargets[0].name);
+			Console.append("targ: " + this.counterTargets[0].name);
 		} else if (this.stance == BattleStance.defend) {
 			this.stance = BattleStance.attack;
 			Console.writeLine(this.name + "'s defensive stance was broken");
 			this.resetCounter(Game.defenseBreakRank);
 		}
 		this.hp = Math.max(this.hp - amount, 0);
+		this.battle.unitDamaged.invoke(this, amount, this.lastAttacker);
 		Console.writeLine(this.name + " took " + amount + " HP damage");
 		Console.append("left: " + this.hp);
 		this.actor.showDamage(amount);

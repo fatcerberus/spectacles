@@ -532,7 +532,10 @@ Game = {
 				if (Link(eventData.tags).contains('physical')) {
 					unit.clearQueue();
 					unit.liftStatus('rearing');
-					unit.resetCounter(0);
+					unit.resetCounter(5);
+				}
+				if (!Link(eventData.tags).contains('special')) {
+					eventData.damage *= 1.5;
 				}
 			}
 		},

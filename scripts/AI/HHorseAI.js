@@ -3,11 +3,12 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-function HHorseAI(context)
+function HHorseAI(battle, context)
 {
+	this.battle = battle;
 	this.context = context;
 	this.unit = this.context.unit;
-	this.unit.targeted.addHook(this, this.onTargeted);
+	this.battle.unitTargeted.addHook(this, this.onUnitTargeted);
 	this.phase = 1;
 	this.usedGhost = false;
 };
@@ -36,15 +37,21 @@ HHorseAI.prototype.strategize = function()
 	}
 };
 
-// .onTargeted() event handler
-// Performs processing when the controlled unit is targeted with an action.
-HHorseAI.prototype.onTargeted = function(unit, action, actingUnit)
+// .onUnitTargeted() event handler
+// Performs processing when unit in the battle is targeted by an action.
+// Arguments:
+//     unit:       The unit who was targeted.
+//     action:     The action to be performed on the targeted unit.
+//     actingUnit: The unit performing the action.
+HHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
-	var isPhysical = Link(action.effects)
-		.filterBy('type', 'damage')
-		.pluck('damageType')
-		.contains('physical');
-	if (isPhysical && unit.hasStatus('rearing')) {
-		this.context.useSkill('flameBreath');
+	if (unit === this.unit && this.phase == 1) {
+		var isPhysical = Link(action.effects)
+			.filterBy('type', 'damage')
+			.pluck('damageType')
+			.contains('physical');
+		if (isPhysical && unit.hasStatus('rearing')) {
+			this.context.useSkill('flameBreath');
+		}
 	}
 };

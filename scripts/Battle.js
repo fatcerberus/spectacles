@@ -24,6 +24,33 @@ BattleResult =
 //     battleID: The ID of the battle descriptor to use to set up the fight.
 function Battle(session, battleID)
 {
+	// .unitDamaged event
+	// Occurs when a unit in the battle is damaged.
+	// Arguments (for event handler)
+	//     unit:     The unit taking damage.
+	//     amount:   The amount of damage taken.
+	//     attacker: The unit responsible for inflicting the damage. In the case of
+	//               residual (e.g. status-induced) damage, this will be null.
+	this.unitDamaged = new MultiDelegate();
+	
+	// .unitHealed event
+	// Occurs when a unit in the battle recovers HP.
+	// Arguments (for event handler)
+	//     unit:     The unit recovering HP.
+	//     amount:   The number of hit points recovered.
+	this.unitHealed = new MultiDelegate();
+	
+	// .unitTargeted event
+	// Occurs when a unit in the battle is successfully targeted by an action.
+	// Arguments (for event handler):
+	//     unit:       The BattleUnit targeted by the action.
+	//     action:     The action being performed.
+	//     actingUnit: The BattleUnit performing the action.
+	// Remarks:
+	//     If, after accuracy is taken into account, the action would result in
+	//     a miss, this event will not be raised.
+	this.unitTargeted = new MultiDelegate();
+	
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
@@ -325,7 +352,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
 		if (Math.random() < odds) {
 			Console.append("hit");
-			targetUnits[i].targeted.invoke(targetUnits[i], action, actingUnit);
+			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
 			Console.append("miss");
