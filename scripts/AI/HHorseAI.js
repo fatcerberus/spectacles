@@ -3,18 +3,18 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-function HHorseAI(battle, context)
+function HHorseAI(battle, unit, context)
 {
 	this.battle = battle;
+	this.unit = unit;
 	this.context = context;
-	this.unit = this.context.unit;
 	this.battle.unitTargeted.addHook(this, this.onUnitTargeted);
 	this.phase = 1;
 	this.usedGhost = false;
-};
+}
 
 // .strategize() method
-// Queues up the enemy's next move(s).
+// Decides the enemy's next move(s).
 HHorseAI.prototype.strategize = function()
 {				
 	var phaseToEnter = this.unit.getHealth() > 50 ? 1 : 2;

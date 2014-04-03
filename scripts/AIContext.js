@@ -24,7 +24,7 @@ function AIContext(unit, battle, aiClass)
 	this.targets = [];
 	this.turnsTaken = 0;
 	this.unit = unit;
-	this.ai = new aiClass(this.battle, this);
+	this.ai = new aiClass(this.battle, this.unit, this);
 }
 
 // .getNextMove() method

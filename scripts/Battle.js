@@ -24,18 +24,27 @@ BattleResult =
 //     battleID: The ID of the battle descriptor to use to set up the fight.
 function Battle(session, battleID)
 {
+	// .itemUsed event
+	// Occurs when an item is used by a battle unit.
+	// Arguments (for event handler):
+	//     itemID:  The item ID of the item used.
+	//     user:    The battle unit that used the item.
+	//     targets: The unit(s), if any, that the item was used on, or null in the case of
+	//              a non-targeted item.
+	this.itemUsed = new MultiDelegate();
+	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
-	// Arguments (for event handler)
+	// Arguments (for event handler):
 	//     unit:     The unit taking damage.
 	//     amount:   The amount of damage taken.
-	//     attacker: The unit responsible for inflicting the damage. In the case of
-	//               residual (e.g. status-induced) damage, this will be null.
+	//     attacker: The unit responsible for inflicting the damage. In the case of residual
+	//               (e.g. status-induced) damage, this will be null.
 	this.unitDamaged = new MultiDelegate();
 	
 	// .unitHealed event
 	// Occurs when a unit in the battle recovers HP.
-	// Arguments (for event handler)
+	// Arguments (for event handler):
 	//     unit:     The unit recovering HP.
 	//     amount:   The number of hit points recovered.
 	this.unitHealed = new MultiDelegate();

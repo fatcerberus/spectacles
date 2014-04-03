@@ -7,8 +7,15 @@ RequireScript('PartyMember.js');
 
 // Party() constructor
 // Creates an object representing a party of player characters.
-function Party()
+// Arguments:
+//     level: Optional. The initial battle level of the party. The first character
+//            added to the party will have his/her stats initialized using this level.
+//            (default: 1)
+function Party(level)
 {
+	level = level !== void null ? level : 1;
+	
+	this.defaultLevel = level;
 	this.members = {};
 	Console.writeLine("Created party manager");
 }
@@ -38,7 +45,7 @@ Party.prototype.getLevel = function()
 		}
 		return Math.floor(total / memberCount);
 	} else {
-		return 8;
+		return this.defaultLevel;
 	}
 }
 
