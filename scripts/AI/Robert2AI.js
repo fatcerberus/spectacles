@@ -8,6 +8,7 @@ function Robert2AI(battle, unit, context)
 	this.battle = battle;
 	this.unit = unit;
 	this.context = context;
+	this.necromancyChance = 0.0;
 }
 
 // .strategize() method
@@ -23,8 +24,7 @@ Robert2AI.prototype.strategize = function()
 			.playSound('Munch.wav')
 			.talk("Robert", true, 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
 			.talk("maggie", true, 2.0,
-				"Tastes like chicken!",
-				"Hey, speaking of which, Robert, did you see any chickens around here? I could really go for some fried chicken right about now! Or even the regular, uncooked, feathery kind...")
+				"Tastes like chicken!")
 			.talk("Robert", true, 2.0, "...")
 			.run(true);
 		this.context.useItem('alcohol');
@@ -47,11 +47,11 @@ Robert2AI.prototype.strategize = function()
 					this.isComboStarted = false;
 				}
 				var forecast = this.context.turnForecast('chargeSlash');
-				if (forecast[0].unit === me) {
+				if (forecast[0].unit === this.unit) {
 					this.context.useSkill('chargeSlash');
 				} else {
 					forecast = this.context.turnForecast('quickstrike');
-					if (forecast[0].unit === me) {
+					if (forecast[0].unit === this.unit) {
 						this.context.useSkill('quickstrike');
 						this.isComboStarted = true;
 					} else {
@@ -71,7 +71,7 @@ Robert2AI.prototype.strategize = function()
 					this.isComboStarted = false;
 				} else {
 					var forecast = this.context.turnForecast('quickstrike');
-					if ((Math.random() < 0.5 || this.isComboStarted) && forecast[0].unit === me) {
+					if ((Math.random() < 0.5 || this.isComboStarted) && forecast[0].unit === this.unit) {
 						this.context.useSkill('quickstrike');
 						this.isComboStarted = true;
 					} else {
@@ -92,12 +92,12 @@ Robert2AI.prototype.strategize = function()
 					this.doChargeSlashNext = false;
 					this.isComboStarted = false;
 				} else {
-					var chanceOfCombo = 0.25 + this.hasStatus('crackdown') * 0.25;
+					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
 					if (Math.random() < chanceOfCombo || this.isComboStarted) {
 						var forecast = this.context.turnForecast('chargeSlash');
-						if ((forecast[0] === me && !this.isComboStarted) || this.doChargeSlashNext) {
+						if ((forecast[0] === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 							this.isComboStarted = false;
-							if (forecast[0] === me) {
+							if (forecast[0] === this.unit) {
 								this.context.useSkill('chargeSlash');
 							} else {
 								var moves = [ 'hellfire', 'windchill' ];
@@ -106,10 +106,10 @@ Robert2AI.prototype.strategize = function()
 						} else {
 							this.isComboStarted = true;
 							forecast = this.context.turnForecast('quickstrike');
-							if (forecast[0] === me) {
+							if (forecast[0] === this.unit) {
 								this.context.useSkill('quickstrike');
 							} else {
-								if (this.hasStatus('crackdown')) {
+								if (this.unit.hasStatus('crackdown')) {
 									this.context.useSkill('omni');
 									this.isComboStarted = false;
 								} else {
@@ -126,13 +126,15 @@ Robert2AI.prototype.strategize = function()
 				break;
 			case 4:
 				if (this.phase > lastPhase) {
-					if (!this.hasStatus('drunk')) {
+					if (!this.unit.hasStatus('zombie')) {
+						this.useItem('alcohol');
+					} else {
 						this.context.useSkill('desperationSlash');
 					}
 					this.context.useSkill('electrocute');
 				} else {
 					var forecast = this.context.turnForecast('omni');
-					if (forecast[0] === me || forecast[1] === me) {
+					if (forecast[0] === this.unit || forecast[1] === this.unit) {
 						this.context.useSkill('omni');
 					} else {
 						if (Math.random() < 0.5) {
@@ -144,6 +146,18 @@ Robert2AI.prototype.strategize = function()
 					}
 				}
 				break;
+		}
+	}
+};
+
+// .onItemUsed() method
+// Enables Robert to adjust his strategy when an item is used.
+Robert2AI.prototype.onItemUsed = function(userID, itemInfo, targetIDs)
+{
+	if (userID == 'scott' && Link(itemInfo.tags).contains('curative')) {
+		this.necromancyChance += 0.25;
+		if (this.necromancyChance > Math.random()) {
+			this.context.useSkill('necromancy');
 		}
 	}
 };

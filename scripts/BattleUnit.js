@@ -147,6 +147,24 @@ BattleUnit.prototype.addStatus = function(statusID)
 	Console.writeLine(this.name + " took on status " + effect.name);
 };
 
+// .announce() method
+// Announces in-battle events.  For AI-controlled units, any announcement will
+// also passed on to the AI unless the unit is afflicted with a status that
+// suppresses it.
+// Arguments:
+//     eventID:   The ID of the event to announce, e.g. 'unitDamaged'.
+//     eventData: An object with data required to process the event. For instance, for a unitDamaged
+//                event, eventData should include the ID of the damaged unit (.unitID) and the amount
+//                of damage sustained (.amount).
+// Remarks:
+//     Unlike with statuses, the eventData for announcements should always be treated as read-only.
+//     In most cases, to prevent AI units from cheating, any changes to its members will be ignored.
+BattleUnit.prototype.announce = function(eventID, eventData)
+{
+	
+};
+
+
 // .beginCycle() method
 // Prepares the unit for a new CTB cycle.
 BattleUnit.prototype.beginCycle = function()

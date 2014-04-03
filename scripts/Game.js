@@ -176,16 +176,16 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				/*'necromancy',
-				'crackdown',*/
+				'necromancy',
+				'crackdown',
 				'flare',
 				'chill',
 				'lightning',
 				'quake',
-				/*'hellfire',
+				'hellfire',
 				'windchill',
 				'electrocute',
-				'upheaval'*/
+				'upheaval'
 			]
 		},
 		bruce: {
@@ -225,7 +225,7 @@ Game = {
 	items: {
 		alcohol: {
 			name: "Alcohol",
-			type: 'drink',
+			tags: [ 'drink', 'curative' ],
 			action: {
 				announceAs: "Alcohol",
 				effects: [
@@ -243,7 +243,7 @@ Game = {
 		},
 		holyWater: {
 			name: "Holy Water",
-			type: 'drink',
+			tags: [ 'remedy' ],
 			action: {
 				announceAs: "Holy Water",
 				effects: [
@@ -262,7 +262,7 @@ Game = {
 		},
 		powerTonic: {
 			name: "Power Tonic",
-			type: 'drink',
+			tags: [ 'drink', 'curative' ],
 			uses: 2,
 			action: {
 				announceAs: "Power Tonic",
@@ -277,7 +277,7 @@ Game = {
 		},
 		tonic: {
 			name: "Tonic",
-			type: 'drink',
+			tags: [ 'drink', 'curative' ],
 			uses: 5,
 			action: {
 				announceAs: "Tonic",
@@ -292,7 +292,7 @@ Game = {
 		},
 		vaccine: {
 			name: "Vaccine",
-			type: 'drink',
+			type: [ 'drink' ],
 			uses: 1,
 			action: {
 				announceAs: "Vaccine",
@@ -373,6 +373,13 @@ Game = {
 			statModifiers: {
 				foc: 0.5
 			},
+			ignoreEvents: [
+				'itemUsed',
+				'skillUsed',
+				'unitDamaged',
+				'unitHealed',
+				'unitTargeted'
+			],
 			initialize: function(unit) {
 				this.sleepChance = 0.0;
 			},
@@ -609,7 +616,7 @@ Game = {
 			name: "Zombie",
 			category: 'undead',
 			dying: function(unit, eventData) {
-				this.addStatus('skeleton');
+				unit.addStatus('skeleton');
 				eventData.cancel = true;
 			},
 			healed: function(unit, eventData) {
@@ -746,6 +753,36 @@ Game = {
 							status: 'crackdown'
 						}
 					],
+				}
+			]
+		},
+		desperationSlash: {
+			name: "Desperation Slash",
+			category: 'sword',
+			weaponType: 'sword',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "#9's Desperation",
+					rank: 5,
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'addStatus',
+							status: 'offGuard'
+						}
+					]
+				},
+				{
+					announceAs: "Desperation Slash",
+					rank: 3,
+					accuracyType: 'sword',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'instaKill'
+						}
+					]
 				}
 			]
 		},
@@ -1258,7 +1295,7 @@ Game = {
 		templeSword: {
 			name: "Temple Sword",
 			type: 'sword',
-			level: 5,
+			level: 75,
 			techniques: [
 				'swordSlash',
 				'quickstrike',
