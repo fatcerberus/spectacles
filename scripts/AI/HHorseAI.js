@@ -20,9 +20,11 @@ HHorseAI.prototype.strategize = function()
 	var phaseToEnter = this.unit.getHealth() > 50 ? 1 : 2;
 	this.phase = this.phase > phaseToEnter ? this.phase : phaseToEnter;
 	if (this.phase == 1) {
-		if (this.context.turnsTaken % 3 == 0) {
+		if (this.context.turnsTaken % 2 == 0) {
 			if (this.context.turnsTaken == 0) {
 				this.context.useSkill('rearingKick', 'maggie');
+			} else {
+				this.context.useSkill('rearingKick');
 			}
 		} else {
 			this.context.useSkill('flare');
@@ -32,7 +34,7 @@ HHorseAI.prototype.strategize = function()
 			this.usedGhost = true;
 			this.context.useSkill('spectralDraw');
 		} else {
-			
+			this.context.useSkill('spectralKick');
 		}
 	}
 };

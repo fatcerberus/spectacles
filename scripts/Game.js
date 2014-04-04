@@ -241,6 +241,24 @@ Game = {
 				]
 			}
 		},
+		alcoholEX: {
+			name: "Alcohol EX",
+			tags: [ 'drink', 'curative' ],
+			action: {
+				announceAs: "Alcohol",
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverAll'
+					},
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'drunk'
+					}
+				]
+			}
+		},
 		holyWater: {
 			name: "Holy Water",
 			tags: [ 'remedy' ],
@@ -419,7 +437,7 @@ Game = {
 				}
 			},
 			endTurn: function(unit, eventData) {
-				unit.takeDamage(0.05 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
+				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
 				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
 			}
 		},
@@ -457,7 +475,7 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
-				unit.takeDamage(0.05 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
+				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
 				this.multiplier = Math.max(this.multiplier - 0.05, 0.50);
 			},
 			attacked: function(unit, eventData) {
@@ -730,7 +748,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'ice'
 						}
 					],
@@ -876,7 +894,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'fire'
 						}
 					],
@@ -925,7 +943,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'lightning'
 						}
 					],
@@ -1025,7 +1043,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 15,
+							power: 25,
 							element: 'earth'
 						}
 					],
@@ -1295,7 +1313,7 @@ Game = {
 		templeSword: {
 			name: "Temple Sword",
 			type: 'sword',
-			level: 75,
+			level: 5,
 			techniques: [
 				'swordSlash',
 				'quickstrike',

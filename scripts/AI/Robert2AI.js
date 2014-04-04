@@ -127,7 +127,7 @@ Robert2AI.prototype.strategize = function()
 			case 4:
 				if (this.phase > lastPhase) {
 					if (!this.unit.hasStatus('zombie')) {
-						this.useItem('alcohol');
+						this.context.useItem('alcohol');
 					} else {
 						this.context.useSkill('desperationSlash');
 					}

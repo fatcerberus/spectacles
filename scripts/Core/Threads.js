@@ -18,6 +18,11 @@ Threads.initialize = function()
 {
 	SetRenderScript('Threads.renderAll();');
 	SetUpdateScript('Threads.updateAll();');
+	this.threadSorter = function(a, b) {
+		return a.priority != b.priority ?
+			a.priority - b.priority :
+			a.id - b.id;
+	};
 }
 
 // .create() method
@@ -47,10 +52,6 @@ Threads.create = function(o, updater, renderer, priority, inputHandler)
 		updater: updater
 	};
 	this.threads.push(newThread);
-	this.threads.sort(function(a, b) {
-		return a.priority != b.priority ? a.priority - b.priority
-			: a.id - b.id;
-	});
 	++this.nextThreadID;
 	return newThread.id;
 };
@@ -143,11 +144,12 @@ Threads.kill = function(threadID)
 // Renders the current frame by calling all active threads' renderers.
 Threads.renderAll = function()
 {
-	for (var i = 0; i < this.threads.length; ++i) {
-		if (this.threads[i].renderer !== null) {
-			this.threads[i].renderer();
-		}
-	}
+	Link(Link(this.threads).sort(this.threadSorter))
+		.where(function(thread) { return thread.renderer !== null })
+		.each(function(thread)
+	{
+		thread.renderer();
+	});
 };
 
 // .synchronize() method
@@ -171,8 +173,9 @@ Threads.synchronize = function(threadIDs)
 Threads.updateAll = function()
 {
 	var threadsEnding = [];
-	for (var i = 0; i < this.threads.length; ++i) {
-		var thread = this.threads[i];
+	Link(Link(this.threads).sort(this.threadSorter))
+		.each(function(thread)
+	{
 		var stillRunning = true;
 		if (!thread.isUpdating) {
 			thread.isUpdating = true;
@@ -185,7 +188,7 @@ Threads.updateAll = function()
 		if (!stillRunning) {
 			threadsEnding.push(thread.id);
 		}
-	}
+	});
 	for (var i = 0; i < threadsEnding.length; ++i) {
 		this.kill(threadsEnding[i]);
 	}

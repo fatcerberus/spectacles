@@ -175,7 +175,7 @@ Scenario.defineCommand('talk',
 				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Engine.frameRate, 1.0);
 				if (this.nameVisibility >= 1.0) {
 					this.lineVisibility = Math.min(this.lineVisibility + (0.5 * this.textSpeed) / Engine.frameRate, 1.0);
-					var lineCount = Math.min(3,this.text[this.currentPage].length - this.topLine);
+					var lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					var currentLineText = this.text[this.currentPage][this.lineToReveal];
 					var currentLineWidth = this.font.getStringWidth(currentLineText);
 					var textAreaWidth = this.textSurface.width;
