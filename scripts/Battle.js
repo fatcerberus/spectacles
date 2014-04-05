@@ -27,10 +27,10 @@ function Battle(session, battleID)
 	// .itemUsed event
 	// Occurs when an item is used by a battle unit.
 	// Arguments (for event handler):
-	//     itemID:  The item ID of the item used.
-	//     user:    The battle unit that used the item.
-	//     targets: The unit(s), if any, that the item was used on, or null in the case of
-	//              a non-targeted item.
+	//     userID:     The ID of the unit that used the item.
+	//     itemID:     The ID of the item used.
+	//     targetIDs:  An array with the IDs of the units, if any, that the item was used on, or
+	//                 null in the case of a non-targeted item.
 	this.itemUsed = new MultiDelegate();
 	
 	// .unitDamaged event
@@ -48,6 +48,12 @@ function Battle(session, battleID)
 	//     unit:     The unit recovering HP.
 	//     amount:   The number of hit points recovered.
 	this.unitHealed = new MultiDelegate();
+	
+	// .unitReady event
+	// Occurs when a unit is about to take its turn.
+	// Arguments (for event handler):
+	//     unitID: The ID of the unit whose turn is up.
+	this.unitReady = new MultiDelegate();
 	
 	// .unitTargeted event
 	// Occurs when a unit in the battle is successfully targeted by an action.

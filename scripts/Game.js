@@ -268,12 +268,7 @@ Game = {
 					{
 						targetHint: 'selected',
 						type: 'liftStatus',
-						status: 'skeleton'
-					},
-					{
-						targetHint: 'selected',
-						type: 'liftStatus',
-						status: 'zombie'
+						statuses: [ 'ghost', 'skeleton', 'zombie' ]
 					}
 				]
 			}
@@ -472,11 +467,11 @@ Game = {
 			category: 'affliction',
 			overrules: [ 'frostbite' ],
 			initialize: function(unit) {
-				this.multiplier = 1.0;
+				this.multiplier = 2.0;
 			},
 			beginCycle: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
-				this.multiplier = Math.max(this.multiplier - 0.05, 0.50);
+				this.multiplier = Math.max(this.multiplier - 0.05, 1.0);
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -507,7 +502,7 @@ Game = {
 			},
 			beginTurn: function(unit, eventData) {
 				++this.turnCount;
-				if (this.turnCount > 3) {
+				if (this.turnCount >= 3) {
 					unit.liftStatus('immune');
 				}
 			}
@@ -686,7 +681,9 @@ Game = {
 		},
 		liftStatus: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].liftStatus(effect.status);
+				for (var i2 = 0; i2 < effect.statuses.length; ++i2) {
+					targets[i].liftStatus(effect.statuses[i2]);
+				}
 			}
 		},
 		recoverAll: function(actor, targets, effect) {
@@ -1094,7 +1091,7 @@ Game = {
 						{
 							targetHint: 'user',
 							type: 'liftStatus',
-							status: 'Ghost'
+							statuses: [ 'ghost' ]
 						},
 						{
 							targetHint: 'selected',
@@ -1384,7 +1381,8 @@ Game = {
 				skill: 'omni'
 			},
 			items: [
-				'alcohol'
+				'alcohol',
+				'tonic'
 			]
 		}
 	},

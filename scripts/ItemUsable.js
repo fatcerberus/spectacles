@@ -90,5 +90,6 @@ ItemUsable.prototype.use = function(unit, targets)
 	var eventData = { item: clone(this.itemDef) };
 	eventData.item.action.rank = 'rank' in eventData.item.action ? eventData.item.action.rank : Game.defaultItemRank;
 	unit.raiseEvent('useItem', eventData);
+	unit.battle.itemUsed.invoke(unit.id, this.itemID, Link(targets).pluck('id').toArray());
 	return [ eventData.item.action ];
 }

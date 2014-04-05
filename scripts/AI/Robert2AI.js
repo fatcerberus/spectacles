@@ -8,11 +8,11 @@ function Robert2AI(battle, unit, context)
 	this.battle = battle;
 	this.unit = unit;
 	this.context = context;
+	this.battle.itemUsed.addHook(this, this.onItemUsed);
+	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.necromancyChance = 0.0;
 }
 
-// .strategize() method
-// Decides the enemy's next move(s).
 Robert2AI.prototype.strategize = function()
 {				
 	if ('maggie' in this.context.enemies && this.context.turnsTaken == 0) {
@@ -32,7 +32,11 @@ Robert2AI.prototype.strategize = function()
 	if (this.context.turnsTaken == 0) {
 		this.phase = 0;
 		this.context.useSkill('omni');
+		this.necromancyReady = true;
+		this.necromancyTurns = 0;
+	} else if (this.necromancyReady && this.necromancyTurns <= 0) {
 		this.context.useSkill('necromancy');
+		this.necromancyReady = false;
 	} else {
 		var phaseToEnter =
 			this.unit.getHealth() > 75 ? 1 :
@@ -150,14 +154,24 @@ Robert2AI.prototype.strategize = function()
 	}
 };
 
-// .onItemUsed() method
-// Enables Robert to adjust his strategy when an item is used.
-Robert2AI.prototype.onItemUsed = function(userID, itemInfo, targetIDs)
+Robert2AI.prototype.onUnitReady = function(unitID)
 {
-	if (userID == 'scott' && Link(itemInfo.tags).contains('curative')) {
-		this.necromancyChance += 0.25;
-		if (this.necromancyChance > Math.random()) {
-			this.context.useSkill('necromancy');
+	if (this.necromancyReady && unitID == 'scott') {
+		--this.necromancyTurns;
+	}
+};
+
+Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
+{
+	if (userID == 'scott') {
+		var curativeIDs = [ 'tonic', 'powerTonic' ];
+		if (this.necromancyReady && itemID == 'vaccine') {
+			this.necromancyTurns = 3;
+		} else if (Link(curativeIDs).contains(itemID)) {
+			this.necromancyChance += 0.25;
+			if (this.necromancyChance > Math.random()) {
+				this.context.useSkill('necromancy');
+			}
 		}
 	}
 };

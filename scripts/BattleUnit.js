@@ -564,6 +564,7 @@ BattleUnit.prototype.tick = function()
 	if (this.cv == 0) {
 		this.battle.suspend();
 		Console.writeLine(this.name + "'s turn is up");
+		this.battle.unitReady.invoke(this.id);
 		var eventData = { skipTurn: false };
 		this.raiseEvent('beginTurn', eventData);
 		if (!this.isAlive()) {
