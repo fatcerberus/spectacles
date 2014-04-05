@@ -59,6 +59,7 @@ function game()
 	session.party.members.scott.items.push(new ItemUsable('alcohol'));
 	session.party.members.scott.items.push(new ItemUsable('tonic'));
 	session.party.members.scott.items.push(new ItemUsable('powerTonic'));
+	session.party.members.scott.items.push(new ItemUsable('redBull'));
 	session.party.members.scott.items.push(new ItemUsable('holyWater'));
 	session.party.members.scott.items.push(new ItemUsable('vaccine'));
 	new Scenario()

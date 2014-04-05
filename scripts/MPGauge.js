@@ -59,7 +59,7 @@ MPGauge.prototype.draw = function(x, y, size)
 MPGauge.prototype.set = function(value)
 {
 	value = Math.min(Math.max(value, 0), this.capacity);
-	if (value < this.value) {
+	if (value != this.value) {
 		if (this.animation != null) {
 			this.animation.stop();
 		}

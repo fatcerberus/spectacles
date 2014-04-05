@@ -468,6 +468,11 @@ BattleUnit.prototype.resetCounter = function(rank)
 	Console.append("rank: " + rank);
 };
 
+BattleUnit.prototype.restoreMP = function(percentage)
+{
+	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
+};
+
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:

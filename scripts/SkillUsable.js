@@ -154,5 +154,6 @@ SkillUsable.prototype.use = function(unit, targets)
 	this.grow(experience);
 	var eventData = { skill: clone(this.skillInfo) };
 	unit.raiseEvent('useSkill', eventData);
+	unit.battle.skillUsed.invoke(unit.id, this.skillID, Link(targets).pluck('id').toArray());
 	return eventData.skill.actions;
 };

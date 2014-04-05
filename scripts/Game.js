@@ -273,6 +273,21 @@ Game = {
 				]
 			}
 		},
+		redBull: {
+			name: "Red Bull",
+			tags: [ 'drink', 'curative' ],
+			uses: 2,
+			action: {
+				announceAs: "Red Bull",
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverMP',
+						strength: 100
+					}
+				]
+			}
+		},
 		powerTonic: {
 			name: "Power Tonic",
 			tags: [ 'drink', 'curative' ],
@@ -427,7 +442,6 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('fire')) {
-					eventData.amount *= 2.0;
 					unit.liftStatus('frostbite');
 				}
 			},
@@ -483,7 +497,6 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('ice')) {
-					eventData.amount *= 2.0;
 					unit.liftStatus('ignite');
 				}
 			}
@@ -694,6 +707,11 @@ Game = {
 		recoverHP: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].heal(targets[i].maxHP * effect.strength / 100);
+			}
+		},
+		recoverMP: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].restoreMP(effect.strength);
 			}
 		}
 	},
@@ -1382,7 +1400,7 @@ Game = {
 			},
 			items: [
 				'alcohol',
-				'tonic'
+				'redBull'
 			]
 		}
 	},

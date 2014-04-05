@@ -33,6 +33,15 @@ function Battle(session, battleID)
 	//                 null in the case of a non-targeted item.
 	this.itemUsed = new MultiDelegate();
 	
+	// .skilUsed event
+	// Occurs when a skill is used by a battle unit.
+	// Arguments (for event handler):
+	//     userID:     The ID of the unit that used the skill.
+	//     itemID:     The ID of the skill used.
+	//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
+	//                 null in the case of a non-targeted skill.
+	this.skillUsed = new MultiDelegate();
+	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
 	// Arguments (for event handler):
@@ -167,6 +176,9 @@ Battle.prototype.go = function()
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool(Math.min(Math.max(partyMaxMP, 0), 9999));
+	partyMPPool.gainedMP.addHook(this, function(mpPool, availableMP) {
+		this.ui.hud.mpGauge.set(availableMP);
+	});
 	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});

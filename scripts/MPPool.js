@@ -39,7 +39,7 @@ function MPPool(capacity, availableMP)
 //     amount: The amount of MP to restore.
 MPPool.prototype.restore = function(amount)
 {
-	this.availableMP = Math.min(this.availableMP + amount, this.capacity);
+	this.availableMP = Math.min(this.availableMP + Math.round(amount), this.capacity);
 	this.gainedMP.invoke(this, this.availableMP);
 };
 
@@ -52,6 +52,6 @@ MPPool.prototype.use = function(amount)
 	if (amount > this.availableMP) {
 		Abort("MPPool.use(): Attempted to use more MP than was available in the pool.");
 	}
-	this.availableMP -= amount;
+	this.availableMP -= Math.round(amount);
 	this.lostMP.invoke(this, this.availableMP);
 };
