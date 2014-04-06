@@ -13,7 +13,6 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
-	this.isVaccineUsed = false;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
 }
@@ -75,20 +74,11 @@ Robert2Strategy.prototype.strategize = function()
 				break;
 			case 2:
 				if (this.phase > lastPhase) {
+					this.ai.useSkill('upheaval');
 					if (this.unit.hasStatus('frostbite')) {
-						if (!this.isVaccineUsed) {
-							this.ai.useItem('vaccine');
-							this.isVaccineUsed = true;
-						}
 						this.ai.useSkill('flare', 'robert2');
 					} else if (this.unit.hasStatus('ignite')) {
-						if (!this.isVaccineUsed) {
-							this.ai.useItem('vaccine');
-							this.isVaccineUsed = true;
-						}
 						this.ai.useSkill('chill', 'robert2');
-					} else {
-						this.ai.useSkill('upheaval');
 					}
 					this.isComboStarted = false;
 				} else {
@@ -105,15 +95,13 @@ Robert2Strategy.prototype.strategize = function()
 							var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
 							if (moveToUse == 'upheaval') {
 								if (this.unit.hasStatus('frostbite')) {
-									if (!this.isVaccineUsed) {
+									if (!this.ai.isItemUsable('vaccine')) {
 										this.ai.useItem('vaccine');
-										this.isVaccineUsed = true;
 									}
 									this.ai.useSkill('flare', 'robert2');
 								} else if (this.unit.hasStatus('ignite')) {
-									if (!this.isVaccineUsed) {
+									if (this.ai.isItemUsable('vaccine')) {
 										this.ai.useItem('vaccine');
-										this.isVaccineUsed = true;
 									}
 									this.ai.useSkill('chill', 'robert2');
 								} else {
@@ -133,9 +121,9 @@ Robert2Strategy.prototype.strategize = function()
 					this.isComboStarted = false;
 				} else {
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
-					if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity) {
+					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
-					} if (Math.random() < chanceOfCombo || this.isComboStarted) {
+					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
 						if ((forecast[0] === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 							this.isComboStarted = false;
@@ -151,7 +139,9 @@ Robert2Strategy.prototype.strategize = function()
 							if (forecast[0] === this.unit) {
 								this.ai.useSkill('quickstrike');
 							} else {
-								if (this.unit.hasStatus('crackdown')) {
+								if (this.unit.hasStatus('crackdown')
+								    && this.ai.isSkillUsable('omni'))
+								{
 									this.ai.useSkill('omni');
 									this.isComboStarted = false;
 								} else {
@@ -200,6 +190,9 @@ Robert2Strategy.prototype.strategize = function()
 
 Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
+	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
+		return;
+	}
 	if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (itemID == 'vaccine' && this.isNecromancyReady) {
@@ -210,9 +203,10 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			} else {
 				this.isScottZombie = false;
 			}
-		} else if (Link(curativeIDs).contains(itemID) && !this.isNecromancyReady && !this.isScottZombie) {
+		} else if (this.phase <= 3 && Link(curativeIDs).contains(itemID) && !this.isNecromancyReady && !this.isScottZombie) {
 			this.necromancyChance += 0.25;
-			if (this.necromancyChance > Math.random()) {
+			var oddsMultiplier = this.phase <= 2 ? 1.0 : 0.5;
+			if (this.necromancyChance * oddsMultiplier > Math.random()) {
 				this.ai.useSkill('necromancy');
 				this.necromancyChance = 0.0;
 			}
@@ -222,6 +216,9 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 
 Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
+	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
+		return;
+	}
 	if (userID == 'robert2') {
 		if (skillID == 'necromancy') {
 			this.isScottZombie = true;
@@ -238,6 +235,9 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 
 Robert2Strategy.prototype.onUnitReady = function(unitID)
 {
+	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
+		return;
+	}
 	if (unitID == 'robert2') {
 		this.rezombieChance /= 2;
 	} if (unitID == 'scott') {

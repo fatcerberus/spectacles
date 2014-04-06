@@ -14,9 +14,12 @@ function ItemUsable(itemID)
 	}
 	this.givesExperience = false;
 	this.isUnlimited = false;
-	this.itemDef = Game.items[itemID];
+	this.itemDef = clone(Game.items[itemID]);
+	if (!('rank' in this.itemDef.action)) {
+		this.itemDef.action.rank = Game.defaultItemRank;
+	}
 	this.itemID = itemID;
-	this.name = Game.items[itemID].name;
+	this.name = this.itemDef.name;
 	this.useAiming = false;
 	this.usesLeft = 'uses' in this.itemDef ? this.itemDef.uses : 1;
 }
@@ -64,10 +67,10 @@ ItemUsable.prototype.mpCost = function(user)
 //     A list of battle actions that will be executed when the item is used.
 // Remarks:
 //     The array returned by this method should be considered read-only. Changing its contents
-//     will change the item definition, which is probably not what you want.
+//     will change the underlying item definition, which is probably not what you want.
 ItemUsable.prototype.peekActions = function()
 {
-	return [ Game.items[this.itemID].action ];
+	return [ this.itemDef.action ];
 };
 
 // .use() method
@@ -77,7 +80,7 @@ ItemUsable.prototype.peekActions = function()
 //     targets: An array of BattleUnit references specifying the battler(s) to use the item on.
 // Returns:
 //     An array of battle actions to be executed. Unlike with peekActions(), the contents of the array may
-//     be freely modified without changing the item definition.
+//     be freely modified without changing the underlying item definition.
 ItemUsable.prototype.use = function(unit, targets)
 {
 	if (!this.isUsable(unit)) {
@@ -88,7 +91,6 @@ ItemUsable.prototype.use = function(unit, targets)
 	--this.usesLeft;
 	Console.append("left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };
-	eventData.item.action.rank = 'rank' in eventData.item.action ? eventData.item.action.rank : Game.defaultItemRank;
 	unit.raiseEvent('useItem', eventData);
 	unit.battle.itemUsed.invoke(unit.id, this.itemID, Link(targets).pluck('id').toArray());
 	return [ eventData.item.action ];

@@ -262,6 +262,7 @@ Game = {
 		holyWater: {
 			name: "Holy Water",
 			tags: [ 'remedy' ],
+			uses: 3,
 			action: {
 				announceAs: "Holy Water",
 				effects: [
@@ -291,7 +292,7 @@ Game = {
 		powerTonic: {
 			name: "Power Tonic",
 			tags: [ 'drink', 'curative' ],
-			uses: 2,
+			uses: 5,
 			action: {
 				announceAs: "Power Tonic",
 				effects: [
@@ -306,7 +307,7 @@ Game = {
 		tonic: {
 			name: "Tonic",
 			tags: [ 'drink', 'curative' ],
-			uses: 5,
+			uses: 10,
 			action: {
 				announceAs: "Tonic",
 				effects: [
@@ -487,11 +488,11 @@ Game = {
 			category: 'affliction',
 			overrules: [ 'frostbite' ],
 			initialize: function(unit) {
-				this.multiplier = 2.0;
+				this.multiplier = 1.0;
 			},
 			beginCycle: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
-				this.multiplier = Math.max(this.multiplier - 0.05, 1.0);
+				this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -566,7 +567,7 @@ Game = {
 			name: "ReGen",
 			category: 'buff',
 			beginCycle: function(unit, eventData) {
-				unit.heal(unit.maxHP * 0.01);
+				unit.heal(unit.maxHP * 0.05);
 			}
 		},
 		rearing: {
