@@ -3,8 +3,8 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('AI/HHorseAI.js');
-RequireScript('AI/Robert2AI.js');
+RequireScript('AIStrategies/HHorseStrategy.js');
+RequireScript('AIStrategies/Robert2Strategy.js');
 
 // Game object
 // Represents the game.
@@ -418,6 +418,11 @@ Game = {
 			aiming: function(unit, eventData) {
 				eventData.aimRate /= 1.5 + this.sleepChance;
 			},
+			damaged: function(unit, eventData) {
+				if (Link(eventData.tags).contains('earth')) {
+					eventData.amount *= 1.5;
+				}
+			},
 			endTurn: function(unit, eventData) {
 				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
 				if (Math.random() < this.sleepChance) {
@@ -442,6 +447,7 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('fire')) {
+					eventData.amount *= 2.0;
 					unit.liftStatus('frostbite');
 				}
 			},
@@ -497,6 +503,7 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('ice')) {
+					eventData.amount *= 2.0;
 					unit.liftStatus('ignite');
 				}
 			}
@@ -515,7 +522,7 @@ Game = {
 			},
 			beginTurn: function(unit, eventData) {
 				++this.turnCount;
-				if (this.turnCount >= 3) {
+				if (this.turnCount > 3) {
 					unit.liftStatus('immune');
 				}
 			}
@@ -1328,7 +1335,7 @@ Game = {
 		templeSword: {
 			name: "Temple Sword",
 			type: 'sword',
-			level: 5,
+			level: 75,
 			techniques: [
 				'swordSlash',
 				'quickstrike',
@@ -1358,7 +1365,7 @@ Game = {
 		headlessHorse: {
 			name: "H. Horse",
 			fullName: "Headless Horse",
-			aiClass: HHorseAI,
+			strategy: HHorseStrategy,
 			hasLifeBar: true,
 			tier: 3,
 			baseStats: {
@@ -1382,7 +1389,7 @@ Game = {
 		robert2: {
 			name: "Robert",
 			fullName: "Robert Spellbinder",
-			aiClass: Robert2AI,
+			strategy: Robert2Strategy,
 			hasLifeBar: true,
 			tier: 3,
 			baseStats: {
@@ -1399,6 +1406,7 @@ Game = {
 				skill: 'omni'
 			},
 			items: [
+				'vaccine',
 				'alcohol',
 				'redBull'
 			]

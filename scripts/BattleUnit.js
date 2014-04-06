@@ -86,7 +86,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.enemyInfo = Game.enemies[basis];
 		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];
-		this.ai = new AIContext(this, battle, this.enemyInfo.aiClass);
+		this.ai = new AIContext(this, battle, this.enemyInfo.strategy);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;

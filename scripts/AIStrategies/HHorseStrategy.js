@@ -3,7 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-function HHorseAI(battle, unit, context)
+function HHorseStrategy(battle, unit, context)
 {
 	this.battle = battle;
 	this.unit = unit;
@@ -15,7 +15,7 @@ function HHorseAI(battle, unit, context)
 
 // .strategize() method
 // Decides the enemy's next move(s).
-HHorseAI.prototype.strategize = function()
+HHorseStrategy.prototype.strategize = function()
 {				
 	var phaseToEnter = this.unit.getHealth() > 50 ? 1 : 2;
 	this.phase = this.phase > phaseToEnter ? this.phase : phaseToEnter;
@@ -45,7 +45,7 @@ HHorseAI.prototype.strategize = function()
 //     unit:       The unit who was targeted.
 //     action:     The action to be performed on the targeted unit.
 //     actingUnit: The unit performing the action.
-HHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
+HHorseStrategy.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
 	if (unit === this.unit && this.phase == 1) {
 		var isPhysical = Link(action.effects)

@@ -15,7 +15,7 @@ RequireScript("SkillUsable.js");
 //               AIContext object, and takes the following arguments:
 //                   me:     The BattleUnit for which actions are being determined.
 //                   nextUp: The upcoming turn prediction, as returned by Battle.predictTurns().
-function AIContext(unit, battle, aiClass)
+function AIContext(unit, battle, strategy)
 {
 	this.battle = battle;
 	this.data = {};
@@ -24,7 +24,7 @@ function AIContext(unit, battle, aiClass)
 	this.targets = [];
 	this.turnsTaken = 0;
 	this.unit = unit;
-	this.ai = new aiClass(this.battle, this.unit, this);
+	this.strategy = new strategy(this.battle, this.unit, this);
 }
 
 // .getNextMove() method
@@ -50,7 +50,7 @@ AIContext.prototype.getNextMove = function()
 			this.allies[ally.id] = ally;
 		}
 		this.targets = null;
-		this.ai.strategize();
+		this.strategy.strategize();
 		if (this.moveQueue.length == 0) {
 			Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
 			if (this.defaultSkillID !== null) {
