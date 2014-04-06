@@ -73,6 +73,28 @@ AIContext.prototype.hasStatus = function(statusID)
 	return this.unit.hasStatus(statusID);
 };
 
+// .isItemUsable() method
+// Determines whether the controlled unit is able to use an item.
+// Arguments:
+//     itemID: The ID of the item to be tested for usability.
+AIContext.prototype.isItemUsable = function(itemID)
+{
+	var user = this.unit;
+	return Link(this.unit.items)
+		.filterBy('itemID', itemID)
+		.some(function(item) { return item.isUsable(user) });
+};
+
+// .isSkillUsable() method
+// Determines whether the controlled unit is able to use a skill.
+// Arguments:
+//     skillID: The ID of the skill to be tested for usability.
+AIContext.prototype.isSkillUsable = function(skillID)
+{
+	var skillToUse = new SkillUsable(skillID, 100);
+	return skillToUse.isUsable(this.unit);
+};
+
 // .setCounter() method
 // Instructs the AI to put the unit into counterattacking stance.
 // Arguments:

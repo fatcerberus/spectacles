@@ -15,7 +15,6 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.isScottZombie = false;
 	this.isVaccineUsed = false;
 	this.necromancyChance = 0.0;
-	this.redBullsUsed = 0;
 	this.rezombieChance = 0.0;
 }
 
@@ -134,7 +133,7 @@ Robert2Strategy.prototype.strategize = function()
 					this.isComboStarted = false;
 				} else {
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
-					if (!this.redBullsUsed < 2 && this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity) {
+					if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity) {
 						this.ai.useItem('redBull');
 					} if (Math.random() < chanceOfCombo || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
@@ -174,14 +173,16 @@ Robert2Strategy.prototype.strategize = function()
 					} else {
 						this.ai.useSkill('desperationSlash');
 					}
-					if (this.redBullsUsed < 2 && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
+					if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
 						this.ai.useItem('redBull');
 					} else {
 						this.ai.useSkill('electrocute');
 					}
 				} else {
 					var forecast = this.ai.turnForecast('omni');
-					if (forecast[0] === this.unit || forecast[1] === this.unit) {
+					if ((forecast[0] === this.unit || forecast[1] === this.unit)
+					    && this.ai.isSkillUsable('omni'))
+					{
 						this.ai.useSkill('omni');
 					} else {
 						if (0.5 > Math.random()) {
@@ -199,11 +200,7 @@ Robert2Strategy.prototype.strategize = function()
 
 Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
-	if (userID == 'robert2') {
-		if (itemID == 'redBull') {
-			++this.redBullsUsed;
-		}
-	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
+	if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (itemID == 'vaccine' && this.isNecromancyReady) {
 			this.necromancyTurns = 4;
