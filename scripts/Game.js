@@ -410,24 +410,25 @@ Game = {
 				'unitTargeted'
 			],
 			initialize: function(unit) {
-				this.sleepChance = 0.0;
-			},
-			acting: function(unit, eventData) {
-				var rankOffset = Math.min(Math.floor(Math.random() * 3), 2) - 1;
-				eventData.action.rank += rankOffset;
+				this.severity = 1.0;
+				this.turns = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100);
 			},
 			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.5 + this.sleepChance;
+				eventData.aimRate /= 1.0 + 0.5 * this.severity;
+			},
+			beginCycle: function(unit, eventData) {
+				var agiPenalty = Math.round(0.25 * this.severity * eventData.battlerInfo.stats.agi);
+				eventData.battlerInfo.stats.agi -= agiPenalty;
+			},
+			beginTurn: function(unit, eventData) {
+				this.severity -= 1.0 / this.turns;
+				if (this.severity <= 0.0) {
+					unit.liftStatus('drunk');
+				}
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {
 					eventData.amount *= 1.5;
-				}
-			},
-			endTurn: function(unit, eventData) {
-				this.sleepChance += 5.0 / unit.battlerInfo.baseStats.vit;
-				if (Math.random() < this.sleepChance) {
-					unit.addStatus('sleep');
 				}
 			}
 		},
@@ -567,7 +568,7 @@ Game = {
 			name: "ReGen",
 			category: 'buff',
 			beginCycle: function(unit, eventData) {
-				unit.heal(unit.maxHP * 0.05);
+				unit.heal(0.01 * unit.maxHP);
 			}
 		},
 		rearing: {
@@ -595,11 +596,8 @@ Game = {
 				this.allowDeath = false;
 			},
 			beginCycle: function(unit, eventData) {
-				if (eventData.battlerInfo.health <= 0) {
-					eventData.battlerInfo.stats.str /= 2;
-					eventData.battlerInfo.stats.mag /= 2;
-				}
-				unit.takeDamage(0.025 * unit.maxHP, [ 'special' ]);
+				eventData.battlerInfo.stats.str /= 2;
+				eventData.battlerInfo.stats.mag /= 2;
 			},
 			damaged: function(unit, eventData) {
 				this.allowDeath =
@@ -610,12 +608,7 @@ Game = {
 				eventData.cancel = !this.allowDeath;
 			},
 			healed: function(unit, eventData) {
-				eventData.amount = -Math.abs(eventData.amount);
-			},
-			useItem: function(unit, eventData) {
-				if (eventData.item.type == 'drink' && eventData.item.name != "Holy Water") {
-					eventData.item.action.effects = null;
-				}
+				eventData.amount = 0;
 			}
 		},
 		sleep: {
