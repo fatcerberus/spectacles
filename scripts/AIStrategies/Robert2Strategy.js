@@ -11,10 +11,14 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
+	this.isAlcoholUsed = false;
+	this.isDesperate = false;
+	this.isFixingZombieHeal = false;
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
+	this.turnCount = {};
 }
 
 Robert2Strategy.prototype.strategize = function()
@@ -41,13 +45,16 @@ Robert2Strategy.prototype.strategize = function()
 		this.ai.useSkill('necromancy');
 		this.isNecromancyReady = false;
 	} else {
+		var lastPhase = this.phase;
 		var phaseToEnter =
 			this.unit.getHealth() > 75 ? 1 :
 			this.unit.getHealth() > 40 ? 2 :
 			this.unit.getHealth() > 10 ? 3 :
 			4;
-		var lastPhase = this.phase;
-		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter
+		if (lastPhase == 4 && this.isAlcoholUsed && !this.unit.hasStatus('drunk')) {
+			phaseToEnter = 5;
+		}
+		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 		switch (this.phase) {
 			case 1:
 				if (this.phase > lastPhase) {
@@ -123,6 +130,8 @@ Robert2Strategy.prototype.strategize = function()
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
+					} else if (0.5 > Math.random() && this.isScottZombie) {
+						this.ai.useSkill('chargeSlash');
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
 						if ((forecast[0] === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
@@ -160,26 +169,69 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					if (!this.unit.hasStatus('zombie')) {
 						this.ai.useItem('alcohol');
+						if (this.ai.isItemUsable('redBull')) {
+							this.ai.useItem('redBull');
+						}
+						this.isAlcoholUsed = true;
 					} else {
 						this.ai.useSkill('desperationSlash');
-					}
-					if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
-						this.ai.useItem('redBull');
-					} else {
+						if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
+							this.ai.useItem('redBull');
+						}
 						this.ai.useSkill('electrocute');
 					}
 				} else {
-					var forecast = this.ai.turnForecast('omni');
-					if ((forecast[0] === this.unit || forecast[1] === this.unit)
-					    && this.ai.isSkillUsable('omni'))
-					{
+					if (this.isScottZombie && 0.50 > Math.random()) {
+						this.ai.useSkill('quickstrike');
+					} else {
+						var forecast = this.ai.turnForecast('omni');
+						if ((forecast[0] === this.unit || forecast[1] === this.unit)
+							&& this.ai.isSkillUsable('omni'))
+						{
+							this.ai.useSkill('omni');
+						} else {
+							if (0.5 > Math.random()) {
+								this.ai.useSkill('chargeSlash');
+							} else {
+								var moves = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
+								this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+							}
+						}
+					}
+				}
+				break;
+			case 5:
+				if (this.phase > lastPhase) {
+					if (this.ai.isSkillUsable('omni')) {
 						this.ai.useSkill('omni');
 					} else {
-						if (0.5 > Math.random()) {
-							this.ai.useSkill('chargeSlash');
+						this.ai.useSkill('swordSlash');
+					}
+				} else {
+					var magics = [ 'flare', 'chill', 'lightning', 'quake' ];
+					var spellToTry = magics[Math.min(Math.floor(Math.random() * magics.length), magics.length - 1)];
+					if (this.unit.getHealth() <= 10 && !this.isDesperate) {
+						this.isDesperate = true;
+						this.ai.useSkill('desperationSlash');
+					} else if (0.5 > Math.random()) {
+						if (this.ai.isSkillUsable(spellToTry)) {
+							this.ai.useSkill(spellToTry);
+						} else if (!this.isDesperate) {
+							this.isDesperate = true;
+							this.ai.useSkill('desperationSlash');
 						} else {
-							var moves = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
-							this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+							this.ai.useSkill('swordSlash');
+						}
+					} else {
+						if (this.turnCount['scott'] / this.turnCount['robert2'] > 1.25) {
+							spellToTry = 'windchill';
+						} else {
+							spellToTry = 'hellfire';
+						}
+						if (0.5 > Math.random() && this.ai.isSkillUsable(spellToTry)) {
+							this.ai.useSkill(spellToTry);
+						} else {
+							this.ai.useSkill('swordSlash');
 						}
 					}
 				}
@@ -190,10 +242,20 @@ Robert2Strategy.prototype.strategize = function()
 
 Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
-	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
-		return;
-	}
-	if (userID == 'scott' && Link(targetIDs).contains('scott')) {
+	if (userID == 'robert2' && itemID == 'holyWater') {
+		this.isFixingZombieHeal = false;
+	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
+		var curativeIDs = [ 'tonic', 'powerTonic' ];
+		if (Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie') && !this.isFixingZombieHeal) {
+			if (this.ai.isSkillUsable('omni')) {
+				this.ai.useSkill('omni');
+			}
+			if (this.ai.isItemUsable('holyWater')) {
+				this.isFixingZombieHeal = true;
+				this.ai.useItem('holyWater');
+			}
+		}
+	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (itemID == 'vaccine' && this.isNecromancyReady) {
 			this.necromancyTurns = 4;
@@ -216,9 +278,6 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 
 Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
-		return;
-	}
 	if (userID == 'robert2') {
 		if (skillID == 'necromancy') {
 			this.isScottZombie = true;
@@ -235,12 +294,10 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 
 Robert2Strategy.prototype.onUnitReady = function(unitID)
 {
-	if (this.unit.hasStatus('drunk') && 0.75 > Math.random()) {
-		return;
-	}
+	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
 	if (unitID == 'robert2') {
 		this.rezombieChance /= 2;
-	} if (unitID == 'scott') {
+	} else if (unitID == 'scott') {
 		if (this.isNecromancyReady) {
 			--this.necromancyTurns;
 		} else {

@@ -274,21 +274,6 @@ Game = {
 				]
 			}
 		},
-		redBull: {
-			name: "Red Bull",
-			tags: [ 'drink', 'curative' ],
-			uses: 2,
-			action: {
-				announceAs: "Red Bull",
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'recoverMP',
-						strength: 100
-					}
-				]
-			}
-		},
 		powerTonic: {
 			name: "Power Tonic",
 			tags: [ 'drink', 'curative' ],
@@ -299,7 +284,22 @@ Game = {
 					{
 						targetHint: 'selected',
 						type: 'recoverHP',
-						strength: 70
+						strength: 10
+					}
+				]
+			}
+		},
+		redBull: {
+			name: "Red Bull",
+			tags: [ 'drink', 'curative' ],
+			uses: 2,
+			action: {
+				announceAs: "Red Bull 2: The Revenge",
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'recoverMP',
+						strength: 100
 					}
 				]
 			}
@@ -314,7 +314,7 @@ Game = {
 					{
 						targetHint: 'selected',
 						type: 'recoverHP',
-						strength: 35
+						strength: 5
 					}
 				]
 			}
@@ -707,7 +707,7 @@ Game = {
 		},
 		recoverHP: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].heal(targets[i].maxHP * effect.strength / 100);
+				targets[i].heal(effect.strength * targets[i].battlerInfo.baseStats.vit);
 			}
 		},
 		recoverMP: function(actor, targets, effect) {
@@ -1400,6 +1400,8 @@ Game = {
 				skill: 'omni'
 			},
 			items: [
+				'powerTonic',
+				'holyWater',
 				'vaccine',
 				'alcohol',
 				'redBull'
