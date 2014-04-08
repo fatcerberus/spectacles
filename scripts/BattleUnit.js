@@ -480,8 +480,8 @@ BattleUnit.prototype.restoreMP = function(percentage)
 //     tags:       Optional. An array of tags to associate with the damage event. The damage output
 //                 will change if any of the tags are found in the unit's list of affinities.
 //     isPriority: Optional. If true, specifies priority damage. Priority damage is unconditional;
-//                 statuses are not allowed to act on it and as such no 'damaged' event will be raised.
-//                 (default: false)
+//                 it is not affected by affinities and statuses don't receive the usual 'damaged' event before
+//                 it is applied. (default: false)
 // Remarks:
 //     If, after all processing is complete, the final damage output is negative, the unit will be healed
 //     instead. If it is exactly zero, it will be set to 1.

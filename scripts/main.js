@@ -11,7 +11,7 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
@@ -56,12 +56,12 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
-	session.party.members.scott.items.push(new ItemUsable('alcohol'));
 	session.party.members.scott.items.push(new ItemUsable('tonic'));
 	session.party.members.scott.items.push(new ItemUsable('powerTonic'));
-	session.party.members.scott.items.push(new ItemUsable('redBull'));
+	session.party.members.scott.items.push(new ItemUsable('revigor'));
 	session.party.members.scott.items.push(new ItemUsable('holyWater'));
 	session.party.members.scott.items.push(new ItemUsable('vaccine'));
+	session.party.members.scott.items.push(new ItemUsable('alcohol'));
 	new Scenario()
 		.battle('robert2')
 		.run(true);

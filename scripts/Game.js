@@ -62,9 +62,6 @@ Game = {
 			devour: function(userInfo, targetInfo) {
 				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
 			},
-			instaKill: function(userInfo, targetInfo) {
-				return 1.0;
-			},
 			pistol: function(userInfo, targetInfo) {
 				return 1.0;
 			},
@@ -231,25 +228,7 @@ Game = {
 				effects: [
 					{
 						targetHint: 'selected',
-						type: 'recoverAll'
-					},
-					{
-						targetHint: 'selected',
-						type: 'addStatus',
-						status: 'drunk'
-					}
-				]
-			}
-		},
-		alcoholEX: {
-			name: "Alcohol EX",
-			tags: [ 'drink', 'curative' ],
-			action: {
-				announceAs: "Alcohol",
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'recoverAll'
+						type: 'fullRecover'
 					},
 					{
 						targetHint: 'selected',
@@ -284,17 +263,17 @@ Game = {
 					{
 						targetHint: 'selected',
 						type: 'recoverHP',
-						strength: 10
+						strength: 20
 					}
 				]
 			}
 		},
-		redBull: {
-			name: "Red Bull",
+		revigor: {
+			name: "Revigor",
 			tags: [ 'drink', 'curative' ],
 			uses: 2,
 			action: {
-				announceAs: "Red Bull 2: The Revenge",
+				announceAs: "Revigor",
 				effects: [
 					{
 						targetHint: 'selected',
@@ -314,7 +293,7 @@ Game = {
 					{
 						targetHint: 'selected',
 						type: 'recoverHP',
-						strength: 5
+						strength: 10
 					}
 				]
 			}
@@ -384,16 +363,14 @@ Game = {
 			name: "Disarray",
 			category: 'debuff',
 			initialize: function(unit) {
-				this.severity = 1.0;
-			},
-			beginCycle: function(unit, eventData) {
-				this.severity -= 0.2;
-				if (this.severity <= 0.0) {
-					unit.liftStatus('disarray');
-				}
+				this.actionsTaken = 0;
 			},
 			acting: function(unit, eventData) {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				++this.actionsTaken;
+				if (this.actionsTaken >= 3) {
+					unit.liftStatus('disarray');
+				}
 			}
 		},
 		drunk: {
@@ -555,7 +532,9 @@ Game = {
 				this.multiplier = 0.5;
 			},
 			damaged: function(unit, eventData) {
-				if (eventData.tags.indexOf('special') == -1) {
+				var isIgnored = eventData.tags.indexOf('special') == -1
+					&& eventData.tags.indexOf('cure') == -1
+				if (isIgnored) {
 					eventData.amount *= this.multiplier;
 					this.multiplier += 0.05;
 					if (this.multiplier >= 1.0) {
@@ -592,6 +571,10 @@ Game = {
 			name: "Skeleton",
 			category: 'undead',
 			overrules: [ 'zombie' ],
+			statModifiers: {
+				str: 0.5,
+				mag: 0.5
+			},
 			initialize: function(unit) {
 				this.allowDeath = false;
 			},
@@ -600,9 +583,12 @@ Game = {
 				eventData.battlerInfo.stats.mag /= 2;
 			},
 			damaged: function(unit, eventData) {
-				this.allowDeath =
-					eventData.tags.indexOf('physical') != -1
-					|| eventData.tags.indexOf('sword') != -1;
+				this.allowDeath = eventData.tags.indexOf('physical') != -1
+					|| eventData.tags.indexOf('sword') != -1
+					|| eventData.tags.indexOf('deathblow') != -1;
+				if (!this.allowDeath) {
+					eventData.amount = 0;
+				}
 			},
 			dying: function(unit, eventData) {
 				eventData.cancel = !this.allowDeath;
@@ -642,12 +628,21 @@ Game = {
 		zombie: {
 			name: "Zombie",
 			category: 'undead',
+			initialize: function(unit) {
+				this.allowDeath = false;
+			},
+			damaged: function(unit, eventData) {
+				this.allowDeath = Link(eventData.tags).contains('cure');
+			},
 			dying: function(unit, eventData) {
-				unit.addStatus('skeleton');
-				eventData.cancel = true;
+				if (!this.allowDeath) {
+					unit.addStatus('skeleton');
+					eventData.cancel = true;
+				}
 			},
 			healed: function(unit, eventData) {
-				eventData.amount = -Math.abs(eventData.amount);
+				unit.takeDamage(eventData.amount, [ 'cure' ]);
+				eventData.amount = 0;
 			}
 		}
 	},
@@ -688,6 +683,11 @@ Game = {
 					.run();
 			}
 		},
+		fullRecover: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				targets[i].heal(targets[i].maxHP);
+			}
+		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].takeDamage(targets[i].maxHP, [ 'deathblow' ]);
@@ -700,14 +700,11 @@ Game = {
 				}
 			}
 		},
-		recoverAll: function(actor, targets, effect) {
-			for (var i = 0; i < targets.length; ++i) {
-				targets[i].heal(targets[i].maxHP);
-			}
-		},
 		recoverHP: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].heal(effect.strength * targets[i].battlerInfo.baseStats.vit);
+				var vitality = targets[i].battlerInfo.stats.vit;
+				var tier = targets[i].battlerInfo.tier;
+				targets[i].heal(effect.strength * vitality / tier);
 			}
 		},
 		recoverMP: function(actor, targets, effect) {
@@ -814,7 +811,8 @@ Game = {
 					effects: [
 						{
 							targetHint: 'selected',
-							type: 'instaKill'
+							type: 'instaKill',
+							damageType: 'sword'
 						}
 					]
 				}
@@ -1404,7 +1402,7 @@ Game = {
 				'holyWater',
 				'vaccine',
 				'alcohol',
-				'redBull'
+				'revigor'
 			]
 		}
 	},
