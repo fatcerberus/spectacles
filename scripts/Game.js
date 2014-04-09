@@ -170,6 +170,7 @@ Game = {
 			},
 			startingWeapon: 'templeSword',
 			skills: [
+				'defendCounter',
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
@@ -338,6 +339,29 @@ Game = {
 	},
 	
 	statuses: {
+		counter: {
+			name: "Counter",
+			category: 'special',
+			statModifiers: {
+				def: 2.0,
+				foc: 2.0
+			},
+			initialize: function(unit) {
+				unit.resetCounter(Infinity);
+			},
+			attacked: function(unit, eventData) {
+				unit.resetCounter(0);
+			},
+			useSkill: function(unit, eventData) {
+				Link(eventData.skill.actions).expandInto('effects')
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					effect.power *= 2;
+				});
+				unit.liftStatus('counter');
+			}
+		},
 		crackdown: {
 			name: "Crackdown",
 			category: 'debuff',
@@ -719,7 +743,7 @@ Game = {
 			name: "Charge Slash",
 			category: 'sword',
 			weaponType: 'sword',
-			targetType: "single",
+			targetType: 'single',
 			actions: [
 				{
 					rank: 3,
@@ -783,7 +807,25 @@ Game = {
 							type: 'addStatus',
 							status: 'crackdown'
 						}
-					],
+					]
+				}
+			]
+		},
+		defendCounter: {
+			name: "Defend/Counter",
+			category: 'strategy',
+			targetType: 'ally',
+			actions: [
+				{
+					announceAs: "Defend",
+					rank: Infinity,
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'counter'
+						}
+					]
 				}
 			]
 		},

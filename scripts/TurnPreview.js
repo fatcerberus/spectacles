@@ -59,7 +59,7 @@ TurnPreview.prototype.ensureEntries = function(unit)
 			name: unit.name,
 			turnBoxes: []
 		};
-		for (var i = 0; i < 7; ++i) {
+		for (var i = 0; i < 8; ++i) {
 			entry.turnBoxes[i] = { x: 160, tween: null };
 		}
 		this.entries[unit.id] = entry;
