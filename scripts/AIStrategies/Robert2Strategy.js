@@ -101,14 +101,9 @@ Robert2Strategy.prototype.strategize = function()
 						} else {
 							var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 							var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
-							if (moveToUse == 'upheaval') {
-								if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
-									this.elementHealState = 1;
-								} else {
-									this.ai.useSkill(moveToUse);
-								}
-							} else {
-								this.ai.useSkill(moveToUse);
+							this.ai.useSkill(moveToUse);
+							if (moveToUse == 'upheaval' && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
+								this.elementHealState = 1;
 							}
 						}
 					}
