@@ -92,7 +92,7 @@ Game = {
 				return power * userInfo.tier * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
 			physicalRecoil: function(userInfo, targetInfo, power) {
-				return power * targetInfo.tier * (userInfo.level + targetInfo.stats.str) / userInfo.stats.str;
+				return power * userInfo.tier * (targetInfo.level + targetInfo.stats.str) / userInfo.stats.str / 2;
 			},
 			sword: function(userInfo, targetInfo, power) {
 				return power * userInfo.tier * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
@@ -273,7 +273,7 @@ Game = {
 			tags: [ 'drink', 'curative' ],
 			uses: 2,
 			action: {
-				announceAs: "Revigor",
+				announceAs: "Red Bull 2: The Revenge",
 				effects: [
 					{
 						targetHint: 'selected',
@@ -536,7 +536,7 @@ Game = {
 					&& eventData.tags.indexOf('cure') == -1
 				if (isIgnored) {
 					eventData.amount *= this.multiplier;
-					this.multiplier += 0.05;
+					this.multiplier += 0.1;
 					if (this.multiplier >= 1.0) {
 						unit.liftStatus('protect');
 					}
@@ -1398,11 +1398,12 @@ Game = {
 				skill: 'omni'
 			},
 			items: [
+				'tonic',
 				'powerTonic',
+				'revigor',
 				'holyWater',
 				'vaccine',
-				'alcohol',
-				'revigor'
+				'alcohol'
 			]
 		}
 	},

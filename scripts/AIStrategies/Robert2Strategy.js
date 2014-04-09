@@ -14,6 +14,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.isAlcoholUsed = false;
 	this.isDesperate = false;
 	this.isFixingZombieHeal = false;
+	this.elementHealState = 0;
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
 	this.necromancyChance = 0.0;
@@ -82,10 +83,8 @@ Robert2Strategy.prototype.strategize = function()
 			case 2:
 				if (this.phase > lastPhase) {
 					this.ai.useSkill('upheaval');
-					if (this.unit.hasStatus('frostbite')) {
-						this.ai.useSkill('flare', 'robert2');
-					} else if (this.unit.hasStatus('ignite')) {
-						this.ai.useSkill('chill', 'robert2');
+					if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
+						this.elementHealState = 1;
 					}
 					this.isComboStarted = false;
 				} else {
@@ -101,16 +100,8 @@ Robert2Strategy.prototype.strategize = function()
 							var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 							var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
 							if (moveToUse == 'upheaval') {
-								if (this.unit.hasStatus('frostbite')) {
-									if (!this.ai.isItemUsable('vaccine')) {
-										this.ai.useItem('vaccine');
-									}
-									this.ai.useSkill('flare', 'robert2');
-								} else if (this.unit.hasStatus('ignite')) {
-									if (this.ai.isItemUsable('vaccine')) {
-										this.ai.useItem('vaccine');
-									}
-									this.ai.useSkill('chill', 'robert2');
+								if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
+									this.elementHealState = 1;
 								} else {
 									this.ai.useSkill(moveToUse);
 								}
@@ -247,6 +238,9 @@ Robert2Strategy.prototype.strategize = function()
 
 Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
+	if (this.unit.hasStatus('drunk')) {
+		return;
+	}
 	if (userID == 'robert2' && itemID == 'holyWater') {
 		this.isFixingZombieHeal = false;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
@@ -283,6 +277,9 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 
 Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
+	if (this.unit.hasStatus('drunk')) {
+		return;
+	}
 	if (userID == 'robert2') {
 		if (skillID == 'necromancy') {
 			this.isScottZombie = true;
@@ -297,9 +294,31 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 
 Robert2Strategy.prototype.onUnitReady = function(unitID)
 {
+	if (this.unit.hasStatus('drunk')) {
+		return;
+	}
 	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
 	if (unitID == 'robert2') {
 		this.rezombieChance /= 2;
+		if (this.elementHealState == 1) {
+			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
+				if (!this.unit.hasStatus('zombie') && this.ai.isItemUsable('tonic')) {
+					this.ai.useItem('tonic');
+				}
+				this.elementHealState = 2;
+			} else {
+				this.elementHealState = 0;
+			}
+		} else if (this.elementHealState == 2) {
+			if (this.unit.hasStatus('frostbite')) {
+				this.ai.useSkill('flare', 'robert2');
+			} else if (this.unit.hasStatus('ignite')) {
+				this.ai.useSkill('chill', 'robert2');
+			} else {
+				this.ai.useSkill('swordSlash');
+			}
+			this.elementHealState = 0;
+		}
 	} else if (unitID == 'scott') {
 		if (this.isNecromancyReady) {
 			--this.necromancyTurns;
