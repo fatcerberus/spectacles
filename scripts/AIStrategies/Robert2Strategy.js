@@ -290,7 +290,7 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	if (userID == 'robert2') {
 		if (skillID == 'necromancy') {
 			this.isScottZombie = true;
-			this.rezombieChance = 0.5;
+			this.rezombieChance = 1.0;
 		} else if (skillID == 'protectiveAura') {
 			if (this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
 				this.ai.useItem('redBull');
@@ -304,9 +304,9 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 	if (this.unit.hasStatus('drunk')) {
 		return;
 	}
+	this.rezombieChance /= 2;
 	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
 	if (unitID == 'robert2') {
-		this.rezombieChance /= 2;
 		if (this.elementHealState == 1) {
 			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 				if (!this.unit.hasStatus('zombie') && this.ai.isItemUsable('tonic')) {

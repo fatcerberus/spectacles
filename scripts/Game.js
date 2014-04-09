@@ -333,7 +333,9 @@ Game = {
 		generalDisarray: {
 			name: "G. Disarray",
 			actionTaken: function(battle, eventData) {
-				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				if (eventData.action.rank != Infinity) {
+					eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				}
 			}
 		}
 	},
@@ -392,7 +394,9 @@ Game = {
 				this.actionsTaken = 0;
 			},
 			acting: function(unit, eventData) {
-				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				if (eventData.action.rank != Infinity) {
+					eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				}
 				++this.actionsTaken;
 				if (this.actionsTaken >= 3) {
 					unit.liftStatus('disarray');
