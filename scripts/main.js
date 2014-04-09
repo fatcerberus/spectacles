@@ -58,7 +58,7 @@ function game()
 	DayNightFilter.initialize();
 	session.party.members.scott.items.push(new ItemUsable('tonic'));
 	session.party.members.scott.items.push(new ItemUsable('powerTonic'));
-	session.party.members.scott.items.push(new ItemUsable('revigor'));
+	session.party.members.scott.items.push(new ItemUsable('redBull'));
 	session.party.members.scott.items.push(new ItemUsable('holyWater'));
 	session.party.members.scott.items.push(new ItemUsable('vaccine'));
 	session.party.members.scott.items.push(new ItemUsable('alcohol'));

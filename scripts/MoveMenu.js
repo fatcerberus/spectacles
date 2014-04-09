@@ -227,7 +227,7 @@ MoveMenu.prototype.open = function()
 	this.drawers = [
 		{ name: "Skill", contents: this.unit.skills, cursor: 0, rank: Game.defaultMoveRank },
 		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank },
-		{ name: "Stance", contents: [], cursor: 0, rank: Game.defaultMoveRank }
+		{ name: "Stance", contents: [], cursor: 0, rank: Infinity }
 	];
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);

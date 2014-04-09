@@ -409,7 +409,7 @@ BattleUnit.prototype.queueMove = function(move)
 		this.actionQueue.push(nextActions[i]);
 	}
 	if (this.actionQueue.length > 0) {
-		Console.writeLine(this.moveUsed.usable.name + " requires " + this.actionQueue.length + " turn(s) to execute");
+		Console.writeLine("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
 	}
 };
 

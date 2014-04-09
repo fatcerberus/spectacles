@@ -43,7 +43,9 @@ Robert2Strategy.prototype.strategize = function()
 		this.isNecromancyReady = true;
 		this.necromancyTurns = 0;
 	} else if (this.isNecromancyReady && this.necromancyTurns <= 0) {
-		this.ai.useSkill('necromancy');
+		if (!this.isScottZombie) {
+			this.ai.useSkill('necromancy');
+		}
 		this.isNecromancyReady = false;
 	} else {
 		var lastPhase = this.phase;
@@ -119,10 +121,10 @@ Robert2Strategy.prototype.strategize = function()
 					this.isComboStarted = false;
 				} else {
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
-					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('revigor')) {
-						this.ai.useItem('revigor');
-					} else if (0.5 > Math.random() && this.isScottZombie) {
-						this.ai.useSkill('chargeSlash');
+					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
+						this.ai.useItem('redBull');
+					} else if (this.isScottZombie && 0.5 > Math.random()) {
+						this.ai.useSkill('swordSlash');
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
 						if ((forecast[0] === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
@@ -130,8 +132,13 @@ Robert2Strategy.prototype.strategize = function()
 							if (forecast[0] === this.unit) {
 								this.ai.useSkill('chargeSlash');
 							} else {
-								var moves = [ 'hellfire', 'windchill' ];
-								this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+								if (0.25 > Math.random()) {
+									var moves = [ 'hellfire', 'windchill' ];
+									this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+								} else {
+									var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+									this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+								}
 							}
 						} else {
 							this.isComboStarted = true;
@@ -139,10 +146,10 @@ Robert2Strategy.prototype.strategize = function()
 							if (forecast[0] === this.unit) {
 								this.ai.useSkill('quickstrike');
 							} else {
-								if (this.unit.hasStatus('crackdown')
-								    && this.ai.isSkillUsable('omni'))
-								{
-									this.ai.useSkill('omni');
+								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+								var crackdownMove = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+								if (this.unit.hasStatus('crackdown') && this.ai.isSkillUsable(crackdownMove)) {
+									this.ai.useSkill(crackdownMove);
 									this.isComboStarted = false;
 								} else {
 									this.ai.useSkill('quickstrike');
@@ -160,14 +167,14 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					if (!this.unit.hasStatus('zombie')) {
 						this.ai.useItem('alcohol');
-						if (this.ai.isItemUsable('revigor')) {
-							this.ai.useItem('revigor');
+						if (this.ai.isItemUsable('redBull')) {
+							this.ai.useItem('redBull');
 						}
 						this.isAlcoholUsed = true;
 					} else {
 						this.ai.useSkill('desperationSlash');
-						if (this.ai.isItemUsable('revigor') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
-							this.ai.useItem('revigor');
+						if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
+							this.ai.useItem('redBull');
 						}
 						this.ai.useSkill('electrocute');
 					}
@@ -195,8 +202,8 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					if (this.ai.isSkillUsable('crackdown')) {
 						this.ai.useSkill('crackdown');
-					} else if (this.ai.isItemUsable('revigor')) {
-						this.ai.useItem('revigor');
+					} else if (this.ai.isItemUsable('redBull')) {
+						this.ai.useItem('redBull');
 					}
 					if (this.ai.isSkillUsable('omni')) {
 						this.ai.useSkill('omni');
@@ -286,7 +293,7 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 			this.rezombieChance = 0.5;
 		} else if (skillID == 'protectiveAura') {
 			if (this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
-				this.ai.useItem('revigor');
+				this.ai.useItem('redBull');
 			}
 		}
 	}

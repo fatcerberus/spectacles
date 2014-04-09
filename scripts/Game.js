@@ -170,7 +170,7 @@ Game = {
 			},
 			startingWeapon: 'templeSword',
 			skills: [
-				'defendCounter',
+				'counterStance',
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
@@ -269,8 +269,8 @@ Game = {
 				]
 			}
 		},
-		revigor: {
-			name: "Revigor",
+		redBull: {
+			name: "Red Bull",
 			tags: [ 'drink', 'curative' ],
 			uses: 2,
 			action: {
@@ -339,8 +339,8 @@ Game = {
 	},
 	
 	statuses: {
-		counter: {
-			name: "Counter",
+		counterattack: {
+			name: "Counterattack",
 			category: 'special',
 			statModifiers: {
 				def: 2.0,
@@ -350,7 +350,9 @@ Game = {
 				unit.resetCounter(Infinity);
 			},
 			attacked: function(unit, eventData) {
-				unit.resetCounter(0);
+				if (Link(eventData.action.effects).pluck('type').contains('damage')) {
+					unit.resetCounter(0);
+				}
 			},
 			useSkill: function(unit, eventData) {
 				Link(eventData.skill.actions).expandInto('effects')
@@ -359,7 +361,7 @@ Game = {
 				{
 					effect.power *= 2;
 				});
-				unit.liftStatus('counter');
+				unit.liftStatus('counterattack');
 			}
 		},
 		crackdown: {
@@ -792,6 +794,24 @@ Game = {
 				}
 			]
 		},
+		counterStance: {
+			name: "Counter Stance",
+			category: 'strategy',
+			targetType: 'ally',
+			actions: [
+				{
+					announceAs: "Counter Stance",
+					rank: Infinity,
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'addStatus',
+							status: 'counterattack'
+						}
+					]
+				}
+			]
+		},
 		crackdown: {
 			name: "Crackdown",
 			category: 'strategy',
@@ -806,24 +826,6 @@ Game = {
 							targetHint: 'selected',
 							type: 'addStatus',
 							status: 'crackdown'
-						}
-					]
-				}
-			]
-		},
-		defendCounter: {
-			name: "Defend/Counter",
-			category: 'strategy',
-			targetType: 'ally',
-			actions: [
-				{
-					announceAs: "Defend",
-					rank: Infinity,
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'counter'
 						}
 					]
 				}
@@ -1442,7 +1444,7 @@ Game = {
 			items: [
 				'tonic',
 				'powerTonic',
-				'revigor',
+				'redBull',
 				'holyWater',
 				'vaccine',
 				'alcohol'
