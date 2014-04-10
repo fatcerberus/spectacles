@@ -77,25 +77,35 @@ Game = {
 		},
 		damage: {
 			bow: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (userInfo.weapon.level + userInfo.stats.str) / Game.math.statValue(0, targetInfo.level);
+				return 3 * power * userInfo.tier / targetInfo.tier
+					* (userInfo.weapon.level + userInfo.stats.str)
+					/ Game.math.statValue(0, targetInfo.level);
 			},
 			breath: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3) / targetInfo.stats.vit;
+				return 3 * power * userInfo.tier / targetInfo.tier
+					* (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3)
+					/ targetInfo.stats.vit;
 			},
 			magic: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3) / targetInfo.stats.foc;
+				return 3 * power * userInfo.tier / targetInfo.tier
+					* (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)
+					/ targetInfo.stats.foc;
 			},
 			pistol: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * userInfo.weapon.level * 2 / targetInfo.stats.def;
+				return 3 * power * userInfo.tier / targetInfo.tier
+					* userInfo.weapon.level * 2
+					/ targetInfo.stats.def;
 			},
 			physical: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (userInfo.level + userInfo.stats.str) / ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
+				return 3 * power * userInfo.tier / targetInfo.tier
+					* (userInfo.level + userInfo.stats.str)
+					/ ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
 			physicalRecoil: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (targetInfo.level + targetInfo.stats.str) / userInfo.stats.str / 2;
+				return 3 * power * userInfo.tier / targetInfo.tier * (targetInfo.level + targetInfo.stats.str) / userInfo.stats.str / 2;
 			},
 			sword: function(userInfo, targetInfo, power) {
-				return power * userInfo.tier * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
+				return 3 * power * userInfo.tier / targetInfo.tier * (userInfo.weapon.level + userInfo.stats.str) / targetInfo.stats.def;
 			}
 		},
 		experience: {
