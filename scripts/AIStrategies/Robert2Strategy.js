@@ -11,10 +11,11 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
+	this.elementHealState = 0;
 	this.isAlcoholUsed = false;
 	this.isDesperate = false;
 	this.isFixingZombieHeal = false;
-	this.elementHealState = 0;
+	this.isFinalTier2Used = false;
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
 	this.necromancyChance = 0.0;
@@ -50,11 +51,11 @@ Robert2Strategy.prototype.strategize = function()
 	} else {
 		var lastPhase = this.phase;
 		var phaseToEnter =
-			this.unit.getHealth() > 75 ? 1 :
-			this.unit.getHealth() > 40 ? 2 :
-			this.unit.getHealth() > 10 ? 3 :
+			this.unit.hp > 3000 ? 1 :
+			this.unit.hp > 1500 ? 2 :
+			this.unit.hp > 500 ? 3 :
 			4;
-		if (lastPhase == 4 && this.isAlcoholUsed && !this.unit.hasStatus('drunk')) {
+		if (lastPhase == 4 && this.isAlcoholUsed) {
 			phaseToEnter = 5;
 		}
 		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
@@ -162,9 +163,6 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					if (!this.unit.hasStatus('zombie')) {
 						this.ai.useItem('alcohol');
-						if (this.ai.isItemUsable('redBull')) {
-							this.ai.useItem('redBull');
-						}
 						this.isAlcoholUsed = true;
 					} else {
 						this.ai.useSkill('desperationSlash');
@@ -195,23 +193,22 @@ Robert2Strategy.prototype.strategize = function()
 				break;
 			case 5:
 				if (this.phase > lastPhase) {
-					if (this.ai.isSkillUsable('crackdown')) {
-						this.ai.useSkill('crackdown');
-					} else if (this.ai.isItemUsable('redBull')) {
-						this.ai.useItem('redBull');
-					}
-					if (this.ai.isSkillUsable('omni')) {
-						this.ai.useSkill('omni');
-					} else {
-						this.ai.useSkill('swordSlash');
-					}
+					this.ai.useSkill('omni');
+					this.ai.useSkill('crackdown');
 				} else {
-					var magics = [ 'flare', 'chill', 'lightning', 'quake' ];
-					var spellToTry = magics[Math.min(Math.floor(Math.random() * magics.length), magics.length - 1)];
-					if (this.unit.getHealth() <= 10 && !this.isDesperate) {
+					if (this.unit.hp <= 2000 && !this.isFinalTier2Used) {
+						if (this.turnCount['scott'] / this.turnCount['robert2'] > 1.25) {
+							this.ai.useSkill('windchill');
+						} else {
+							this.ai.useSkill('hellfire');
+						}
+						this.isFinalTier2Used = true;
+					} else if (this.unit.hp <= 500 && !this.isDesperate) {
 						this.isDesperate = true;
 						this.ai.useSkill('desperationSlash');
 					} else if (0.5 > Math.random()) {
+						var magics = [ 'flare', 'chill', 'lightning', 'quake' ];
+						var spellToTry = magics[Math.min(Math.floor(Math.random() * magics.length), magics.length - 1)];
 						if (this.ai.isSkillUsable(spellToTry)) {
 							this.ai.useSkill(spellToTry);
 						} else if (!this.isDesperate) {
@@ -221,16 +218,7 @@ Robert2Strategy.prototype.strategize = function()
 							this.ai.useSkill('swordSlash');
 						}
 					} else {
-						if (this.turnCount['scott'] / this.turnCount['robert2'] > 1.25) {
-							spellToTry = 'windchill';
-						} else {
-							spellToTry = 'hellfire';
-						}
-						if (0.5 > Math.random() && this.ai.isSkillUsable(spellToTry)) {
-							this.ai.useSkill(spellToTry);
-						} else {
-							this.ai.useSkill('swordSlash');
-						}
+						this.ai.useSkill('chargeSlash');
 					}
 				}
 				break;

@@ -233,6 +233,11 @@ Game = {
 					},
 					{
 						targetHint: 'selected',
+						type: 'recoverMP',
+						strength: 100
+					},
+					{
+						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'drunk'
 					}
@@ -274,7 +279,7 @@ Game = {
 			tags: [ 'drink', 'curative' ],
 			uses: 2,
 			action: {
-				announceAs: "Red Bull 2: The Revenge",
+				announceAs: "Red Bull",
 				effects: [
 					{
 						targetHint: 'selected',
@@ -424,7 +429,7 @@ Game = {
 				eventData.aimRate /= 1.0 + 0.5 * this.severity;
 			},
 			beginCycle: function(unit, eventData) {
-				var agiPenalty = Math.round(0.25 * this.severity * eventData.battlerInfo.stats.agi);
+				var agiPenalty = Math.round(0.5 * this.severity * eventData.battlerInfo.stats.agi);
 				eventData.battlerInfo.stats.agi -= agiPenalty;
 			},
 			beginTurn: function(unit, eventData) {
@@ -524,7 +529,7 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'counterattack', 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					eventData.statusID = null;
 				}
@@ -715,7 +720,9 @@ Game = {
 		},
 		fullRecover: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].heal(targets[i].maxHP);
+				if (!targets[i].hasStatus('zombie')) {
+					targets[i].heal(targets[i].maxHP);
+				}
 			}
 		},
 		instaKill: function(actor, targets, effect) {
@@ -752,6 +759,7 @@ Game = {
 			targetType: 'single',
 			actions: [
 				{
+					announceAs: "Charging Up...",
 					rank: 3,
 					effects: [
 						{
