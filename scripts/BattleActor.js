@@ -86,8 +86,14 @@ BattleActor.prototype.render = function()
 	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
 	DrawTextEx(this.messageFont, this.x + 5, this.y + 17, this.name[0], CreateColor(128, 128, 128, 255));
 	for (var i = 0; i < this.damages.length; ++i) {
-		var y = this.y + this.damages[i].y;
-		DrawTextEx(this.messageFont, this.x + 8, y, this.damages[i].amount, CreateColor(255, 255, 255, 255), 1, 'center');
+		var text = this.damages[i].text;
+		var x = this.x + 8 - this.messageFont.getStringWidth(text) / 2;
+		for (var i2 = 0; i2 < text.length; ++i2) {
+			var yName = 'y' + i2.toString();
+			var y = this.y + this.damages[i][yName];
+			DrawTextEx(this.messageFont, x, y, text[i2], CreateColor(255, 255, 255, 255), 1);
+			x += this.messageFont.getStringWidth(text[i2]);
+		}
 	}
 	for (var i = 0; i < this.healings.length; ++i) {
 		var y = this.y + this.healings[i].y;
@@ -102,9 +108,15 @@ BattleActor.prototype.render = function()
 BattleActor.prototype.showDamage = function(amount)
 {
 	var finalY = 20 - 11 * this.damages.length;
-	var data = { amount: amount, finalY: finalY, y: finalY - 20 };
+	var data = { text: amount.toString(), finalY: finalY };
+	var tweenInfo = {};
+	for (var i = 0; i < data.text.length; ++i) {
+		var yName = 'y' + i.toString();
+		data[yName] = finalY - (20 - i * 5);
+		tweenInfo[yName] = finalY;
+	}
 	data.scene = new Scenario()
-		.tween(data, 0.5, 'easeOutBounce', { y: finalY })
+		.tween(data, 0.5, 'easeOutBounce', tweenInfo)
 		.pause(0.25);
 	data.scene.run();
 	this.damages.push(data);
@@ -134,8 +146,13 @@ BattleActor.prototype.update = function()
 		if (data.finalY != finalY) {
 			data.scene.stop();
 			data.finalY = finalY;
+			var tweenInfo = {};
+			for (var i2 = 0; i2 < data.text.length; ++i2) {
+				var yName = 'y' + i2.toString();
+				tweenInfo[yName] = finalY;
+			}
 			data.scene = new Scenario()
-				.tween(data, 0.5, 'easeOutBounce', { y: finalY })
+				.tween(data, 0.5, 'easeOutBounce', tweenInfo)
 				.pause(0.25);
 			data.scene.run();
 		}

@@ -51,7 +51,7 @@ Robert2Strategy.prototype.strategize = function()
 	} else {
 		var lastPhase = this.phase;
 		var phaseToEnter =
-			this.unit.hp > 3000 ? 1 :
+			this.unit.hp > 2500 ? 1 :
 			this.unit.hp > 1500 ? 2 :
 			this.unit.hp > 500 ? 3 :
 			4;

@@ -77,39 +77,38 @@ Game = {
 		},
 		damage: {
 			bow: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* (userInfo.weapon.level + userInfo.stats.str)
+				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
+					* userInfo.stats.str
 					/ Game.math.statValue(0, targetInfo.level);
 			},
 			breath: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* (userInfo.level + (userInfo.stats.vit * 2 + userInfo.stats.mag) / 3)
+				return power * userInfo.level / (10 * targetInfo.tier)
+					* Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3)
 					/ targetInfo.stats.vit;
 			},
 			magic: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* (userInfo.level + (userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)
+				return power * userInfo.level / (10 * targetInfo.tier)
+					* Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)
 					/ targetInfo.stats.foc;
 			},
 			pistol: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* userInfo.weapon.level * 2
+				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
+					* Game.math.statValue(userInfo.weapon.level, userInfo.level)
 					/ targetInfo.stats.def;
 			},
 			physical: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* (userInfo.level + userInfo.stats.str)
+				return power * userInfo.level / (10 * targetInfo.tier)
+					* userInfo.stats.str
 					/ ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
 			},
 			physicalRecoil: function(userInfo, targetInfo, power) {
-				return 3 * power / userInfo.tier
-					* (targetInfo.level + targetInfo.stats.str)
-					/ userInfo.stats.str
-					/ 2;
+				return power * userInfo.level / (20 * targetInfo.tier)
+					* targetInfo.stats.str
+					/ userInfo.stats.str;
 			},
 			sword: function(userInfo, targetInfo, power) {
-				return 3 * power / targetInfo.tier
-					* (userInfo.weapon.level + userInfo.stats.str)
+				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
+					* userInfo.stats.str
 					/ targetInfo.stats.def;
 			}
 		},
@@ -136,7 +135,7 @@ Game = {
 				+ unitInfo.baseStats.foc
 				+ unitInfo.baseStats.mag
 				+ unitInfo.baseStats.agi) / 15);
-			return 25 * tier * (50 + statAverage / 2) * (10 + level) / 110;
+			return 25 * tier * Game.math.statValue(statAverage, level);
 		},
 		mp: {
 			capacity: function(battlerInfo) {
@@ -146,7 +145,7 @@ Game = {
 					+ battlerInfo.baseStats.def
 					+ battlerInfo.baseStats.foc
 					+ battlerInfo.baseStats.agi) / 15);
-				return 10 * battlerInfo.tier * (50 + statAverage / 2) * (10 + battlerInfo.level) / 110;
+				return 10 * battlerInfo.tier * Game.math.statValue(statAverage, battlerInfo.level);
 			},
 			usage: function(skill, level, userInfo) {
 				var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
