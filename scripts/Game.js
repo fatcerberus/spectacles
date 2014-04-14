@@ -79,40 +79,42 @@ Game = {
 			}
 		},
 		damage: {
+			calculate: function(power, level, targetTier, attack, defense) {
+				var multiplier = 1.0 + 4.0 * (level - 1) / 99;
+				return 3 * power * multiplier / targetTier * attack / defense;
+			},
 			bow: function(userInfo, targetInfo, power) {
-				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
-					* userInfo.stats.str
-					/ Game.math.statValue(0, targetInfo.level);
+				return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+					userInfo.stats.str,
+					Game.math.statValue(0, targetInfo.level));
 			},
 			breath: function(userInfo, targetInfo, power) {
-				return power * userInfo.level / (10 * targetInfo.tier)
-					* Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3)
-					/ targetInfo.stats.vit;
+				return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+					Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3),
+					targetInfo.stats.vit);
 			},
 			magic: function(userInfo, targetInfo, power) {
-				return power * userInfo.level / (10 * targetInfo.tier)
-					* Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3)
-					/ targetInfo.stats.foc;
+				return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+					Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
+					targetInfo.stats.foc);
 			},
 			pistol: function(userInfo, targetInfo, power) {
-				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
-					* Game.math.statValue(userInfo.weapon.level, userInfo.level)
-					/ targetInfo.stats.def;
+				return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+					Game.math.statValue(100, userInfo.level),
+					targetInfo.stats.def);
 			},
 			physical: function(userInfo, targetInfo, power) {
-				return power * userInfo.level / (10 * targetInfo.tier)
-					* userInfo.stats.str
-					/ ((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3);
+				return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+					userInfo.stats.str,
+					Math.round((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3));
 			},
 			physicalRecoil: function(userInfo, targetInfo, power) {
-				return power * userInfo.level / (20 * targetInfo.tier)
-					* targetInfo.stats.str
-					/ userInfo.stats.str;
+				return Game.math.damage.calculate(power / 2, userInfo.level, targetInfo.tier,
+					targetInfo.stats.str, userInfo.stats.str);
 			},
 			sword: function(userInfo, targetInfo, power) {
-				return power * Math.round((userInfo.level * 2 + userInfo.weapon.level) / 3) / (10 * targetInfo.tier)
-					* userInfo.stats.str
-					/ targetInfo.stats.def;
+				return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+					userInfo.stats.str, targetInfo.stats.def);
 			}
 		},
 		experience: {
@@ -166,10 +168,10 @@ Game = {
 			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
-			return (50 + baseStat / 2) * (10 + level) / 110;
+			return Math.round((50 + baseStat / 2) * (10 + level) / 110);
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
-			return Math.ceil(rank * 10000 / unitInfo.stats.agi);
+			return rank * 10000 / unitInfo.stats.agi;
 		}
 	},
 	
@@ -466,7 +468,7 @@ Game = {
 			category: 'affliction',
 			overrules: [ 'ignite' ],
 			initialize: function(unit) {
-				this.multiplier = 1.0;
+				this.multiplier = 0.5;
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -484,7 +486,7 @@ Game = {
 			},
 			endTurn: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
+				this.multiplier = Math.min(this.multiplier + 0.05, 1.0);
 			}
 		},
 		ghost: {
