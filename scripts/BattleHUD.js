@@ -96,7 +96,7 @@ BattleHUD.prototype.dispose = function()
 //     capacity: The HP capacity of the gauge.
 BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 {
-	var gauge = new kh2Bar(capacity, 500, this.enemyHPGaugeColor, 20);
+	var gauge = new kh2Bar(capacity, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
 	gauge.show(0.0);
 	Console.writeLine("Created HP gauge on HUD for " + name);
@@ -202,7 +202,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	var hpGauge = new kh2Bar(maxHP, 250, this.partyHPGaugeColor, 10);
+	var hpGauge = new kh2Bar(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
 		name: name,

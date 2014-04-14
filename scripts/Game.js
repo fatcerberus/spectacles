@@ -16,6 +16,9 @@ Game = {
 	defaultItemRank: 3,
 	defenseBreakRank: 3,
 	
+	bossHPPerBar: 500,
+	partyHPPerBar: 250,
+	
 	initialPartyMembers: [
 		'scott'
 	],
