@@ -595,7 +595,7 @@ Game = {
 					&& eventData.tags.indexOf('cure') == -1
 				if (isIgnored) {
 					eventData.amount *= this.multiplier;
-					this.multiplier += 0.1;
+					this.multiplier += 0.05;
 					if (this.multiplier >= 1.0) {
 						unit.liftStatus('protect');
 					}

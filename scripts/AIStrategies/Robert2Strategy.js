@@ -116,10 +116,20 @@ Robert2Strategy.prototype.strategize = function()
 					this.ai.useSkill('protectiveAura');
 					this.doChargeSlashNext = false;
 					this.isComboStarted = false;
+					this.isPowerTonicReady = false;
+					this.movesTillZombieTonic = 5;
 				} else {
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
+					} else if (this.movesTillZombieTonic <= 0 && this.ai.isItemUsable('powerTonic')) {
+						this.ai.useSkill('necromancy');
+						this.isPowerTonicReady = true;
+						this.movesTillZombieTonic = Infinity;
+					} else if (this.isPowerTonicReady) {
+						var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+						this.ai.useItem('powerTonic', itemTarget);
+						this.isPowerTonicReady = false;
 					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
 						if (this.elementalsHealed >= 2) {
 							if (this.ai.isItemUsable('vaccine')) {
@@ -174,6 +184,7 @@ Robert2Strategy.prototype.strategize = function()
 						var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 						this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 					}
+					--this.movesTillZombieTonic;
 				}
 				break;
 			case 4:
