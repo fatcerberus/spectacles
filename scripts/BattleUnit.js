@@ -357,6 +357,17 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	}
 };
 
+BattleUnit.prototype.liftStatusTag = function(tag)
+{
+	var statusIDs = Link(this.statuses)
+		.where(function(status) { return Link(status.statusDef.tags).contains(tag); })
+		.pluck('statusID')
+		.toArray();
+	for (var i = 0; i < statusIDs.length; ++i) {
+		this.liftStatus(statusIDs[i]);
+	}
+};
+
 // .performAction() method
 // Instructs the unit to perform a battle action.
 // Arguments:

@@ -81,7 +81,7 @@ Game = {
 		damage: {
 			calculate: function(power, level, targetTier, attack, defense) {
 				var multiplier = 1.0 + 4.0 * (level - 1) / 99;
-				return 3 * power * multiplier / targetTier * attack / defense;
+				return 2.5 * power * multiplier / targetTier * attack / defense;
 			},
 			bow: function(userInfo, targetInfo, power) {
 				return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
@@ -332,6 +332,11 @@ Game = {
 				effects: [
 					{
 						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'ailment' ]
+					},
+					{
+						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'immune'
 					}
@@ -367,7 +372,7 @@ Game = {
 	statuses: {
 		counterattack: {
 			name: "Counterattack",
-			category: 'special',
+			tags: [ 'special' ],
 			statModifiers: {
 				def: 2.0,
 				foc: 2.0
@@ -392,7 +397,7 @@ Game = {
 		},
 		crackdown: {
 			name: "Crackdown",
-			category: 'debuff',
+			tags: [ 'debuff' ],
 			initialize: function(unit) {
 				this.lastSkillType = null;
 				this.multiplier = 1.0;
@@ -413,7 +418,7 @@ Game = {
 		},
 		disarray: {
 			name: "Disarray",
-			category: 'debuff',
+			tags: [ 'acute' ],
 			initialize: function(unit) {
 				this.actionsTaken = 0;
 			},
@@ -429,7 +434,7 @@ Game = {
 		},
 		drunk: {
 			name: "Drunk",
-			category: 'special',
+			tags: [ 'acute', 'debuff' ],
 			statModifiers: {
 				foc: 0.5
 			},
@@ -465,7 +470,7 @@ Game = {
 		},
 		frostbite: {
 			name: "Frostbite",
-			category: 'affliction',
+			tags: [ 'ailment', 'damage' ],
 			overrules: [ 'ignite' ],
 			initialize: function(unit) {
 				this.multiplier = 0.5;
@@ -491,7 +496,7 @@ Game = {
 		},
 		ghost: {
 			name: "Ghost",
-			category: 'affliction',
+			tags: [ 'undead' ],
 			aiming: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
 					var effect = eventData.action.effects[i];
@@ -517,7 +522,7 @@ Game = {
 		},
 		ignite: {
 			name: "Ignite",
-			category: 'affliction',
+			tags: [ 'ailment', 'damage' ],
 			overrules: [ 'frostbite' ],
 			initialize: function(unit) {
 				this.multiplier = 1.0;
@@ -543,7 +548,7 @@ Game = {
 		},
 		immune: {
 			name: "Immune",
-			category: 'buff',
+			tags: [ 'buff' ],
 			initialize: function(unit) {
 				this.turnCount = 0;
 			},
@@ -562,14 +567,14 @@ Game = {
 		},
 		lockstep: {
 			name: "Lockstep",
-			category: 'debuff',
+			tags: [ 'debuff' ],
 			afflicted: function(unit, eventData) {
 				
 			}
 		},
 		offGuard: {
 			name: "Off Guard",
-			category: 'special',
+			tags: [ 'special' ],
 			beginTurn: function(unit, eventData) {
 				unit.liftStatus('offGuard');
 			},
@@ -581,7 +586,7 @@ Game = {
 		},
 		protect: {
 			name: "Protect",
-			category: 'buff',
+			tags: [ 'buff' ],
 			initialize: function(unit) {
 				this.multiplier = 0.5;
 			},
@@ -599,14 +604,14 @@ Game = {
 		},
 		reGen: {
 			name: "ReGen",
-			category: 'buff',
+			tags: [ 'buff' ],
 			beginCycle: function(unit, eventData) {
 				unit.heal(0.01 * unit.maxHP);
 			}
 		},
 		rearing: {
 			name: "Rearing",
-			category: 'special',
+			category: [ 'special' ],
 			beginTurn: function(unit, eventData) {
 				unit.liftStatus('rearing');
 			},
@@ -623,7 +628,7 @@ Game = {
 		},
 		skeleton: {
 			name: "Skeleton",
-			category: 'undead',
+			tags: [ 'undead' ],
 			overrules: [ 'zombie' ],
 			statModifiers: {
 				str: 0.5,
@@ -653,7 +658,7 @@ Game = {
 		},
 		sleep: {
 			name: "Sleep",
-			category: 'affliction',
+			tags: [ 'acute' ],
 			overrules: [ 'drunk', 'offGuard' ],
 			initialize: function(unit) {
 				unit.actor.animate('sleep');
@@ -681,7 +686,7 @@ Game = {
 		},
 		zombie: {
 			name: "Zombie",
-			category: 'undead',
+			tags: [ 'ailment', 'undead' ],
 			initialize: function(unit) {
 				this.allowDeath = false;
 			},
@@ -753,6 +758,13 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				for (var i2 = 0; i2 < effect.statuses.length; ++i2) {
 					targets[i].liftStatus(effect.statuses[i2]);
+				}
+			}
+		},
+		liftStatusTags: function(actor, targets, effect) {
+			for (var i = 0; i < targets.length; ++i) {
+				for (var i2 = 0; i2 < effect.tags.length; ++i2) {
+					targets[i].liftStatusTag(effect.tags[i2]);
 				}
 			}
 		},
@@ -1457,7 +1469,7 @@ Game = {
 			name: "Robert",
 			fullName: "Robert Spellbinder",
 			strategy: Robert2Strategy,
-			hasLifeBar: true,
+			hasLifeBar: false,
 			tier: 3,
 			baseStats: {
 				vit: 75,

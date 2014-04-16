@@ -12,6 +12,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.elementHealState = 0;
+	this.elementalsHealed = 0;
 	this.isAlcoholUsed = false;
 	this.isDesperate = false;
 	this.isFixingZombieHeal = false;
@@ -119,6 +120,22 @@ Robert2Strategy.prototype.strategize = function()
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
+					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
+						if (this.elementalsHealed >= 2) {
+							if (this.ai.isItemUsable('vaccine')) {
+								this.ai.useItem('vaccine');
+							}
+							if (this.ai.isSkillUsable('omni')) {
+								this.ai.useSkill('omni');
+							}
+						} else {
+							if (this.unit.hasStatus('ignite')) {
+								this.ai.useSkill('chill', 'robert2');
+							} else if (this.unit.hasStatus('frostbite')) {
+								this.ai.useSkill('flare', 'robert2');
+							}
+						}
+						++this.elementalsHealed;
 					} else if (this.isScottZombie && 0.5 > Math.random()) {
 						this.ai.useSkill('swordSlash');
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
@@ -197,7 +214,7 @@ Robert2Strategy.prototype.strategize = function()
 					this.ai.useSkill('crackdown');
 				} else {
 					if (this.unit.hp <= 2000 && !this.isFinalTier2Used) {
-						if (this.turnCount['scott'] / this.turnCount['robert2'] > 1.25) {
+						if (this.turnCount['scott'] > this.turnCount['robert2']) {
 							this.ai.useSkill('windchill');
 						} else {
 							this.ai.useSkill('hellfire');

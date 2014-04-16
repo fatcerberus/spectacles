@@ -168,7 +168,7 @@ TargetMenu.prototype.render = function()
 	if (this.unitToShowInfo != null) {
 		SetClippingRectangle(0, 16, 160, GetScreenHeight() - 16);
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
-		if (true || this.unitToShowInfo.isPartyMember()) {
+		if (this.unitToShowInfo.isPartyMember()) {
 			var statuses = this.unitToShowInfo.statuses;
 			var nameBoxHeight = 20 + 12 * statuses.length;
 			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
