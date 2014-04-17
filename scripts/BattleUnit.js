@@ -200,6 +200,7 @@ BattleUnit.prototype.beginCycle = function()
 	}
 	this.battlerInfo.statAverage = Math.round(statSum / numStats);
 	this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
+	this.mpPool.restore(this.battlerInfo.statAverage / 10);
 };
 
 // .clearQueue() method
