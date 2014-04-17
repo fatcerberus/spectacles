@@ -370,8 +370,8 @@ Game = {
 	},
 	
 	statuses: {
-		counterattack: {
-			name: "Counterattack",
+		counter: {
+			name: "Counter",
 			tags: [ 'special' ],
 			statModifiers: {
 				def: 2.0,
@@ -392,7 +392,7 @@ Game = {
 				{
 					effect.power *= 2;
 				});
-				unit.liftStatus('counterattack');
+				unit.liftStatus('counter');
 			}
 		},
 		crackdown: {
@@ -553,7 +553,7 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'counterattack', 'drunk', 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'counter', 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					eventData.statusID = null;
 				}
@@ -847,7 +847,7 @@ Game = {
 						{
 							targetHint: 'selected',
 							type: 'addStatus',
-							status: 'counterattack'
+							status: 'counter'
 						}
 					]
 				}
@@ -1334,9 +1334,8 @@ Game = {
 					effects: [
 						{
 							targetHint: 'selected',
-							type: 'damage',
-							damageType: 'physical',
-							power: 50
+							type: 'instakill',
+							damageType: 'physical'
 						}
 					]
 				}
@@ -1467,7 +1466,7 @@ Game = {
 			name: "Robert",
 			fullName: "Robert Spellbinder",
 			strategy: Robert2Strategy,
-			hasLifeBar: false,
+			hasLifeBar: true,
 			tier: 3,
 			baseStats: {
 				vit: 75,

@@ -19,6 +19,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.isFinalTier2Used = false;
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
+	this.isZombieTonicReady = false;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
 	this.turnCount = {};
@@ -116,9 +117,9 @@ Robert2Strategy.prototype.strategize = function()
 					this.ai.useSkill('protectiveAura');
 					this.doChargeSlashNext = false;
 					this.isComboStarted = false;
-					this.isZombieTonicReady = false;
 					this.movesTillZombieTonic = 5;
 				} else {
+					--this.movesTillZombieTonic;
 					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
@@ -126,10 +127,6 @@ Robert2Strategy.prototype.strategize = function()
 						this.ai.useSkill('necromancy');
 						this.isZombieTonicReady = true;
 						this.movesTillZombieTonic = Infinity;
-					} else if (this.isZombieTonicReady) {
-						var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
-						this.ai.useItem('powerTonic', itemTarget);
-						this.isZombieTonicReady = false;
 					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
 						if (this.elementalsHealed >= 2 && this.ai.isItemUsable('vaccine')) {
 							this.ai.useItem('vaccine');
@@ -182,7 +179,6 @@ Robert2Strategy.prototype.strategize = function()
 						var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 						this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
 					}
-					--this.movesTillZombieTonic;
 				}
 				break;
 			case 4:
@@ -316,7 +312,11 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 	this.rezombieChance /= 2;
 	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
 	if (unitID == 'robert2') {
-		if (this.elementHealState == 1) {
+		if (this.isZombieTonicReady) {
+			var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+			this.ai.useItem('powerTonic', itemTarget);
+			this.isZombieTonicReady = false;
+		} else if (this.elementHealState == 1) {
 			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 				if (!this.unit.hasStatus('zombie') && this.ai.isItemUsable('tonic')) {
 					this.ai.useItem('tonic');
