@@ -33,16 +33,15 @@ function StatusContext(statusID, unit)
 // Applies static effects defined for the status, such as stat modifiers.
 // Remarks:
 //     This method should be called at the beginning of every CTB cycle, after
-//     building the subject's battler info.
+//     the subject's battler info has been refreshed.
 StatusContext.prototype.beginCycle = function()
 {
 	if ('statModifiers' in this.statusDef) {
 		for (var stat in Game.namedStats) {
-			if (!(stat in this.statusDef.statModifiers)) {
-				continue;
-			}
-			var multiplier = this.statusDef.statModifiers[stat];
-			this.unit.battlerInfo.stats[stat] = Math.floor(multiplier * this.unit.battlerInfo.stats[stat]);
+			var multiplier = stat in this.statusDef.statModifiers
+				? this.statusDef.statModifiers[stat]
+				: 1.0;
+			this.unit.battlerInfo.stats[stat] = Math.round(multiplier * this.unit.battlerInfo.stats[stat]);
 		}
 	}
 };

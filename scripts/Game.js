@@ -575,13 +575,11 @@ Game = {
 		offGuard: {
 			name: "Off Guard",
 			tags: [ 'special' ],
+			statModifiers: {
+				def: 0.75
+			},
 			beginTurn: function(unit, eventData) {
 				unit.liftStatus('offGuard');
-			},
-			damaged: function(unit, eventData) {
-				if (!Link(eventData.tags).contains('special')) {
-					eventData.amount *= 1.5;
-				}
 			}
 		},
 		protect: {
