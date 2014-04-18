@@ -64,11 +64,13 @@ Robert2Strategy.prototype.strategize = function()
 		switch (this.phase) {
 			case 1:
 				if (this.phase > lastPhase) {
+					this.doChargeSlashNext = false;
 					this.isComboStarted = false;
 				}
 				var forecast = this.ai.turnForecast('chargeSlash');
-				if (forecast[0].unit === this.unit) {
+				if (this.doChargeSlashNext || forecast[0].unit === this.unit) {
 					this.ai.useSkill('chargeSlash');
+					this.doChargeSlashNext = false;
 				} else {
 					forecast = this.ai.turnForecast('quickstrike');
 					if (forecast[0].unit === this.unit) {
@@ -78,6 +80,7 @@ Robert2Strategy.prototype.strategize = function()
 						if (this.isComboStarted) {
 							this.ai.useSkill('swordSlash');
 							this.isComboStarted = false;
+							this.doChargeSlashNext = true;
 						} else {
 							var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
 							this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
