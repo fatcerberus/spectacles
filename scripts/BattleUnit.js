@@ -358,15 +358,17 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	}
 };
 
-BattleUnit.prototype.liftStatusTag = function(tag)
+BattleUnit.prototype.liftStatusTags = function(tags)
 {
-	var statusIDs = Link(this.statuses)
-		.where(function(status) { return Link(status.statusDef.tags).contains(tag); })
+	var me = this;
+	var activeStatuses = this.statuses.slice();
+	var statusIDs = Link(activeStatuses)
+		.where(function(status) { return Link(status.statusDef.tags).some(tags); })
 		.pluck('statusID')
-		.toArray();
-	for (var i = 0; i < statusIDs.length; ++i) {
-		this.liftStatus(statusIDs[i]);
-	}
+		.each(function(statusID)
+	{
+		me.liftStatus(statusID);
+	});
 };
 
 // .performAction() method

@@ -1,15 +1,26 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Mar/26/2014
-* Version: 0.2.11
+* Updated: Apr/17/2014
+* Version: 0.2.12
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
 
-// optimization idea came from compilation:
 var Link = (function() {
 	"use strict";
+	var _slice = [].slice;
+	
+	function _IndexOf(array, elem) {
+		for (var i = 0, l = array.length; i < l; ++i) {
+			if (array[i] === elem) return i;
+		}
+		return -1;
+	};
+	
+	function _IsArray(a) {
+		return Object.prototype.toString.call(a) === "[object Array]";
+	}
 	
 	/** Point Layer **/
 
@@ -32,6 +43,31 @@ var Link = (function() {
 			while (i < l) { if (f(a[i])) n.exec(a[i]); i++; }
 	}
 
+	function HasPoint(prop, item) {
+		this.next = null;
+		this.env  = null;
+		this.item = item;
+		this.prop = prop;
+	}
+	
+	HasPoint.prototype.exec = function(item) {
+		if (_IndexOf(item[this.prop], this.item) >= 0) this.next.exec(item);
+	}
+
+	function HasFuncPoint(prop, func) {
+		this.next = null;
+		this.env  = null;
+		this.func = func;
+		this.prop = prop;
+	}
+	
+	HasFuncPoint.prototype.exec = function(item) {
+		var array = item[this.prop];
+		for (var i = 0, l = array.length; i < l; ++i) {
+			if (this.func(array[i])) { this.next.exec(item); break; }
+		}
+	}
+	
 	function RejectPoint(fn) {
 		this.next = null;
 		this.env  = null;
@@ -43,32 +79,57 @@ var Link = (function() {
 	}
 	
 	RejectPoint.prototype.run = function(a) {
-		var i = 0, l = a.length, e = this.env,
-			f = this.func, n = this.next;
+		var i = 0, l = a.length, e = this.env, f = this.func, n = this.next;
 		if (e.take)
 			while (i < l && !e.stop) { if (!f(a[i])) n.exec(a[i]); i++; }
 		else
 			while (i < l) { if (!f(a[i])) n.exec(a[i]); i++; }
 	}
 	
-	function FilterByPoint(key, val) {
+	function FilterByPoint(key, values) {
+		this.next = null;
+		this.env  = null;
+		this.key  = key;
+		this.vals = values;
+	}
+	
+	FilterByPoint.prototype.exec = function(item) {
+		if (_IndexOf(this.vals, item[this.key])) this.next.exec(item);
+	}
+	
+	FilterByPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, e = this.env,
+			k = this.key, v = this.vals, n = this.next;
+		if (e.take)
+			while (i < l && !e.stop) {
+				if (_IndexOf(v, a[i][k]) >= 0) n.exec(a[i]);
+				i++;
+			}
+		else
+			while (i < l) {
+				if (_IndexOf(v, a[i][k]) >= 0) n.exec(a[i]);
+				i++;
+			}
+	}
+
+	function FilterByOnePoint(key, val) {
 		this.next = null;
 		this.env  = null;
 		this.key  = key;
 		this.val  = val;
 	}
 	
-	FilterByPoint.prototype.exec = function(item) {
-		if (item[this.key] == this.val) this.next.exec(item);
+	FilterByOnePoint.prototype.exec = function(item) {
+		if (this.val === item[this.key]) this.next.exec(item);
 	}
 	
-	FilterByPoint.prototype.run = function(a) {
+	FilterByOnePoint.prototype.run = function(a) {
 		var i = 0, l = a.length, e = this.env,
 			k = this.key, v = this.val, n = this.next;
 		if (e.take)
-			while (i < l && !e.stop) { if (a[i][k] == v) n.exec(a[i]); i++; }
+			while (i < l && !e.stop) { if (v === a[i][k]) n.exec(a[i]); i++; }
 		else
-			while (i < l) { if (a[i][k] == v) n.exec(a[i]); i++; }
+			while (i < l) { if (v === a[i][k]) n.exec(a[i]); i++; }
 	}
 	
 	function PluckPoint(prop) {
@@ -78,12 +139,11 @@ var Link = (function() {
 	}
 	
 	PluckPoint.prototype.exec = function(item) {
-		this.next.exec(item[this.prop]);
+		this.next.exec(item[this.prop], item);
 	}
 	
 	PluckPoint.prototype.run = function(a) {
-		var i = 0, l = a.length, e = this.env,
-			k = this.prop, n = this.next;
+		var i = 0, l = a.length, e = this.env, k = this.prop, n = this.next;
 		if (e.take)
 			while (i < l && !e.stop) { n.exec(a[i][k]); i++; }
 		else
@@ -387,7 +447,7 @@ var Link = (function() {
 	ContainsFuncPoint.prototype.exec = function(item) {
 		if (this.func(item)) this.pass = this.env.stop = true;
 	}
-
+	
 	function ContainsPoint(o) { // end point
 		this.next = null;
 		this.env  = null;
@@ -396,7 +456,30 @@ var Link = (function() {
 	}
 	
 	ContainsPoint.prototype.exec = function(item) {
-		if (item == this.obj) this.pass = this.env.stop = true;
+		if (item === this.obj) this.pass = this.env.stop = true;
+	}
+	
+	ContainsPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, t = this.obj;
+		while (i < l) { if (a[i++] === t) { this.pass = true; break; } }
+	}
+	
+	function ContainsAnyPoint(array) { // end point
+		this.next = null;
+		this.env  = null;
+		this.arr  = array;
+		this.pass = false;
+	}
+	
+	ContainsAnyPoint.prototype.exec = function(item) {
+		if (_IndexOf(this.arr, item) >= 0) this.pass = this.env.stop = true;
+	}
+	
+	ContainsAnyPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, arr = this.arr;
+		while (i < l) {
+			if (_IndexOf(this.arr, a[i++]) >= 0) { this.pass = true; break; }
+		}
 	}
 	
 	function EveryPoint(func) { // end point
@@ -582,11 +665,11 @@ var Link = (function() {
 		this.next = null;
 		this.env  = null;
 		this.func = fn;
-		this.memo = m || false;
+		this.memo = m;
 	}
 	
 	ReducePoint.prototype.exec = function(item) {
-		if (this.memo === false)
+		if (this.memo === undefined)
 			this.memo = item;
 		else
 			this.memo = this.func(this.memo, item);
@@ -604,7 +687,6 @@ var Link = (function() {
 	AllPoint.prototype.run = function(a) {
 		var i = 0, l = a.length, b = this.array;
 		while (i < l) b[i] = a[i++];
-		this.array = b;
 	}
 	
 	/** Functional Layer **/
@@ -669,11 +751,21 @@ var Link = (function() {
 		return point.num;
 	}
 	
+	function Has(prop, value) {
+		if (typeof value === "function")
+			this.pushPoint(new HasFuncPoint(prop, value));
+		else
+			this.pushPoint(new HasPoint(prop, value));
+		return this;
+	}
+	
 	function Contains(o) {
 		this.env.take = true;
 		var point;
 		if (typeof o == "function")
 			point = new ContainsFuncPoint(o);
+		else if (_IsArray(o))
+			point = new ContainsAnyPoint(o);
 		else
 			point = new ContainsPoint(o);
 		this.run(point);
@@ -706,8 +798,12 @@ var Link = (function() {
 		return point.group;
 	}
 	
-	function FilterBy(key, value) {
-		this.pushPoint(new FilterByPoint(key, value));
+	function FilterBy(key, a) {
+		if (_IsArray(a)) {
+			this.pushPoint(new FilterByPoint(key, a));
+		}
+		else
+			this.pushPoint(new FilterByOnePoint(key, a));
 		return this;
 	}
 	
@@ -921,6 +1017,7 @@ var Link = (function() {
 		first     : First,
 		get       : Get,
 		groupBy   : GroupBy,
+		has       : Has,
 		indexOf   : IndexOf,
 		invoke    : Invoke,
 		is        : Is,
@@ -954,9 +1051,7 @@ var Link = (function() {
 		whereBy   : FilterBy,
 		zip       : Zip,
 	}
-	
-	var _slice = [].slice;
-	
+		
 	function Link(arr, test) {
 		if (!test)
 			return new Chain(arr);
@@ -984,6 +1079,12 @@ var Link = (function() {
 		}
 		
 		return CreateArray(0);
+	}
+	
+	Link.range = function(num) {
+		var a = [];
+		while (num--) { a[num] = num; }
+		return a;
 	}
 	
 	Link.alias = function(from, to) {

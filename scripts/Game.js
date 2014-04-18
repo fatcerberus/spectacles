@@ -272,8 +272,8 @@ Game = {
 				effects: [
 					{
 						targetHint: 'selected',
-						type: 'liftStatus',
-						statuses: [ 'ghost', 'skeleton', 'zombie' ]
+						type: 'liftStatusTags',
+						tags: [ 'undead' ]
 					}
 				]
 			}
@@ -761,9 +761,7 @@ Game = {
 		},
 		liftStatusTags: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				for (var i2 = 0; i2 < effect.tags.length; ++i2) {
-					targets[i].liftStatusTag(effect.tags[i2]);
-				}
+				targets[i].liftStatusTags(effect.tags);
 			}
 		},
 		recoverHP: function(actor, targets, effect) {
