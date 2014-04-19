@@ -123,7 +123,9 @@ Robert2Strategy.prototype.strategize = function()
 					this.movesTillZombieTonic = 5;
 				} else {
 					--this.movesTillZombieTonic;
-					var chanceOfCombo = 0.25 + this.unit.hasStatus('crackdown') * 0.25;
+					var chanceOfCombo = 0.5
+						+ 0.25 * this.unit.hasStatus('crackdown')
+						+ 0.25 * this.isScottZombie;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
 					} else if (this.movesTillZombieTonic <= 0 && this.ai.isItemUsable('powerTonic')) {
@@ -144,13 +146,11 @@ Robert2Strategy.prototype.strategize = function()
 							this.ai.useSkill('omni');
 						}
 						++this.elementalsHealed;
-					} else if (this.isScottZombie && 0.5 > Math.random()) {
-						this.ai.useSkill('swordSlash');
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
-						if ((forecast[0] === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
+						if ((forecast[0].unit === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 							this.isComboStarted = false;
-							if (forecast[0] === this.unit) {
+							if (forecast[0].unit === this.unit) {
 								this.ai.useSkill('chargeSlash');
 							} else {
 								if (0.25 > Math.random()) {
@@ -164,11 +164,12 @@ Robert2Strategy.prototype.strategize = function()
 						} else {
 							this.isComboStarted = true;
 							forecast = this.ai.turnForecast('quickstrike');
-							if (forecast[0] === this.unit) {
+							if (forecast[0].unit === this.unit) {
 								this.ai.useSkill('quickstrike');
 							} else {
 								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-								var crackdownMove = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+								var crackdownMove = this.isScottZombie ? 'swordSlash'
+									: moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
 								if (this.unit.hasStatus('crackdown') && this.ai.isSkillUsable(crackdownMove)) {
 									this.ai.useSkill(crackdownMove);
 									this.isComboStarted = false;
@@ -201,7 +202,7 @@ Robert2Strategy.prototype.strategize = function()
 						this.ai.useSkill('quickstrike');
 					} else {
 						var forecast = this.ai.turnForecast('omni');
-						if ((forecast[0] === this.unit || forecast[1] === this.unit)
+						if ((forecast[0].unit === this.unit || forecast[1].unit === this.unit)
 							&& this.ai.isSkillUsable('omni'))
 						{
 							this.ai.useSkill('omni');

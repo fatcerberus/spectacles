@@ -12,7 +12,6 @@ RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_CUTSCENE_DELAYS = true;
 var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;

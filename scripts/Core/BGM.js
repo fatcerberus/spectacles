@@ -34,6 +34,7 @@ BGM = new (function()
 	{
 		duration = duration !== void null ? duration : 0.0;
 		
+		if (DBG_DISABLE_BGM) return;
 		newVolume = Math.min(Math.max(newVolume, 0.0), 1.0);
 		if (this.adjuster != null && this.adjuster.isRunning()) {
 			this.adjuster.stop();
