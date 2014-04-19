@@ -145,9 +145,10 @@ Battle.prototype.enemiesOf = function(unit)
 //     exists.
 Battle.prototype.findUnit = function(unitID)
 {
-	return Link(this.enemyUnits, this.playerUnits).first(function(unit) {
+	var unit = Link(this.enemyUnits, this.playerUnits).first(function(unit) {
 		return unit.id == unitID;
 	});
+	return unit !== void null ? unit : null;
 };
 
 // .getLevel() method

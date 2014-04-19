@@ -482,8 +482,13 @@ BattleUnit.prototype.resetCounter = function(rank)
 	Console.append("rank: " + rank);
 };
 
+// .restoreMP() method
+// Restores a percentage of MP to the unit's assigned MP pool.
+// Arguments:
+//     percentage: The percentage of MP to restore, from 0 to 100.
 BattleUnit.prototype.restoreMP = function(percentage)
 {
+	percentage = Math.min(Math.max(percentage, 0), 100);
 	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
 };
 
@@ -511,8 +516,8 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			multiplier *= this.affinities[tags[i]];
 		}
 	}
-	amount = Math.round(Math.max(amount * multiplier, 1));
-	if (!isPriority) {
+	amount = Math.round(amount * multiplier);
+	if (amount > 0 && !isPriority) {
 		var eventData = { amount: amount, tags: tags };
 		this.raiseEvent('damaged', eventData);
 		amount = Math.round(eventData.amount);
@@ -546,7 +551,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			}
 		}
 	} else if (amount < 0) {
-		this.heal(-amount, true);
+		this.heal(Math.abs(amount), true);
 	}
 };
 

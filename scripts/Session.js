@@ -25,7 +25,7 @@ function Session(difficulty)
 	difficulty = difficulty !== void null ? difficulty : GameDifficulty.standard;
 	
 	this.difficulty = difficulty;
-	this.party = new Party(50);
+	this.party = new Party();
 	for (var i = 0; i < Game.initialPartyMembers.length; ++i) {
 		var name = Game.initialPartyMembers[i];
 		this.party.add(name);

@@ -24,9 +24,13 @@ function Party(level)
 // Adds a character to the party.
 // Arguments:
 //     characterID: The ID of the character to be added, as defined in the gamedef.
-Party.prototype.add = function(characterID)
+//     level:       Optional. The level the character will be added at. If not specified,
+//                  the current party average will be used.
+Party.prototype.add = function(characterID, level)
 {
-	var newMember = new PartyMember(characterID, this.getLevel());
+	level = level !== void null ? level : this.getLevel();
+	
+	var newMember = new PartyMember(characterID, level);
 	this.members[characterID] = newMember;
 	Console.writeLine("Added PC " + newMember.name + " to party");
 };
@@ -68,7 +72,7 @@ Party.prototype.remove = function(characterID)
 {
 	for (var id in this.members) {
 		if (id === characterID) {
-			delete this.members[i];
+			delete this.members[id];
 		}
 	}
 };

@@ -202,9 +202,10 @@ AIContext.prototype.useSkill = function(skillID, unitID)
 		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
 	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
-	var targets = this.targets !== null ? this.targets :
-		unitID !== null ? [ this.battle.findUnit(unitID) ] :
-		skillToUse.defaultTargets(this.unit);
+	var targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;
+	var targets = this.targets !== null ? this.targets
+		: targetUnit !== null ? [ targetUnit ]
+		: skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
 		targets: targets

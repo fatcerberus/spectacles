@@ -718,7 +718,7 @@ Game = {
 				if ('element' in effect) {
 					damageTags.push(effect.element);
 				}
-				var damage = Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power));
+				var damage = Math.round(Math.max(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power), 1));
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), damageTags);
 				var recoilFunction = effect.damageType + "Recoil";
 				if (recoilFunction in Game.math.damage) {
@@ -749,7 +749,7 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(targets[i].maxHP, [ 'deathblow' ]);
+				targets[i].takeDamage(targets[i].hp, [ 'deathblow' ]);
 			}
 		},
 		liftStatus: function(actor, targets, effect) {
@@ -1287,7 +1287,7 @@ Game = {
 						{
 							targetHint: 'user',
 							type: 'addStatus',
-							status: 'Ghost'
+							status: 'ghost'
 						},
 						{
 							targetHint: 'selected',
@@ -1451,7 +1451,7 @@ Game = {
 				agi: 70
 			},
 			damageModifiers: {
-				fire: 0.5,
+				fire: -1.0,
 				ice: 2.0,
 				fat: 1.5
 			},

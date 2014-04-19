@@ -12,6 +12,7 @@ RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_CUTSCENE_DELAYS = true;
 var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
@@ -56,14 +57,22 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
-	session.party.members.scott.items.push(new ItemUsable('tonic'));
-	session.party.members.scott.items.push(new ItemUsable('powerTonic'));
-	session.party.members.scott.items.push(new ItemUsable('redBull'));
-	session.party.members.scott.items.push(new ItemUsable('holyWater'));
-	session.party.members.scott.items.push(new ItemUsable('vaccine'));
-	session.party.members.scott.items.push(new ItemUsable('alcohol'));
+	var setup = {
+		battleID: 'robert2',
+		party: {
+			scott: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] }
+		}
+	};
+	Link(Game.initialPartyMembers).each(function(id) { session.party.remove(id); });
+	for (var id in setup.party) {
+		var memberInfo = setup.party[id];
+		session.party.add(id, memberInfo.level);
+		for (var iItem = 0; iItem < memberInfo.items.length; ++iItem) {
+			session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
+		}
+	}
 	new Scenario()
-		.battle('robert2')
+		.battle(setup.battleID)
 		.run(true);
 	MapEngine('main.rmp', Engine.frameRate);
 }
