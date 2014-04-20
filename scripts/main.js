@@ -59,7 +59,9 @@ function game()
 	var setup = {
 		battleID: 'robert2',
 		party: {
-			scott: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] }
+			scott: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//bruce: { level: 50, items: [ 'alcohol' ] },
+			//maggie: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'alcohol' ] }
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) { session.party.remove(id); });

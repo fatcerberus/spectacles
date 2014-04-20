@@ -33,35 +33,47 @@ function AIContext(unit, battle, strategy)
 //     An object with properties specifying the AI's next move.
 AIContext.prototype.getNextMove = function()
 {
-	if (this.moveQueue.length == 0) {
-		Console.writeLine("Deferring to AI for " + this.unit.name + "'s next move");
-		var enemyList = this.battle.enemiesOf(this.unit);
-		this.enemies = [];
-		for (var i = 0; i < enemyList.length; ++i) {
-			var enemy = enemyList[i];
-			this.enemies.push(enemy);
-			this.enemies[enemy.id] = enemy;
-		}
-		var allyList = this.battle.alliesOf(this.unit);
-		this.allies = [];
-		for (var i = 0; i < allyList.length; ++i) {
-			var ally = allyList[i];
-			this.allies.push(ally);
-			this.allies[ally.id] = ally;
-		}
-		this.targets = null;
-		this.strategy.strategize();
+	var moveToUse = null;
+	do {
 		if (this.moveQueue.length == 0) {
-			Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
-			if (this.defaultSkillID !== null) {
-				this.useSkill(this.defaultSkillID);
-			} else {
-				Abort("AIContext.getNextAction(): No moves were queued and there is no default skill set.");
+			Console.writeLine("Deferring to AI for " + this.unit.name + "'s next move");
+			var enemyList = this.battle.enemiesOf(this.unit);
+			this.enemies = [];
+			for (var i = 0; i < enemyList.length; ++i) {
+				var enemy = enemyList[i];
+				this.enemies.push(enemy);
+				this.enemies[enemy.id] = enemy;
+			}
+			var allyList = this.battle.alliesOf(this.unit);
+			this.allies = [];
+			for (var i = 0; i < allyList.length; ++i) {
+				var ally = allyList[i];
+				this.allies.push(ally);
+				this.allies[ally.id] = ally;
+			}
+			this.targets = null;
+			this.strategy.strategize();
+			if (this.moveQueue.length == 0) {
+				Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
+				if (this.defaultSkillID !== null) {
+					this.useSkill(this.defaultSkillID);
+				} else {
+					Abort("AIContext.getNextAction(): No moves were queued and there is no default skill set.");
+				}
 			}
 		}
-	}
+		var candidateMove;
+		var isMoveUsable;
+		do {
+			candidateMove = this.moveQueue.shift();
+			var isMoveUsable = candidateMove.predicate();
+		} while (!isMoveUsable && this.moveQueue.length > 0);
+		if (isMoveUsable) {
+			moveToUse = candidateMove;
+		}
+	} while (moveToUse === null);
 	++this.turnsTaken;
-	return this.moveQueue.shift();
+	return moveToUse;
 }
 
 // .hasStatus() method
@@ -165,7 +177,7 @@ AIContext.prototype.useItem = function(itemID, unitID)
 		}
 	}
 	if (itemToUse == null) {
-		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an item it didn't have");
+		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an item (ID: '" + itemID + "') it didn't have");
 	}
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 	var targets = this.targets !== null ? this.targets :
@@ -173,22 +185,23 @@ AIContext.prototype.useItem = function(itemID, unitID)
 		itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
-		targets: targets
+		targets: targets,
+		predicate: function() { return true; }
 	});
 };
 
 // .useSkill() method
 // Adds the use of a skill to the AI's move queue.
 // Arguments:
-//     skillID: The ID of the skill to use, as defined in the gamedef.
-//     unitID:  Optional. The ID of the unit to use the skill on. If not provided or null, a
-//              default target (usually random) will be chosen.
-// Remarks:
-//     If no target has been set (as by calling .setTarget()), a random target will be
-//     selected.
-AIContext.prototype.useSkill = function(skillID, unitID)
+//     skillID:   The ID of the skill to use, as defined in the gamedef.
+//     unitID:    Optional. The ID of the unit to use the skill on. If not provided or null, a
+//                default target (usually random) will be chosen.
+//     predicate: A function which will be called at the time the move is to be used. The function
+//                should return true to use the skill, or false to cancel it.
+AIContext.prototype.useSkill = function(skillID, unitID, predicate)
 {
 	unitID = unitID !== void null ? unitID : null;
+	predicate = predicate !== void null ? predicate : function() { return true; };
 	
 	var skillToUse = new SkillUsable(skillID, 100);
 	/*for (var i = 0; i < this.unit.skills.length; ++i) {
@@ -208,6 +221,7 @@ AIContext.prototype.useSkill = function(skillID, unitID)
 		: skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
-		targets: targets
+		targets: targets,
+		predicate: predicate
 	});
 };

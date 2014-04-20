@@ -11,7 +11,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
-	this.elementHealState = 0;
+	this.elementHealState = 'ok';
 	this.elementalsHealed = 0;
 	this.isAlcoholUsed = false;
 	this.isDesperate = false;
@@ -23,6 +23,9 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
 	this.turnCount = {};
+	this.hasFrostbite = this.unit.hasStatus.bind(this.unit, 'frostbite');
+	this.hasIgnite = this.unit.hasStatus.bind(this.unit, 'ignite');
+	this.hasZombie = this.unit.hasStatus.bind(this.unit, 'zombie');
 }
 
 Robert2Strategy.prototype.strategize = function()
@@ -50,6 +53,32 @@ Robert2Strategy.prototype.strategize = function()
 			this.ai.useSkill('necromancy');
 		}
 		this.isNecromancyReady = false;
+	} else if (this.elementHealState != 'ok') {
+		if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
+			if (this.elementHealState == 'prep') {
+				if (!this.unit.hasStatus('zombie') && this.ai.isItemUsable('tonic')) {
+					this.ai.useItem('tonic', 'robert2', this.hasZombie);
+				} else {
+					this.elementHealState = 'cureNext';
+				}
+			}
+			if (this.elementHealState == 'cureNext') {
+				this.ai.useSkill('flare', 'robert2', this.hasFrostbite);
+				this.ai.useSkill('chill', 'robert2', this.hasIgnite);
+				this.elementHealState = 'ok';
+			} else {
+				this.elementHealState = 'cureNext';
+			}
+		} else {
+			if (this.elementHealStatus == 'cureNext') {
+				this.ai.useSkill('swordSlash');
+			}
+			this.elementHealState = 'ok';
+		}
+	} else if (this.isZombieTonicReady) {
+		var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+		this.ai.useItem('powerTonic', itemTarget);
+		this.isZombieTonicReady = false;
 	} else {
 		var lastPhase = this.phase;
 		var phaseToEnter =
@@ -92,7 +121,7 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					this.ai.useSkill('upheaval');
 					if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
-						this.elementHealState = 1;
+						this.elementHealState = 'prep';
 					}
 					this.isComboStarted = false;
 				} else {
@@ -315,31 +344,7 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 	}
 	this.rezombieChance /= 2;
 	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
-	if (unitID == 'robert2') {
-		if (this.isZombieTonicReady) {
-			var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
-			this.ai.useItem('powerTonic', itemTarget);
-			this.isZombieTonicReady = false;
-		} else if (this.elementHealState == 1) {
-			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
-				if (!this.unit.hasStatus('zombie') && this.ai.isItemUsable('tonic')) {
-					this.ai.useItem('tonic');
-				}
-				this.elementHealState = 2;
-			} else {
-				this.elementHealState = 0;
-			}
-		} else if (this.elementHealState == 2) {
-			if (this.unit.hasStatus('frostbite')) {
-				this.ai.useSkill('flare', 'robert2');
-			} else if (this.unit.hasStatus('ignite')) {
-				this.ai.useSkill('chill', 'robert2');
-			} else {
-				this.ai.useSkill('swordSlash');
-			}
-			this.elementHealState = 0;
-		}
-	} else if (unitID == 'scott') {
+	if (unitID == 'scott') {
 		if (this.isNecromancyReady) {
 			--this.necromancyTurns;
 		} else {
