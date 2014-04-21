@@ -13,7 +13,7 @@ Game = {
 	
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
-	defaultItemRank: 3,
+	defaultItemRank: 1,
 	defenseBreakRank: 3,
 	
 	bossHPPerBar: 500,
@@ -379,9 +379,16 @@ Game = {
 			},
 			initialize: function(unit) {
 				unit.resetCounter(Infinity);
+				this.powerBoost = 1.0;
 			},
 			attacked: function(unit, eventData) {
-				if (Link(eventData.action.effects).pluck('type').contains('damage')) {
+				Link(eventData.action.effects)
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					this.powerBoost += effect.power / 100;
+				}.bind(this));
+				if (this.powerBoost > 1.0) {
 					unit.resetCounter(0);
 				}
 			},
@@ -390,8 +397,8 @@ Game = {
 					.filterBy('type', 'damage')
 					.each(function(effect)
 				{
-					effect.power *= 2;
-				});
+					effect.power *= this.powerBoost;
+				}.bind(this));
 				unit.liftStatus('counter');
 			}
 		},
@@ -436,6 +443,7 @@ Game = {
 			name: "Drunk",
 			tags: [ 'acute', 'debuff' ],
 			statModifiers: {
+				str: 2.0,
 				foc: 0.5
 			},
 			ignoreEvents: [

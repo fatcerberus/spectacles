@@ -76,6 +76,13 @@ AIContext.prototype.getNextMove = function()
 	return moveToUse;
 }
 
+// .hasMovesQueued() method
+// Checks whether the controlled unit has any moves pending (queued).
+AIContext.prototype.hasMovesQueued = function()
+{
+	return this.moveQueue.length > 0;
+};
+
 // .hasStatus() method
 // Determines whether the unit being controlled is afflicted with a specified status.
 // Arguments:
