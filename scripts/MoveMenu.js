@@ -107,13 +107,13 @@ function MoveMenu(unit, battle)
 		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
 		var rankBoxColor = BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha));
-		Rectangle(x + 5, y + 3, 12, 12, rankBoxColor);
-		OutlinedRectangle(x + 5, y + 3, 12, 12, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
-		DrawTextEx(this.font, x + 11, y + 3, isFinite(item.rank) ? item.rank : "?", item.idColor, 1, 'center');
-		DrawTextEx(this.font, x + 21, y + 3, item.name, textColor, 1 * isEnabled);
+		Rectangle(x + 5, y + 2, 14, 14, rankBoxColor);
+		OutlinedRectangle(x + 5, y + 2, 14, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
+		DrawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", item.idColor, 1, 'center');
+		DrawTextEx(this.font, x + 24, y + 3, item.name, textColor, 1 * isEnabled);
 		if (item.mpCost > 0) {
-			this.drawText(this.font, x + 141, y + 1, isEnabled, usageTextColor, item.mpCost, 'right');
-			this.drawText(this.font, x + 142, y + 5, isEnabled, textColor, "MP");
+			this.drawText(this.font, x + 141, y + 1, isEnabled, textColor, item.mpCost, 'right');
+			this.drawText(this.font, x + 142, y + 5, isEnabled, usageTextColor, "MP");
 		} else if (item.usable instanceof ItemUsable) {
 			this.drawText(this.font, x + 148, y + 3, isEnabled, usageTextColor, item.usable.usesLeft, 'right');
 			this.drawText(this.font, x + 149, y + 3, isEnabled, textColor, "x");
@@ -146,7 +146,7 @@ function MoveMenu(unit, battle)
 		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
-		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name, 'center');
+		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
 	};
 	
 	this.updateTurnPreview = function(nextMoveUsable)
@@ -171,7 +171,7 @@ MoveMenu.prototype.getInput = function()
 			for (var i = 0; i < usables.length; ++i) {
 				var menuItem = {
 					name: usables[i].name,
-					idColor: CreateColor(128, 128, 128, 255),
+					idColor: CreateColor(192, 192, 192, 255),
 					isEnabled: usables[i].isUsable(this.unit),
 					mpCost: usables[i].mpCost(this.unit),
 					rank: usables[i].getRank(),
@@ -226,11 +226,30 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
-	this.drawers = [
-		{ name: "Skill", contents: this.unit.skills, cursor: 0, rank: Game.defaultMoveRank },
-		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank },
-		{ name: "Stance", contents: [], cursor: 0, rank: Infinity }
+	var stanceList = [
+		new SkillUsable('counterStance', 100)
 	];
+	var drawerTable = {};
+	Link(this.unit.skills).each(function(skill) {
+		var category = skill.skillInfo.category;
+		if (!(category in drawerTable)) {
+			drawerTable[category] = {
+				name: Game.moveCategories[category],
+				contents: [],
+				cursor: 0,
+				rank: Game.defaultMoveRank
+			};
+		}
+		drawerTable[category].contents.push(skill);
+	});
+	this.drawers = [];
+	for (var category in drawerTable) {
+		this.drawers.push(drawerTable[category]);
+	}
+	this.drawers = this.drawers.concat([
+		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank },
+		{ name: "Stance", contents: stanceList, cursor: 0, rank: Infinity }
+	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;

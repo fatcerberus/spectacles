@@ -49,9 +49,9 @@ Game = {
 	},
 	
 	moveCategories: {
-		sword: "Sword",
-		strategy: "Strategy",
-		magic: "Magic"
+		attack: "Attack",
+		magic: "Magic",
+		strategy: "Strategy"
 	},
 	
 	math: {
@@ -189,12 +189,9 @@ Game = {
 			},
 			startingWeapon: 'templeSword',
 			skills: [
-				'counterStance',
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				'necromancy',
-				'crackdown',
 				'flare',
 				'chill',
 				'lightning',
@@ -202,7 +199,9 @@ Game = {
 				'hellfire',
 				'windchill',
 				'electrocute',
-				'upheaval'
+				'upheaval',
+				'necromancy',
+				'crackdown'
 			]
 		},
 		bruce: {
@@ -789,7 +788,7 @@ Game = {
 	skills: {
 		chargeSlash: {
 			name: "Charge Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -880,7 +879,7 @@ Game = {
 		},
 		desperationSlash: {
 			name: "Desperation Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1157,7 +1156,7 @@ Game = {
 		},
 		quickstrike: {
 			name: "Quickstrike",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1309,7 +1308,7 @@ Game = {
 		},
 		swordSlash: {
 			name: "Sword Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [

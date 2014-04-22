@@ -51,12 +51,17 @@ function BattleHUD(partyMaxMP)
 			this.drawHighlight(x, y, 100, 20, this.highlightColor);
 		}
 		this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
+		var headingColor = isHighlighted ?
+			BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			CreateColor(192, 144, 0, 255);
 		var textColor = isHighlighted ?
 			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 192, 192, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
-		Rectangle(x + 82, y + 4, 12, 12, CreateColor(64, 96, 128, 255));
+		//this.drawText(this.font, x + 62, y + 6, 1, headingColor, "HP");
+		//this.drawText(this.font, x + 61, y + 2, 1, textColor, Math.round(memberInfo.hp), 'right');
+		Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
 		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
 	
@@ -155,9 +160,9 @@ BattleHUD.prototype.render = function()
 		if (this.highlightedName == gaugeInfo.owner) {
 			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 		}
-		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
-		Rectangle(itemX + 142, itemY + 4, 12, 12, CreateColor(128, 32, 32, 255));
+		Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
 		OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
+		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
 	}
 };
 
