@@ -50,8 +50,10 @@ Game = {
 	
 	moveCategories: {
 		attack: "Attack",
+		gun: "Gun",
 		magic: "Magic",
-		strategy: "Strategy"
+		strategy: "Strategy",
+		sword: "Sword"
 	},
 	
 	math: {
@@ -788,7 +790,7 @@ Game = {
 	skills: {
 		chargeSlash: {
 			name: "Charge Slash",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -879,7 +881,7 @@ Game = {
 		},
 		desperationSlash: {
 			name: "Desperation Slash",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1156,7 +1158,7 @@ Game = {
 		},
 		quickstrike: {
 			name: "Quickstrike",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1212,7 +1214,7 @@ Game = {
 		},
 		sharpshooter: {
 			name: "Sharpshooter",
-			category: 'attack',
+			category: 'gun',
 			weaponType: 'rifle',
 			targetType: 'single',
 			actions: [
@@ -1233,7 +1235,7 @@ Game = {
 		},
 		shootout: {
 			name: "Shootout",
-			category: 'attack',
+			category: 'gun',
 			weaponType: 'pistol',
 			targetType: 'allEnemies',
 			actions: [
@@ -1308,7 +1310,7 @@ Game = {
 		},
 		swordSlash: {
 			name: "Sword Slash",
-			category: 'attack',
+			category: 'sword',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [

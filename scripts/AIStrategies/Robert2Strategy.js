@@ -20,10 +20,11 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.isFinalTier2Used = false;
 	this.isNecromancyReady = false;
 	this.isScottZombie = false;
-	this.isZombieTonicReady = false;
+	this.isZombieTonicReady = true;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
 	this.turnCount = {};
+	this.zombieTonicItem = null;
 }
 
 Robert2Strategy.prototype.strategize = function()
@@ -125,8 +126,8 @@ Robert2Strategy.prototype.strategize = function()
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
 					} else if (this.movesTillZombieTonic <= 0 && this.ai.isItemUsable('powerTonic')) {
+						this.zombieTonicItem = 'powerTonic';
 						this.ai.useSkill('necromancy');
-						this.isZombieTonicReady = true;
 						this.movesTillZombieTonic = Infinity;
 					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
 						if (this.elementalsHealed >= 2 && this.ai.isItemUsable('vaccine')) {
@@ -276,14 +277,15 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		if (itemID == 'vaccine' && this.isNecromancyReady) {
 			this.necromancyTurns = 4;
 		} else if ((itemID == 'holyWater' || itemID == 'vaccine') && this.isScottZombie) {
-			if (this.phase <= 1 && this.rezombieChance > Math.random() && itemID == 'holyWater') {
+			var odds = this.phase >= 3 ? 0.5 : 1.0;
+			if (this.phase <= 1 && this.rezombieChance * odds > Math.random() && itemID == 'holyWater') {
 				this.ai.useSkill('necromancy');
 			} else {
 				this.isScottZombie = false;
 			}
-		} else if (this.phase <= 3 && Link(curativeIDs).contains(itemID) && !this.isNecromancyReady && !this.isScottZombie) {
+		} else if (this.phase <= 4 && Link(curativeIDs).contains(itemID) && !this.isNecromancyReady && !this.isScottZombie) {
 			this.necromancyChance += 0.25;
-			var oddsMultiplier = this.phase <= 2 ? 1.0 : 0.5;
+			var oddsMultiplier = this.phase <= 3 ? 1.0 : 0.5;
 			if (this.necromancyChance * oddsMultiplier > Math.random()) {
 				this.ai.useSkill('necromancy');
 				this.necromancyChance = 0.0;
@@ -301,6 +303,9 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		if (skillID == 'necromancy') {
 			this.isScottZombie = true;
 			this.rezombieChance = 1.0;
+			if (this.phase >= 3) {
+				this.isZombieTonicReady = true;
+			}
 		} else if (skillID == 'protectiveAura') {
 			if (this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
 				this.ai.useItem('redBull');
@@ -322,6 +327,13 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 				this.ai.useSkill('necromancy');
 			}
 			this.isNecromancyReady = false;
+		} else if (this.isZombieTonicReady) {
+			if (this.ai.isItemUsable(this.zombieTonicItem)) {
+				var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+				this.ai.useItem(this.zombieTonicItem, itemTarget);
+			}
+			this.isZombieTonicReady = false;
+			this.zombieTonicItem = 'tonic';
 		} else if (this.elementHealState != 'ok') {
 			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 				if (this.elementHealState == 'prep') {
@@ -347,10 +359,6 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 				}
 				this.elementHealState = 'ok';
 			}
-		} else if (this.isZombieTonicReady) {
-			var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
-			this.ai.useItem('powerTonic', itemTarget);
-			this.isZombieTonicReady = false;
 		} else if (this.isAlcoholPending) {
 			if (!this.unit.hasStatus('zombie')) {
 				this.ai.useItem('alcohol');
