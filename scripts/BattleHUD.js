@@ -177,6 +177,10 @@ BattleHUD.prototype.setHP = function(name, hp)
 		var characterInfo = this.partyInfo[i];
 		if (characterInfo !== null && characterInfo.name == name && hp != characterInfo.hp) {
 			characterInfo.hpGauge.set(hp);
+			var gaugeColor = hp / characterInfo.maxHP <= 0.1 ? CreateColor(255, 0, 0, 255)
+				: hp / characterInfo.maxHP <= 0.33 ? CreateColor(255, 255, 0, 255)
+				: CreateColor(0, 255, 0, 255);
+			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new Scenario()
 				.fork()
