@@ -193,7 +193,6 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
-				'munch',
 				'flare',
 				'chill',
 				'lightning',
@@ -371,8 +370,8 @@ Game = {
 	},
 	
 	statuses: {
-		counter: {
-			name: "Counter",
+		counterStance: {
+			name: "Counter Stance",
 			tags: [ 'special' ],
 			statModifiers: {
 				def: 2.0,
@@ -393,6 +392,11 @@ Game = {
 					unit.resetCounter(0);
 				}
 			},
+			damaged: function(unit, eventData) {
+				if (Link(eventData.tags).contains('deathblow')) {
+					eventData.amount /= 2;
+				}
+			},
 			useSkill: function(unit, eventData) {
 				Link(eventData.skill.actions).expandInto('effects')
 					.filterBy('type', 'damage')
@@ -400,7 +404,7 @@ Game = {
 				{
 					effect.power *= this.powerBoost;
 				}.bind(this));
-				unit.liftStatus('counter');
+				unit.liftStatus('counterStance');
 			}
 		},
 		crackdown: {
@@ -562,7 +566,7 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'counter', 'drunk', 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'counterStance', 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					eventData.statusID = null;
 				}
@@ -857,7 +861,7 @@ Game = {
 						{
 							targetHint: 'selected',
 							type: 'addStatus',
-							status: 'counter'
+							status: 'counterStance'
 						}
 					]
 				}
