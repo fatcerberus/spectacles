@@ -50,10 +50,8 @@ Game = {
 	
 	moveCategories: {
 		attack: "Attack",
-		gun: "Gun",
 		magic: "Magic",
-		strategy: "Strategy",
-		sword: "Sword"
+		strategy: "Strategy"
 	},
 	
 	math: {
@@ -65,7 +63,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
-				return (userInfo.health - targetInfo.health) * userInfo.stats.agi / targetInfo.stats.agi / 400;
+				return userInfo.health / targetInfo.health * userInfo.stats.agi / targetInfo.stats.agi / 100;
 			},
 			pistol: function(userInfo, targetInfo) {
 				return 1.0;
@@ -194,6 +192,7 @@ Game = {
 				'swordSlash',
 				'quickstrike',
 				'chargeSlash',
+				'munch',
 				'flare',
 				'chill',
 				'lightning',
@@ -790,7 +789,7 @@ Game = {
 	skills: {
 		chargeSlash: {
 			name: "Charge Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -881,7 +880,7 @@ Game = {
 		},
 		desperationSlash: {
 			name: "Desperation Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1158,7 +1157,7 @@ Game = {
 		},
 		quickstrike: {
 			name: "Quickstrike",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [
@@ -1214,7 +1213,7 @@ Game = {
 		},
 		sharpshooter: {
 			name: "Sharpshooter",
-			category: 'gun',
+			category: 'attack',
 			weaponType: 'rifle',
 			targetType: 'single',
 			actions: [
@@ -1235,7 +1234,7 @@ Game = {
 		},
 		shootout: {
 			name: "Shootout",
-			category: 'gun',
+			category: 'attack',
 			weaponType: 'pistol',
 			targetType: 'allEnemies',
 			actions: [
@@ -1310,7 +1309,7 @@ Game = {
 		},
 		swordSlash: {
 			name: "Sword Slash",
-			category: 'sword',
+			category: 'attack',
 			weaponType: 'sword',
 			targetType: 'single',
 			actions: [

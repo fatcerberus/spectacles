@@ -247,8 +247,8 @@ MoveMenu.prototype.open = function()
 		this.drawers.push(drawerTable[category]);
 	}
 	this.drawers = this.drawers.concat([
-		{ name: "Stance", contents: stanceList, cursor: 0, rank: Infinity },
-		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank }
+		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank },
+		{ name: "Stance", contents: stanceList, cursor: 0, rank: Infinity }
 	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
