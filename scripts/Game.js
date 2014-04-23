@@ -737,17 +737,20 @@ Game = {
 			}
 		},
 		devour: function(actor, targets, effect) {
+			var healAmount = 0;
 			for (var i = 0; i < targets.length; ++i) {
 				if (!targets[i].isPartyMember()) {
 					var munchData = targets[i].enemyInfo.munchData;
 					var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
 					actor.growSkill(munchData.skill, experience);
 				}
+				healAmount += Math.round(targets[i].maxHP / 10);
 				targets[i].die();
 				new Scenario()
 					.playSound("Munch.wav")
 					.run();
 			}
+			actor.heal(healAmount, true);
 		},
 		fullRecover: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {

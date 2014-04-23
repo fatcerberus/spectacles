@@ -62,7 +62,7 @@ GameOverScreen.prototype.update = function()
 				this.mode = 'idle';
 				var menu = new MenuStrip("Game Over", false);
 				menu.addItem("Retry Battle", GameOverAction.retry);
-				menu.addItem("Title Screen", GameOverAction.quit);
+				menu.addItem("Give Up", GameOverAction.quit);
 				this.action = menu.open();
 				if (DBG_DISABLE_TRANSITIONS) {
 					this.fadeness = 1.0;
