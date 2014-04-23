@@ -106,10 +106,12 @@ function MoveMenu(unit, battle)
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 		this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-		var rankBoxColor = BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha));
+		var rankBoxColor = isEnabled ? BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha))
+			: BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 25, 75);
+		var rankColor = isEnabled ? item.idColor : BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 33, 66);
 		Rectangle(x + 5, y + 2, 14, 14, rankBoxColor);
 		OutlinedRectangle(x + 5, y + 2, 14, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
-		DrawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", item.idColor, 1, 'center');
+		DrawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", rankColor, 1, 'center');
 		DrawTextEx(this.font, x + 24, y + 3, item.name, textColor, 1 * isEnabled);
 		if (item.mpCost > 0) {
 			this.drawText(this.font, x + 141, y + 1, isEnabled, textColor, item.mpCost, 'right');

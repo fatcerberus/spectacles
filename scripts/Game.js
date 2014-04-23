@@ -63,7 +63,8 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
-				return userInfo.health / targetInfo.health * userInfo.stats.agi / targetInfo.stats.agi / 100;
+				return (100 - targetInfo.health) / 100 / targetInfo.tier
+					* userInfo.stats.agi / targetInfo.stats.agi;
 			},
 			pistol: function(userInfo, targetInfo) {
 				return 1.0;
@@ -75,7 +76,7 @@ Game = {
 				return 1.0;
 			},
 			sword: function(userInfo, targetInfo) {
-				return 1.0;
+				return (userInfo.level * 1.25) / userInfo.weapon.level;
 			}
 		},
 		damage: {
@@ -1066,6 +1067,7 @@ Game = {
 					accuracyType: 'devour',
 					effects: [
 						{
+							element: 'fat',
 							targetHint: 'selected',
 							type: 'devour',
 							successRate: 1.0
