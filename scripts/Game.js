@@ -388,6 +388,9 @@ Game = {
 				{
 					this.powerBoost += effect.power / 100;
 				}.bind(this));
+				if (Link(eventData.action.effects).pluck('type').contains('instaKill')) {
+					this.powerBoost = 2.0;
+				}
 				if (this.powerBoost > 1.0) {
 					unit.resetCounter(0);
 				}
@@ -1349,7 +1352,7 @@ Game = {
 					effects: [
 						{
 							targetHint: 'selected',
-							type: 'instakill',
+							type: 'instaKill',
 							damageType: 'physical'
 						}
 					]
