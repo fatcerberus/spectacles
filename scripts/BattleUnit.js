@@ -647,10 +647,13 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	assumedRank = assumedRank !== void null ? assumedRank : Game.defaultMoveRank;
 	nextActions = nextActions !== void null ? nextActions : null;
 	
+	nextActions = nextActions !== null
+		? this.actionQueue.concat(nextActions)
+		: this.actionQueue;
 	var timeLeft = this.cv;
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
-		if (nextActions !== null && i <= nextActions.length) {
+		if (i <= nextActions.length) {
 			rank = nextActions[i - 1].rank;
 		}
 		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
