@@ -280,6 +280,20 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 	}
 };
 
+// .getNextAction() method
+// Retrieves the next battle action, if any, in the unit's action queue.
+// Returns:
+//     The next action in the unit's action queue. If the action queue is empty, returns null.
+BattleUnit.prototype.getNextAction = function()
+{
+	if (this.actionQueue.length > 0) {
+		Console.writeLine(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
+		return this.actionQueue.shift();
+	} else {
+		return null;
+	}
+}
+
 // .hasStatus() method
 // Determines whether the unit is under the effects of a specified status.
 // Arguments:
@@ -315,20 +329,6 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 	}
 };
 
-// .getNextAction() method
-// Retrieves the next battle action, if any, in the unit's action queue.
-// Returns:
-//     The next action in the unit's action queue. If the action queue is empty, returns null.
-BattleUnit.prototype.getNextAction = function()
-{
-	if (this.actionQueue.length > 0) {
-		Console.writeLine(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
-		return this.actionQueue.shift();
-	} else {
-		return null;
-	}
-}
-
 // .isAlive() method
 // Determines whether the unit is still able to battle.
 BattleUnit.prototype.isAlive = function()
@@ -349,11 +349,18 @@ BattleUnit.prototype.isPartyMember = function()
 //     statusID: The status ID of the status effect to remove.
 BattleUnit.prototype.liftStatus = function(statusID)
 {
-	for (var i = 0; i < this.statuses.length; ++i) {
-		if (statusID == this.statuses[i].statusID) {
-			Console.writeLine(this.name + " lost status " + this.statuses[i].name);
-			this.statuses.splice(i, 1);
-			--i; continue;
+	var eventData = {
+		statusID: statusID,
+		cancel: false
+	};
+	this.raiseEvent('cured', eventData);
+	if (!eventData.cancel) {
+		for (var i = 0; i < this.statuses.length; ++i) {
+			if (statusID == this.statuses[i].statusID) {
+				Console.writeLine(this.name + " lost status " + this.statuses[i].name);
+				this.statuses.splice(i, 1);
+				--i; continue;
+			}
 		}
 	}
 };

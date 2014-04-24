@@ -655,6 +655,11 @@ Game = {
 				eventData.battlerInfo.stats.str /= 2;
 				eventData.battlerInfo.stats.mag /= 2;
 			},
+			cured: function(unit, eventData) {
+				if (eventData.statusID == 'skeleton') {
+					unit.heal(1, true);
+				}
+			},
 			damaged: function(unit, eventData) {
 				this.allowDeath = eventData.tags.indexOf('physical') != -1
 					|| eventData.tags.indexOf('sword') != -1
