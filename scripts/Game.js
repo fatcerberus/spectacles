@@ -374,8 +374,8 @@ Game = {
 			name: "Counter Stance",
 			tags: [ 'special' ],
 			statModifiers: {
-				def: 2.0,
-				foc: 2.0
+				def: 1.5,
+				foc: 1.5
 			},
 			initialize: function(unit) {
 				unit.resetCounter(Infinity);
@@ -397,7 +397,7 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('deathblow')) {
-					eventData.amount /= 2;
+					eventData.amount -= 1;
 				}
 			},
 			useSkill: function(unit, eventData) {
@@ -896,7 +896,7 @@ Game = {
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "#9's Desperation",
+					announceAs: "#9's Desperation...",
 					rank: 5,
 					effects: [
 						{

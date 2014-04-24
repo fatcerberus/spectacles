@@ -21,7 +21,7 @@ function AIContext(unit, battle, strategy)
 	this.data = {};
 	this.defaultSkillID = null;
 	this.moveQueue = [];
-	this.targets = [];
+	this.targets = null;
 	this.turnsTaken = 0;
 	this.unit = unit;
 	this.strategy = new strategy(this.battle, this.unit, this);
@@ -187,9 +187,9 @@ AIContext.prototype.useItem = function(itemID, unitID)
 		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an item (ID: '" + itemID + "') it didn't have");
 	}
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
-	var targets = this.targets !== null ? this.targets :
-		unitID !== null ? [ this.battle.findUnit(unitID) ] :
-		itemToUse.defaultTargets(this.unit);
+	var targets = this.targets !== null ? this.targets
+		: unitID !== null ? [ this.battle.findUnit(unitID) ]
+		: itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
 		targets: targets,
