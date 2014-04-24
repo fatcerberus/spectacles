@@ -320,7 +320,8 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 						this.ai.useItem('holyWater');
 						this.zombieHealFixState = 'healSelf';
 					} else {
-						this.zombieHealFixState = 'revenge';
+						this.ai.useSkill('desperationSlash');
+						this.zombieHealFixState = null;
 					}
 					break;
 				case 'healSelf':
@@ -335,17 +336,12 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 				case 'revenge':
 					if (this.ai.isSkillUsable('electrocute')) {
 						this.ai.useSkill('electrocute');
+					} else {
+						this.ai.useSkill('desperationSlash');
 					}
 					this.zombieHealFixState = null;
 					break;
 			}
-		} else if (this.isNecroTonicItemReady) {
-			if (this.ai.isItemUsable(this.necroTonicItem)) {
-				var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
-				this.ai.useItem(this.necroTonicItem, itemTarget);
-			}
-			this.isNecroTonicItemReady = false;
-			this.necroTonicItem = 'tonic';
 		} else if (this.elementHealState !== null) {
 			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 				if (this.elementHealState == 'prep') {
@@ -371,6 +367,13 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 				}
 				this.elementHealState = null;
 			}
+		} else if (this.isNecroTonicItemReady) {
+			if (this.ai.isItemUsable(this.necroTonicItem)) {
+				var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+				this.ai.useItem(this.necroTonicItem, itemTarget);
+			}
+			this.isNecroTonicItemReady = false;
+			this.necroTonicItem = 'tonic';
 		} else if (this.isAlcoholPending && !this.isPhase4Started) {
 			if (!this.unit.hasStatus('zombie')) {
 				this.ai.useItem('alcohol');
