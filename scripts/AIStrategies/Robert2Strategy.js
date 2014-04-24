@@ -14,7 +14,6 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.elementHealState = null;
 	this.elementalsTillOmniP3 = 2;
 	this.isAlcoholPending = false;
-	this.isDesperate = false;
 	this.isFinalTier2Used = false;
 	this.isNecromancyReady = false;
 	this.isPhase4Started = false;
@@ -181,7 +180,6 @@ Robert2Strategy.prototype.strategize = function()
 			case 4:
 				if (this.phase > lastPhase) {
 					this.ai.useSkill('desperationSlash');
-					this.isDesperate = true;
 				} else {
 					if (!this.isPhase4Started) {
 						if (!this.unit.hasStatus('zombie') && !this.isAlcoholPending) {
@@ -321,7 +319,7 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 						this.zombieHealFixState = 'healSelf';
 					} else {
 						this.ai.useSkill('desperationSlash');
-						this.zombieHealFixState = null;
+						this.zombieHealFixState = 'desperation';
 					}
 					break;
 				case 'healSelf':
@@ -330,15 +328,19 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 						this.zombieHealFixState = 'revenge';
 					} else {
 						this.ai.useSkill('desperationSlash');
-						this.zombieHealFixState = null;
+						this.zombieHealFixState = 'desperation';
 					}
 					break;
 				case 'revenge':
 					if (this.ai.isSkillUsable('electrocute')) {
 						this.ai.useSkill('electrocute');
+						this.zombieHealFixState = null;
 					} else {
 						this.ai.useSkill('desperationSlash');
+						this.zombieHealFixState = 'desperation'
 					}
+					break;
+				case 'desperation':
 					this.zombieHealFixState = null;
 					break;
 			}

@@ -13,7 +13,7 @@ Game = {
 	
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
-	defaultItemRank: 1,
+	defaultItemRank: 2,
 	defenseBreakRank: 3,
 	
 	bossHPPerBar: 500,
@@ -806,7 +806,7 @@ Game = {
 			actions: [
 				{
 					announceAs: "Charging Up...",
-					rank: 3,
+					rank: 2,
 					effects: [
 						{
 							targetHint: "user",
@@ -817,7 +817,7 @@ Game = {
 				},
 				{
 					announceAs: "Charge Slash",
-					rank: 2,
+					rank: 3,
 					accuracyType: 'sword',
 					effects: [
 						{
@@ -896,8 +896,8 @@ Game = {
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "#9's Desperation...",
-					rank: 5,
+					announceAs: "#9 seems desperate...",
+					rank: 2,
 					effects: [
 						{
 							targetHint: 'user',
@@ -908,7 +908,7 @@ Game = {
 				},
 				{
 					announceAs: "Desperation Slash",
-					rank: 3,
+					rank: 5,
 					accuracyType: 'sword',
 					effects: [
 						{

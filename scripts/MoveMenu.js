@@ -210,11 +210,17 @@ MoveMenu.prototype.getInput = function()
 		if (this.topCursor < 0) {
 			this.topCursor = this.drawers.length - 1;
 		}
+		var drawer = this.drawers[this.topCursor];
+		var usable = drawer.contents[drawer.cursor];
+		this.updateTurnPreview(usable);
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 		++this.topCursor;
 		if (this.topCursor >= this.drawers.length) {
 			this.topCursor = 0;
 		}
+		var drawer = this.drawers[this.topCursor];
+		var usable = drawer.contents[drawer.cursor];
+		this.updateTurnPreview(usable);
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
 		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
 		this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
@@ -238,8 +244,7 @@ MoveMenu.prototype.open = function()
 			drawerTable[category] = {
 				name: Game.moveCategories[category],
 				contents: [],
-				cursor: 0,
-				rank: Game.defaultMoveRank
+				cursor: 0
 			};
 		}
 		drawerTable[category].contents.push(skill);
@@ -249,8 +254,8 @@ MoveMenu.prototype.open = function()
 		this.drawers.push(drawerTable[category]);
 	}
 	this.drawers = this.drawers.concat([
-		{ name: "Item", contents: this.unit.items, cursor: 0, rank: Game.defaultItemRank },
-		{ name: "Stance", contents: stanceList, cursor: 0, rank: Infinity }
+		{ name: "Item", contents: this.unit.items, cursor: 0 },
+		{ name: "Stance", contents: stanceList, cursor: 0 }
 	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
@@ -261,6 +266,9 @@ MoveMenu.prototype.open = function()
 		this.selection = null;
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
+		var drawer = this.drawers[this.topCursor];
+		var usable = drawer.contents[drawer.cursor];
+		this.updateTurnPreview(usable);
 		Threads.waitFor(Threads.createEntityThread(this, 10));
 		var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
 	}
