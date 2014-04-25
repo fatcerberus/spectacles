@@ -902,7 +902,7 @@ Game = {
 			actions: [
 				{
 					announceAs: "#9 seems desperate...",
-					rank: 2,
+					rank: 3,
 					effects: [
 						{
 							targetHint: 'user',

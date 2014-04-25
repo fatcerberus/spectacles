@@ -462,6 +462,7 @@ Battle.prototype.tick = function()
 			return;
 		}
 	}
+	Link(unitLists).unroll().invoke('endCycle');
 };
 
 // .update() method

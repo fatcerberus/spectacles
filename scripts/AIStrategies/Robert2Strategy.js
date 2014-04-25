@@ -12,7 +12,6 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.elementHealState = null;
-	this.elementalsTillOmniP3 = 2;
 	this.isAlcoholPending = false;
 	this.isFinalTier2Used = false;
 	this.isNecromancyReady = false;
@@ -112,6 +111,7 @@ Robert2Strategy.prototype.strategize = function()
 				if (this.phase > lastPhase) {
 					this.ai.useSkill('protectiveAura');
 					this.doChargeSlashNext = false;
+					this.elementalsTillOmni = 2;
 					this.isComboStarted = false;
 					this.movesTillNecroTonic = 5;
 				} else {
@@ -125,8 +125,8 @@ Robert2Strategy.prototype.strategize = function()
 						this.ai.useSkill('necromancy');
 						this.movesTillNecroTonic = Infinity;
 					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
-						--this.elementalsTillOmniP3;
-						if (this.elementalsTillOmniP3 <= 0 && this.ai.isItemUsable('vaccine')) {
+						--this.elementalsTillOmni;
+						if (this.elementalsTillOmni <= 0 && this.ai.isItemUsable('vaccine')) {
 							this.ai.useItem('vaccine');
 						} else {
 							if (this.unit.hasStatus('ignite')) {
@@ -135,7 +135,7 @@ Robert2Strategy.prototype.strategize = function()
 								this.ai.useSkill('flare', 'robert2');
 							}
 						}
-						if (this.elementalsTillOmniP3 <= 0) {
+						if (this.elementalsTillOmni <= 0) {
 							this.ai.useSkill('omni');
 						}
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {

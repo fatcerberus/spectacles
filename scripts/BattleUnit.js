@@ -46,6 +46,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.ai = null;
 	this.battle = battle;
 	this.battlerInfo = {};
+	this.counterDamage = 0;
 	this.cv = 0;
 	this.hp = 0;
 	this.lastAttacker = null;
@@ -80,6 +81,9 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.stats[stat] = basis.stats[stat];
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
+		this.stance = BattleStance.counter;
+		this.counterMove = { usable: new SkillUsable('chargeSlash', 100) };
+		this.isCounterReady = false;
 	} else {
 		if (!(basis in Game.enemies)) {
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
@@ -172,16 +176,6 @@ BattleUnit.prototype.beginCycle = function()
 	if (!this.isAlive()) {
 		return;
 	}
-	if (this.stance == BattleStance.counter && this.isCounterReady) {
-		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		this.stance = BattleStance.attack;
-		this.queueMove(this.counterMove);
-		var action = this.getNextAction();
-		while (action != null) {
-			performAction(action, this.counterMove);
-			action = this.getNextAction();
-		}
-	}
 	this.refreshInfo();
 	for (var i = 0; i < this.statuses.length; ++i) {
 		this.statuses[i].beginCycle();
@@ -222,6 +216,35 @@ BattleUnit.prototype.die = function()
 	this.hp = 0;
 	this.battle.ui.hud.setHP(this.name, this.hp);
 	this.actor.animate('die');
+};
+
+// .endCycle() method
+// Performs necessary processing for the unit at the end of a CTB cycle.
+BattleUnit.prototype.endCycle = function()
+{
+	if (!this.isAlive()) {
+		return;
+	}
+	if (this.stance == BattleStance.counter && this.isCounterReady) {
+		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
+		var powerBoost = 1.0 + this.counterDamage / this.maxHP;
+		this.stance = BattleStance.attack;
+		this.queueMove(this.counterMove);
+		var action = this.getNextAction();
+		while (action != null) {
+			action.accuracyRate = 2.0;
+			Link(action.effects)
+				.filterBy('type', 'damage')
+				.each(function(effect)
+			{
+				effect.power *= powerBoost;
+			});
+			this.performAction(action, this.counterMove);
+			action = this.getNextAction();
+		}
+		this.counterDamage = 0;
+		this.resetCounter(Game.defenseBreakRank);
+	}
 };
 
 // .evade() method
@@ -482,9 +505,14 @@ BattleUnit.prototype.refreshInfo = function()
 // Arguments:
 //     rank: The rank of the action taken. The higher the rank, the longer the unit will have to
 //           wait for its next turn.
+// Remarks:
+//     Rank 0 is treated as a special case; passing 0 or less for rank will always give the unit
+//     its next turn immediately.
 BattleUnit.prototype.resetCounter = function(rank)
 {
-	this.cv = Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
+	this.cv = rank > 0
+		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1)
+		: 1;
 	Console.writeLine(this.name + "'s CV reset to " + this.cv);
 	Console.append("rank: " + rank);
 };
@@ -517,7 +545,9 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
-	var multiplier = this.stance == BattleStance.defend ? 0.5 : 1.0;
+	var multiplier = this.stance == BattleStance.defend ? 0.5
+		: this.stance == BattleStance.counter ? 0.75
+		: 1.0;
 	for (var i = 0; i < tags.length; ++i) {
 		if (tags[i] in this.affinities) {
 			multiplier *= this.affinities[tags[i]];
@@ -530,11 +560,15 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		amount = Math.round(eventData.amount);
 	}
 	if (amount > 0) {
+		if (amount >= this.hp && this.stance != BattleStance.attack) {
+			amount = this.hp - 1;
+		}
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
+			this.counterDamage += amount;
 			this.counterMove.targets = [ this.lastAttacker ];
 			this.isCounterReady = true;
 			Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
-			Console.append("targ: " + this.counterTargets[0].name);
+			Console.append("targ: " + this.counterMove.targets[0].name);
 		} else if (this.stance == BattleStance.defend) {
 			this.stance = BattleStance.attack;
 			Console.writeLine(this.name + "'s defensive stance was broken");
