@@ -390,6 +390,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
+	Link(targetsHit).each(function(target) {
+		target.beginTargeting(actingUnit);
+	});
 	Link(action.effects)
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)
@@ -405,6 +408,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.append("retarg: " + effect.targetHint);
 		effectHandler(actingUnit, effectTargets, effect);
 	});
+	Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
 };
 

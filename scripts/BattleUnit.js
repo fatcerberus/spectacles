@@ -81,9 +81,6 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.stats[stat] = basis.stats[stat];
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
-		this.stance = BattleStance.counter;
-		this.counterMove = { usable: new SkillUsable('chargeSlash', 100) };
-		this.isCounterReady = false;
 	} else {
 		if (!(basis in Game.enemies)) {
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
@@ -197,6 +194,15 @@ BattleUnit.prototype.beginCycle = function()
 	this.mpPool.restore(this.battlerInfo.statAverage / 10);
 };
 
+// .beginTargeting() method
+// Signals the unit that it is being targeted by a battle action.
+// Arguments:
+//     actingUnit: The unit performing the action.
+BattleUnit.prototype.beginTargeting = function(actingUnit)
+{
+	this.lastAttacker = actingUnit;
+}
+
 // .clearQueue() method
 // Clears the unit's action queue without executing any queued actions.
 BattleUnit.prototype.clearQueue = function()
@@ -243,8 +249,15 @@ BattleUnit.prototype.endCycle = function()
 			action = this.getNextAction();
 		}
 		this.counterDamage = 0;
-		this.resetCounter(Game.defenseBreakRank);
 	}
+};
+
+// .endTargeting() method
+// Signals the unit that a battle action targeting it has finished executing. Should be paired
+// with .beginTargeting().
+BattleUnit.prototype.endTargeting = function()
+{
+	this.lastAttacker = null;
 };
 
 // .evade() method
@@ -527,6 +540,27 @@ BattleUnit.prototype.restoreMP = function(percentage)
 	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
 };
 
+// .setCounter() method
+// Sets the unit into Counter Stance with a specified skill as the reprisal.
+// Arguments:
+//     skill: The SkillUsable representing the skill to use as the reprisal.
+// Remarks:
+//     If the unit is already in Counter Stance and ready to counterattack, this
+//     merely changes the reprisal without canceling the counterattack.
+BattleUnit.prototype.setCounter = function(skill)
+{
+	if (this.stance != BattleStance.counter) {
+		Console.writeLine(this.name + " is going into Counter Stance");
+		this.stance = BattleStance.counter;
+		this.counterMove = { usable: skill, targets: null };
+		this.isCounterReady = false;
+		this.cv = Infinity;
+	} else {
+		this.counterMove.usable = skill;
+	}
+	Console.writeLine(this.name + "'s reprisal set to " + this.counterMove.usable.name);
+}
+
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
@@ -545,9 +579,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
-	var multiplier = this.stance == BattleStance.defend ? 0.5
-		: this.stance == BattleStance.counter ? 0.75
-		: 1.0;
+	var multiplier = this.stance == BattleStance.defend ? 0.5 : 1.0;
 	for (var i = 0; i < tags.length; ++i) {
 		if (tags[i] in this.affinities) {
 			multiplier *= this.affinities[tags[i]];
@@ -560,16 +592,19 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		amount = Math.round(eventData.amount);
 	}
 	if (amount > 0) {
-		if (amount >= this.hp && this.stance != BattleStance.attack) {
-			amount = this.hp - 1;
-		}
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
+			if (amount >= this.hp && this.stance != BattleStance.attack) {
+				amount = this.hp - 1;
+			}
 			this.counterDamage += amount;
 			this.counterMove.targets = [ this.lastAttacker ];
 			this.isCounterReady = true;
 			Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
 			Console.append("targ: " + this.counterMove.targets[0].name);
 		} else if (this.stance == BattleStance.defend) {
+			if (amount >= this.hp && this.stance != BattleStance.attack) {
+				amount = this.hp - 1;
+			}
 			this.stance = BattleStance.attack;
 			Console.writeLine(this.name + "'s defensive stance was broken");
 			this.resetCounter(Game.defenseBreakRank);
@@ -603,7 +638,6 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 //     action:     The action being performed.
 BattleUnit.prototype.takeHit = function(actingUnit, action)
 {
-	this.lastAttacker = actingUnit;
 	var eventData = {
 		actingUnitInfo: actingUnit.battlerInfo,
 		action: action
