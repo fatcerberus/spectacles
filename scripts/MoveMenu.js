@@ -152,8 +152,19 @@ function MoveMenu(unit, battle)
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
 	};
 	
-	this.updateTurnPreview = function(nextMoveOrRank)
+	this.updateTurnPreview = function()
 	{
+		var nextMoveOrRank;
+		if (this.stance == BattleStance.attack) {
+			if (this.isExpanded) {
+				nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
+			} else {
+				var drawer = this.drawers[this.topCursor]
+				nextMoveOrRank = drawer.contents[drawer.cursor];
+			}
+		} else {
+			nextMoveOrRank = Infinity;
+		}
 		var prediction = this.battle.predictTurns(this.unit, isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : nextMoveOrRank);
 		this.battle.ui.hud.turnPreview.set(prediction);
 	};
@@ -194,7 +205,7 @@ MoveMenu.prototype.getInput = function()
 			this.isExpanded = true;
 			this.hideMoveList.stop();
 			this.showMoveList.run();
-			this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
+			this.updateTurnPreview();
 		} else if (this.isExpanded && this.moveMenu[this.moveCursor].isEnabled) {
 			this.drawers[this.topCursor].cursor = this.moveCursor;
 			this.selection = this.moveMenu[this.moveCursor].usable;
@@ -212,28 +223,25 @@ MoveMenu.prototype.getInput = function()
 		} else {
 			this.stance = BattleStance.attack;
 		}
+		this.updateTurnPreview();
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		--this.topCursor;
 		if (this.topCursor < 0) {
 			this.topCursor = this.drawers.length - 1;
 		}
-		var drawer = this.drawers[this.topCursor];
-		var usable = drawer.contents[drawer.cursor];
-		this.updateTurnPreview(usable);
+		this.updateTurnPreview();
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 		++this.topCursor;
 		if (this.topCursor >= this.drawers.length) {
 			this.topCursor = 0;
 		}
-		var drawer = this.drawers[this.topCursor];
-		var usable = drawer.contents[drawer.cursor];
-		this.updateTurnPreview(usable);
+		this.updateTurnPreview();
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
 		this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
-		this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
+		this.updateTurnPreview();
 	} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
 		this.moveCursor = (this.moveCursor + 1) % this.moveMenu.length;
-		this.updateTurnPreview(this.moveMenu[this.moveCursor].usable);
+		this.updateTurnPreview();
 	}
 };
 
@@ -272,7 +280,7 @@ MoveMenu.prototype.open = function()
 		this.showMenu.run();
 		var drawer = this.drawers[this.topCursor];
 		var usable = drawer.contents[drawer.cursor];
-		this.updateTurnPreview(usable);
+		this.updateTurnPreview();
 		Threads.waitFor(Threads.createEntityThread(this, 10));
 		if (this.stance == BattleStance.attack) {
 			var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
@@ -291,7 +299,7 @@ MoveMenu.prototype.open = function()
 // Renders the menu in its current state.
 MoveMenu.prototype.render = function()
 {
-	var yOrigin = -34 * (1.0 - this.fadeness) + 16;
+	var yOrigin = -50 * (1.0 - this.fadeness) + 16;
 	var itemWidth = 160 / this.drawers.length;
 	var litTextColor = CreateColor(255, 255, 255, 255);
 	var dimTextColor = CreateColor(192, 192, 192, 255);
@@ -321,7 +329,8 @@ MoveMenu.prototype.render = function()
 	}
 	Rectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
 	OutlinedRectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-	this.drawText(this.font, 80, itemY + 2, 1, CreateColor(192, 192, 192, 255 * this.fadeness), stanceName + " Stance", 'center');
+	this.drawText(this.font, 5, itemY + 2, 1, CreateColor(64, 64, 64, 255 * this.fadeness), "Stance");
+	this.drawText(this.font, 155, itemY + 2, 1, CreateColor(192, 192, 192, 255 * this.fadeness), stanceName, 'right');
 };
 
 // .update() method
