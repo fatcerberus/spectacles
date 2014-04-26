@@ -37,7 +37,7 @@ function MenuStrip(title, isCancelable, items)
 // Arguments:
 //     text: The text to display on the menu strip when the item is selected.
 //     tag:  Optional. An object or value to associate with the menu item. If this argument is not provided,
-//           the item text is used as the tag.
+//           the item text will be used as the tag.
 MenuStrip.prototype.addItem = function(text, tag)
 {
 	if (tag === void null) {
@@ -47,6 +47,7 @@ MenuStrip.prototype.addItem = function(text, tag)
 		text: text,
 		tag: tag
 	});
+	return this;
 }
 
 // .getInput() method

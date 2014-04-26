@@ -79,6 +79,9 @@ Game = {
 				return (userInfo.level * 1.25) / userInfo.weapon.level;
 			}
 		},
+		counterStrength: function(damage, unitInfo) {
+			return 1.0 + Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
+		},
 		damage: {
 			calculate: function(power, level, targetTier, attack, defense) {
 				var multiplier = 1.0 + 4.0 * (level - 1) / 99;

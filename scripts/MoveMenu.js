@@ -29,6 +29,7 @@ function MoveMenu(unit, battle)
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
 	this.moveMenu = null;
 	this.selection = null;
+	this.stance = BattleStance.attack;
 	this.topCursor = 0;
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
@@ -151,9 +152,9 @@ function MoveMenu(unit, battle)
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
 	};
 	
-	this.updateTurnPreview = function(nextMoveUsable)
+	this.updateTurnPreview = function(nextMoveOrRank)
 	{
-		var prediction = this.battle.predictTurns(this.unit, nextMoveUsable.peekActions());
+		var prediction = this.battle.predictTurns(this.unit, isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : nextMoveOrRank);
 		this.battle.ui.hud.turnPreview.set(prediction);
 	};
 }
@@ -205,6 +206,12 @@ MoveMenu.prototype.getInput = function()
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
+		if (this.stance == BattleStance.attack) {
+			this.stance = BattleStance.counter;
+		} else {
+			this.stance = BattleStance.attack;
+		}
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		--this.topCursor;
 		if (this.topCursor < 0) {
@@ -234,9 +241,6 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
-	var stanceList = [
-		new SkillUsable('counterStance', 100)
-	];
 	var drawerTable = {};
 	Link(this.unit.skills).each(function(skill) {
 		var category = skill.skillInfo.category;
@@ -254,13 +258,13 @@ MoveMenu.prototype.open = function()
 		this.drawers.push(drawerTable[category]);
 	}
 	this.drawers = this.drawers.concat([
-		{ name: "Item", contents: this.unit.items, cursor: 0 },
-		{ name: "Stance", contents: stanceList, cursor: 0 }
+		{ name: "Item", contents: this.unit.items, cursor: 0 }
 	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;
-	while (chosenTargets === null) {
+	this.stance = BattleStance.attack;
+	while (this.stance == BattleStance.attack && chosenTargets === null) {
 		this.expansion = 0.0;
 		this.isExpanded = false;
 		this.selection = null;
@@ -270,12 +274,15 @@ MoveMenu.prototype.open = function()
 		var usable = drawer.contents[drawer.cursor];
 		this.updateTurnPreview(usable);
 		Threads.waitFor(Threads.createEntityThread(this, 10));
-		var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+		if (this.stance == BattleStance.attack) {
+			var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+		}
 	}
 	this.battle.ui.hud.highlight(null);
 	this.battle.resume();
 	return {
 		usable: this.selection,
+		stance: this.stance,
 		targets: chosenTargets
 	};
 };
@@ -294,17 +301,27 @@ MoveMenu.prototype.render = function()
 		var width = Math.floor((i + 1) * itemWidth) - x;
 		this.drawTopItem(x, yOrigin, width, this.drawers[i], i == this.topCursor);
 	}
+	var stanceName = this.stance == BattleStance.counter ? "Counter"
+		: this.stance == BattleStance.defend ? "Defend"
+		: "Attack";
+	var itemY;
 	if (this.expansion > 0.0) {
 		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
 		var height = this.moveMenu.length * 16;
 		var y = yOrigin + 18 - height * (1.0 - this.expansion);
-		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 192 * this.expansion * this.fadeness)); 
+		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 192 * this.expansion * this.fadeness));
+		itemY = y;
 		for (var i = 0; i < this.moveMenu.length; ++i) {
-			var itemY = y + i * 18;
 			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.isRunning());
+			itemY += 18;
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+	} else {
+		itemY = yOrigin + 18;
 	}
+	Rectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
+	OutlinedRectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
+	this.drawText(this.font, 80, itemY + 2, 1, CreateColor(192, 192, 192, 255 * this.fadeness), stanceName + " Stance", 'center');
 };
 
 // .update() method

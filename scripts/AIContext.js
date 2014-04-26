@@ -120,7 +120,12 @@ AIContext.prototype.isSkillUsable = function(skillID)
 //     skillID: The ID of the skill to counter with, as defined in the gamedef.
 AIContext.prototype.setCounter = function(skillID)
 {
-	
+	var skill = new SkillUsable(skillID, 100);
+	this.moveQueue.push({
+		usable: skill,
+		stance: BattleStance.counter,
+		predicate: function() { return true; }
+	});
 };
 
 // .setDefaultSkill() method
@@ -192,6 +197,7 @@ AIContext.prototype.useItem = function(itemID, unitID)
 		: itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
+		stance: BattleStance.attack,
 		targets: targets,
 		predicate: function() { return true; }
 	});
@@ -228,6 +234,7 @@ AIContext.prototype.useSkill = function(skillID, unitID, predicate)
 		: skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
+		stance: BattleStance.attack,
 		targets: targets,
 		predicate: predicate
 	});

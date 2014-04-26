@@ -233,18 +233,24 @@ BattleUnit.prototype.endCycle = function()
 	}
 	if (this.stance == BattleStance.counter && this.isCounterReady) {
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		var powerBoost = 1.0 + this.counterDamage / this.maxHP;
+		var powerBoost = Game.math.counterStrength(this.counterDamage, this.battlerInfo);
 		this.stance = BattleStance.attack;
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
 		while (action != null) {
 			action.accuracyRate = 2.0;
+			var newPower;
+			var oldPower;
 			Link(action.effects)
 				.filterBy('type', 'damage')
 				.each(function(effect)
 			{
-				effect.power *= powerBoost;
+				oldPower = effect.power;
+				effect.power = Math.round(effect.power * powerBoost);
+				newPower = effect.power;
 			});
+			Console.writeLine("Attack boosted by C.S. to " + newPower + " POW");
+			Console.append("reg: " + oldPower);
 			this.performAction(action, this.counterMove);
 			action = this.getNextAction();
 		}
@@ -499,7 +505,7 @@ BattleUnit.prototype.refreshInfo = function()
 	this.battlerInfo.weapon = clone(this.weapon);
 	this.battlerInfo.tier = this.tier;
 	this.battlerInfo.baseStats = {};
-	this.battlerInfo.stats = {};
+	this.battlerInfo.stats = { maxHP: this.maxHP };
 	for (var stat in Game.namedStats) {
 		this.battlerInfo.baseStats[stat] = this.isPartyMember() ?
 			this.character.baseStats[stat] :
@@ -687,11 +693,24 @@ BattleUnit.prototype.tick = function()
 			} else {
 				chosenMove = this.ai.getNextMove();
 			}
-			this.queueMove(chosenMove);
-			action = this.getNextAction();
+			switch (chosenMove.stance) {
+				case BattleStance.attack:
+					this.queueMove(chosenMove);
+					action = this.getNextAction();
+					break;
+				case BattleStance.counter:
+					this.setCounter(chosenMove.usable);
+					break;
+				case BattleStance.defend:
+					this.stance = BattleStance.defend;
+					this.cv = Infinity;
+					break;
+			}
 		}
 		if (this.isAlive()) {
-			this.performAction(action, this.moveUsed);
+			if (action !== null) {
+				this.performAction(action, this.moveUsed);
+			}
 			this.raiseEvent('endTurn');
 		}
 		this.battle.resume();
@@ -729,7 +748,8 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	for (var i = 1; i <= turnIndex; ++i) {
 		var rank = assumedRank;
 		if (i <= nextActions.length) {
-			rank = nextActions[i - 1].rank;
+			rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank
+				: nextActions[i - 1];
 		}
 		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
 	}
