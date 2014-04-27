@@ -130,6 +130,15 @@ Game = {
 					userInfo.stats.str, targetInfo.stats.def);
 			}
 		},
+		defend: {
+			damageTaken: function(baseDamage, tags) {
+				if (!Link(tags).some([ 'special', 'cure' ])) {
+					return baseDamage / 2;
+				} else {
+					return baseDamage;
+				}
+			}
+		},
 		experience: {
 			skill: function(skillInfo, userInfo, targetsInfo) {
 				var levelSum = 0;

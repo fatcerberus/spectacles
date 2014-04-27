@@ -594,7 +594,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
-	var multiplier = this.stance == BattleStance.defend ? 0.5 : 1.0;
+	var multiplier = 1.0;
 	for (var i = 0; i < tags.length; ++i) {
 		if (tags[i] in this.affinities) {
 			multiplier *= this.affinities[tags[i]];
@@ -616,6 +616,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 				Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
 				Console.append("targ: " + this.counterMove.targets[0].name);
 			} else if (this.stance == BattleStance.defend) {
+				amount = Math.round(Game.math.defend.damageTaken(amount, tags));
 				this.stance = BattleStance.attack;
 				Console.writeLine(this.name + "'s defensive stance was broken");
 				this.resetCounter(Game.defenseBreakRank);
