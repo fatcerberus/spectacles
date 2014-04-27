@@ -233,7 +233,7 @@ BattleUnit.prototype.endCycle = function()
 	}
 	if (this.stance == BattleStance.counter && this.isCounterReady) {
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		var powerBoost = Game.math.counterStrength(this.counterDamage, this.battlerInfo);
+		var multiplier = 1.0 + Game.math.counterBoost(this.counterDamage, this.battlerInfo);
 		this.stance = BattleStance.attack;
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
@@ -246,7 +246,7 @@ BattleUnit.prototype.endCycle = function()
 				.each(function(effect)
 			{
 				oldPower = effect.power;
-				effect.power = Math.round(effect.power * powerBoost);
+				effect.power = Math.round(effect.power * multiplier);
 				newPower = effect.power;
 			});
 			Console.writeLine("Attack boosted by C.S. to " + newPower + " POW");
@@ -585,7 +585,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	amount = Math.round(amount);
-	var multiplier = this.stance != BattleStance.attack ? 0.5 : 1.0;
+	var multiplier = this.stance == BattleStance.defend ? 0.5 : 1.0;
 	for (var i = 0; i < tags.length; ++i) {
 		if (tags[i] in this.affinities) {
 			multiplier *= this.affinities[tags[i]];
@@ -599,7 +599,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount > 0) {
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
-			amount = Math.max(Math.min(amount, this.hp - 1), 0);
+			amount = Math.max(Math.min(Math.round(Game.math.counterDamage(amount, tags)), this.hp - 1), 0);
 			this.counterDamage += amount;
 			this.counterMove.targets = [ this.lastAttacker ];
 			this.isCounterReady = true;

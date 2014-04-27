@@ -92,7 +92,8 @@ SkillUsable.prototype.grow = function(amount)
 // .isUsable() method
 // Determines whether the skill can be used by a specified battler.
 // Arguments:
-//     user: The battle unit that will be using the skill.
+//     user:   The battle unit that will be using the skill.
+//     stance: The user's stance.
 // Returns:
 //     true if the skill can be used; false otherwise.
 SkillUsable.prototype.isUsable = function(user)

@@ -79,8 +79,13 @@ Game = {
 				return (userInfo.level * 1.25) / userInfo.weapon.level;
 			}
 		},
-		counterStrength: function(damage, unitInfo) {
-			return 1.0 + Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
+		counterBoost: function(damage, unitInfo) {
+			return Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
+		},
+		counterDamage: function(baseDamage, tags) {
+			if (!Link(tags).some([ 'deathblow', 'special' ])) {
+				return baseDamage * 0.75;
+			}
 		},
 		damage: {
 			calculate: function(power, level, targetTier, attack, defense) {

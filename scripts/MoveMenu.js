@@ -74,7 +74,7 @@ function MoveMenu(unit, battle)
 		
 		var color;
 		var color2;
-		color = isEnabled ? cursorColor : CreateColor(48, 48, 48, cursorColor.alpha);
+		color = isEnabled ? cursorColor : CreateColor(96, 96, 96, cursorColor.alpha);
 		color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 		if (isLockedIn) {
 			var mainColor = color;
@@ -118,8 +118,8 @@ function MoveMenu(unit, battle)
 			this.drawText(this.font, x + 141, y + 1, isEnabled, textColor, item.mpCost, 'right');
 			this.drawText(this.font, x + 142, y + 5, isEnabled, usageTextColor, "MP");
 		} else if (item.usable instanceof ItemUsable) {
-			this.drawText(this.font, x + 148, y + 3, isEnabled, usageTextColor, item.usable.usesLeft, 'right');
-			this.drawText(this.font, x + 149, y + 3, isEnabled, textColor, "x");
+			this.drawText(this.font, x + 148, y + 3, isEnabled, textColor, item.usable.usesLeft, 'right');
+			this.drawText(this.font, x + 149, y + 3, isEnabled, usageTextColor, "x");
 		}
 	};
 	
@@ -146,7 +146,7 @@ function MoveMenu(unit, battle)
 	this.drawTopItem = function(x, y, width, item, isSelected)
 	{
 		var isEnabled = item.contents.length > 0;
-		this.drawItemBox(x, y, width, 18, 160 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
+		this.drawItemBox(x, y, width, 18, 144 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 		var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
@@ -186,7 +186,7 @@ MoveMenu.prototype.getInput = function()
 				var menuItem = {
 					name: usables[i].name,
 					idColor: CreateColor(192, 192, 192, 255),
-					isEnabled: usables[i].isUsable(this.unit),
+					isEnabled: usables[i].isUsable(this.unit, this.stance),
 					mpCost: usables[i].mpCost(this.unit),
 					rank: usables[i].getRank(),
 					usable: usables[i]
@@ -222,6 +222,11 @@ MoveMenu.prototype.getInput = function()
 			this.stance = BattleStance.counter;
 		} else {
 			this.stance = BattleStance.attack;
+		}
+		if (this.isExpanded) {
+			Link(this.moveMenu).each(function(entry) {
+				entry.isEnabled = entry.usable.isUsable(this.unit, this.stance);
+			}.bind(this));
 		}
 		this.updateTurnPreview();
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
@@ -272,18 +277,24 @@ MoveMenu.prototype.open = function()
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;
 	this.stance = BattleStance.attack;
-	while (this.stance == BattleStance.attack && chosenTargets === null) {
+	while (chosenTargets === null) {
 		this.expansion = 0.0;
 		this.isExpanded = false;
 		this.selection = null;
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
-		var drawer = this.drawers[this.topCursor];
-		var usable = drawer.contents[drawer.cursor];
 		this.updateTurnPreview();
 		Threads.waitFor(Threads.createEntityThread(this, 10));
-		if (this.stance == BattleStance.attack) {
-			var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+		switch (this.stance) {
+			case BattleStance.attack:
+				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+				break;
+			case BattleStance.counter:
+				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "CS/" + this.selection.name).open();
+				break;
+			case BattleStance.defend:
+				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "Defend").open();
+				break;
 		}
 	}
 	this.battle.ui.hud.highlight(null);
@@ -299,7 +310,14 @@ MoveMenu.prototype.open = function()
 // Renders the menu in its current state.
 MoveMenu.prototype.render = function()
 {
-	var yOrigin = -50 * (1.0 - this.fadeness) + 16;
+	var yOrigin = -54 * (1.0 - this.fadeness) + 16;
+	var stanceName = this.stance == BattleStance.counter ? "CTR"
+		: this.stance == BattleStance.defend ? "DEF"
+		: "ATT";
+	Rectangle(0, yOrigin, 160, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
+	OutlinedRectangle(0, yOrigin, 160, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
+	this.drawText(this.font, 5, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName);
+	this.drawText(this.font, 155, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), "[" + stanceName + "]", 'right');
 	var itemWidth = 160 / this.drawers.length;
 	var litTextColor = CreateColor(255, 255, 255, 255);
 	var dimTextColor = CreateColor(192, 192, 192, 255);
@@ -307,17 +325,14 @@ MoveMenu.prototype.render = function()
 	for (var i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
-		this.drawTopItem(x, yOrigin, width, this.drawers[i], i == this.topCursor);
+		this.drawTopItem(x, yOrigin + 16, width, this.drawers[i], i == this.topCursor);
 	}
-	var stanceName = this.stance == BattleStance.counter ? "Counter"
-		: this.stance == BattleStance.defend ? "Defend"
-		: "Attack";
 	var itemY;
 	if (this.expansion > 0.0) {
-		SetClippingRectangle(0, yOrigin + 18, 160, GetScreenHeight() - (yOrigin + 18));
+		SetClippingRectangle(0, yOrigin + 34, 160, GetScreenHeight() - (yOrigin + 34));
 		var height = this.moveMenu.length * 16;
-		var y = yOrigin + 18 - height * (1.0 - this.expansion);
-		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 192 * this.expansion * this.fadeness));
+		var y = yOrigin + 34 - height * (1.0 - this.expansion);
+		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
 		itemY = y;
 		for (var i = 0; i < this.moveMenu.length; ++i) {
 			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.isRunning());
@@ -325,12 +340,8 @@ MoveMenu.prototype.render = function()
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
 	} else {
-		itemY = yOrigin + 18;
+		itemY = yOrigin + 34;
 	}
-	Rectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
-	OutlinedRectangle(0, itemY, 160, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-	this.drawText(this.font, 5, itemY + 2, 1, CreateColor(64, 64, 64, 255 * this.fadeness), "Stance");
-	this.drawText(this.font, 155, itemY + 2, 1, CreateColor(192, 192, 192, 255 * this.fadeness), stanceName, 'right');
 };
 
 // .update() method

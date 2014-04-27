@@ -302,7 +302,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 		var biasOrder = a.bias - b.bias;
 		return sortOrder !== 0 ? sortOrder : biasOrder;
 	});
-	forecast = forecast.slice(0, 7);
+	forecast = forecast.slice(0, 10);
 	return forecast;
 };
 

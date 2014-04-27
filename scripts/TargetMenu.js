@@ -6,17 +6,26 @@
 // TargetMenu() constructor
 // Creates an object representing a move targeting menu.
 // Arguments:
-//     unit:   The battler whose move's target will be selected.
-//     battle: The battle session during which the menu will be shown.
-//     usable: The move (skill or item) whose target is being determined.
-function TargetMenu(unit, battle, usable)
+//     unit:     The battler whose move's target will be selected.
+//     battle:   The battle session during which the menu will be shown.
+//     usable:   Optional. If specified and not null, the Usable move whose target is being determined.
+//     moveName: Optional. The move name displayed while selecting a target. If not specified or null,
+//               the move name will be taken from the Usable.
+function TargetMenu(unit, battle, usable, moveName)
 {
+	usable = usable !== void null ? usable : null;
+	moveName = moveName !== void null ? moveName : null;
+	
 	this.battle = battle;
 	this.doChangeInfo = null;
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
+	this.isTargetLocked = usable === null;
 	this.multiTarget = false;
+	this.name = moveName !== null ? moveName
+		: usable !== null ? usable.name
+		: unit.name;
 	this.statusInfo = null;
 	this.cursorFont = GetSystemFont();
 	this.infoFont = GetSystemFont();
@@ -27,12 +36,12 @@ function TargetMenu(unit, battle, usable)
 	
 	this.drawCursor = function(unit)
 	{
-		var width = this.cursorFont.getStringWidth(this.usable.name) + 10;
+		var width = this.cursorFont.getStringWidth(this.name) + 10;
 		var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 21 : unit.actor.x - 5 - width;
 		var y = unit.actor.y + 6;
 		Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
 		OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
-		DrawTextEx(this.cursorFont, x + width / 2, y + 4, this.usable.name, CreateColor(255, 255, 255, 255), 1, 'center');
+		DrawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, CreateColor(255, 255, 255, 255), 1, 'center');
 	};
 	
 	this.drawInfoBox = function(x, y, width, height, alpha)
@@ -115,26 +124,34 @@ TargetMenu.prototype.getInput = function()
 				.run();
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_UP):
-			this.moveCursor(-1);
+			if (!this.isTargetLocked) {
+				this.moveCursor(-1);
+			}
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN):
-			this.moveCursor(1);
+			if (!this.isTargetLocked) {
+				this.moveCursor(1);
+			}
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
-			if (!this.multiTarget) {
-				this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
-			} else {
-				this.targets = this.battle.enemiesOf(this.unit);
+			if (!this.isTargetLocked) {
+				if (!this.multiTarget) {
+					this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
+				} else {
+					this.targets = this.battle.enemiesOf(this.unit);
+				}
+				this.updateInfo();
 			}
-			this.updateInfo();
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
-			if (!this.multiTarget) {
-				this.targets = [ this.unit ];
-			} else {
-				this.targets = this.battle.alliesOf(this.unit);
+			if (!this.isTargetLocked) {
+				if (!this.multiTarget) {
+					this.targets = [ this.unit ];
+				} else {
+					this.targets = this.battle.alliesOf(this.unit);
+				}
+				this.updateInfo();
 			}
-			this.updateInfo();
 			break;
 	}
 };
@@ -146,7 +163,7 @@ TargetMenu.prototype.getInput = function()
 TargetMenu.prototype.open = function()
 {
 	this.isChoiceMade = false;
-	this.targets = this.usable.defaultTargets(this.unit);
+	this.targets = this.usable !== null ? this.usable.defaultTargets(this.unit) : [ this.unit ];
 	this.multiTarget = this.targets.length > 1;
 	this.updateInfo();
 	while (AreKeysLeft()) {
