@@ -25,6 +25,7 @@ function MoveMenu(unit, battle)
 	this.font = GetSystemFont();
 	this.healthyColor
 	this.isExpanded = false;
+	this.menuThread = null;
 	this.moveCursor = 0;
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
 	this.moveMenu = null;
@@ -217,18 +218,24 @@ MoveMenu.prototype.getInput = function()
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
-	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_X)) {
 		if (this.stance == BattleStance.attack) {
 			this.stance = BattleStance.counter;
 		} else {
 			this.stance = BattleStance.attack;
 		}
+		this.lastStance = this.stance;
 		if (this.isExpanded) {
 			Link(this.moveMenu).each(function(entry) {
 				entry.isEnabled = entry.usable.isUsable(this.unit, this.stance);
 			}.bind(this));
 		}
 		this.updateTurnPreview();
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
+		this.stance = BattleStance.defend;
+		this.updateTurnPreview();
+		this.showMoveList.stop();
+		this.chooseMove.run();
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		--this.topCursor;
 		if (this.topCursor < 0) {
@@ -276,15 +283,17 @@ MoveMenu.prototype.open = function()
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;
-	this.stance = BattleStance.attack;
+	this.stance = this.lastStance = BattleStance.attack;
 	while (chosenTargets === null) {
 		this.expansion = 0.0;
 		this.isExpanded = false;
 		this.selection = null;
+		this.stance = this.lastStance;
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
 		this.updateTurnPreview();
-		Threads.waitFor(Threads.createEntityThread(this, 10));
+		this.menuThread = Threads.createEntityThread(this, 10);
+		Threads.waitFor(this.menuThread);
 		switch (this.stance) {
 			case BattleStance.attack:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
@@ -348,5 +357,6 @@ MoveMenu.prototype.render = function()
 // Updates the entity's state for the next frame.
 MoveMenu.prototype.update = function()
 {
-	return this.selection === null || this.chooseMove.isRunning();
+	return (this.stance != BattleStance.defend && this.selection === null)
+		|| this.chooseMove.isRunning();
 };

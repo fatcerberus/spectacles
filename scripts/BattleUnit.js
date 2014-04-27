@@ -567,6 +567,15 @@ BattleUnit.prototype.setCounter = function(skill)
 	Console.writeLine(this.name + "'s reprisal set to " + this.counterMove.usable.name);
 }
 
+// .setDefend() method
+// Sets the unit into the defensive stance.
+BattleUnit.prototype.setDefend = function()
+{
+	this.stance = BattleStance.defend;
+	this.cv = Infinity;
+	Console.writeLine(this.name + " has switched to defensive stance");
+}
+
 // .takeDamage() method
 // Inflicts damage on the battler.
 // Arguments:
@@ -598,18 +607,19 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		amount = Math.round(eventData.amount);
 	}
 	if (amount > 0) {
-		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
-			amount = Math.round(Game.math.counter.damageTaken(amount, tags));
-			this.counterDamage += amount;
-			this.counterMove.targets = [ this.lastAttacker ];
-			this.isCounterReady = true;
-			Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
-			Console.append("targ: " + this.counterMove.targets[0].name);
-		} else if (this.stance == BattleStance.defend) {
-			amount = Math.max(Math.min(amount, this.hp - 1), 0);
-			this.stance = BattleStance.attack;
-			Console.writeLine(this.name + "'s defensive stance was broken");
-			this.resetCounter(Game.defenseBreakRank);
+		if (this.lastAttacker !== null) {
+			if (this.stance == BattleStance.counter) {
+				amount = Math.round(Game.math.counter.damageTaken(amount, tags));
+				this.counterDamage += amount;
+				this.counterMove.targets = [ this.lastAttacker ];
+				this.isCounterReady = true;
+				Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
+				Console.append("targ: " + this.counterMove.targets[0].name);
+			} else if (this.stance == BattleStance.defend) {
+				this.stance = BattleStance.attack;
+				Console.writeLine(this.name + "'s defensive stance was broken");
+				this.resetCounter(Game.defenseBreakRank);
+			}
 		}
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, this.lastAttacker);
@@ -698,8 +708,7 @@ BattleUnit.prototype.tick = function()
 					this.setCounter(chosenMove.usable);
 					break;
 				case BattleStance.defend:
-					this.stance = BattleStance.defend;
-					this.cv = Infinity;
+					this.setDefend();
 					break;
 			}
 		}
