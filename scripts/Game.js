@@ -79,12 +79,18 @@ Game = {
 				return (userInfo.level * 1.25) / userInfo.weapon.level;
 			}
 		},
-		counterBoost: function(damage, unitInfo) {
-			return Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
-		},
-		counterDamage: function(baseDamage, tags) {
-			if (!Link(tags).some([ 'deathblow', 'special' ])) {
-				return baseDamage * 0.75;
+		counter: {
+			bonus: function(damage, unitInfo) {
+				return Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
+			},
+			damageTaken: function(baseDamage, tags) {
+				if (!Link(tags).some([ 'deathblow', 'special' ])) {
+					return baseDamage * 0.75;
+				} else if (Link(tags).contains('deathblow')) {
+					return baseDamage - 1;
+				} else {
+					return baseDamage;
+				}
 			}
 		},
 		damage: {
@@ -378,46 +384,6 @@ Game = {
 	},
 	
 	statuses: {
-		counterStance: {
-			name: "Counter Stance",
-			tags: [ 'special' ],
-			statModifiers: {
-				def: 1.5,
-				foc: 1.5
-			},
-			initialize: function(unit) {
-				unit.resetCounter(Infinity);
-				this.powerBoost = 1.0;
-			},
-			attacked: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					this.powerBoost += effect.power / 100;
-				}.bind(this));
-				if (Link(eventData.action.effects).pluck('type').contains('instaKill')) {
-					this.powerBoost = 2.0;
-				}
-				if (this.powerBoost > 1.0) {
-					unit.resetCounter(0);
-				}
-			},
-			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('deathblow')) {
-					eventData.amount -= 1;
-				}
-			},
-			useSkill: function(unit, eventData) {
-				Link(eventData.skill.actions).expandInto('effects')
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					effect.power *= this.powerBoost;
-				}.bind(this));
-				unit.liftStatus('counterStance');
-			}
-		},
 		crackdown: {
 			name: "Crackdown",
 			tags: [ 'debuff' ],
@@ -577,7 +543,7 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'counterStance', 'drunk', 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					eventData.statusID = null;
 				}
@@ -862,24 +828,6 @@ Game = {
 							element: 'ice'
 						}
 					],
-				}
-			]
-		},
-		counterStance: {
-			name: "Counter Stance",
-			category: 'strategy',
-			targetType: 'ally',
-			actions: [
-				{
-					announceAs: "Counter Stance",
-					rank: Infinity,
-					effects: [
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'counterStance'
-						}
-					]
 				}
 			]
 		},
@@ -1555,13 +1503,8 @@ Game = {
 						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(1.0)
-					.fork()
-						.adjustBGM(0.0, 5.0)
-					.end()
-					.talk("Robert", true, 1.0, "What makes you so sure you have a choice?")
+					.talk("Robert", true, 2.0, "What makes you so sure you have a choice?")
 					.synchronize()
-					.playBGM('MyDreamsButADropOfFuel')
-					.adjustBGM(1.0)
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');
 			}

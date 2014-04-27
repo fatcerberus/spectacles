@@ -250,6 +250,29 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		return;
 	}
 	if (userID == 'robert2' && itemID == 'alcohol') {
+		new Scenario()
+			.adjustBGM(0.5, 5.0)
+			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! No "
+				+ "matter what any of us do, Amanda is the Primus. None of us can change that now.")
+			.talk("Robert", true, 2.0, "Maybe not, but I'm certainly not about to turn tail and run "
+				+ "when I've already come this far. Believe what you want, but mark my words, so long as "
+				+ "you continue to stand in my way, this will never be over!")
+			.talk("Scott", true, 2.0, "If that's the way it has to be, fine! You think I haven't come "
+				+ "just as far as you? Do you truly believe I chose ANY of this? Instead... well, if only "
+				+ "it were so simple.",
+				"None of us chose our lots, Robert. Not Bruce, or Lauren, or Amanda. Not even you or me. "
+				+ "Yet we all have to play with the hand we're dealt in the end, right?")
+			.talk("Robert", true, 2.0, "What's your point, #11?")
+			.fork()
+				.adjustBGM(0.0, 5.0)
+			.end()
+			.talk("Scott", true, 2.0, "Let the cards fall how they may.")
+			.synchronize()
+			.pause(2.0)
+			.talk("Robert", true, 1.0, "If that's how you want it, then so be it.")
+			.playBGM("MyDreamsButADropOfFuel")
+			.adjustBGM(1.0)
+			.run(true);
 		this.phase = 5;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];

@@ -25,7 +25,7 @@ var BattleRow =
 var BattleStance =
 {
 	attack: 0,  // normal attacking stance
-	defend: 1,  // defending; cuts damage by 50%
+	defend: 1,  // defending, reduces damage taken from an attack
 	counter: 2  // counterattack when damaged
 };
 
@@ -233,7 +233,7 @@ BattleUnit.prototype.endCycle = function()
 	}
 	if (this.stance == BattleStance.counter && this.isCounterReady) {
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		var multiplier = 1.0 + Game.math.counterBoost(this.counterDamage, this.battlerInfo);
+		var multiplier = 1.0 + Game.math.counter.bonus(this.counterDamage, this.battlerInfo);
 		this.stance = BattleStance.attack;
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
@@ -599,7 +599,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount > 0) {
 		if (this.stance == BattleStance.counter && this.lastAttacker !== null) {
-			amount = Math.max(Math.min(Math.round(Game.math.counterDamage(amount, tags)), this.hp - 1), 0);
+			amount = Math.round(Game.math.counter.damageTaken(amount, tags));
 			this.counterDamage += amount;
 			this.counterMove.targets = [ this.lastAttacker ];
 			this.isCounterReady = true;
