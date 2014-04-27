@@ -390,9 +390,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
-	Link(targetsHit).each(function(target) {
-		target.beginTargeting(actingUnit);
-	});
+	Link(targetsHit).invoke('beginTargeting', actingUnit);
 	Link(action.effects)
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)
