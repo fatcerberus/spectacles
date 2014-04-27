@@ -132,7 +132,9 @@ Game = {
 		},
 		defend: {
 			damageTaken: function(baseDamage, tags) {
-				if (!Link(tags).some([ 'special', 'cure' ])) {
+				if (Link(tags).contains('deathblow')) {
+					return baseDamage - 1;
+				} else if (!Link(tags).some([ 'special', 'cure' ])) {
 					return baseDamage / 2;
 				} else {
 					return baseDamage;
