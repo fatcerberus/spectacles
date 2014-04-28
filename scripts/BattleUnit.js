@@ -21,12 +21,12 @@ var BattleRow =
 };
 
 // BattleStance enumeration
-// Specifies a battler's current defensive stance.
+// Specifies a battler's current battling stance.
 var BattleStance =
 {
 	attack: 0,  // normal attacking stance
-	defend: 1,  // defending, reduces damage taken from an attack
-	counter: 2  // counterattack when damaged
+	defend: 1,  // defending - reduces damage and covers allies
+	counter: 2  // counterattacks when damaged
 };
 
 // BattleUnit() constructor
@@ -233,7 +233,7 @@ BattleUnit.prototype.endCycle = function()
 	}
 	if (this.stance == BattleStance.counter && this.isCounterReady) {
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		var multiplier = 1.0 + Game.math.counter.bonus(this.counterDamage, this.battlerInfo);
+		var multiplier = 1.0 + Game.math.counterBonus(this.counterDamage, this.battlerInfo);
 		this.stance = BattleStance.attack;
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
@@ -489,9 +489,8 @@ BattleUnit.prototype.raiseEvent = function(eventID, data)
 {
 	data = data !== void null ? data : null;
 	
-	for (var i = 0; i < this.statuses.length; ++i) {
-		this.statuses[i].invoke(eventID, data);
-	}
+	var statuses = this.statuses.slice();
+	Link(statuses).invoke('invoke', eventID, data);
 };
 
 // .refreshInfo() method
@@ -609,7 +608,6 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	if (amount > 0) {
 		if (this.lastAttacker !== null) {
 			if (this.stance == BattleStance.counter) {
-				amount = Math.round(Game.math.counter.damageTaken(amount, tags));
 				this.counterDamage += amount;
 				this.counterMove.targets = [ this.lastAttacker ];
 				this.isCounterReady = true;

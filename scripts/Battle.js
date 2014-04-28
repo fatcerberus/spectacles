@@ -319,9 +319,8 @@ Battle.prototype.raiseEvent = function(eventID, data)
 {
 	data = data !== void null ? data : null;
 	
-	for (var i = 0; i < this.conditions.length; ++i) {
-		this.conditions[i].invoke(eventID, data);
-	}
+	var conditions = this.conditions.slice();
+	Link(conditions).invoke('invoke', eventID, data);
 };
 
 // .resume() method
@@ -356,9 +355,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
-	for (var i = 0; i < targetUnits.length; ++i) {
-		targetUnits[i].takeHit(actingUnit, action);
-	}
+	Link(targetUnits).invoke('takeHit', actingUnit, action);
 	if (action.effects === null) {
 		return [];
 	}
@@ -390,7 +387,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
-	Link(targetsHit).each(function(unit) { unit.beginTargeting(actingUnit) });
+	Link(targetsHit).invoke('beginTargeting', actingUnit);
 	Link(action.effects)
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)

@@ -1,8 +1,8 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Apr/25/2014
-* Version: 0.2.13
+* Updated: Apr/27/2014
+* Version: 0.2.14
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
 **/
@@ -588,11 +588,11 @@ var Link = (function() {
 		this.args = args;
 	}
 	
-	InvokeArgsPoint.prototype.exec = function(item) { item[this.name].apply(item[this.name], this.args); }
+	InvokeArgsPoint.prototype.exec = function(item) { item[this.name].apply(item, this.args); }
 	
 	InvokeArgsPoint.prototype.run = function(a) {
 		var i = 0, l = a.length, n = this.name, args = this.args;
-		while(i < l) { var m = a[i++][n]; m.apply(m, args); }
+		while(i < l) { var m = a[i++]; m[n].apply(m, args); }
 	}
 	
 	function ExpandPoint() {

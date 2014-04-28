@@ -79,17 +79,8 @@ Game = {
 				return (userInfo.level * 1.25) / userInfo.weapon.level;
 			}
 		},
-		counter: {
-			bonus: function(damage, unitInfo) {
-				return 0.5 + 0.5 * Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
-			},
-			damageTaken: function(baseDamage, tags) {
-				if (!Link(tags).some([ 'deathblow', 'special' ])) {
-					return baseDamage * 0.75;
-				} else {
-					return baseDamage;
-				}
-			}
+		counterBonus: function(damage, unitInfo) {
+			return 0.5 + 0.5 * Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
 		},
 		damage: {
 			calculate: function(power, level, targetTier, attack, defense) {
@@ -476,6 +467,14 @@ Game = {
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					if ('addStatus' in effect && effect.addStatus == 'ignite') {
+						delete effect.addStatus;
+					}
+				});
+				Link(eventData.action.effects)
 					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
 					.each(function(effect)
 				{
@@ -531,6 +530,14 @@ Game = {
 				this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 			},
 			attacked: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					if ('addStatus' in effect && effect.addStatus == 'frostbite') {
+						delete effect.addStatus;
+					}
+				});
 				Link(eventData.action.effects)
 					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
 					.each(function(effect)
@@ -729,6 +736,10 @@ Game = {
 					var recoil = Math.round(Game.math.damage[recoilFunction](userInfo, targetInfo, effect.power));
 					actor.takeDamage(Math.max(recoil + recoil * 0.2 * (Math.random() - 0.5), 1), [ 'recoil' ], true);
 				}
+				if ('addStatus' in effect) {
+					var statusChance = 'statusChance' in effect ? effect.statusChance : 1.0;
+					targets[i].addStatus(effect.addStatus);
+				}
 			}
 		},
 		devour: function(actor, targets, effect) {
@@ -906,12 +917,8 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 50,
-							element: 'lightning'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'zombie'
+							element: 'lightning',
+							addStatus: 'zombie'
 						}
 					]
 				}
@@ -1003,12 +1010,8 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 50,
-							element: 'fire'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'ignite'
+							element: 'fire',
+							addStatus: 'ignite'
 						}
 					]
 				}
@@ -1345,12 +1348,8 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 50,
-							element: 'earth'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'disarray'
+							element: 'earth',
+							addStatus: 'disarray'
 						}
 					]
 				}
@@ -1372,12 +1371,8 @@ Game = {
 							type: 'damage',
 							damageType: 'magic',
 							power: 50,
-							element: 'ice'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'frostbite'
+							element: 'ice',
+							addStatus: 'frostbite'
 						}
 					]
 				}
