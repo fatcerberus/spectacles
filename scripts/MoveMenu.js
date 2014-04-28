@@ -232,7 +232,7 @@ MoveMenu.prototype.getInput = function()
 		}
 		this.updateTurnPreview();
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
-		this.stance = BattleStance.defend;
+		this.stance = BattleStance.guard;
 		this.updateTurnPreview();
 		this.showMoveList.stop();
 		this.chooseMove.run();
@@ -301,7 +301,7 @@ MoveMenu.prototype.open = function()
 			case BattleStance.counter:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name).open();
 				break;
-			case BattleStance.defend:
+			case BattleStance.guard:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "Guard").open();
 				break;
 		}
@@ -321,7 +321,7 @@ MoveMenu.prototype.render = function()
 {
 	var yOrigin = -54 * (1.0 - this.fadeness) + 16;
 	var stanceText = this.stance == BattleStance.counter ? "CS"
-		: this.stance == BattleStance.defend ? "GS"
+		: this.stance == BattleStance.guard ? "GS"
 		: "AS";
 	Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
 	OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
@@ -359,6 +359,6 @@ MoveMenu.prototype.render = function()
 // Updates the entity's state for the next frame.
 MoveMenu.prototype.update = function()
 {
-	return (this.stance != BattleStance.defend && this.selection === null)
+	return (this.stance != BattleStance.guard && this.selection === null)
 		|| this.chooseMove.isRunning();
 };

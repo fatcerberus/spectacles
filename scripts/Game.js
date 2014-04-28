@@ -121,7 +121,7 @@ Game = {
 					userInfo.stats.str, targetInfo.stats.def);
 			}
 		},
-		defend: {
+		guardStance: {
 			damageTaken: function(baseDamage, tags) {
 				if (Link(tags).contains('deathblow')) {
 					return baseDamage - 1;
@@ -718,7 +718,7 @@ Game = {
 	effects: {
 		addStatus: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].addStatus(effect.status);
+				targets[i].addStatus(effect.status, false);
 			}
 		},
 		damage: function(actor, targets, effect) {

@@ -25,8 +25,8 @@ var BattleRow =
 var BattleStance =
 {
 	attack: 0,  // normal attacking stance
-	defend: 1,  // defending - reduces damage and covers allies
-	counter: 2  // counterattacks when damaged
+	guard: 1,   // guard against damage and statuses and cover allies
+	counter: 2  // counterattack when damaged
 };
 
 // BattleUnit() constructor
@@ -127,25 +127,27 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 // .addStatus() method
 // Afflicts the unit with a status effect.
 // Arguments:
-//     statusID: The ID of the status to inflict.
-BattleUnit.prototype.addStatus = function(statusID)
+//     statusID:    The ID of the status to inflict.
+//     isGuardable: Optional. If true, indicates that the affliction can be blocked by use of
+//                  Guard Stance. (default: true)
+BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 {
+	isGuardable = isGuardable !== void null ? isGuardable : true;
+	
 	if (this.hasStatus(statusID)) {
 		return;
 	}
-	for (var i = 0; i < this.statuses.length; ++i) {
-		if (this.statuses[i].overrules(statusID)) {
+	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
+	if (!isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
+		var eventData = { statusID: statusID };
+		this.raiseEvent('afflicted', eventData);
+		if (eventData.statusID === null) {
 			return;
 		}
+		var effect = new StatusContext(eventData.statusID, this);
+		this.statuses.push(effect);
+		Console.writeLine(this.name + " took on status " + effect.name);
 	}
-	var eventData = { statusID: statusID };
-	this.raiseEvent('afflicted', eventData);
-	if (eventData.statusID === null) {
-		return;
-	}
-	var effect = new StatusContext(eventData.statusID, this);
-	this.statuses.push(effect);
-	Console.writeLine(this.name + " took on status " + effect.name);
 };
 
 // .announce() method
@@ -566,13 +568,13 @@ BattleUnit.prototype.setCounter = function(skill)
 	Console.writeLine(this.name + "'s reprisal set to " + this.counterMove.usable.name);
 }
 
-// .setDefend() method
-// Sets the unit into the defensive stance.
-BattleUnit.prototype.setDefend = function()
+// .setGuard() method
+// Switches the unit into Guard Stance.
+BattleUnit.prototype.setGuard = function()
 {
-	this.stance = BattleStance.defend;
+	this.stance = BattleStance.guard;
 	this.cv = Infinity;
-	Console.writeLine(this.name + " has switched to defensive stance");
+	Console.writeLine(this.name + " has switched to a defensive stance");
 }
 
 // .takeDamage() method
@@ -613,8 +615,8 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 				this.isCounterReady = true;
 				Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
 				Console.append("targ: " + this.counterMove.targets[0].name);
-			} else if (this.stance == BattleStance.defend) {
-				amount = Math.round(Game.math.defend.damageTaken(amount, tags));
+			} else if (this.stance == BattleStance.guard) {
+				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 				this.stance = BattleStance.attack;
 				Console.writeLine(this.name + "'s defensive stance was broken");
 				this.resetCounter(Game.defenseBreakRank);
@@ -706,8 +708,8 @@ BattleUnit.prototype.tick = function()
 				case BattleStance.counter:
 					this.setCounter(chosenMove.usable);
 					break;
-				case BattleStance.defend:
-					this.setDefend();
+				case BattleStance.guard:
+					this.setGuard();
 					break;
 			}
 		}
