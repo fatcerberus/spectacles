@@ -104,6 +104,17 @@ AIContext.prototype.isItemUsable = function(itemID)
 		.some(function(item) { return item.isUsable(user) });
 };
 
+// .isSkillQueued() method
+// Checks whether a use of a skill is already in the AI's move queue.
+// Arguments:
+//     skillID: The skill ID of the skill to check for.
+AIContext.prototype.isSkillQueued = function(skillID)
+{
+	return Link(this.moveQueue)
+		.pluck('usable')
+		.some(function(usable) { return usable instanceof SkillUsable && usable.skillID == skillID; });
+};
+
 // .isSkillUsable() method
 // Determines whether the controlled unit is able to use a skill.
 // Arguments:

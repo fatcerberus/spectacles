@@ -14,7 +14,7 @@ Game = {
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
-	defenseBreakRank: 3,
+	defenseBreakRank: 1,
 	
 	bossHPPerBar: 500,
 	partyHPPerBar: 250,
@@ -81,7 +81,7 @@ Game = {
 		},
 		counter: {
 			bonus: function(damage, unitInfo) {
-				return Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
+				return 0.5 + 0.5 * Math.pow(unitInfo.tier, 2) * damage / unitInfo.stats.maxHP;
 			},
 			damageTaken: function(baseDamage, tags) {
 				if (!Link(tags).some([ 'deathblow', 'special' ])) {
@@ -472,7 +472,7 @@ Game = {
 			tags: [ 'ailment', 'damage' ],
 			overrules: [ 'ignite' ],
 			initialize: function(unit) {
-				this.multiplier = 0.5;
+				this.multiplier = 1.0;
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -490,7 +490,7 @@ Game = {
 			},
 			endTurn: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.05, 1.0);
+				this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
 			}
 		},
 		ghost: {
