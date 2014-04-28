@@ -302,7 +302,7 @@ MoveMenu.prototype.open = function()
 				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name).open();
 				break;
 			case BattleStance.defend:
-				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "Defend").open();
+				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "Guard").open();
 				break;
 		}
 	}
@@ -321,12 +321,14 @@ MoveMenu.prototype.render = function()
 {
 	var yOrigin = -54 * (1.0 - this.fadeness) + 16;
 	var stanceText = this.stance == BattleStance.counter ? "CS"
-		: this.stance == BattleStance.defend ? "DS"
+		: this.stance == BattleStance.defend ? "GS"
 		: "AS";
-	Rectangle(0, yOrigin, 160, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
-	OutlinedRectangle(0, yOrigin, 160, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
+	Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
+	OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
+	Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
+	OutlinedRectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
 	this.drawText(this.font, 5, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName);
-	this.drawText(this.font, 155, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), stanceText, 'right');
+	this.drawText(this.font, 148, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), stanceText, 'center');
 	var itemWidth = 160 / this.drawers.length;
 	var litTextColor = CreateColor(255, 255, 255, 255);
 	var dimTextColor = CreateColor(192, 192, 192, 255);
