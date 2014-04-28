@@ -271,9 +271,9 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.talk("Scott", true, 2.0, "Let the cards fall how they may.")
 			.synchronize()
 			.pause(2.0)
-			.talk("Robert", true, 1.0, "If that's how you want it, then so be it.")
 			.playBGM("MyDreamsButADropOfFuel")
 			.adjustBGM(1.0)
+			.talk("Robert", true, 1.0, "If that's how you want it, then so be it.")
 			.run(true);
 		this.phase = 5;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
