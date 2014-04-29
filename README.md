@@ -16,14 +16,67 @@ Credits
 - Bruce Pascoe - Director / Writer / Lead Developer
 - John Stanko - Co-writer / Beta Tester
 
-Controls
-========
+Battle System
+=============
 
-The following controls are simply the defaults. The key mappings can be changed
-by running config.exe in the same directory as the engine.
+Spectacles uses a conditional turn-based battle system, very similar to the
+battle system seen in Final Fantasy X. This system resolves turns dynamically
+and assymetrically, based on both the battlers' speed (AGI stat) and the nature
+of the attacks used. The rank of a move, displayed next to the move's name in
+the action menu and ranging from 1 to 5, determines how long the move will take
+to recover from. The higher the rank, the more recovery time is needed and the
+longer it will take before the unit's next turn arrives.
 
-- Arrow Keys - Change selection in menus
-- Z - Confirm selection
-- X - Cancel / close menu
-- C - Switch between Attack and Counter stances
-- V - Change to Defensive stance
+Units can also choose to change to a defensive stance to guard against powerful
+blows or even counterattack at the cost of one or more lost turns. Pressing the
+key assigned to [X] in the Sphere configuration utility during move selection
+will switch between the Attack and Counter stances, the latter of which allows
+you to do additional damage with an attack in response to damage received.
+Pressing the key assigned to [Y] will instead allow you to switch to Guard
+Stance, which reduces damage from attacks and prevents secondary effects, such
+as the Zombie affliction caused by Electrocute.
+
+Status Effects
+==============
+
+There are many status effects in Spectacles; some are detrimental, while others
+are benign or even beneficial. Unlike many other role-playing games, almost all
+bosses in Spectacles are susceptible to status afflictions, with a small to 
+non-existant list of immunities.
+
+Below are descriptions of some of the statuses available in the Spectacles Saga.
+
+- *Crackdown:* Crackdown, as its name suggests, cracks down on consecutive
+               attacks of the same type. Each time an attack of the same type as
+			   the previous one is used, its efficacy is cut by 25%. Using a
+			   different type of move will reset the multiplier, but the status
+			   itself will remain in effect until the end of the battle.
+			   
+- *Disarray:*  Randomizes the ranks of actions taken by the afflicted unit. This
+               cannot be cured, but will wear off on its own after the victim
+			   has taken 3 actions.
+			   
+- *Frostbite:* Inflicts a small amount of ice damage after every action taken by
+               the victim. The effect worsens over time, peaking at double its
+			   initial efficacy. Frostbite can be removed by subjecting the
+			   afflicted battler to a fire attack, the damage from which will be
+			   doubled as a tradeoff.
+			   
+- *Ignite:*    Similar to Frostbite, except it inflicts fire damage and hits
+               between turns, dealing damage with every action taken in the
+			   battle. As a tradeoff, the effect weakens over time, quickly
+			   dropping to only half its initial output. As with Frostbite, this
+			   can be removed by attacking the afflicted unit with ice.
+			   
+- *Skeleton:*  The end result of Zombie (see below) if the status is not cured
+               before the victim reaches 0 HP. Skeletons have their STR and FOC
+			   cut in half in exchange for being allowed to continue fighting
+			   after death. Any physical or slash damage will end a Skeleton,
+			   however. Skeleton can be removed with Holy Water, reviving the
+			   battler with 1 HP.
+			   
+- *Zombie:*    Reverses HP restoration (healing), converting it into an
+               equivalent amount of damage. If a zombified battler is reduced to
+			   0 HP by an attack, the status will progress to Skeleton; however,
+			   converted restoratives will bypass this clause. Zombie can be
+			   cured with the use of  Holy Water.
