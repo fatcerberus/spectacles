@@ -10,14 +10,16 @@ the Primus with the aid of the Spectacles, a legendary pair of eyeglasses
 granting their wearer magical protection--ostensibly making Scott the chosen
 one. But all may not be as it seems...
 
+
 Credits
 =======
 
-- Bruce Pascoe - Director / Writer / Lead Developer
-- John Stanko - Co-writer / Beta Tester
+- *Bruce Pascoe* - Director / Writer / Lead Developer
+- *John Stanko* - Co-writer / Beta Tester
 
-Battle System
-=============
+
+The Battle System
+=================
 
 Spectacles uses a conditional turn-based battle system, very similar to the
 battle system seen in Final Fantasy X. This system resolves turns dynamically
@@ -29,12 +31,14 @@ longer it will take before the unit's next turn arrives.
 
 Units can also choose to change to a defensive stance to guard against powerful
 blows or even counterattack at the cost of one or more lost turns. Pressing the
-key assigned to [X] in the Sphere configuration utility during move selection
-will switch between the Attack and Counter stances, the latter of which allows
+key assigned to [X] in the engine configuration utility during move selection
+will switch between the Attack and Counter stances; the latter of which allows
 you to do additional damage with an attack in response to damage received.
 Pressing the key assigned to [Y] will instead allow you to switch to Guard
 Stance, which reduces damage from attacks and prevents secondary effects, such
-as the Zombie affliction caused by Electrocute.
+as the Zombie affliction caused by Electrocute. It cannot block statuses
+inflicted as a primary effect, however, such as that from Necromancy.
+
 
 Status Effects
 ==============
@@ -49,18 +53,31 @@ Below are descriptions of some of the statuses available in the Spectacles Saga.
 - *Crackdown:* Crackdown, as its name suggests, cracks down on consecutive
                attacks of the same type. Each time an attack of the same type as
 			   the previous one is used, its efficacy is cut by 25%. Using a
-			   different type of move will reset the multiplier, but the status
-			   itself will remain in effect until the end of the battle.
+			   different type of move will reset the multiplier, but the
+			   affliction will remain in effect until the end of the battle.
 			   
 - *Disarray:*  Randomizes the ranks of actions taken by the afflicted unit. This
                cannot be cured, but will wear off on its own after the victim
 			   has taken 3 actions.
 			   
+- *Drunk:*     Using Alcohol constitutes full HP recovery at the cost of
+               inflicting the Drunk status on the user. This cuts the victim's
+               AGI, FOC, and accuracy, as well as creating a painful Earth
+               weakness, but doubles STR as a compromise. The status must be
+               allowed to wear off on its own; the number of turns required for
+               it to expire depends on the victim's base VIT.
+               
 - *Frostbite:* Inflicts a small amount of ice damage after every action taken by
                the victim. The effect worsens over time, peaking at double its
 			   initial efficacy. Frostbite can be removed by subjecting the
 			   afflicted battler to a fire attack, the damage from which will be
 			   doubled as a tradeoff.
+			   
+- *Ghost:*     A battler in Ghost status can't be damaged by anything other than
+               magic; however, they are also limited to using magic against
+               non-Ghosts if they intend to get anywhere. Note that two Ghosts
+               attacking each other will bypass this restriction. Ghost can be
+               removed with Holy Water.
 			   
 - *Ignite:*    Similar to Frostbite, except it inflicts fire damage and hits
                between turns, dealing damage with every action taken in the
