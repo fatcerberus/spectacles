@@ -18,6 +18,7 @@ function HHorseStrategy(battle, unit, context)
 HHorseStrategy.prototype.strategize = function()
 {				
 	var phaseToEnter = this.unit.getHealth() > 50 ? 1 : 2;
+	phaseToEnter = 2;
 	this.phase = this.phase > phaseToEnter ? this.phase : phaseToEnter;
 	if (this.phase == 1) {
 		if (this.context.turnsTaken % 2 == 0) {

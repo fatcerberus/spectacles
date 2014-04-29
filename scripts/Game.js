@@ -202,7 +202,7 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
-			startingWeapon: 'templeSword',
+			startingWeapon: 'heirloom',
 			skills: [
 				'swordSlash',
 				'quickstrike',
@@ -395,7 +395,7 @@ Game = {
 					.each(function(effect)
 				{
 					effect.power = Math.ceil(effect.power * this.multiplier);
-				}
+				});
 			},
 			useSkill: function(unit, eventData) {
 				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
@@ -491,13 +491,14 @@ Game = {
 		ghost: {
 			name: "Ghost",
 			tags: [ 'undead' ],
+			overrules: [ 'zombie' ],
 			aiming: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
 					var effect = eventData.action.effects[i];
 					if (effect.type != 'damage' || effect.damageType == 'magic') {
 						continue;
 					}
-					if (eventData.targetInfo.statuses.indexOf('ghost') === -1) {
+					if (!Link(eventData.targetInfo.statuses).contains('ghost')) {
 						eventData.aimRate = 0.0;
 					}
 				}
@@ -508,7 +509,7 @@ Game = {
 					if (effect.type != 'damage' || effect.damageType == 'magic') {
 						continue;
 					}
-					if (eventData.actingUnitInfo.statuses.indexOf('ghost') === -1) {
+					if (!Link(eventData.actingUnitInfo.statuses).contains('ghost')) {
 						eventData.action.accuracyRate = 0.0;
 					}
 				}
@@ -629,7 +630,7 @@ Game = {
 		skeleton: {
 			name: "Skeleton",
 			tags: [ 'undead' ],
-			overrules: [ 'zombie' ],
+			overrules: [ 'ghost', 'zombie' ],
 			statModifiers: {
 				str: 0.5,
 				mag: 0.5

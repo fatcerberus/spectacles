@@ -11,12 +11,12 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = false;
-var DBG_SHOW_CONSOLE = false;
+var DBG_DISABLE_TRANSITIONS = true;
+var DBG_SHOW_CONSOLE = true;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
@@ -57,17 +57,22 @@ function game()
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
 	var setup = {
-		battleID: 'robert2',
+		battleID: 'headlessHorse',
 		party: {
-			scott: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//bruce: { level: 50, items: [ 'alcohol' ] },
-			//maggie: { level: 50, items: [ 'tonic', 'powerTonic', 'redBull', 'alcohol' ] }
+			scott: { level: 5, weapon: 'heirloom', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			bruce: { level: 5, weapon: 'arsenRifle', items: [ 'alcohol' ] },
+			maggie: { level: 5, items: [ 'tonic', 'powerTonic', 'redBull', 'alcohol' ] }
 		}
 	};
-	Link(Game.initialPartyMembers).each(function(id) { session.party.remove(id); });
+	Link(Game.initialPartyMembers).each(function(id) {
+		session.party.remove(id);
+	});
 	for (var id in setup.party) {
 		var memberInfo = setup.party[id];
 		session.party.add(id, memberInfo.level);
+		if ('weapon' in memberInfo) {
+			session.party.members[id].setWeapon(memberInfo.weapon);
+		}
 		for (var iItem = 0; iItem < memberInfo.items.length; ++iItem) {
 			session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
 		}

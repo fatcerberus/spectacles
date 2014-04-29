@@ -362,6 +362,15 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
+	Link(action.effects)
+		.filterBy('targetHint', 'user')
+		.each(function(effect)
+	{
+		var effectHandler = Game.effects[effect.type];
+		Console.writeLine("Applying effect '" + effect.type + "'");
+		Console.append("retarg: " + effect.targetHint);
+		effectHandler(actingUnit, [ actingUnit ], effect);
+	});
 	Link(targetUnits).invoke('takeHit', actingUnit, action);
 	if (action.effects === null) {
 		return [];
@@ -396,19 +405,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	}
 	Link(targetsHit).invoke('beginTargeting', actingUnit);
 	Link(action.effects)
+		.filterBy('targetHint', 'selected')
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)
 	{
-		var effectTargets = null;
-		if (effect.targetHint == 'selected') {
-			effectTargets = targetsHit;
-		} else if (effect.targetHint == 'user') {
-			effectTargets = [ actingUnit ];
-		}
-		var effectHandler = Game.effects[effect.type];
 		Console.writeLine("Applying effect '" + effect.type + "'");
 		Console.append("retarg: " + effect.targetHint);
-		effectHandler(actingUnit, effectTargets, effect);
+		Game.effects[effect.type](actingUnit, targetsHit, effect);
 	});
 	Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
