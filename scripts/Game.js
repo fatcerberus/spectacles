@@ -394,8 +394,11 @@ Game = {
 					.filterBy('type', 'damage')
 					.each(function(effect)
 				{
-					effect.power = Math.ceil(effect.power * this.multiplier);
-				});
+					var oldPower = effect.power;
+					effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
+					Console.writeLine("POW modified by Crackdown to " + effect.power);
+					Console.append("orig: " + oldPower);
+				}.bind(this));
 			},
 			useSkill: function(unit, eventData) {
 				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
@@ -714,9 +717,7 @@ Game = {
 	
 	effects: {
 		addStatus: function(actor, targets, effect) {
-			for (var i = 0; i < targets.length; ++i) {
-				targets[i].addStatus(effect.status);
-			}
+			Link(targets).invoke('addStatus', effect.status);
 		},
 		damage: function(actor, targets, effect) {
 			var userInfo = actor.battlerInfo;
@@ -775,9 +776,7 @@ Game = {
 			}
 		},
 		liftStatusTags: function(actor, targets, effect) {
-			for (var i = 0; i < targets.length; ++i) {
-				targets[i].liftStatusTags(effect.tags);
-			}
+			Link(targets).invoke('liftStatusTags', effect.tags);
 		},
 		recoverHP: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
@@ -787,9 +786,7 @@ Game = {
 			}
 		},
 		recoverMP: function(actor, targets, effect) {
-			for (var i = 0; i < targets.length; ++i) {
-				targets[i].restoreMP(effect.strength);
-			}
+			Link(targets).invoke('restoreMP', effect.strength);
 		}
 	},
 	
