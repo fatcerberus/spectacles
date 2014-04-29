@@ -10,6 +10,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.ai = aiContext;
 	this.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
+	this.battle.stanceChanged.addHook(this, this.onStanceChanged);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.elementHealState = null;
 	this.isAlcoholPending = false;
@@ -21,6 +22,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.necroTonicItem = null;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
+	this.scottStance = BattleStance.attack;
 	this.turnCount = {};
 	this.zombieHealFixState = null;
 }
@@ -48,9 +50,9 @@ Robert2Strategy.prototype.strategize = function()
 	} else {
 		var lastPhase = this.phase;
 		var phaseToEnter =
-			this.unit.hp > 2500 ? 1 :
-			this.unit.hp > 1500 ? 2 :
-			this.unit.hp > 500 ? 3 :
+			this.unit.hp > 3000 ? 1 :
+			this.unit.hp > 2000 ? 2 :
+			this.unit.hp > 1000 ? 3 :
 			4;
 		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 		switch (this.phase) {
@@ -60,10 +62,10 @@ Robert2Strategy.prototype.strategize = function()
 					this.isComboStarted = false;
 				}
 				var forecast = this.ai.turnForecast('chargeSlash');
-				if (this.doChargeSlashNext || forecast[0].unit === this.unit) {
+				if (this.doChargeSlashNext || 0.5 > Math.random() && forecast[0].unit === this.unit) {
 					this.ai.useSkill('chargeSlash');
 					this.doChargeSlashNext = false;
-				} else {
+				} else if (this.scottStance == BattleStance.attack || this.isComboStarted) {
 					forecast = this.ai.turnForecast('quickstrike');
 					if (forecast[0].unit === this.unit) {
 						this.ai.useSkill('quickstrike');
@@ -75,8 +77,21 @@ Robert2Strategy.prototype.strategize = function()
 							this.doChargeSlashNext = true;
 						} else {
 							var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-							this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * 4), 3)]);
+							var skillID = moves[Math.min(Math.floor(Math.random() * 4), 3)];
+							if (this.ai.isSkillUsable(skillID)) {
+								this.ai.useSkill(skillID);
+							} else {
+								this.ai.useSkill('swordSlash');
+							}
 						}
+					}
+				} else {
+					var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+					var skillID = moves[Math.min(Math.floor(Math.random() * 4), 3)];
+					if (this.ai.isSkillUsable(skillID)) {
+						this.ai.useSkill(skillID);
+					} else {
+						this.ai.useSkill('swordSlash');
 					}
 				}
 				break;
@@ -162,13 +177,13 @@ Robert2Strategy.prototype.strategize = function()
 								this.ai.useSkill('quickstrike');
 							} else {
 								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-								var crackdownMove = this.isScottZombie ? 'swordSlash'
+								var skillID = this.isScottZombie ? 'swordSlash'
 									: moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
-								if (this.unit.hasStatus('crackdown') && this.ai.isSkillUsable(crackdownMove)) {
-									this.ai.useSkill(crackdownMove);
+								if (0.5 > Math.random() && this.ai.isSkillUsable(skillID)) {
+									this.ai.useSkill(skillID);
 									this.isComboStarted = false;
 								} else {
-									this.ai.useSkill('quickstrike');
+									this.ai.useSkill('swordSlash');
 									this.doChargeSlashNext = true;
 								}
 							}
@@ -314,8 +329,10 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	}
 	if (userID == 'robert2') {
 		if (skillID == 'necromancy' || skillID == 'electrocute') {
-			this.isScottZombie = true;
-			this.rezombieChance = 1.0;
+			this.isScottZombie = skillID == 'necromancy' || skillID == 'electrocute' && this.scottStance != BattleStance.guard;
+			if (this.isScottZombie) {
+				this.rezombieChance = 1.0;
+			}
 			if (skillID == 'necromancy' && this.phase >= 3 && this.necroTonicItem !== null) {
 				this.necroTonicItem = 'tonic';
 				this.isNecroTonicItemReady = true;
@@ -325,6 +342,16 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 				this.ai.useItem('redBull');
 			}
 		}
+	}
+};
+
+Robert2Strategy.prototype.onStanceChanged = function(unitID, stance)
+{
+	if (this.unit.hasStatus('drunk')) {
+		return;
+	}
+	if (unitID == 'scott') {
+		this.scottStance = stance;
 	}
 };
 
@@ -362,8 +389,9 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 					}
 					break;
 				case 'revenge':
-					if (this.ai.isSkillUsable('electrocute')) {
-						this.ai.useSkill('electrocute');
+					var skillID = this.scottStance != BattleStance.attack ? 'omni' : 'electrocute';
+					if (this.ai.isSkillUsable(skillID)) {
+						this.ai.useSkill(skillID);
 						this.zombieHealFixState = null;
 					} else {
 						this.ai.useSkill('desperationSlash');

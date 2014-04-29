@@ -152,6 +152,17 @@ AIContext.prototype.setDefaultSkill = function(skillID)
 	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
 };
 
+// .setGuard() method
+// Instructs the AI to put the unit into a defensive stance.
+AIContext.prototype.setGuard = function()
+{
+	this.moveQueue.push({
+		usable: null,
+		stance: BattleStance.guard,
+		predicate: function() { return true; }
+	});
+};
+
 // .setTarget() method
 // Sets the battler to be targeted by the AI's actions.
 // Arguments:

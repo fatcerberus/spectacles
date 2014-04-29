@@ -237,6 +237,7 @@ BattleUnit.prototype.endCycle = function()
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
 		var multiplier = 1.0 + Game.math.counterBonus(this.counterDamage, this.battlerInfo);
 		this.stance = BattleStance.attack;
+		this.battle.stanceChanged.invoke(this, this.stance);
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
 		while (action != null) {
@@ -562,6 +563,7 @@ BattleUnit.prototype.setCounter = function(skill)
 		this.counterMove = { usable: skill, targets: null };
 		this.isCounterReady = false;
 		this.cv = Infinity;
+		this.battle.stanceChanged.invoke(this, this.stance);
 	} else {
 		this.counterMove.usable = skill;
 	}
@@ -574,6 +576,7 @@ BattleUnit.prototype.setGuard = function()
 {
 	this.stance = BattleStance.guard;
 	this.cv = Infinity;
+	this.battle.stanceChanged.invoke(this, this.stance);
 	Console.writeLine(this.name + " has switched to a defensive stance");
 }
 
@@ -618,6 +621,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			} else if (this.stance == BattleStance.guard) {
 				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 				this.stance = BattleStance.attack;
+				this.battle.stanceChanged.invoke(this, this.stance);
 				Console.writeLine(this.name + "'s defensive stance was broken");
 				this.resetCounter(Game.defenseBreakRank);
 			}

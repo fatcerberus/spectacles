@@ -24,6 +24,22 @@ BattleResult =
 //     battleID: The ID of the battle descriptor to use to set up the fight.
 function Battle(session, battleID)
 {
+	if (!(battleID in Game.battles)) {
+		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
+	}
+	this.battleID = battleID;
+	this.conditions = [];
+	this.enemyUnits = [];
+	this.mode = null;
+	this.parameters = Game.battles[battleID];
+	this.partyMPPool = null;
+	this.playerUnits = [];
+	this.session = session;
+	this.suspendCount = 0;
+	this.timer = 0;
+	Console.writeLine("Battle session prepared");
+	Console.append("battleID: " + this.battleID);
+	
 	// .itemUsed event
 	// Occurs when an item is used by a battle unit.
 	// Arguments (for event handler):
@@ -33,7 +49,7 @@ function Battle(session, battleID)
 	//                 null in the case of a non-targeted item.
 	this.itemUsed = new MultiDelegate();
 	
-	// .skilUsed event
+	// .skillUsed event
 	// Occurs when a skill is used by a battle unit.
 	// Arguments (for event handler):
 	//     userID:     The ID of the unit that used the skill.
@@ -41,6 +57,13 @@ function Battle(session, battleID)
 	//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
 	//                 null in the case of a non-targeted skill.
 	this.skillUsed = new MultiDelegate();
+	
+	// .stanceChanged event
+	// Occurs when a unit changes stance.
+	// Arguments (for event handler):
+	//     unitID: The ID of the unit changing stance.
+	//     stance: The unit's new stance.
+	this.stanceChanged = new MultiDelegate();
 	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
@@ -74,22 +97,6 @@ function Battle(session, battleID)
 	//     If, after accuracy is taken into account, the action would result in
 	//     a miss, this event will not be raised.
 	this.unitTargeted = new MultiDelegate();
-	
-	if (!(battleID in Game.battles)) {
-		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
-	}
-	this.battleID = battleID;
-	this.conditions = [];
-	this.enemyUnits = [];
-	this.mode = null;
-	this.parameters = Game.battles[battleID];
-	this.partyMPPool = null;
-	this.playerUnits = [];
-	this.session = session;
-	this.suspendCount = 0;
-	this.timer = 0;
-	Console.writeLine("Battle session prepared");
-	Console.append("battleID: " + this.battleID);
 }
 
 // .addCondition() method

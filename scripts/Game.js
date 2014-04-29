@@ -376,9 +376,7 @@ Game = {
 		generalDisarray: {
 			name: "G. Disarray",
 			actionTaken: function(battle, eventData) {
-				if (eventData.action.rank != Infinity) {
-					eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
-				}
+				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
 		}
 	},
@@ -392,11 +390,11 @@ Game = {
 				this.multiplier = 1.0;
 			},
 			acting: function(unit, eventData) {
-				for (var i = 0; i < eventData.action.effects.length; ++i) {
-					var effect = eventData.action.effects[i];
-					if (effect.type == 'damage') {
-						effect.power = Math.ceil(effect.power * this.multiplier);
-					}
+				Link(eventData.action.effects)
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					effect.power = Math.ceil(effect.power * this.multiplier);
 				}
 			},
 			useSkill: function(unit, eventData) {
@@ -412,9 +410,7 @@ Game = {
 				this.actionsTaken = 0;
 			},
 			acting: function(unit, eventData) {
-				if (eventData.action.rank != Infinity) {
-					eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
-				}
+				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 				++this.actionsTaken;
 				if (this.actionsTaken >= 3) {
 					unit.liftStatus('disarray');
