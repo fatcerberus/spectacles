@@ -21,7 +21,7 @@ var BattleRow =
 };
 
 // BattleStance enumeration
-// Specifies a battler's current battling stance.
+// Specifies a battle unit's current battling stance.
 var BattleStance =
 {
 	attack: 0,  // normal attacking stance
@@ -55,6 +55,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.moveTargets = null;
 	this.mpPool = null;
 	this.newSkills = [];
+	this.newStance = BattleStance.attack;
 	this.partyMember = null;
 	this.row = startingRow;
 	this.skills = [];
@@ -129,10 +130,10 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 // Arguments:
 //     statusID:    The ID of the status to inflict.
 //     isGuardable: Optional. If true, indicates that the affliction can be blocked by use of
-//                  Guard Stance. (default: true)
+//                  Guard Stance. (default: false)
 BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 {
-	isGuardable = isGuardable !== void null ? isGuardable : true;
+	isGuardable = isGuardable !== void null ? isGuardable : false;
 	
 	if (this.hasStatus(statusID)) {
 		return;
@@ -240,8 +241,7 @@ BattleUnit.prototype.endCycle = function()
 	if (this.stance == BattleStance.counter && this.isCounterReady) {
 		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
 		var multiplier = 1.0 + Game.math.counterBonus(this.counterDamage, this.battlerInfo);
-		this.stance = BattleStance.attack;
-		this.battle.stanceChanged.invoke(this, this.stance);
+		this.newStance = BattleStance.attack;
 		this.queueMove(this.counterMove);
 		var action = this.getNextAction();
 		while (action != null) {
@@ -256,12 +256,20 @@ BattleUnit.prototype.endCycle = function()
 				effect.power = Math.round(effect.power * multiplier);
 				newPower = effect.power;
 			});
-			Console.writeLine("Attack boosted by C.S. to " + newPower + " POW");
+			Console.writeLine("Attack boosted by CS to " + newPower + " POW");
 			Console.append("reg: " + oldPower);
 			this.performAction(action, this.counterMove);
 			action = this.getNextAction();
 		}
 		this.counterDamage = 0;
+	}
+	if (this.newStance !== this.stance) {
+		this.stance = this.newStance;
+		this.battle.stanceChanged.invoke(this, this.stance);
+		var stanceName = this.stance == BattleStance.guard ? "Guard"
+			: this.stance == BattleStance.counter ? "Counter"
+			: "Attack";
+		Console.writeLine(this.name + " has switched to " + stanceName + " Stance");
 	}
 };
 
@@ -566,12 +574,11 @@ BattleUnit.prototype.restoreMP = function(percentage)
 BattleUnit.prototype.setCounter = function(skill)
 {
 	if (this.stance != BattleStance.counter) {
-		Console.writeLine(this.name + " is going into Counter Stance");
-		this.stance = BattleStance.counter;
+		Console.writeLine(this.name + " will switch to Counter Stance");
+		this.newStance = BattleStance.counter;
 		this.counterMove = { usable: skill, targets: null };
 		this.isCounterReady = false;
 		this.cv = Infinity;
-		this.battle.stanceChanged.invoke(this, this.stance);
 	} else {
 		this.counterMove.usable = skill;
 	}
@@ -582,10 +589,9 @@ BattleUnit.prototype.setCounter = function(skill)
 // Switches the unit into Guard Stance.
 BattleUnit.prototype.setGuard = function()
 {
-	this.stance = BattleStance.guard;
+	this.newStance = BattleStance.guard;
 	this.cv = Infinity;
-	this.battle.stanceChanged.invoke(this, this.stance);
-	Console.writeLine(this.name + " has switched to a defensive stance");
+	Console.writeLine(this.name + " will switch to Guard Stance");
 }
 
 // .takeDamage() method
@@ -628,8 +634,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 				Console.append("targ: " + this.counterMove.targets[0].name);
 			} else if (this.stance == BattleStance.guard) {
 				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
-				this.stance = BattleStance.attack;
-				this.battle.stanceChanged.invoke(this, this.stance);
+				this.newStance = BattleStance.attack;
 				Console.writeLine(this.name + "'s defensive stance was broken");
 				this.resetCounter(Game.defenseBreakRank);
 			}

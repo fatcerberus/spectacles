@@ -715,7 +715,7 @@ Game = {
 	effects: {
 		addStatus: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].addStatus(effect.status, false);
+				targets[i].addStatus(effect.status);
 			}
 		},
 		damage: function(actor, targets, effect) {
@@ -735,7 +735,7 @@ Game = {
 				}
 				if ('addStatus' in effect) {
 					var statusChance = 'statusChance' in effect ? effect.statusChance : 1.0;
-					targets[i].addStatus(effect.addStatus);
+					targets[i].addStatus(effect.addStatus, true);
 				}
 			}
 		},
