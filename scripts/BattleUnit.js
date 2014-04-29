@@ -146,6 +146,10 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 		}
 		var effect = new StatusContext(eventData.statusID, this);
 		this.statuses.push(effect);
+		this.battlerInfo.statuses = [];
+		Link(this.statuses).pluck('statusID').each(function(statusID) {
+			this.battlerInfo.statuses.push(statusID);
+		}.bind(this));
 		Console.writeLine(this.name + " took on status " + effect.name);
 	}
 };
@@ -407,6 +411,10 @@ BattleUnit.prototype.liftStatus = function(statusID)
 				--i; continue;
 			}
 		}
+		this.battlerInfo.statuses = [];
+		Link(this.statuses).pluck('statusID').each(function(statusID) {
+			this.battlerInfo.statuses.push(statusID);
+		}.bind(this));
 	}
 };
 
@@ -515,9 +523,9 @@ BattleUnit.prototype.refreshInfo = function()
 		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
 	}
 	this.battlerInfo.statuses = [];
-	for (var i = 0; i < this.statuses.length; ++i) {
-		this.battlerInfo.statuses.push(this.statuses[i].statusID);
-	}
+	Link(this.statuses).pluck('statusID').each(function(statusID) {
+		this.battlerInfo.statuses.push(statusID);
+	}.bind(this));
 };
 
 // .resetCounter() method
