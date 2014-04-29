@@ -25,6 +25,10 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.scottStance = BattleStance.attack;
 	this.turnCount = {};
 	this.zombieHealFixState = null;
+	this.phasePoints = [ 3000, 2000, 1000 ];
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+	}
 }
 
 Robert2Strategy.prototype.strategize = function()
@@ -50,9 +54,9 @@ Robert2Strategy.prototype.strategize = function()
 	} else {
 		var lastPhase = this.phase;
 		var phaseToEnter =
-			this.unit.hp > 3000 ? 1 :
-			this.unit.hp > 2000 ? 2 :
-			this.unit.hp > 1000 ? 3 :
+			this.unit.hp > this.phasePoints[0] ? 1 :
+			this.unit.hp > this.phasePoints[1] ? 2 :
+			this.unit.hp > this.phasePoints[2] ? 3 :
 			4;
 		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 		switch (this.phase) {
