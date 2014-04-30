@@ -72,6 +72,7 @@ Party.prototype.remove = function(characterID)
 {
 	for (var id in this.members) {
 		if (id === characterID) {
+			Console.writeLine("Removing PC " + this.members[id].name + " from party");
 			delete this.members[id];
 		}
 	}

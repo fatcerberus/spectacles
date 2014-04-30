@@ -442,8 +442,7 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
-	Console.writeLine("");
-	Console.writeLine("Beginning new CTB cycle");
+	Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	Link(unitLists).unroll().invoke('beginCycle');

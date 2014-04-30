@@ -14,11 +14,12 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.elementHealState = null;
 	this.isAlcoholPending = false;
+	this.isAlcoholUsed = false;
 	this.isFinalTier2Used = false;
+	this.isNecroTonicItemReady = false;
 	this.isNecromancyReady = false;
 	this.isPhase4Started = false;
 	this.isScottZombie = false;
-	this.isNecroTonicItemReady = false;
 	this.necroTonicItem = null;
 	this.necromancyChance = 0.0;
 	this.rezombieChance = 0.0;
@@ -27,18 +28,17 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.zombieHealFixState = null;
 	this.phasePoints = [ 3000, 2000, 1000 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
-		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 360 * (0.5 - Math.random()));
 	}
 }
 
 Robert2Strategy.prototype.strategize = function()
 {				
 	if ('maggie' in this.ai.enemies && this.ai.turnsTaken == 0) {
-		var me = this.unit;
 		new Scenario()
 			.talk("Robert", true, 2.0, "Wait, hold on... what in Hades' name is SHE doing here?")
 			.talk("maggie", true, 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
-			.call(function() { me.takeDamage(me.maxHP - 1); })
+			.call(function() { this.unit.takeDamage(this.unit.maxHP - 1); }.bind(this))
 			.playSound('Munch.wav')
 			.talk("Robert", true, 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
 			.talk("maggie", true, 2.0, "Tastes like chicken!")
@@ -58,6 +58,9 @@ Robert2Strategy.prototype.strategize = function()
 			this.unit.hp > this.phasePoints[1] ? 2 :
 			this.unit.hp > this.phasePoints[2] ? 3 :
 			4;
+		if (this.isAlcoholUsed) {
+			phaseToEnter = 5;
+		}
 		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 		switch (this.phase) {
 			case 1:
@@ -222,8 +225,13 @@ Robert2Strategy.prototype.strategize = function()
 					} else {
 						var forecast = this.ai.turnForecast('omni');
 						if ((forecast[0].unit === this.unit || forecast[1].unit === this.unit)
-							&& this.ai.isSkillUsable('omni'))
+						    && this.ai.isSkillUsable('omni'))
 						{
+							if (this.scottStance == BattleStance.counter) {
+								if (this.ai.isItemUsable('tonic')) {
+									this.ai.useItem('tonic');
+								}
+							}
 							this.ai.useSkill('omni');
 						} else {
 							if (0.5 > Math.random()) {
@@ -241,7 +249,7 @@ Robert2Strategy.prototype.strategize = function()
 					this.ai.useSkill('omni');
 					this.ai.useSkill('crackdown');
 				} else {
-					if (this.unit.hp <= 2000 && !this.isFinalTier2Used) {
+					if (this.unit.hp <= 1500 && !this.isFinalTier2Used) {
 						if (this.turnCount['scott'] > this.turnCount['robert2']) {
 							this.ai.useSkill('windchill');
 						} else {
@@ -294,7 +302,7 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.adjustBGM(1.0)
 			.talk("Robert", true, 1.0, "If that's how you want it, then so be it.")
 			.run(true);
-		this.phase = 5;
+		this.isAlcoholUsed = true;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (this.phase <= 4 && Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie') && this.zombieHealFixState == null) {

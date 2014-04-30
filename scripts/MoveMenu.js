@@ -164,7 +164,7 @@ function MoveMenu(unit, battle)
 				nextMoveOrRank = drawer.contents[drawer.cursor];
 			}
 		} else {
-			nextMoveOrRank = Infinity;
+			nextMoveOrRank = Game.stanceChangeRank;
 		}
 		var prediction = this.battle.predictTurns(this.unit, isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : nextMoveOrRank);
 		this.battle.ui.hud.turnPreview.set(prediction);
@@ -325,9 +325,9 @@ MoveMenu.prototype.render = function()
 		: "AS";
 	Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
 	OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-	Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
+	Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 176 * this.fadeness));
 	OutlinedRectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-	this.drawText(this.font, 5, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName);
+	this.drawText(this.font, 68, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName, 'center');
 	this.drawText(this.font, 148, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), stanceText, 'center');
 	var itemWidth = 160 / this.drawers.length;
 	var litTextColor = CreateColor(255, 255, 255, 255);

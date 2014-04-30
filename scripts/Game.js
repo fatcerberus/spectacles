@@ -14,7 +14,8 @@ Game = {
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
-	defenseBreakRank: 1,
+	guardBreakRank: 1,
+	stanceChangeRank: 5,
 	
 	bossHPPerBar: 500,
 	partyHPPerBar: 250,

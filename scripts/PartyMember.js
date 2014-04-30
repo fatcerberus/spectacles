@@ -89,7 +89,7 @@ PartyMember.prototype.learnSkill = function(skillID)
 	var skill = new SkillUsable(skillID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
-	Console.writeLine("P.C. " + this.name + " learned skill " + skill.name);
+	Console.writeLine("PC " + this.name + " learned skill " + skill.name);
 	return skill;
 };
 

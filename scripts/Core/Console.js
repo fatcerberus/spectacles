@@ -23,7 +23,9 @@ Console = new (function()
 // Initializes the console.
 Console.initialize = function(numLines)
 {
-	this.log = OpenLog('enginelog' + new Date().valueOf() + '.txt');
+	if (DBG_LOG_CONSOLE_OUTPUT) {
+		this.log = OpenLog('consoleLog.txt');
+	}
 	this.numLines = numLines;
 	this.thread = Threads.createEntityThread(this, 101);
 	this.writeLine("Specs Engine v6.0");
@@ -42,7 +44,9 @@ Console.append = function(text)
 		Console.writeLine(text);
 		return;
 	}
-	this.log.write("    >> " + text);
+	if (DBG_LOG_CONSOLE_OUTPUT) {
+		this.log.write("    - " + text);
+	}
 	var lineInBuffer = (this.nextLine - 1) % this.numLines;
 	this.buffer[lineInBuffer] += " >>" + text;
 };
@@ -108,7 +112,9 @@ Console.update = function() {
 // Writes a line of text to the console.
 Console.writeLine = function(text)
 {
-	this.log.write("> " + text);
+	if (DBG_LOG_CONSOLE_OUTPUT) {
+		this.log.write(text);
+	}
 	var lineInBuffer = this.nextLine % this.numLines;
 	this.buffer[lineInBuffer] = ">" + text;
 	++this.nextLine;
