@@ -265,7 +265,7 @@ BattleUnit.prototype.endCycle = function()
 	}
 	if (this.newStance !== this.stance) {
 		this.stance = this.newStance;
-		this.battle.stanceChanged.invoke(this, this.stance);
+		this.battle.stanceChanged.invoke(this.id, this.stance);
 		var stanceName = this.stance == BattleStance.guard ? "Guard"
 			: this.stance == BattleStance.counter ? "Counter"
 			: "Attack";
@@ -694,7 +694,7 @@ BattleUnit.prototype.tick = function()
 				: this.stance == BattleStance.counter ? "Counter"
 				: "Attack";
 			this.stance = this.newStance = BattleStance.attack;
-			this.battle.stanceChanged.invoke(this, this.stance);
+			this.battle.stanceChanged.invoke(this.id, this.stance);
 			Console.writeLine(this.name + "'s " + stanceName + " Stance expired, reverted to AS");
 		}
 		Console.writeLine(this.name + "'s turn is up");

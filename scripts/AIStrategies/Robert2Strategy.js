@@ -12,6 +12,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.stanceChanged.addHook(this, this.onStanceChanged);
 	this.battle.unitReady.addHook(this, this.onUnitReady);
+	this.avengeP3Elementals = false;
 	this.elementHealState = null;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
@@ -152,15 +153,13 @@ Robert2Strategy.prototype.strategize = function()
 						--this.elementalsTillOmni;
 						if (this.elementalsTillOmni <= 0 && this.ai.isItemUsable('vaccine')) {
 							this.ai.useItem('vaccine');
+							this.avengeP3Elementals = true;
 						} else {
 							if (this.unit.hasStatus('ignite')) {
 								this.ai.useSkill('chill', 'robert2');
 							} else if (this.unit.hasStatus('frostbite')) {
 								this.ai.useSkill('flare', 'robert2');
 							}
-						}
-						if (this.elementalsTillOmni <= 0) {
-							this.ai.useSkill('omni');
 						}
 					} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
 						var forecast = this.ai.turnForecast('chargeSlash');
@@ -227,11 +226,6 @@ Robert2Strategy.prototype.strategize = function()
 						if ((forecast[0].unit === this.unit || forecast[1].unit === this.unit)
 						    && this.ai.isSkillUsable('omni'))
 						{
-							if (this.scottStance == BattleStance.counter) {
-								if (this.ai.isItemUsable('tonic')) {
-									this.ai.useItem('tonic');
-								}
-							}
 							this.ai.useSkill('omni');
 						} else {
 							if (0.5 > Math.random()) {
@@ -401,7 +395,7 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 					}
 					break;
 				case 'revenge':
-					var skillID = this.scottStance != BattleStance.attack ? 'omni' : 'electrocute';
+					var skillID = this.scottStance != BattleStance.counter ? 'omni' : 'electrocute';
 					if (this.ai.isSkillUsable(skillID)) {
 						this.ai.useSkill(skillID);
 						this.zombieHealFixState = null;
@@ -414,6 +408,11 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 					this.zombieHealFixState = null;
 					break;
 			}
+		} else if (this.avengeP3Elementals) {
+			if (this.ai.isSkillUsable('omni')) {
+				this.ai.useSkill('omni');
+			}
+			this.avengeP3Elementals = false;
 		} else if (this.elementHealState !== null) {
 			if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 				if (this.elementHealState == 'prep') {
