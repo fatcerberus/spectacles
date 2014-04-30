@@ -13,6 +13,7 @@ Console = new (function()
 	this.commands = [];
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
+	this.log = null;
 	this.nextLine = 0;
 	this.numLines = 0;
 	this.thread = null;
@@ -22,10 +23,11 @@ Console = new (function()
 // Initializes the console.
 Console.initialize = function(numLines)
 {
+	this.log = OpenLog('enginelog' + new Date().valueOf() + '.txt');
 	this.numLines = numLines;
 	this.thread = Threads.createEntityThread(this, 101);
 	this.writeLine("Specs Engine v6.0");
-	this.append("(c)2013 Power-Command");
+	this.append("(c)2013-2014 Power-Command");
 	this.writeLine("");
 	this.writeLine("Initialized console");
 };
@@ -40,6 +42,7 @@ Console.append = function(text)
 		Console.writeLine(text);
 		return;
 	}
+	this.log.write("    >> " + text);
 	var lineInBuffer = (this.nextLine - 1) % this.numLines;
 	this.buffer[lineInBuffer] += " >>" + text;
 };
@@ -105,6 +108,7 @@ Console.update = function() {
 // Writes a line of text to the console.
 Console.writeLine = function(text)
 {
+	this.log.write("> " + text);
 	var lineInBuffer = this.nextLine % this.numLines;
 	this.buffer[lineInBuffer] = ">" + text;
 	++this.nextLine;
