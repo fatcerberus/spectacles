@@ -758,11 +758,12 @@ Game = {
 			actor.heal(healAmount, true);
 		},
 		fullRecover: function(actor, targets, effect) {
-			for (var i = 0; i < targets.length; ++i) {
-				if (!targets[i].hasStatus('zombie')) {
-					targets[i].heal(targets[i].maxHP);
-				}
-			}
+			Link(targets)
+				.where(function(unit) { return !unit.hasStatus('zombie'); })
+				.each(function(unit)
+			{
+				unit.heal(unit.maxHP - unit.hp);
+			});
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {

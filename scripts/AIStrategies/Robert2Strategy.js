@@ -16,7 +16,6 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.elementHealState = null;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
-	this.isFinalTier2Used = false;
 	this.isNecroTonicItemReady = false;
 	this.isNecromancyReady = false;
 	this.isPhase4Started = false;
@@ -109,7 +108,11 @@ Robert2Strategy.prototype.strategize = function()
 					if (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite')) {
 						this.elementHealState = 'prep';
 					}
+					this.doChargeSlashNext = false;
 					this.isComboStarted = false;
+				} else if (this.doChargeSlashNext) {
+					this.ai.useSkill('chargeSlash');
+					this.doChargeSlashNext = false;
 				} else {
 					var forecast = this.ai.turnForecast('quickstrike');
 					if ((0.5 > Math.random() || this.isComboStarted) && forecast[0].unit === this.unit) {
@@ -119,6 +122,7 @@ Robert2Strategy.prototype.strategize = function()
 						if (this.isComboStarted) {
 							this.ai.useSkill('swordSlash');
 							this.isComboStarted = false;
+							this.doChargeSlashNext = true;
 						} else {
 							var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 							var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
@@ -144,9 +148,9 @@ Robert2Strategy.prototype.strategize = function()
 						+ 0.25 * this.isScottZombie;
 					if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
-					} else if (this.movesTillNecroTonic <= 0 && this.ai.isItemUsable('powerTonic')) {
+					} else if (this.movesTillNecroTonic <= 0 && this.ai.isItemUsable('tonic')) {
 						this.ai.useSkill('electrocute');
-						this.necroTonicItem = 'powerTonic';
+						this.necroTonicItem = 'tonic';
 						this.isNecroTonicItemReady = true;
 						this.movesTillNecroTonic = Infinity;
 					} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
@@ -240,8 +244,11 @@ Robert2Strategy.prototype.strategize = function()
 				break;
 			case 5:
 				if (this.phase > lastPhase) {
-					this.ai.useSkill('omni');
-					this.ai.useSkill('crackdown');
+					this.ai.useSkill('electrocute');
+					this.phase5Moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+					this.isDesperate = false;
+					this.isFinalCrackdownUsed = false;
+					this.isFinalTier2Used = false;
 				} else {
 					if (this.unit.hp <= 1500 && !this.isFinalTier2Used) {
 						if (this.turnCount['scott'] > this.turnCount['robert2']) {
@@ -249,17 +256,31 @@ Robert2Strategy.prototype.strategize = function()
 						} else {
 							this.ai.useSkill('hellfire');
 						}
+						this.phase5Moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 						this.isFinalTier2Used = true;
-					} else if (0.5 > Math.random()) {
-						var magics = [ 'flare', 'chill', 'lightning', 'quake' ];
-						var spellToTry = magics[Math.min(Math.floor(Math.random() * magics.length), magics.length - 1)];
-						if (this.ai.isSkillUsable(spellToTry)) {
-							this.ai.useSkill(spellToTry);
+					} else if (this.isFinalTier2Used && !this.isFinalCrackdownUsed) {
+						this.ai.useSkill('crackdown');
+						this.isFinalCrackdownUsed = true;
+					} else if (this.unit.hp <= 500 && !this.isDesperate) {
+						this.isDesperate = true;
+						this.phase5Moves = [ 'electrocute', 'upheaval', 'omni' ];
+						if (this.ai.isSkillUsable('omni')) {
+							this.ai.useSkill('omni');
 						} else {
 							this.ai.useSkill('chargeSlash');
 						}
 					} else {
-						this.ai.useSkill('swordSlash');
+						var index = Math.min(Math.floor(Math.random() * this.phase5Moves.length), this.phase5Moves.length - 1);
+						var moveToTry = this.phase5Moves[index];
+						if (this.ai.isSkillUsable(moveToTry)) {
+							this.ai.useSkill(moveToTry);
+						} else {
+							if (0.5 > Math.random()) {
+								this.ai.useSkill('chargeSlash');
+							} else {
+								this.ai.useSkill('swordSlash');
+							}
+						}
 					}
 				}
 				break;

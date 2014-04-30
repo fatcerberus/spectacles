@@ -695,7 +695,7 @@ BattleUnit.prototype.tick = function()
 				: "Attack";
 			this.stance = this.newStance = BattleStance.attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
-			Console.writeLine(this.name + "'s " + stanceName + " Stance expired, reverted to AS");
+			Console.writeLine(this.name + "'s " + stanceName + " Stance has expired");
 		}
 		Console.writeLine(this.name + "'s turn is up");
 		this.battle.unitReady.invoke(this.id);
