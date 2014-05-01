@@ -77,7 +77,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);
 		}
-		this.items = this.partyMember.items;
+		this.items = clone(this.partyMember.items);
 		for (var stat in Game.namedStats) {
 			this.stats[stat] = basis.stats[stat];
 		}

@@ -1502,8 +1502,8 @@ Game = {
 					.talk("Scott", true, 2.0,
 						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.pause(1.0)
-					.talk("Robert", true, 2.0, "What makes you so sure you have a choice?")
+					.pause(2.0)
+					.talk("Robert", true, 1.0, "What makes you so sure you have a choice?")
 					.synchronize()
 					.run(true);
 				this.playerUnits[0].addStatus('reGen');

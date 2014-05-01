@@ -6,7 +6,7 @@
 // ItemUsable() constructor
 // Creates an object representing a consumable item.
 // Arguments:
-//     itemID: The ID of the item as defined in the gamedef.
+//     itemID:   The ID of the item as defined in the gamedef.
 function ItemUsable(itemID)
 {
 	if (!(itemID in Game.items)) {
@@ -23,6 +23,15 @@ function ItemUsable(itemID)
 	this.useAiming = false;
 	this.usesLeft = 'uses' in this.itemDef ? this.itemDef.uses : 1;
 }
+
+// .clone() method
+// Creates a copy of the ItemUsable in its current state.
+ItemUsable.prototype.clone = function()
+{
+	var newCopy = new ItemUsable(this.itemID);
+	newCopy.usesLeft = this.usesLeft;
+	return newCopy;
+};
 
 // .defaultTargets() method
 // Determines the default targets for the item.

@@ -148,10 +148,14 @@ function clone(o)
 				return clones[i].dolly;
 			}
 		}
-		var dolly = o.hasOwnProperty('length') ? [] : {};
+		var dolly = o instanceof Array ? []
+			: 'clone' in o && typeof o.clone === 'function' ? o.clone()
+			: {};
 		clones.push({ original: o, dolly: dolly });
-		for (var p in o) {
-			dolly[p] = clone(o[p], clones);
+		if (o instanceof Array || !('clone' in o) || typeof o.clone !== 'function') {
+			for (var p in o) {
+				dolly[p] = clone(o[p], clones);
+			}
 		}
 		return dolly;
 	} else {
