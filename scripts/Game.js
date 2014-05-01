@@ -728,7 +728,7 @@ Game = {
 				if ('element' in effect) {
 					damageTags.push(effect.element);
 				}
-				var damage = Math.round(Math.max(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power), 1));
+				var damage = Math.max(Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
 				targets[i].takeDamage(Math.max(damage + damage * 0.2 * (Math.random() - 0.5), 1), damageTags);
 				var recoilFunction = effect.damageType + "Recoil";
 				if (recoilFunction in Game.math.damage) {
@@ -767,7 +767,7 @@ Game = {
 		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
-				targets[i].takeDamage(targets[i].hp, [ 'deathblow' ]);
+				targets[i].takeDamage(Math.max(targets[i].hp, 1), [ effect.damageType, 'deathblow' ]);
 			}
 		},
 		liftStatus: function(actor, targets, effect) {
@@ -873,7 +873,7 @@ Game = {
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "#9 seems desperate...",
+					announceAs: "#9's Desperation...",
 					rank: 3,
 					effects: [
 						{

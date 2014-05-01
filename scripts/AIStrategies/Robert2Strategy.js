@@ -58,7 +58,7 @@ Robert2Strategy.prototype.strategize = function()
 			this.unit.hp > this.phasePoints[1] ? 2 :
 			this.unit.hp > this.phasePoints[2] ? 3 :
 			4;
-		if (this.isAlcoholUsed) {
+		if (this.isAlcoholUsed && !this.unit.hasStatus('drunk')) {
 			phaseToEnter = 5;
 		}
 		this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
@@ -211,6 +211,8 @@ Robert2Strategy.prototype.strategize = function()
 					if (!this.isPhase4Started) {
 						if (!this.unit.hasStatus('zombie') && !this.isAlcoholPending) {
 							this.ai.useItem('alcohol');
+							this.ai.useSkill('electrocute');
+							this.isPhase4Started = true;
 						} else {
 							if (!this.isAlcoholPending && this.ai.isItemUsable('holyWater')) {
 								this.ai.useItem('holyWater');
@@ -244,10 +246,8 @@ Robert2Strategy.prototype.strategize = function()
 				break;
 			case 5:
 				if (this.phase > lastPhase) {
-					this.ai.useSkill('electrocute');
-					this.phase5Moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+					this.ai.useSkill('crackdown');
 					this.isDesperate = false;
-					this.isFinalCrackdownUsed = false;
 					this.isFinalTier2Used = false;
 				} else {
 					if (this.unit.hp <= 1500 && !this.isFinalTier2Used) {
@@ -256,30 +256,27 @@ Robert2Strategy.prototype.strategize = function()
 						} else {
 							this.ai.useSkill('hellfire');
 						}
-						this.phase5Moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
 						this.isFinalTier2Used = true;
-					} else if (this.isFinalTier2Used && !this.isFinalCrackdownUsed) {
-						this.ai.useSkill('crackdown');
-						this.isFinalCrackdownUsed = true;
 					} else if (this.unit.hp <= 500 && !this.isDesperate) {
 						this.isDesperate = true;
-						this.phase5Moves = [ 'electrocute', 'upheaval', 'omni' ];
+						this.ai.useSkill('desperationSlash');
 						if (this.ai.isSkillUsable('omni')) {
 							this.ai.useSkill('omni');
+						}
+					} else if (this.isDesperate) {
+						if (!this.unit.hasStatus('disarray')) {
+							var qsTurns = this.ai.turnForecast('quickstrike');
+							this.ai.useSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : 'chargeSlash');
 						} else {
 							this.ai.useSkill('chargeSlash');
 						}
 					} else {
-						var index = Math.min(Math.floor(Math.random() * this.phase5Moves.length), this.phase5Moves.length - 1);
-						var moveToTry = this.phase5Moves[index];
+						var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
+						var moveToTry = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
 						if (this.ai.isSkillUsable(moveToTry)) {
 							this.ai.useSkill(moveToTry);
 						} else {
-							if (0.5 > Math.random()) {
-								this.ai.useSkill('chargeSlash');
-							} else {
-								this.ai.useSkill('swordSlash');
-							}
+							this.ai.useSkill('chargeSlash');
 						}
 					}
 				}
@@ -470,6 +467,8 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 		} else if (this.isAlcoholPending && !this.isPhase4Started) {
 			if (!this.unit.hasStatus('zombie')) {
 				this.ai.useItem('alcohol');
+				this.ai.useSkill('electrocute');
+				this.isPhase4Started = true;
 			}
 		}
 	} else if (unitID == 'scott') {
