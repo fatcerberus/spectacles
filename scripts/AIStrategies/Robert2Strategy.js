@@ -318,6 +318,7 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.talk("Robert", true, 1.0, "If that's how you want it, then so be it.")
 			.run(true);
 		this.isAlcoholUsed = true;
+		this.isAlcoholPending = false;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (this.phase <= 4 && Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie') && this.zombieHealFixState == null) {
@@ -416,7 +417,7 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 					}
 					break;
 				case 'revenge':
-					var skillID = this.scottStance != BattleStance.counter ? 'omni' : 'electrocute';
+					var skillID = this.scottStance == BattleStance.guard ? 'omni' : 'electrocute';
 					if (this.ai.isSkillUsable(skillID)) {
 						this.ai.useSkill(skillID);
 						this.zombieHealFixState = null;
