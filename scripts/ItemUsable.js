@@ -6,7 +6,7 @@
 // ItemUsable() constructor
 // Creates an object representing a consumable item.
 // Arguments:
-//     itemID:   The ID of the item as defined in the gamedef.
+//     itemID: The ID of the item as defined in the gamedef.
 function ItemUsable(itemID)
 {
 	if (!(itemID in Game.items)) {

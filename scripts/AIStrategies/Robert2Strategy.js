@@ -26,7 +26,7 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.scottStance = BattleStance.attack;
 	this.turnCount = {};
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 3000, 2000, 1000 ];
+	this.phasePoints = [ 3000, 1500, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 360 * (0.5 - Math.random()));
 	}
@@ -218,10 +218,10 @@ Robert2Strategy.prototype.strategize = function()
 								this.ai.useItem('holyWater');
 								this.isAlcoholPending = true;
 							} else {
-								if (this.ai.isItemUsable('redBull') && this.unit.mpPool.availableMP < 0.5 * this.unit.mpPool.capacity) {
-									this.ai.useItem('redBull');
+								if (this.ai.isSkillUsable('omni')) {
+									this.ai.useSkill('omni');
 								}
-								this.ai.useSkill('electrocute');
+								this.ai.useSkill('chargeSlash');
 								this.isPhase4Started = true;
 							}
 						}
@@ -238,7 +238,15 @@ Robert2Strategy.prototype.strategize = function()
 								this.ai.useSkill('chargeSlash');
 							} else {
 								var moves = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
-								this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+								var moveID = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+								if (this.ai.isSkillUsable(moveID)) {
+									this.ai.useSkill(moveID);
+								} else if (!this.unit.hasStatus('disarray')) {
+									var qsTurns = this.ai.turnForecast('quickstrike');
+									this.ai.useSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : 'swordSlash');
+								} else {
+									this.ai.useSkill('swordSlash');
+								}
 							}
 						}
 					}
@@ -263,6 +271,7 @@ Robert2Strategy.prototype.strategize = function()
 						if (this.ai.isSkillUsable('omni')) {
 							this.ai.useSkill('omni');
 						}
+						this.ai.useSkill('chargeSlash');
 					} else if (this.isDesperate) {
 						if (!this.unit.hasStatus('disarray')) {
 							var qsTurns = this.ai.turnForecast('quickstrike');
@@ -467,8 +476,7 @@ Robert2Strategy.prototype.onUnitReady = function(unitID)
 		} else if (this.isAlcoholPending && !this.isPhase4Started) {
 			if (!this.unit.hasStatus('zombie')) {
 				this.ai.useItem('alcohol');
-				this.ai.useSkill('electrocute');
-				this.isPhase4Started = true;
+				this.ai.useSkill('electrocute');this.isPhase4Started = true;
 			}
 		}
 	} else if (unitID == 'scott') {
