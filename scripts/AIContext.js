@@ -125,6 +125,38 @@ AIContext.prototype.isSkillUsable = function(skillID)
 	return skillToUse.isUsable(this.unit);
 };
 
+// .predictItemTurns() method
+// Gets a turn order prediction for the use of a specified skill.
+// Arguments:
+//     itemID: The ID, as defined in the gamedef, of the item whose effects on
+//             the turn order are to be tested.
+AIContext.prototype.predictItemTurns = function(itemID)
+{
+	if (!(itemID in Game.items)) {
+		Abort("AIContext.predictItemTurns(): The item '" + itemID + "' doesn't exist!");
+	}
+	var forecast = this.battle.predictTurns(this.unit, [ Game.items[itemID].action ]);
+	Console.writeLine(this.unit.name + " considering " + Game.items[itemID].name);
+	Console.append("next: " + forecast[0].unit.name);
+	return forecast;
+};
+
+// .predictSkillTurns() method
+// Gets a turn order prediction for the use of a specified skill.
+// Arguments:
+//     skillID: The ID, as defined in the gamedef, of the skill whose effects on
+//              the turn order are to be tested.
+AIContext.prototype.predictSkillTurns = function(skillID)
+{
+	if (!(skillID in Game.skills)) {
+		Abort("AIContext.predictSkillTurns(): The skill '" + skillID + "' doesn't exist!");
+	}
+	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
+	Console.writeLine(this.unit.name + " considering " + Game.skills[skillID].name);
+	Console.append("next: " + forecast[0].unit.name);
+	return forecast;
+};
+
 // .setCounter() method
 // Instructs the AI to put the unit into counterattacking stance.
 // Arguments:
@@ -171,22 +203,6 @@ AIContext.prototype.setTarget = function(targetID)
 {
 	var unit = this.battle.findUnit(targetID);
 	this.targets = unit !== null ? [ unit ] : null;
-};
-
-// .turnForecast() method
-// Gets a turn order prediction for the use of a specified skill.
-// Arguments:
-//     skillID: The ID, as defined in the gamedef, of the skill whose effects on
-//              the turn order are to be tested.
-AIContext.prototype.turnForecast = function(skillID)
-{
-	if (!(skillID in Game.skills)) {
-		Abort("AIContext.turnForecast(): The skill '" + skillID + "' doesn't exist!");
-	}
-	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
-	Console.writeLine(this.unit.name + " considering " + Game.skills[skillID].name);
-	Console.append("next: " + forecast[0].unit.name);
-	return forecast;
 };
 
 // .useItem() method
