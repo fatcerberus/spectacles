@@ -111,7 +111,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	}
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
-		: new MPPool(Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
+		: new MPPool(this.id + "MP", Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
 		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
@@ -381,6 +381,7 @@ BattleUnit.prototype.heal = function(amount, isPriority)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
 		Console.writeLine(this.name + " healed for " + amount + " HP");
+		Console.append("now: " + this.hp);
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
 	}

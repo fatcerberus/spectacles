@@ -183,7 +183,7 @@ Battle.prototype.go = function()
 		partyMaxMP += Math.round(Game.math.mp.capacity(battlerInfo));
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
-	var partyMPPool = new MPPool(Math.min(Math.max(partyMaxMP, 0), 9999));
+	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
 	partyMPPool.gainedMP.addHook(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
@@ -442,6 +442,7 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
+	Console.writeLine("");
 	Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var unitLists = [ this.enemyUnits, this.playerUnits ];

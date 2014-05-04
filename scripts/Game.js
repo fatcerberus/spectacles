@@ -397,8 +397,10 @@ Game = {
 				{
 					var oldPower = effect.power;
 					effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
-					Console.writeLine("POW modified by Crackdown to " + effect.power);
-					Console.append("orig: " + oldPower);
+					if (effect.power != oldPower) {
+						Console.writeLine("POW modified by Crackdown to " + effect.power);
+						Console.append("orig: " + oldPower);
+					}
 				}.bind(this));
 			},
 			useSkill: function(unit, eventData) {
@@ -414,8 +416,16 @@ Game = {
 				this.actionsTaken = 0;
 			},
 			acting: function(unit, eventData) {
+				var oldRank = eventData.action.rank;
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+				if (eventData.action.rank != oldRank) {
+					Console.writeLine("Rank modified by Disarray to " + eventData.action.rank);
+					Console.append("orig: " + oldRank);
+				}
 				++this.actionsTaken;
+				Console.writeLine(this.actionsTaken < 3
+					? "Disarray will expire after " + (3 - this.actionsTaken) + " more action(s)"
+					: "Disarray has expired");
 				if (this.actionsTaken >= 3) {
 					unit.liftStatus('disarray');
 				}
