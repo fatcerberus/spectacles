@@ -399,7 +399,7 @@ Game = {
 					effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
 					if (effect.power != oldPower) {
 						Console.writeLine("POW modified by Crackdown to " + effect.power);
-						Console.append("orig: " + oldPower);
+						Console.append("was: " + oldPower);
 					}
 				}.bind(this));
 			},
@@ -420,7 +420,7 @@ Game = {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 				if (eventData.action.rank != oldRank) {
 					Console.writeLine("Rank modified by Disarray to " + eventData.action.rank);
-					Console.append("orig: " + oldRank);
+					Console.append("was: " + oldRank);
 				}
 				++this.actionsTaken;
 				Console.writeLine(this.actionsTaken < 3
@@ -652,19 +652,13 @@ Game = {
 			initialize: function(unit) {
 				this.allowDeath = false;
 			},
-			beginCycle: function(unit, eventData) {
-				eventData.battlerInfo.stats.str /= 2;
-				eventData.battlerInfo.stats.mag /= 2;
-			},
 			cured: function(unit, eventData) {
 				if (eventData.statusID == 'skeleton') {
 					unit.heal(1, true);
 				}
 			},
 			damaged: function(unit, eventData) {
-				this.allowDeath = eventData.tags.indexOf('physical') != -1
-					|| eventData.tags.indexOf('sword') != -1
-					|| eventData.tags.indexOf('deathblow') != -1;
+				this.allowDeath = Link(eventData.tags).some([ 'physical', 'sword', 'earth' ]);
 				if (!this.allowDeath) {
 					eventData.amount = 0;
 				}

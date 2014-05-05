@@ -11,8 +11,8 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_BGM = true;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;

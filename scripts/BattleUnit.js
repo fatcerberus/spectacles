@@ -256,8 +256,8 @@ BattleUnit.prototype.endCycle = function()
 				effect.power = Math.round(effect.power * multiplier);
 				newPower = effect.power;
 			});
-			Console.writeLine("Attack boosted by CS to " + newPower + " POW");
-			Console.append("reg: " + oldPower);
+			Console.writeLine("POW boosted by CS to " + newPower);
+			Console.append("was: " + oldPower);
 			this.performAction(action, this.counterMove);
 			action = this.getNextAction();
 		}

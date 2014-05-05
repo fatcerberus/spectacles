@@ -44,9 +44,6 @@ Console.append = function(text)
 		Console.writeLine(text);
 		return;
 	}
-	if (DBG_LOG_CONSOLE_OUTPUT) {
-		this.log.write("    - " + text);
-	}
 	var lineInBuffer = (this.nextLine - 1) % this.numLines;
 	this.buffer[lineInBuffer] += " >>" + text;
 };
@@ -112,8 +109,9 @@ Console.update = function() {
 // Writes a line of text to the console.
 Console.writeLine = function(text)
 {
-	if (DBG_LOG_CONSOLE_OUTPUT) {
-		this.log.write(text);
+	if (DBG_LOG_CONSOLE_OUTPUT && this.nextLine > 0) {
+		var lineInBuffer = (this.nextLine - 1) % this.numLines;
+		this.log.write(this.buffer[lineInBuffer]);
 	}
 	var lineInBuffer = this.nextLine % this.numLines;
 	this.buffer[lineInBuffer] = ">" + text;
