@@ -3,8 +3,8 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('AIStrategies/HHorseStrategy.js');
-RequireScript('AIStrategies/Robert2Strategy.js');
+RequireScript('AIs/HeadlessHorseAI.js');
+RequireScript('AIs/Robert2AI.js');
 
 // Game object
 // Represents the game.
@@ -57,8 +57,8 @@ Game = {
 	
 	math: {
 		accuracy: {
-			bow: function(userInfo, target) {
-				return 1.0;
+			bow: function(userInfo, targetInfo) {
+				return userInfo.stats.foc / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
 			},
 			breath: function(userInfo, targetInfo) {
 				return 1.0;
@@ -77,7 +77,7 @@ Game = {
 				return 1.0;
 			},
 			sword: function(userInfo, targetInfo) {
-				return (userInfo.level * 1.25) / userInfo.weapon.level;
+				return userInfo.stats.agi * 1.5 / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
 			}
 		},
 		counterBonus: function(damage, unitInfo) {
@@ -235,6 +235,24 @@ Game = {
 			skills: [
 				'sharpshooter',
 				'shootout'
+			]
+		},
+		elysia: {
+			name: "Elysia",
+			fullName: "Elysia Ilapse",
+			baseStats: {
+				vit: 40,
+				str: 50,
+				def: 50,
+				foc: 90,
+				mag: 75,
+				agi: 100
+			},
+			startingWeapon: 'fireAndIce',
+			skills: [
+				'archery',
+				'flareShot',
+				'chillShot'
 			]
 		},
 		maggie: {
@@ -760,10 +778,11 @@ Game = {
 					actor.growSkill(munchData.skill, experience);
 				}
 				healAmount += Math.round(targets[i].maxHP / 10);
-				targets[i].die();
+				Console.writeLine(targets[i].fullName + " got eaten by " + actor.name);
 				new Scenario()
 					.playSound("Munch.wav")
 					.run();
+				targets[i].die();
 			}
 			actor.heal(healAmount, true);
 		},
@@ -803,6 +822,75 @@ Game = {
 	},
 	
 	skills: {
+		// Bow & Arrow moves
+		archery: {
+			name: "Archery",
+			category: 'attack',
+			weaponType: 'bow',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Archery",
+					rank: 2,
+					accuracyType: 'bow',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'bow',
+							power: 15
+						}
+					],
+				}
+			]
+		},
+		
+		flareShot: {
+			name: "Flare Shot",
+			category: 'attack',
+			weaponType: 'bow',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Flare Shot",
+					rank: 2,
+					accuracyType: 'bow',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'bow',
+							power: 25,
+							element: 'fire'
+						}
+					],
+				}
+			]
+		},
+		
+		chillShot: {
+			name: "Chill Shot",
+			category: 'attack',
+			weaponType: 'bow',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Chill Shot",
+					rank: 2,
+					accuracyType: 'bow',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'bow',
+							power: 25,
+							element: 'ice'
+						}
+					],
+				}
+			]
+		},
+		
 		chargeSlash: {
 			name: "Charge Slash",
 			category: 'attack',
@@ -1393,8 +1481,7 @@ Game = {
 			level: 5,
 			techniques: [
 				'swordSlash',
-				'quickstrike',
-				'chargeSlash'
+				'quickstrike'
 			]
 		},
 		templeSword: {
@@ -1410,9 +1497,19 @@ Game = {
 		arsenRifle: {
 			name: "Arsen's Rifle",
 			type: 'rifle',
-			level: 10,
+			level: 5,
 			techniques: [
 				'sharpshooter'
+			]
+		},
+		fireAndIce: {
+			name: "Fire & Ice",
+			type: 'bow',
+			level: 5,
+			techniques: [
+				'archery',
+				'flareShot',
+				'chillShot'
 			]
 		},
 		rsbSword: {
@@ -1430,7 +1527,7 @@ Game = {
 		headlessHorse: {
 			name: "H. Horse",
 			fullName: "Headless Horse",
-			strategy: HHorseStrategy,
+			aiType: HeadlessHorseAI,
 			hasLifeBar: true,
 			tier: 3,
 			baseStats: {
@@ -1442,6 +1539,7 @@ Game = {
 				agi: 70
 			},
 			damageModifiers: {
+				bow: 1.5,
 				fire: -1.0,
 				ice: 2.0,
 				fat: 1.5
@@ -1454,7 +1552,7 @@ Game = {
 		robert2: {
 			name: "Robert",
 			fullName: "Robert Spellbinder",
-			strategy: Robert2Strategy,
+			aiType: Robert2AI,
 			hasLifeBar: true,
 			tier: 3,
 			baseStats: {

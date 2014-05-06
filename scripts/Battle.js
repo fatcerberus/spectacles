@@ -27,18 +27,18 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
+	Console.writeLine("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.conditions = [];
+	this.battleUnits = [];
 	this.enemyUnits = [];
+	this.playerUnits = [];
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
 	this.partyMPPool = null;
-	this.playerUnits = [];
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
-	Console.writeLine("Battle session prepared");
-	Console.append("battleID: " + this.battleID);
 	
 	// .itemUsed event
 	// Occurs when an item is used by a battle unit.
@@ -172,9 +172,12 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (DBG_DISABLE_BATTLES) {
+		Console.writeLine("Battles disabled, automatic win");
+		Console.append("battleID: " + this.battleID);
 		this.result = BattleResult.playerWon;
 		return null;
 	}
+	Console.writeLine("");
 	Console.writeLine("Starting battle engine");
 	Console.append("battleID: " + this.battleID);
 	var partyMaxMP = 0;
@@ -196,11 +199,13 @@ Battle.prototype.go = function()
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyID = this.parameters.enemies[i];
 		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
+		this.battleUnits.push(unit);
 		this.enemyUnits.push(unit);
 	}
 	var i = 0;
 	for (var name in this.session.party.members) {
 		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle, partyMPPool);
+		this.battleUnits.push(unit);
 		this.playerUnits.push(unit);
 		++i;
 	}
@@ -425,6 +430,7 @@ Battle.prototype.spawnEnemy = function(enemyClass)
 {
 	Console.writeLine("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
+	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
 };
 
@@ -445,6 +451,9 @@ Battle.prototype.tick = function()
 	Console.writeLine("");
 	Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
+	var isUnitAlive = function(unit) { return unit.isAlive(); };
+	this.enemyUnits = Link(this.enemyUnits).where(isUnitAlive).toArray();
+	this.playerUnits = Link(this.playerUnits).where(isUnitAlive).toArray();
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	Link(unitLists).unroll().invoke('beginCycle');
 	Link(this.conditions).invoke('beginCycle');
@@ -453,17 +462,14 @@ Battle.prototype.tick = function()
 		Link(unitLists).unroll().each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
-		var isUnitAlive = function(unit) { return unit.isAlive(); };
-		this.playerUnits = Link(this.playerUnits).where(isUnitAlive).toArray();
-		this.enemyUnits = Link(this.enemyUnits).where(isUnitAlive).toArray();
-		if (this.playerUnits.length == 0) {
+		if (Link(this.playerUnits).none(isUnitAlive)) {
 			BGM.adjustVolume(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
 			Console.writeLine("All active party members have been killed");
 			return;
 		}
-		if (this.enemyUnits.length == 0) {
+		if (Link(this.enemyUnits).none(isUnitAlive)) {
 			BGM.adjustVolume(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
@@ -502,6 +508,7 @@ Battle.prototype.update = function() {
 	}
 	if (this.result !== null) {
 		Console.writeLine("Battle engine shutting down");
+		Link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
 		BGM.reset();
 		BGM.adjustVolume(1.0, 0.0);

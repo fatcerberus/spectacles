@@ -8,15 +8,19 @@ RequireScript("SkillUsable.js");
 // AIContext() constructor
 // Creates an object representing a context for an enemy AI.
 // Arguments:
-//     unit:     The unit whose actions are to be managed by the AI.
-//     battle:   The battle session the unit is taking part in.
-//     strategy: A function to be called by the AI context when it needs to know what action(s)
-//               should be taken next. The function will be called with 'this' set to the
-//               AIContext object, and takes the following arguments:
-//                   me:     The BattleUnit for which actions are being determined.
-//                   nextUp: The upcoming turn prediction, as returned by Battle.predictTurns().
-function AIContext(unit, battle, strategy)
+//     unit:   The unit whose actions are to be managed by the AI.
+//     battle: The battle session the unit is taking part in.
+//     aiType: The constructor for the AI which will control the enemy. The object created must,
+//             at the very least, include a parameterless function called 'strategize', which
+//             must queue at least one move (via AIContext.useSkill or AIContext.useItem) each
+//             time it is called.
+//             Note: The constructor will be called the following arguments:
+//                 battle:    The battle context representing the battle the unit is participating in.
+//                 unit:      The battle unit to be controlled by the AI.
+//                 aiContext: The AI context hosting the AI.
+function AIContext(unit, battle, aiType)
 {
+	Console.writeLine("Initializing AI context for " + unit.fullName);
 	this.battle = battle;
 	this.data = {};
 	this.defaultSkillID = null;
@@ -24,8 +28,18 @@ function AIContext(unit, battle, strategy)
 	this.targets = null;
 	this.turnsTaken = 0;
 	this.unit = unit;
-	this.strategy = new strategy(this.battle, this.unit, this);
+	this.strategy = new aiType(this.battle, this.unit, this);
 }
+
+// .dispose() method
+// Relinquishes resources held by the AI context.
+AIContext.prototype.dispose = function()
+{
+	Console.writeLine("Shutting down AI for " + this.unit.fullName);
+	if ('dispose' in this.strategy) {
+		this.strategy.dispose();
+	}
+};
 
 // .getNextMove() method
 // Gets the next skill to be executed or item to be used by the AI.

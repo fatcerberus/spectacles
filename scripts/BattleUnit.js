@@ -88,7 +88,6 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.enemyInfo = Game.enemies[basis];
 		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];
-		this.ai = new AIContext(this, battle, this.enemyInfo.strategy);
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
@@ -108,6 +107,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
 			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
 		}
+		this.ai = new AIContext(this, battle, this.enemyInfo.aiType);
 	}
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
@@ -124,6 +124,15 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("hp: " + this.hp + "/" + this.maxHP);
 }
+
+// .dispose() method
+// Relinquishes resources held by the battle unit.
+BattleUnit.prototype.dispose = function()
+{
+	if (this.ai !== null) {
+		this.ai.dispose();
+	}
+};
 
 // .addStatus() method
 // Afflicts the unit with a status effect.
@@ -171,7 +180,6 @@ BattleUnit.prototype.announce = function(eventID, eventData)
 {
 	
 };
-
 
 // .beginCycle() method
 // Prepares the unit for a new CTB cycle.

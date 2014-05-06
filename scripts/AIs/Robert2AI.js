@@ -3,15 +3,11 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-function Robert2Strategy(battle, unit, aiContext)
+function Robert2AI(battle, unit, aiContext)
 {
 	this.battle = battle;
 	this.unit = unit;
 	this.ai = aiContext;
-	this.battle.itemUsed.addHook(this, this.onItemUsed);
-	this.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.battle.stanceChanged.addHook(this, this.onStanceChanged);
-	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.avengeP3Elementals = false;
 	this.hasBeenZombieHealed = false;
 	this.isAlcoholPending = false;
@@ -30,11 +26,24 @@ function Robert2Strategy(battle, unit, aiContext)
 	this.zombieHealFixState = null;
 	this.phasePoints = [ 3000, 1500, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
-		this.phasePoints[i] = Math.round(this.phasePoints[i] + 360 * (0.5 - Math.random()));
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
+	
+	this.battle.itemUsed.addHook(this, this.onItemUsed);
+	this.battle.skillUsed.addHook(this, this.onSkillUsed);
+	this.battle.stanceChanged.addHook(this, this.onStanceChanged);
+	this.battle.unitReady.addHook(this, this.onUnitReady);
 }
 
-Robert2Strategy.prototype.strategize = function()
+Robert2AI.prototype.dispose = function()
+{
+	this.battle.itemUsed.removeHook(this, this.onItemUsed);
+	this.battle.skillUsed.removeHook(this, this.onSkillUsed);
+	this.battle.stanceChanged.removeHook(this, this.onStanceChanged);
+	this.battle.unitReady.removeHook(this, this.onUnitReady);
+};
+
+Robert2AI.prototype.strategize = function()
 {				
 	if ('maggie' in this.ai.enemies && this.ai.turnsTaken == 0) {
 		new Scenario()
@@ -107,45 +116,49 @@ Robert2Strategy.prototype.strategize = function()
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('upheaval');
 				this.isComboStarted = false;
-				this.isElementHealPending = this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite');
+				this.isStatusHealPending = true;
+				this.wasHolyWaterUsed = false;
 				this.wasTonicUsed = false;
 			} else {
 				var qsTurns = this.ai.predictSkillTurns('quickstrike');
-				this.isElementHealPending = this.isElementHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'));
-				if (this.isElementHealPending) {
-					if (this.unit.hasStatus('zombie') && this.ai.itemsLeft('holyWater') > 1) {
-						var holyWaterTurns = this.ai.predictItemTurns('holyWater');
-						if (holyWaterTurns[0].unit === this.unit && this.ai.isItemUsable('tonic')) {
-							this.ai.useItem('holyWater');
-							this.ai.useItem('tonic');
-							this.wasTonicUsed = true;
-						} else {
-							this.ai.useItem('holyWater');
-							this.wasTonicUsed = false;
-						}
+				this.isStatusHealPending = this.isStatusHealPending
+					&& (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite') || this.unit.hasStatus('zombie'));
+				var holyWatersLeft = this.ai.itemsLeft('holyWater');
+				if (this.isStatusHealPending && !this.wasHolyWaterUsed && this.unit.hasStatus('zombie') && holyWatersLeft > 1) {
+					var holyWaterTurns = this.ai.predictItemTurns('holyWater');
+					if (holyWaterTurns[0].unit === this.unit && this.ai.isItemUsable('tonic')) {
+						this.ai.useItem('holyWater');
+						this.ai.useItem('tonic');
+						this.wasTonicUsed = true;
 					} else {
-						var skillID = this.unit.hasStatus('frostbite') ? 'flare' : 'chill';
-						var spellTurns = this.ai.predictSkillTurns(skillID);
-						var isTonicSafe = this.ai.itemsLeft('tonic') > 5 && !this.unit.hasStatus('zombie');
-						if (spellTurns[0].unit === this.unit && isTonicSafe || this.wasTonicUsed)) {
-							this.ai.useSkill(skillID, 'robert2');
-							if (!this.wasTonicUsed && isTonicSafe) {
-								this.ai.useItem('tonic');
-							} else {
-								this.ai.useSkill(this.nextElementalMove !== null ? this.nextElementalMove
-									: skillID == 'chill' ? 'hellfire' : 'windchill');
-							}
-						} else if (!this.wasTonicUsed && isTonicSafe) {
+						this.ai.useItem('holyWater');
+						this.wasTonicUsed = false;
+					}
+					this.wasHolyWaterUsed = true;
+				} else if (this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
+					var skillID = this.unit.hasStatus('frostbite') ? 'flare' : 'chill';
+					var spellTurns = this.ai.predictSkillTurns(skillID);
+					var isTonicUsable = this.wasHolyWaterUsed && this.ai.itemsLeft('tonic') > 5;
+					if (spellTurns[0].unit === this.unit && isTonicUsable || this.wasTonicUsed) {
+						this.ai.useSkill(skillID, 'robert2');
+						if (!this.wasTonicUsed && isTonicUsable) {
 							this.ai.useItem('tonic');
 						} else {
 							this.ai.useSkill(this.nextElementalMove !== null ? this.nextElementalMove
 								: skillID == 'chill' ? 'hellfire' : 'windchill');
 						}
-						this.isElementHealPending = false;
+					} else if (!this.wasTonicUsed && isTonicUsable) {
+						this.ai.useItem('tonic');
+					} else {
+						this.ai.useSkill(this.nextElementalMove !== null ? this.nextElementalMove
+							: skillID == 'chill' ? 'hellfire' : 'windchill');
 					}
+					this.isStatusHealPending = false;
+					this.wasHolyWaterUsed = false;
 				} else if ((0.5 > Math.random() || this.isComboStarted) && qsTurns[0].unit === this.unit) {
 					this.ai.useSkill('quickstrike');
 					this.isComboStarted = true;
+					this.wasHolyWaterUsed = false;
 				} else if (this.isComboStarted) {
 					var spells = [ 'flare', 'chill', 'lightning', 'quake' ];
 					var skillToUse = 0.5 > Math.random()
@@ -156,15 +169,19 @@ Robert2Strategy.prototype.strategize = function()
 					}
 					this.ai.useSkill(skillToUse);
 					this.isComboStarted = false;
+					this.wasHolyWaterUsed = false;
 				} else {
-					if (this.ai.isSkillUsable('upheaval')) {
-						this.ai.useSkill('upheaval');
-						this.isElementHealPending = this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite');
+					var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
+					var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+					if (this.ai.isSkillUsable(moveToUse)) {
+						this.ai.useSkill(moveToUse);
+						this.isStatusHealPending = moveToUse == 'upheaval';
 					} else if (this.ai.isItemUsable('redBull')) {
 						this.ai.useItem('redBull');
 					} else {
 						this.ai.useSkill('chargeSlash');
 					}
+					this.wasHolyWaterUsed = false;
 				}
 			}
 			break;
@@ -329,7 +346,7 @@ Robert2Strategy.prototype.strategize = function()
 	}
 };
 
-Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
+Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
 	if (this.unit.hasStatus('drunk')) {
 		return;
@@ -390,7 +407,7 @@ Robert2Strategy.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	}
 };
 
-Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
+Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
 	if (this.unit.hasStatus('drunk')) {
 		return;
@@ -419,7 +436,7 @@ Robert2Strategy.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	}
 };
 
-Robert2Strategy.prototype.onStanceChanged = function(unitID, stance)
+Robert2AI.prototype.onStanceChanged = function(unitID, stance)
 {
 	if (this.unit.hasStatus('drunk')) {
 		return;
@@ -429,7 +446,7 @@ Robert2Strategy.prototype.onStanceChanged = function(unitID, stance)
 	}
 };
 
-Robert2Strategy.prototype.onUnitReady = function(unitID)
+Robert2AI.prototype.onUnitReady = function(unitID)
 {
 	if (this.unit.hasStatus('drunk')) {
 		return;

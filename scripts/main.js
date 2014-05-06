@@ -11,8 +11,8 @@ RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
@@ -58,11 +58,11 @@ function game()
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
 	var setup = {
-		battleID: 'robert2',
+		battleID: 'headlessHorse',
 		party: {
-			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			/*bruce: { level: 5, weapon: 'arsenRifle', items: [ 'alcohol' ] },
-			maggie: { level: 5, items: [ 'tonic', 'powerTonic', 'redBull', 'alcohol' ] }*/
+			scott: { level: 10, weapon: 'heirloom', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			elysia: { level: 10, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
+			maggie: { level: 10, items: [ 'powerTonic', 'redBull', 'alcohol' ] }
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) {

@@ -33,6 +33,7 @@ Scenario.defineCommand('battle',
 			case 'battle':
 				if (!Threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.enemyWon) {
+						Console.writeLine("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -44,6 +45,7 @@ Scenario.defineCommand('battle',
 			case 'gameOver':
 				if (!Threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
+						Console.writeLine("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {

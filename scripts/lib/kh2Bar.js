@@ -141,8 +141,8 @@ kh2Bar.prototype.draw = function(x, y, width, height)
 	var emptyColor = this.fadeColor(this.emptyColor, this.fadeness);
 	var usageColor = BlendColorsWeighted(emptyColor, this.fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
 	if (barInUse < this.sectorSize && numReservesFilled > 0) {
-		OutlinedRectangle(x, y, width, barHeight, BlendColorsWeighted(borderColor, CreateColor(0, 0, 0, 0), 33, 66));
-		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColorsWeighted(fillColor, CreateColor(0, 0, 0, 0), 33, 66));
+		OutlinedRectangle(x, y, width, barHeight, BlendColorsWeighted(borderColor, CreateColor(0, 0, 0, 0), 25, 75));
+		this.drawSegment(x + 1, y + 1, width - 2, barHeight - 2, BlendColorsWeighted(fillColor, CreateColor(0, 0, 0, 0), 25, 75));
 	}
 	var barEdgeX = x + width - 1;
 	OutlinedRectangle(barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, borderColor);
