@@ -108,13 +108,12 @@ Robert2Strategy.prototype.strategize = function()
 				this.ai.useSkill('upheaval');
 				this.isComboStarted = false;
 				this.isElementHealPending = this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite');
-				this.isNecromancyPending = true;
 				this.wasTonicUsed = false;
 			} else {
 				var qsTurns = this.ai.predictSkillTurns('quickstrike');
 				this.isElementHealPending = this.isElementHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'));
 				if (this.isElementHealPending) {
-					if (this.unit.hasStatus('zombie') && this.ai.isItemUsable('holyWater')) {
+					if (this.unit.hasStatus('zombie') && this.ai.itemsLeft('holyWater') > 1) {
 						var holyWaterTurns = this.ai.predictItemTurns('holyWater');
 						if (holyWaterTurns[0].unit === this.unit && this.ai.isItemUsable('tonic')) {
 							this.ai.useItem('holyWater');
@@ -127,15 +126,16 @@ Robert2Strategy.prototype.strategize = function()
 					} else {
 						var skillID = this.unit.hasStatus('frostbite') ? 'flare' : 'chill';
 						var spellTurns = this.ai.predictSkillTurns(skillID);
-						if (spellTurns[0].unit === this.unit && (this.ai.isItemUsable('tonic') || this.wasTonicUsed)) {
+						var isTonicSafe = this.ai.itemsLeft('tonic') > 5 && !this.unit.hasStatus('zombie');
+						if (spellTurns[0].unit === this.unit && isTonicSafe || this.wasTonicUsed)) {
 							this.ai.useSkill(skillID, 'robert2');
-							if (!this.wasTonicUsed && this.ai.isItemUsable('tonic')) {
+							if (!this.wasTonicUsed && isTonicSafe) {
 								this.ai.useItem('tonic');
 							} else {
 								this.ai.useSkill(this.nextElementalMove !== null ? this.nextElementalMove
 									: skillID == 'chill' ? 'hellfire' : 'windchill');
 							}
-						} else if (!this.wasTonicUsed && this.ai.isItemUsable('tonic')) {
+						} else if (!this.wasTonicUsed && isTonicSafe) {
 							this.ai.useItem('tonic');
 						} else {
 							this.ai.useSkill(this.nextElementalMove !== null ? this.nextElementalMove
@@ -261,6 +261,7 @@ Robert2Strategy.prototype.strategize = function()
 							this.ai.useSkill('desperationSlash');
 							this.ai.useSkill('omni');
 							this.ai.useSkill('chargeSlash');
+							this.isAlcoholPending = false;
 						}
 					} else {
 						this.ai.useItem('alcohol');

@@ -390,8 +390,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			aimRate = eventData.aimRate;
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~1:" + (Math.round(1 / odds) - 1));
-		if (Math.random() < odds) {
+		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
+		if (odds > Math.random()) {
 			Console.append("hit");
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);

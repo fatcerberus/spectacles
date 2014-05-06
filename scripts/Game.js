@@ -407,6 +407,9 @@ Game = {
 				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
 					: this.multiplier * 0.75;
 				this.lastSkillType = eventData.skill.category;
+				if (this.multiplier < 1.0) {
+					Console.writeLine("POW modifier for Crackdown is now at ~" + Math.round(this.multiplier * 100) + "%");
+				}
 			}
 		},
 		disarray: {
@@ -494,6 +497,7 @@ Game = {
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('fire')) {
 					eventData.amount *= 2.0;
+					Console.writeLine("Frostbite neutralized by fire, damage increased");
 					unit.liftStatus('frostbite');
 				}
 			},
@@ -559,6 +563,7 @@ Game = {
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('ice')) {
 					eventData.amount *= 2.0;
+					Console.writeLine("Ignite neutralized by ice, damage increased");
 					unit.liftStatus('ignite');
 				}
 			}
@@ -572,6 +577,7 @@ Game = {
 			afflicted: function(unit, eventData) {
 				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
+					Console.writeLine("Status " + Game.statuses[eventData.statusID].name + " was blocked by Immune");
 					eventData.statusID = null;
 				}
 			},

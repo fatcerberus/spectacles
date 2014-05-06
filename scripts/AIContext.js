@@ -67,6 +67,9 @@ AIContext.prototype.getNextMove = function()
 		do {
 			candidateMove = this.moveQueue.shift();
 			var isMoveUsable = candidateMove.predicate();
+			if (!isMoveUsable) {
+				Console.writeLine("Discarding " + this.unit + "'s " + candidateMove.usable.name + ", precondition not met");
+			}
 		} while (!isMoveUsable && this.moveQueue.length > 0);
 		if (isMoveUsable) {
 			moveToUse = candidateMove;
@@ -123,6 +126,19 @@ AIContext.prototype.isSkillUsable = function(skillID)
 {
 	var skillToUse = new SkillUsable(skillID, 100);
 	return skillToUse.isUsable(this.unit);
+};
+
+// .itemsLeft() method
+// Checks how many of a given item the controlled unit has available for use.
+// Arguments:
+//     itemID: The ID of the item to check.
+AIContext.prototype.itemsLeft = function(itemID)
+{
+	var user = this.unit;
+	var itemUsable = Link(this.unit.items).filterBy('itemID', itemID).first();
+	Console.writeLine(this.unit.name + " requested item count for " + itemUsable.name);
+	Console.append("left: " + itemUsable.usesLeft);
+	return itemUsable.usesLeft;
 };
 
 // .predictItemTurns() method
