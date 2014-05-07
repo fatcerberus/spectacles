@@ -3,6 +3,12 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+// Robert2AI() constructor
+// Creates an AI to control Robert Spellbinder in the final battle.
+// Arguments:
+//     battle:    The battle session this AI is participating in.
+//     unit:      The battle unit to be controlled by this AI.
+//     aiContext: The AI context that this AI will execute under.
 function Robert2AI(battle, unit, aiContext)
 {
 	this.battle = battle;
@@ -35,6 +41,8 @@ function Robert2AI(battle, unit, aiContext)
 	this.battle.unitReady.addHook(this, this.onUnitReady);
 }
 
+// .dispose() method
+// Relinquishes resources and shuts down the AI.
 Robert2AI.prototype.dispose = function()
 {
 	this.battle.itemUsed.removeHook(this, this.onItemUsed);
@@ -43,6 +51,8 @@ Robert2AI.prototype.dispose = function()
 	this.battle.unitReady.removeHook(this, this.onUnitReady);
 };
 
+// .strategize() method
+// Allows Robert to decide what he will do next when his turn arrives.
 Robert2AI.prototype.strategize = function()
 {				
 	if ('maggie' in this.ai.enemies && this.ai.turnsTaken == 0) {
@@ -346,6 +356,8 @@ Robert2AI.prototype.strategize = function()
 	}
 };
 
+// .onItemUsed() event handler
+// Allows Robert to react when someone in the battle uses an item.
 Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
 	if (this.unit.hasStatus('drunk')) {
@@ -407,6 +419,8 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	}
 };
 
+// .onSkillUsed() event handler
+// Allows Robert to react when someone in the battle uses an attack.
 Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
 	if (this.unit.hasStatus('drunk')) {
@@ -436,6 +450,8 @@ Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	}
 };
 
+// .onStanceChanged() event handler
+// Allows Robert to react when someone in the battle changes stance.
 Robert2AI.prototype.onStanceChanged = function(unitID, stance)
 {
 	if (this.unit.hasStatus('drunk')) {
@@ -446,6 +462,8 @@ Robert2AI.prototype.onStanceChanged = function(unitID, stance)
 	}
 };
 
+// .onUnitReady() event handler
+// Allows Robert to react when a new turn arrives during the battle.
 Robert2AI.prototype.onUnitReady = function(unitID)
 {
 	if (this.unit.hasStatus('drunk')) {

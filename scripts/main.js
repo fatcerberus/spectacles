@@ -12,7 +12,7 @@ RequireScript('lib/Scenario.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
-var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_TEXTBOXES = true;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
@@ -62,7 +62,7 @@ function game()
 		party: {
 			scott: { level: 10, weapon: 'heirloom', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			elysia: { level: 10, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			maggie: { level: 10, items: [ 'powerTonic', 'redBull', 'alcohol' ] }
+			bruce: { level: 10, weapon: 'arsenRifle', items: [ 'powerTonic', 'redBull' ] }
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) {

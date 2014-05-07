@@ -231,6 +231,7 @@ Game = {
 				mag: 30,
 				agi: 55
 			},
+			autoScan: true,
 			startingWeapon: 'arsenRifle',
 			skills: [
 				'sharpshooter',
@@ -765,7 +766,9 @@ Game = {
 				}
 				if ('addStatus' in effect) {
 					var statusChance = 'statusChance' in effect ? effect.statusChance : 1.0;
-					targets[i].addStatus(effect.addStatus, true);
+					if (statusChance > Math.random()) {
+						targets[i].addStatus(effect.addStatus, true);
+					}
 				}
 			}
 		},
@@ -831,7 +834,7 @@ Game = {
 			actions: [
 				{
 					announceAs: "Archery",
-					rank: 2,
+					rank: 1,
 					accuracyType: 'bow',
 					effects: [
 						{
@@ -850,6 +853,7 @@ Game = {
 			category: 'attack',
 			weaponType: 'bow',
 			targetType: 'single',
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Flare Shot",
@@ -860,8 +864,10 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'bow',
-							power: 25,
-							element: 'fire'
+							power: 10,
+							element: 'fire',
+							addStatus: 'ignite',
+							statusChance: 50
 						}
 					],
 				}
@@ -873,6 +879,7 @@ Game = {
 			category: 'attack',
 			weaponType: 'bow',
 			targetType: 'single',
+			baseMPCost: 10,
 			actions: [
 				{
 					announceAs: "Chill Shot",
@@ -883,8 +890,10 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'bow',
-							power: 25,
-							element: 'ice'
+							power: 10,
+							element: 'ice',
+							addStatus: 'frostbite',
+							statusChance: 50
 						}
 					],
 				}
@@ -949,7 +958,7 @@ Game = {
 			name: "Crackdown",
 			category: 'strategy',
 			targetType: 'single',
-			baseMPCost: 75,
+			baseMPCost: 200,
 			actions: [
 				{
 					announceAs: "Crackdown",
@@ -1157,7 +1166,7 @@ Game = {
 			name: "Necromancy",
 			category: 'strategy',
 			targetType: 'single',
-			baseMPCost: 35,
+			baseMPCost: 25,
 			actions: [
 				{
 					announceAs: "Necromancy",
@@ -1335,8 +1344,8 @@ Game = {
 		spectralDraw: {
 			name: "Spectral Draw",
 			category: 'strategy',
-			targetType: 'allEnemies',
-			baseMPCost: 100,
+			targetType: 'single',
+			baseMPCost: 25,
 			actions: [
 				{
 					announceAs: "Spectral Draw",
@@ -1536,12 +1545,12 @@ Game = {
 				def: 55,
 				foc: 65,
 				mag: 30,
-				agi: 70
+				agi: 100
 			},
 			damageModifiers: {
 				bow: 1.5,
+				magic: 0.5,
 				fire: -1.0,
-				ice: 2.0,
 				fat: 1.5
 			},
 			immunities: [],

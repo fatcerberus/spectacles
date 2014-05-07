@@ -21,6 +21,7 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
+	this.isTargetScanOn = Link(battle.alliesOf(unit)).pluck('allowTargetScan').contains(true);
 	this.isTargetLocked = usable === null;
 	this.multiTarget = false;
 	this.name = moveName !== null ? moveName
@@ -185,7 +186,7 @@ TargetMenu.prototype.render = function()
 	if (this.unitToShowInfo != null) {
 		SetClippingRectangle(0, 16, 160, GetScreenHeight() - 16);
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
-		if (this.unitToShowInfo.isPartyMember()) {
+		if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
 			var statuses = this.unitToShowInfo.statuses;
 			var nameBoxHeight = 20 + 12 * statuses.length;
 			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;

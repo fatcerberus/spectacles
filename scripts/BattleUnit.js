@@ -44,6 +44,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.actor = null;
 	this.affinities = [];
 	this.ai = null;
+	this.allowTargetScan = false;
 	this.battle = battle;
 	this.battlerInfo = {};
 	this.counterDamage = 0;
@@ -73,6 +74,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		this.fullName = this.partyMember.fullName;
+		this.allowTargetScan = this.partyMember.isTargetScanOn;
 		var skills = this.partyMember.getUsableSkills();
 		for (var i = 0; i < skills.length; ++i) {
 			this.skills.push(skills[i]);

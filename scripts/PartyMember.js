@@ -17,6 +17,7 @@ function PartyMember(characterID, level)
 	
 	this.characterDef = Game.characters[characterID];
 	this.characterID = characterID;
+	this.isTargetScanOn = this.characterDef.autoScan;
 	this.fullName = 'fullName' in Game.characters[characterID] ?
 		Game.characters[characterID].fullName :
 		Game.characters[characterID].name;
