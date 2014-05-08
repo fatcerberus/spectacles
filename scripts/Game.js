@@ -126,7 +126,7 @@ Game = {
 			damageTaken: function(baseDamage, tags) {
 				if (Link(tags).contains('deathblow')) {
 					return baseDamage - 1;
-				} else if (!Link(tags).some([ 'special', 'cure' ])) {
+				} else if (!Link(tags).some([ 'omni', 'special', 'cure' ])) {
 					return baseDamage / 2;
 				} else {
 					return baseDamage;
@@ -268,6 +268,7 @@ Game = {
 			},
 			skills: [
 				'munch',
+				'fatseat',
 				'fatSlam'
 			]
 		}
@@ -594,7 +595,7 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'drunk', 'offGuard', 'protect', 'reGen' ];
+				var exemptions = [ 'disarray', 'drunk', 'ghost', 'offGuard', 'protect', 'reGen', 'rearing' ];
 				if (!Link(exemptions).contains(eventData.statusID)) {
 					Console.writeLine("Status " + Game.statuses[eventData.statusID].name + " was blocked by Immune");
 					eventData.statusID = null;
@@ -656,12 +657,12 @@ Game = {
 				unit.liftStatus('rearing');
 			},
 			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('physical')) {
+				if (Link(eventData.tags).some([ 'physical', 'earth' ])) {
 					unit.clearQueue();
 					unit.liftStatus('rearing');
 					unit.resetCounter(5);
 				}
-				if (!Link(eventData.tags).contains('special')) {
+				if (!Link(eventData.tags).some([ 'special', 'magic' ])) {
 					eventData.damage *= 1.5;
 				}
 			}
@@ -765,7 +766,7 @@ Game = {
 					actor.takeDamage(Math.max(recoil + recoil * 0.2 * (Math.random() - 0.5), 1), [ 'recoil' ], true);
 				}
 				if ('addStatus' in effect) {
-					var statusChance = 'statusChance' in effect ? effect.statusChance : 1.0;
+					var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
 					if (statusChance > Math.random()) {
 						targets[i].addStatus(effect.addStatus, true);
 					}
@@ -1048,6 +1049,27 @@ Game = {
 				}
 			]
 		},
+		fatseat: {
+			name: "Fatseat",
+			category: 'attack',
+			targetType: 'allEnemies',
+			actions: [
+				{
+					announceAs: "Fatseat",
+					rank: 2,
+					accuracyType: 'physical',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'physical',
+							power: 25,
+							element: 'fat'
+						}
+					],
+				}
+			]
+		},
 		flameBreath: {
 			name: "Flame Breath",
 			category: 'magic',
@@ -1056,7 +1078,7 @@ Game = {
 			actions: [
 				{
 					announceAs: "Flame Breath",
-					rank: 3,
+					rank: 2,
 					accuracyType: 'breath',
 					effects: [
 						{
@@ -1064,12 +1086,8 @@ Game = {
 							type: 'damage',
 							damageType: 'breath',
 							power: 20,
-							element: 'fire'
-						},
-						{
-							targetHint: 'selected',
-							type: 'addStatus',
-							status: 'ignite'
+							element: 'fire',
+							addStatus: 'ignite'
 						}
 					],
 				}
@@ -1196,7 +1214,8 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'magic',
-							power: 100
+							power: 100,
+							element: 'omni'
 						}
 					]
 				}
@@ -1545,12 +1564,13 @@ Game = {
 				def: 55,
 				foc: 65,
 				mag: 30,
-				agi: 100
+				agi: 70
 			},
 			damageModifiers: {
 				bow: 1.5,
-				magic: 0.5,
+				gun: 1.5,
 				fire: -1.0,
+				ice: 2.0,
 				fat: 1.5
 			},
 			immunities: [],

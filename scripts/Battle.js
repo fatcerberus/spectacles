@@ -194,6 +194,7 @@ Battle.prototype.go = function()
 		this.ui.hud.mpGauge.set(availableMP);
 	});
 	this.ui = new BattleScreen(partyMaxMP);
+	this.battleUnits = [];
 	this.playerUnits = [];
 	this.enemyUnits = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {

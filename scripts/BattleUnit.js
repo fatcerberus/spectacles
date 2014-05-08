@@ -651,7 +651,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			}
 		}
 		this.hp = Math.max(this.hp - amount, 0);
-		this.battle.unitDamaged.invoke(this, amount, this.lastAttacker);
+		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
 		Console.writeLine(this.name + " took " + amount + " HP damage");
 		Console.append("left: " + this.hp);
 		this.actor.showDamage(amount);

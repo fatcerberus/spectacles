@@ -209,11 +209,20 @@ Robert2AI.prototype.strategize = function()
 					+ 0.25 * this.isScottZombie;
 				if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 					this.ai.useItem('redBull');
-				} else if (this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) {
+				} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillOmni > 0) {
 					--this.elementalsTillOmni;
 					if (this.elementalsTillOmni <= 0 && this.ai.isItemUsable('vaccine')) {
-						this.ai.useItem('vaccine');
-						this.avengeP3Elementals = true;
+						var holyWatersLeft = this.ai.itemsLeft('holyWater');
+						if (holyWatersLeft > 0) {
+							this.ai.useItem('vaccine');
+							this.avengeP3Elementals = true;
+						} else {
+							if (this.ai.isSkillUsable('omni')) {
+								this.ai.useSkill('omni');
+							} else {
+								this.ai.useSkill('chargeSlash');
+							}
+						}
 					} else {
 						if (this.unit.hasStatus('ignite')) {
 							this.ai.useSkill('chill', 'robert2');
@@ -277,18 +286,29 @@ Robert2AI.prototype.strategize = function()
 					this.ai.useSkill('electrocute');
 				}
 				this.isAlcoholPending = true;
-				this.isHolyWaterPending = this.unit.hasStatus('zombie') && this.ai.isItemUsable('holyWater');
+				this.isHolyWaterPending = this.unit.hasStatus('zombie') && (this.ai.isItemUsable('holyWater') || this.ai.isItemUsable('vaccine'));
+				this.isLastQSComboPending = true;
 			} else {
 				if (this.isAlcoholPending) {
 					if (this.unit.hasStatus('zombie')) {
 						if (this.isHolyWaterPending) {
-							this.ai.useItem('holyWater');
+							if (this.ai.isItemUsable('vaccine')) {
+								this.ai.useItem('vaccine');
+							} else {
+								this.ai.useItem('holyWater');
+							}
 							this.isHolyWaterPending = false;
 						} else {
 							this.ai.useSkill('desperationSlash');
 							this.ai.useSkill('omni');
 							this.ai.useSkill('chargeSlash');
 							this.isAlcoholPending = false;
+						}
+					} else if (this.isLastQSComboPending) {
+						var qsTurns = this.ai.predictSkillTurns('quickstrike');
+						this.ai.useSkill(this.unit.hasStatus('disarray') ? 'swordSlash' : 'quickstrike');
+						if (qsTurns[0].unit !== this.unit || this.unit.hasStatus('disarray')) {
+							this.isLastQSComboPending = false;
 						}
 					} else {
 						this.ai.useItem('alcohol');
@@ -301,7 +321,11 @@ Robert2AI.prototype.strategize = function()
 					{
 						this.ai.useSkill('omni');
 					} else {
-						if (0.5 > Math.random()) {
+						var hellfireTurns = this.ai.predictSkillTurns('hellfire');
+						if (hellfireTurns[0].unit === this.unit && this.nextElementalMove === null) {
+							this.ai.useSkill('hellfire');
+							this.ai.useSkill('windchill');
+						} else if (0.5 > Math.random()) {
 							this.ai.useSkill('chargeSlash');
 						} else {
 							var moves = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];

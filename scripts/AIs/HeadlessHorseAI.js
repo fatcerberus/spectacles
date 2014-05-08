@@ -21,7 +21,9 @@ function HeadlessHorseAI(battle, unit, aiContext)
 	this.trampleTarget = null;
 	
 	this.battle.itemUsed.addHook(this, this.onItemUsed);
+	this.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.battle.unitDamaged.addHook(this, this.onUnitDamaged);
+	this.battle.unitReady.addHook(this, this.onUnitReady);
 	this.battle.unitTargeted.addHook(this, this.onUnitTargeted);
 }
 
@@ -30,7 +32,9 @@ function HeadlessHorseAI(battle, unit, aiContext)
 HeadlessHorseAI.prototype.dispose = function()
 {
 	this.battle.itemUsed.removeHook(this, this.onItemUsed);
+	this.battle.skillUsed.removeHook(this, this.onSkillUsed);
 	this.battle.unitDamaged.removeHook(this, this.onUnitDamaged);
+	this.battle.unitReady.removeHook(this, this.onUnitReady);
 	this.battle.unitTargeted.removeHook(this, this.onUnitTargeted);
 };
 
@@ -48,19 +52,13 @@ HeadlessHorseAI.prototype.strategize = function()
 			} else {
 				var kickTurns = this.ai.predictSkillTurns('rearingKick');
 				var hellfireTurns = this.ai.predictSkillTurns('hellfire');
-				if (this.trampleTarget !== null && this.unit.hasStatus('ignite')) {
-					this.ai.useSkill('trample', this.trampleTarget);
-				} else if (!this.unit.hasStatus('ignite')) {
+				if (!this.unit.hasStatus('ignite')) {
 					this.ai.useSkill('hellfire', 'headlessHorse');
 					if (Link(hellfireTurns).pluck('unit').pluck('id').contains('elysia')) {
 						this.ai.useSkill('spectralDraw', 'elysia');
 					}
 				} else {
-					if (0.5 > Math.random()) {
-						this.ai.useSkill('rearingKick');
-					} else {
-						this.ai.useSkill('flare');
-					}
+					this.ai.useSkill('rearingKick');
 				}
 			}
 			break;
@@ -79,6 +77,8 @@ HeadlessHorseAI.prototype.strategize = function()
 				this.ai.useSkill('spectralDraw', this.ghostTargetID);
 				this.spectralDrawPending = false;
 				this.trampleTarget = null;
+			} else {
+				this.ai.useSkill('flare');
 			}
 			break;
 	}
@@ -94,20 +94,35 @@ HeadlessHorseAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 // Allows the Headless Horse to react when someone attacks.
 HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (skillID == 'flareShot' && Link(targetIDs).contains('headlessHorse')) {
-		this.ai.trampleTarget = userID;
+	if (Link(targetIDs).contains('headlessHorse')) {
+		var iceSkills = [ 'chillShot', 'chill', 'windchill' ];
+		if (Link(iceSkills).contains(skillID) && (this.unit.hasStatus('ignite') || this.unit.hasStatus('rearing'))) {
+			this.trampleTarget = userID;
+		}
 	}
 };
 
 // .onUnitDamaged() event handler
 // Allows the Headless Horse to react when someone takes damage.
-HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, attacker)
+HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, attacker)
 {
 	if (unit === this.unit && attacker !== null) {
 		if (!(attacker.id in this.damageTaken)) {
 			this.damageTaken[attacker.id] = 0;
 		}
 		this.damageTaken[attacker.id] += amount;
+	}
+};
+
+// .onUnitReady() event handler
+// Allows the Headless Horse to react when a battler's turn arrives.
+HeadlessHorseAI.prototype.onUnitReady = function(unitID)
+{
+	if (unitID == 'headlessHorse' && !this.ai.hasMovesQueued() && this.phase > 0) {
+		if (this.trampleTarget !== null) {
+			this.ai.useSkill('trample', this.trampleTarget);
+			this.trampleTarget = null;
+		}
 	}
 };
 
@@ -120,11 +135,17 @@ HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, attacker)
 HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
 	if (unit === this.unit) {
+		var isPhysical = Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical')
+		                 || Link(action.effects).filterBy('type', 'damage').pluck('element').contains('earth');
+		if (isPhysical && this.unit.hasStatus('rearing')) {
+			if (this.trampleTarget === null) {
+				this.ai.useSkill('flameBreath');
+			} else if (this.trampleTarget !== null) {
+				this.trampleTarget = actingUnit.id;
+			}
+		}
 		var isMagic = Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('magic');
-		var isPhysical = Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical');
-		if (isPhysical && unit.hasStatus('rearing')) {
-			this.ai.useSkill('flameBreath');
-		} else if (isMagic && this.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
+		if (isMagic && this.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
 			this.ai.useSkill('spectralKick', actingUnit.id);
 		}
 	}
