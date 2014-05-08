@@ -38,6 +38,7 @@ Game = {
 		ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
 		lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
 		earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
+		omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
 		fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) }
 	},
 	
@@ -64,6 +65,7 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
+				return 1.0;
 				return (100 - targetInfo.health) / 100 / targetInfo.tier
 					* userInfo.stats.agi / targetInfo.stats.agi;
 			},
@@ -203,6 +205,7 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
+			autoScan: true,
 			startingWeapon: 'heirloom',
 			skills: [
 				'swordSlash',
@@ -360,7 +363,7 @@ Game = {
 		},
 		vaccine: {
 			name: "Vaccine",
-			type: [ 'drink' ],
+			tags: [ 'drink' ],
 			uses: 1,
 			action: {
 				announceAs: "Vaccine",
@@ -434,7 +437,7 @@ Game = {
 		},
 		disarray: {
 			name: "Disarray",
-			tags: [ 'acute' ],
+			tags: [ 'acute', 'ailment' ],
 			initialize: function(unit) {
 				this.actionsTaken = 0;
 			},
@@ -528,7 +531,7 @@ Game = {
 		},
 		ghost: {
 			name: "Ghost",
-			tags: [ 'undead' ],
+			tags: [ 'ailment', 'undead' ],
 			overrules: [ 'zombie' ],
 			aiming: function(unit, eventData) {
 				for (var i = 0; i < eventData.action.effects.length; ++i) {
@@ -595,9 +598,9 @@ Game = {
 				this.turnCount = 0;
 			},
 			afflicted: function(unit, eventData) {
-				var exemptions = [ 'disarray', 'drunk', 'ghost', 'offGuard', 'protect', 'reGen', 'rearing' ];
-				if (!Link(exemptions).contains(eventData.statusID)) {
-					Console.writeLine("Status " + Game.statuses[eventData.statusID].name + " was blocked by Immune");
+				var statusDef = Game.statuses[eventData.statusID];
+				if (Link(statusDef.tags).contains('ailment')) {
+					Console.writeLine("Status " + statusDef.name + " was blocked by Immune");
 					eventData.statusID = null;
 				}
 			},
