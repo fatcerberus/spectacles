@@ -362,7 +362,11 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		return;
 	}
 	var curativeIDs = [ 'tonic', 'powerTonic' ];
-	if (userID == 'robert2' && itemID == 'alcohol') {
+	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.unit.hasStatus('zombie')) {
+		if (this.zombieHealFixState === null && this.phase >= 3 && this.ai.isItemUsable('holyWater')) {
+			this.ai.useItem('holyWater');
+		}
+	} else if (userID == 'robert2' && itemID == 'alcohol') {
 		new Scenario()
 			.adjustBGM(0.5, 5.0)
 			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! You have to "
@@ -396,11 +400,10 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		}
 	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		if (itemID == 'vaccine' && this.scottImmuneTurnsLeft == 0) {
+			this.isScottZombie = false;
 			this.scottImmuneTurnsLeft = 4;
-		} else if ((itemID == 'holyWater' || itemID == 'vaccine') && this.isScottZombie) {
-			if (this.phase <= 1 && this.rezombieChance > Math.random() && itemID == 'holyWater'
-				&& !this.isNecroTonicItemPending)
-			{
+		} else if (itemID == 'holyWater' && this.isScottZombie) {
+			if (this.phase <= 1 && this.rezombieChance > Math.random() && !this.isNecroTonicItemPending) {
 				this.ai.useSkill('necromancy');
 			} else {
 				this.isScottZombie = false;
@@ -494,7 +497,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 					switch (this.zombieHealAlertLevel) {
 						case 1:
 							this.ai.useItem('tonic');
-							this.zombieHealFixState = null;
+							this.zombieHealFixState = 'finish';
 							break;
 						case 2:
 							if (!this.isScottZombie) {
@@ -503,7 +506,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 								this.zombieHealFixState = 'finish';
 							} else {
 								this.ai.useItem('tonic', 'scott');
-								this.zombieHealFixState = null;
+								this.zombieHealFixState = 'finish';
 							}
 							break;
 						case 3:
@@ -514,10 +517,11 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 						case 4:
 							if (this.ai.isItemUsable('vaccine') && !this.unit.hasStatus('immune')) {
 								this.ai.useItem('vaccine');
+								this.ai.useSkill('omni');
 								this.zombieHealFixState = 'finish';
 							} else {
 								this.ai.useSkill('omni');
-								this.zombieHealFixState = null;
+								this.zombieHealFixState = 'finish';
 							}
 							break;
 					}
