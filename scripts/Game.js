@@ -128,7 +128,7 @@ Game = {
 			damageTaken: function(baseDamage, tags) {
 				if (Link(tags).contains('deathblow')) {
 					return baseDamage - 1;
-				} else if (!Link(tags).some([ 'omni', 'special', 'cure' ])) {
+				} else if (!Link(tags).some([ 'omni', 'special', 'zombie' ])) {
 					return baseDamage / 2;
 				} else {
 					return baseDamage;
@@ -205,7 +205,6 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
-			autoScan: true,
 			startingWeapon: 'heirloom',
 			skills: [
 				'swordSlash',
@@ -635,9 +634,8 @@ Game = {
 				this.multiplier = 0.5;
 			},
 			damaged: function(unit, eventData) {
-				var isIgnored = eventData.tags.indexOf('special') == -1
-					&& eventData.tags.indexOf('cure') == -1
-				if (isIgnored) {
+				var isProtected = !Link(eventData.tags).some([ 'special', 'zombie' ]);
+				if (isProtected) {
 					eventData.amount *= this.multiplier;
 					this.multiplier += 0.05;
 					if (this.multiplier >= 1.0) {
@@ -650,7 +648,7 @@ Game = {
 			name: "ReGen",
 			tags: [ 'buff' ],
 			beginCycle: function(unit, eventData) {
-				unit.heal(0.01 * unit.maxHP);
+				unit.heal(0.01 * unit.maxHP, [ 'reGen' ]);
 			}
 		},
 		rearing: {
@@ -683,11 +681,12 @@ Game = {
 			},
 			cured: function(unit, eventData) {
 				if (eventData.statusID == 'skeleton') {
-					unit.heal(1, true);
+					unit.heal(1, [], true);
 				}
 			},
 			damaged: function(unit, eventData) {
-				this.allowDeath = Link(eventData.tags).some([ 'physical', 'sword', 'earth' ]);
+				this.allowDeath = Link(eventData.tags)
+					.some([ 'zombie', 'physical', 'sword', 'earth', 'omni' ]);
 				if (!this.allowDeath) {
 					eventData.amount = 0;
 				}
@@ -696,6 +695,9 @@ Game = {
 				eventData.cancel = !this.allowDeath;
 			},
 			healed: function(unit, eventData) {
+				if (Link(eventData.tags).contains('cure')) {
+					unit.takeDamage(eventData.amount, [ 'zombie' ]);
+				}
 				eventData.amount = 0;
 			}
 		},
@@ -734,7 +736,7 @@ Game = {
 				this.allowDeath = false;
 			},
 			damaged: function(unit, eventData) {
-				this.allowDeath = Link(eventData.tags).contains('cure');
+				this.allowDeath = Link(eventData.tags).contains('zombie');
 			},
 			dying: function(unit, eventData) {
 				if (!this.allowDeath) {
@@ -743,8 +745,10 @@ Game = {
 				}
 			},
 			healed: function(unit, eventData) {
-				unit.takeDamage(eventData.amount, [ 'cure' ]);
-				eventData.amount = 0;
+				if (Link(eventData.tags).some([ 'cure', 'reGen' ])) {
+					unit.takeDamage(eventData.amount, [ 'zombie' ]);
+					eventData.amount = 0;
+				}
 			}
 		}
 	},
@@ -791,14 +795,14 @@ Game = {
 					.run();
 				targets[i].die();
 			}
-			actor.heal(healAmount, true);
+			actor.heal(healAmount, [ 'munch' ]);
 		},
 		fullRecover: function(actor, targets, effect) {
 			Link(targets)
 				.where(function(unit) { return !unit.hasStatus('zombie'); })
 				.each(function(unit)
 			{
-				unit.heal(unit.maxHP - unit.hp);
+				unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
 			});
 		},
 		instaKill: function(actor, targets, effect) {
@@ -820,7 +824,7 @@ Game = {
 			for (var i = 0; i < targets.length; ++i) {
 				var vitality = targets[i].battlerInfo.stats.vit;
 				var tier = targets[i].battlerInfo.tier;
-				targets[i].heal(effect.strength * vitality / tier);
+				targets[i].heal(effect.strength * vitality / tier, [ 'cure' ]);
 			}
 		},
 		recoverMP: function(actor, targets, effect) {

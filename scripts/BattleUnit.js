@@ -374,14 +374,15 @@ BattleUnit.prototype.hasStatus = function(statusID)
 // Restores a specified amount of the battler's HP.
 // Arguments:
 //     amount:     The number of hit points to restore.
+//     tags:       Optional. An array of tags to associate with the healing event.
 //     isPriority: Optional. If true, specifies priority healing. Priority healing is unconditional;
 //                 statuses are not allowed to act on it and as such no event will be raised. (default: false)
-BattleUnit.prototype.heal = function(amount, isPriority)
+BattleUnit.prototype.heal = function(amount, tags, isPriority)
 {
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	if (!isPriority) {
-		var eventData = { amount: Math.round(amount) };
+		var eventData = { amount: Math.round(amount), tags: tags };
 		this.raiseEvent('healed', eventData);
 		amount = Math.round(eventData.amount);
 	}
@@ -635,7 +636,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		this.raiseEvent('damaged', eventData);
 		amount = Math.round(eventData.amount);
 	}
-	if (amount > 0) {
+	if (amount >= 0) {
 		if (this.lastAttacker !== null) {
 			if (this.stance == BattleStance.counter) {
 				this.counterDamage += amount;
@@ -650,13 +651,16 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 				this.resetCounter(Game.guardBreakRank);
 			}
 		}
+		var oldHPValue = this.hp;
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
 		Console.writeLine(this.name + " took " + amount + " HP damage");
 		Console.append("left: " + this.hp);
-		this.actor.showDamage(amount);
+		if (oldHPValue > 0 || this.lazarusFlag) {
+			this.actor.showDamage(amount);
+		}
 		this.battle.ui.hud.setHP(this.name, this.hp);
-		if (this.hp <= 0) {
+		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
 			Console.writeLine(this.name + " dying due to lack of HP");
 			var eventData = { cancel: false };
 			this.raiseEvent('dying', eventData);
@@ -668,7 +672,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			}
 		}
 	} else if (amount < 0) {
-		this.heal(Math.abs(amount), true);
+		this.heal(Math.abs(amount), tags);
 	}
 };
 
