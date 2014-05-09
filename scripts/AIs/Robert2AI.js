@@ -14,6 +14,7 @@ function Robert2AI(battle, unit, aiContext)
 	this.battle = battle;
 	this.unit = unit;
 	this.ai = aiContext;
+	this.hasZombieHealedSelf = false;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
 	this.isAvengingElementals = false;
@@ -128,10 +129,13 @@ Robert2AI.prototype.strategize = function()
 				this.wasHolyWaterUsed = false;
 				this.wasTonicUsed = false;
 			} else {
+				this.isStatusHealPending =
+					(this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
+					&& this.isStatusHealPending;
 				var qsTurns = this.ai.predictSkillTurns('quickstrike');
-				this.isStatusHealPending = this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'));
-				var holyWatersLeft = this.ai.itemsLeft('holyWater');
-				if (this.isStatusHealPending && !this.wasHolyWaterUsed && this.unit.hasStatus('zombie') && holyWatersLeft > 1) {
+				if (this.isStatusHealPending && this.hasZombieHealedSelf
+				    && !this.wasHolyWaterUsed && this.unit.hasStatus('zombie') && this.ai.isItemUsable('holyWater'))
+				{
 					var holyWaterTurns = this.ai.predictItemTurns('holyWater');
 					if (holyWaterTurns[0].unit === this.unit && this.ai.isItemUsable('tonic')) {
 						this.ai.useItem('holyWater');
@@ -145,7 +149,8 @@ Robert2AI.prototype.strategize = function()
 				} else if (this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
 					var skillID = this.unit.hasStatus('frostbite') ? 'flare' : 'chill';
 					var spellTurns = this.ai.predictSkillTurns(skillID);
-					var isTonicUsable = this.wasHolyWaterUsed && this.ai.isItemUsable('tonic');
+					var isTonicUsable = (!this.unit.hasStatus('zombie') || this.wasHolyWaterUsed || !this.hasZombieHealedSelf || this.ai.isItemUsable('holyWater'))
+						&& this.ai.isItemUsable('tonic');
 					if (spellTurns[0].unit === this.unit && isTonicUsable || this.wasTonicUsed) {
 						this.ai.useSkill(skillID, 'robert2');
 						if (!this.wasTonicUsed && isTonicUsable) {
@@ -248,6 +253,7 @@ Robert2AI.prototype.strategize = function()
 								: moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
 							if (0.5 > Math.random() && this.ai.isSkillUsable(skillID)) {
 								this.ai.useSkill(skillID);
+								this.doChargeSlashNext = skillID == 'swordSlash';
 								this.isComboStarted = false;
 							} else {
 								this.ai.useSkill('swordSlash');
@@ -263,21 +269,19 @@ Robert2AI.prototype.strategize = function()
 			break;
 		case 4:
 			if (this.phase > lastPhase) {
-				this.ai.useSkill('electrocute');
-				this.necroTonicItem = 'tonic';
+				this.ai.useSkill('desperationSlash');
 				this.isAlcoholPending = true;
 				this.isQSComboPending = true;
 				this.isQSComboStarted = false;
 				this.isVaccinePending = this.ai.isItemUsable('vaccine');
 			} else {
 				if (this.isAlcoholPending) {
-					if (this.isVaccinePending && this.unit.hasStatus('zombie')) {
+					if (this.isVaccinePending) {
 						this.ai.useItem('vaccine');
 						this.isVaccinePending = false;
 					} else if (this.unit.hasStatus('zombie')) {
-						this.ai.useSkill('desperationSlash');
-						this.ai.useSkill('omni');
 						this.ai.useSkill('chargeSlash');
+						this.ai.useSkill('omni');
 						this.isAlcoholPending = false;
 					} else if (this.isQSComboPending) {
 						this.isVaccinePending = false;
@@ -285,6 +289,7 @@ Robert2AI.prototype.strategize = function()
 						this.ai.useSkill('quickstrike');
 					} else {
 						this.ai.useItem('alcohol');
+						this.ai.useSkill('omni');
 						this.ai.useSkill('chargeSlash');
 					}
 				} else {
@@ -323,7 +328,6 @@ Robert2AI.prototype.strategize = function()
 					this.isFinalTier2Used = true;
 				} else if (this.unit.hp <= 500 && !this.isDesperate) {
 					this.isDesperate = true;
-					this.ai.useSkill('desperationSlash');
 					if (this.ai.isSkillUsable('omni')) {
 						this.ai.useSkill('omni');
 					}
@@ -369,8 +373,9 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.unit.hasStatus('zombie')) {
 		if (this.zombieHealFixState === null && this.phase >= 3 && this.ai.isItemUsable('holyWater')) {
 			this.ai.useItem('holyWater');
+			this.hasZombieHealedSelf = true;
 		}
-	} else if (userID == 'robert2' && itemID == 'alcohol') {
+	} else if (userID == 'robert2' && itemID == 'alcohol' && Link(targetIDs).contains('robert2')) {
 		new Scenario()
 			.adjustBGM(0.5, 5.0)
 			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! You have to "
@@ -501,7 +506,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 			switch (this.zombieHealFixState) {
 				case 'fixStatus':
 					this.ai.useItem('holyWater');
-					this.zombieHealFixState = 'retaliate';
+					this.zombieHealFixState = this.phase <= 1 ? 'retaliate' : 'finish';
 					break;
 				case 'retaliate':
 					switch (this.phase) {
@@ -510,14 +515,17 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 							this.zombieHealFixState = 'finish';
 							break;
 						case 2:
-							if (!this.isScottZombie) {
+							var itemToUse = this.ai.itemsLeft('alcohol') > 1 ? 'alcohol' : 'tonic';
+							if (itemToUse != 'alcohol' && !this.isScottZombie) {
 								this.ai.useSkill('necromancy');
-								this.ai.useItem('tonic', 'scott');
-								this.zombieHealFixState = 'finish';
+								this.ai.useItem(itemToUse, 'scott');
 							} else {
-								this.ai.useItem('tonic', 'scott');
-								this.zombieHealFixState = 'finish';
+								this.ai.useItem(itemToUse, 'scott');
+								if (itemToUse == 'alcohol') {
+									this.ai.useSkill('electrocute');
+								}
 							}
+							this.zombieHealFixState = this.ai.isItemUsable('holyWater') ? 'fixStatus' : 'finish';
 							break;
 						case 3:
 							this.ai.useSkill('electrocute');

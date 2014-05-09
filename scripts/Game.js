@@ -280,6 +280,7 @@ Game = {
 		alcohol: {
 			name: "Alcohol",
 			tags: [ 'drink', 'curative' ],
+			uses: 2,
 			action: {
 				announceAs: "Alcohol",
 				effects: [
