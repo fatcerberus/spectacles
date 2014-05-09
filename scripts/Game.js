@@ -517,7 +517,7 @@ Game = {
 				});
 			},
 			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('fire')) {
+				if (Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
 					eventData.amount *= 2.0;
 					Console.writeLine("Frostbite neutralized by fire, damage increased");
 					unit.liftStatus('frostbite');
@@ -583,7 +583,7 @@ Game = {
 				});
 			},
 			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('ice')) {
+				if (Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
 					eventData.amount *= 2.0;
 					Console.writeLine("Ignite neutralized by ice, damage increased");
 					unit.liftStatus('ignite');
