@@ -165,7 +165,8 @@ AIContext.prototype.predictItemTurns = function(itemID)
 	if (!(itemID in Game.items)) {
 		Abort("AIContext.predictItemTurns(): The item '" + itemID + "' doesn't exist!");
 	}
-	var forecast = this.battle.predictTurns(this.unit, [ Game.items[itemID].action ]);
+	var itemRank = 'rank' in Game.items[itemID] ? Game.items[itemID].rank : Game.defaultItemRank;
+	var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
 	Console.writeLine(this.unit.name + " considering " + Game.items[itemID].name);
 	Console.append("next: " + forecast[0].unit.name);
 	return forecast;

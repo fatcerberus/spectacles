@@ -17,7 +17,6 @@ function Robert2AI(battle, unit, aiContext)
 	this.hasZombieHealedSelf = false;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
-	this.isAvengingElementals = false;
 	this.isNecroTonicItemPending = false;
 	this.isNecromancyPending = false;
 	this.isScottZombie = false;
@@ -95,7 +94,7 @@ Robert2AI.prototype.strategize = function()
 						this.isComboStarted = true;
 					} else {
 						if (this.isComboStarted) {
-							this.ai.useSkill('quickstrike');
+							this.ai.useSkill('swordSlash');
 							this.doChargeSlashNext = true;
 							this.isComboStarted = false;
 						} else {
@@ -176,23 +175,21 @@ Robert2AI.prototype.strategize = function()
 					var skillToUse = 0.5 > Math.random()
 						? spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)]
 						: 'chargeSlash';
-					if (!this.ai.isSkillUsable(skillToUse)) {
-						skillToUse = 'swordSlash';
-					}
 					this.ai.useSkill(skillToUse);
+					if (skillToUse == 'quake') {
+						this.ai.useSkill('upheaval');
+					}
 					this.isComboStarted = false;
+					this.isStatusHealPending = skillToUse == 'quake';
 					this.wasHolyWaterUsed = false;
 				} else {
-					var moves = [ 'flare', 'chill', 'lightning', 'upheaval' ];
-					var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
-					if (this.ai.isSkillUsable(moveToUse)) {
-						this.ai.useSkill(moveToUse);
-						this.isStatusHealPending = moveToUse == 'upheaval';
-					} else if (this.ai.isItemUsable('redBull')) {
-						this.ai.useItem('redBull');
-					} else {
-						this.ai.useSkill('chargeSlash');
+					var spells = [ 'flare', 'chill', 'lightning', 'quake' ];
+					var skillToUse = spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)];
+					this.ai.useSkill(skillToUse);
+					if (skillToUse == 'quake') {
+						this.ai.useSkill('upheaval');
 					}
+					this.isStatusHealPending = skillToUse == 'quake';
 					this.wasHolyWaterUsed = false;
 				}
 			}
@@ -200,21 +197,26 @@ Robert2AI.prototype.strategize = function()
 		case 3:
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('protectiveAura');
+				this.ai.useSkill('electrocute');
+				this.necroTonicItem = 'tonic';
 				this.doChargeSlashNext = false;
 				this.elementalsTillRevenge = 3;
 				this.isComboStarted = false;
 			} else {
-				var chanceOfCombo = 0.75 + 0.25 * this.isScottZombie;
-				if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
+				var holyWaterTurns = this.ai.predictItemTurns('holyWater');
+				if (this.unit.hasStatus('zombie') && this.hasZombieHealedSelf
+				    && this.ai.isItemUsable('holyWater') && this.ai.isItemUsable('tonic')
+				    && holyWaterTurns[0].unit === this.unit)
+				{
+					this.ai.useItem('holyWater');
+					this.ai.useItem('tonic');
+				} else if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.ai.isItemUsable('redBull')) {
 					this.ai.useItem('redBull');
 				} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
 					--this.elementalsTillRevenge;
 					if (this.elementalsTillRevenge <= 0) {
-						var skillID = this.nextElementalMove == null || this.nextElementalMove == 'windchill'
-							? 'hellfire' : 'windchill';
-						if (this.ai.isSkillUsable(skillID)) {
-							this.ai.useSkill(skillID);
-							this.isAvengingElementals = true;
+						if (this.ai.isSkillUsable('omni')) {
+							this.ai.useSkill('omni');
 						} else {
 							this.ai.useSkill('chargeSlash');
 						}
@@ -225,21 +227,18 @@ Robert2AI.prototype.strategize = function()
 							this.ai.useSkill('flare', 'robert2');
 						}
 					}
-				} else if (chanceOfCombo > Math.random() || this.isComboStarted) {
+				} else if (0.75 > Math.random() || this.isComboStarted) {
 					var forecast = this.ai.predictSkillTurns('chargeSlash');
 					if ((forecast[0].unit === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 						this.isComboStarted = false;
 						if (forecast[0].unit === this.unit) {
 							this.ai.useSkill('chargeSlash');
 						} else {
-							if (0.25 > Math.random()) {
-								var moves = [ 'upheaval', 'electrocute' ];
-								var moveToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
-								this.ai.useSkill(moveToUse);
-								this.necroTonicItem = moveToUse == 'electrocute' ? 'tonic' : null;
-							} else {
-								var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-								this.ai.useSkill(moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)]);
+							var spells = [ 'flare', 'chill', 'lightning', 'quake' ];
+							var skillToUse = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+							this.ai.useSkill(skillToUse);
+							if (skillToUse = 'quake') {
+								this.ai.useSkill('upheaval');
 							}
 						}
 					} else {
@@ -249,15 +248,20 @@ Robert2AI.prototype.strategize = function()
 							this.ai.useSkill('quickstrike');
 						} else {
 							var moves = [ 'flare', 'chill', 'lightning', 'quake' ];
-							var skillID = this.isScottZombie ? 'swordSlash'
+							var skillToUse = 
+								0.5 > Math.random() || this.isScottZombie ? 'swordSlash'
 								: moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
-							if (0.5 > Math.random() && this.ai.isSkillUsable(skillID)) {
-								this.ai.useSkill(skillID);
-								this.doChargeSlashNext = skillID == 'swordSlash';
+							if (this.ai.isSkillUsable(skillToUse)) {
+								this.ai.useSkill(skillToUse);
+								if (skillToUse = 'quake') {
+									this.ai.useSkill('upheaval');
+								}
+								this.doChargeSlashNext = skillToUse == 'swordSlash';
 								this.isComboStarted = false;
 							} else {
 								this.ai.useSkill('swordSlash');
 								this.doChargeSlashNext = true;
+								this.isComboStarted = false;
 							}
 						}
 					}
@@ -278,6 +282,7 @@ Robert2AI.prototype.strategize = function()
 				if (this.isAlcoholPending) {
 					if (this.isVaccinePending) {
 						this.ai.useItem('vaccine');
+						this.ai.useSkill('chargeSlash');
 						this.isVaccinePending = false;
 					} else if (this.unit.hasStatus('zombie')) {
 						this.ai.useSkill('chargeSlash');
@@ -289,7 +294,6 @@ Robert2AI.prototype.strategize = function()
 						this.ai.useSkill('quickstrike');
 					} else {
 						this.ai.useItem('alcohol');
-						this.ai.useSkill('omni');
 						this.ai.useSkill('chargeSlash');
 					}
 				} else {
@@ -328,10 +332,10 @@ Robert2AI.prototype.strategize = function()
 					this.isFinalTier2Used = true;
 				} else if (this.unit.hp <= 500 && !this.isDesperate) {
 					this.isDesperate = true;
+					this.ai.useSkill('chargeSlash');
 					if (this.ai.isSkillUsable('omni')) {
 						this.ai.useSkill('omni');
 					}
-					this.ai.useSkill('chargeSlash');
 				} else if (this.isDesperate) {
 					if (!this.unit.hasStatus('disarray')) {
 						var qsTurns = this.ai.predictSkillTurns('quickstrike');
@@ -366,12 +370,14 @@ Robert2AI.prototype.strategize = function()
 // Allows Robert to react when someone in the battle uses an item.
 Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
-	if (this.unit.hasStatus('drunk')) {
+	if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard')) {
 		return;
 	}
 	var curativeIDs = [ 'tonic', 'powerTonic' ];
-	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.unit.hasStatus('zombie')) {
-		if (this.zombieHealFixState === null && this.phase >= 3 && this.ai.isItemUsable('holyWater')) {
+	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.unit.hasStatus('zombie')
+	    && Link(targetIDs).contains('robert2'))
+	{
+		if (this.zombieHealFixState === null && this.ai.isItemUsable('holyWater')) {
 			this.ai.useItem('holyWater');
 			this.hasZombieHealedSelf = true;
 		}
@@ -396,7 +402,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.talk("Scott", true, 1.0, "Let the cards fall how they may.")
 			.synchronize()
 			.pause(2.0)
-			.playBGM("MyDreamsButADropOfFuel")
+			.playBGM("BasicInstinct")
 			.adjustBGM(1.0)
 			.talk("Robert", true, 2.0, "If that's how you want it, then so be it.")
 			.run(true);
@@ -404,7 +410,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		this.isAlcoholPending = false;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
 		if (this.phase <= 4 && Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie') && this.zombieHealFixState === null) {
-			this.zombieHealFixState = this.phase <= 1 ? 'fixStatus' : 'retaliate';
+			this.zombieHealFixState = this.ai.itemsLeft('alcohol') > 1 ? 'fixStatus' : 'retaliate';
 		}
 	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		if (itemID == 'vaccine' && this.scottImmuneTurnsLeft == 0) {
@@ -420,9 +426,10 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			&& !this.isScottZombie && !this.ai.isSkillQueued('necromancy') && this.zombieHealFixState === null)
 		{
 			this.necromancyChance += 0.25;
-			if ((this.necromancyChance > Math.random()) && !this.isNecroTonicItemPending) {
-				this.ai.useSkill(this.phase >= 3 ? 'electrocute' : 'necromancy');
-				this.necroTonicItem = this.phase == 3 ? 'tonic' : null;
+			var odds = this.phase <= 2 ? 1.0 : 0.5;
+			if ((this.necromancyChance * odds > Math.random()) && !this.isNecroTonicItemPending) {
+				this.ai.useSkill(this.phase <= 2 ? 'necromancy' : 'electrocute');
+				this.necroTonicItem = this.phase >= 3 ? 'tonic' : null;
 				this.necromancyChance = 0.0;
 			}
 		}
@@ -495,48 +502,22 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 			}
 			this.isNecroTonicItemPending = false;
 			this.necroTonicItem = null;
-		} else if (this.isAvengingElementals) {
-			if (this.ai.isSkillUsable(this.nextElementalMove)) {
-				this.ai.useSkill(this.nextElementalMove);
-			} else {
-				this.ai.useSkill('chargeSlash');
-			}
-			this.isAvengingElementals = false;
 		} else if (this.zombieHealFixState !== null) {
 			switch (this.zombieHealFixState) {
 				case 'fixStatus':
 					this.ai.useItem('holyWater');
-					this.zombieHealFixState = this.phase <= 1 ? 'retaliate' : 'finish';
+					this.zombieHealFixState = 'retaliate';
 					break;
 				case 'retaliate':
-					switch (this.phase) {
-						case 1:
-							this.ai.useItem('tonic');
-							this.zombieHealFixState = 'finish';
-							break;
-						case 2:
-							var itemToUse = this.ai.itemsLeft('alcohol') > 1 ? 'alcohol' : 'tonic';
-							if (itemToUse != 'alcohol' && !this.isScottZombie) {
-								this.ai.useSkill('necromancy');
-								this.ai.useItem(itemToUse, 'scott');
-							} else {
-								this.ai.useItem(itemToUse, 'scott');
-								if (itemToUse == 'alcohol') {
-									this.ai.useSkill('electrocute');
-								}
-							}
-							this.zombieHealFixState = this.ai.isItemUsable('holyWater') ? 'fixStatus' : 'finish';
-							break;
-						case 3:
-							this.ai.useSkill('electrocute');
-							this.necroTonicItem = 'powerTonic';
-							this.zombieHealFixState = 'finish';
-							break;
-						case 4:
-							this.ai.useSkill('omni');
-							this.zombieHealFixState = 'finish';
-							break;
+					var alcoholLeft = this.ai.itemsLeft('alcohol');
+					if (this.ai.itemsLeft('alcohol') > 1) {
+						this.ai.useItem('alcohol', 'scott');
+						this.ai.useSkill('electrocute');
+						this.necroTonicItem = 'powerTonic';
+					} else {
+						this.ai.useSkill('omni');
 					}
+					this.zombieHealFixState = 'finish';
 					break;
 				case 'finish':
 					this.zombieHealFixState = null;
