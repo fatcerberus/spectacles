@@ -297,8 +297,16 @@ BattleUnit.prototype.endTargeting = function()
 //     attacker: The BattleUnit whose attack was evaded.
 BattleUnit.prototype.evade = function(attacker)
 {
-	this.actor.showDamage("miss");
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
+	if (this.stance == BattleStance.counter) {
+		this.newStance = BattleStance.attack;
+		Console.writeLine(this.name + "'s Counter Stance was broken");
+	} else if (this.stance == BattleStance.guard) {
+		this.newStance = BattleStance.attack;
+		Console.writeLine(this.name + "'s Guard Stance was broken");
+		this.resetCounter(Game.guardBreakRank);
+	}
+	this.actor.showDamage("miss");
 };
 
 // .getHealth() method
@@ -546,6 +554,7 @@ BattleUnit.prototype.refreshInfo = function()
 	Link(this.statuses).pluck('statusID').each(function(statusID) {
 		this.battlerInfo.statuses.push(statusID);
 	}.bind(this));
+	this.battlerInfo.stance = this.stance;
 };
 
 // .resetCounter() method
@@ -647,7 +656,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			} else if (this.stance == BattleStance.guard) {
 				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 				this.newStance = BattleStance.attack;
-				Console.writeLine(this.name + "'s defensive stance was broken");
+				Console.writeLine(this.name + "'s Guard Stance was broken, damage reduced");
 				this.resetCounter(Game.guardBreakRank);
 			}
 		}

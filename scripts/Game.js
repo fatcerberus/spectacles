@@ -128,10 +128,10 @@ Game = {
 			damageTaken: function(baseDamage, tags) {
 				if (Link(tags).contains('deathblow')) {
 					return baseDamage - 1;
-				} else if (!Link(tags).some([ 'omni', 'special', 'zombie' ])) {
-					return baseDamage / 2;
-				} else {
+				} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
 					return baseDamage;
+				} else {
+					return baseDamage / 2;
 				}
 			}
 		},
@@ -218,6 +218,7 @@ Game = {
 				'windchill',
 				'electrocute',
 				'upheaval',
+				'protectiveAura',
 				'necromancy',
 				'crackdown'
 			]
@@ -459,10 +460,9 @@ Game = {
 		},
 		drunk: {
 			name: "Drunk",
-			tags: [ 'acute', 'debuff' ],
+			tags: [ 'acute', 'special' ],
 			statModifiers: {
-				str: 2.0,
-				foc: 0.5
+				agi: 0.75
 			},
 			ignoreEvents: [
 				'itemUsed',
@@ -472,19 +472,39 @@ Game = {
 				'unitTargeted'
 			],
 			initialize: function(unit) {
-				this.severity = 1.0;
-				this.turns = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100);
+				this.turnsLeft = 10;
+				this.recoil = 0;
 			},
 			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.0 + 0.5 * this.severity;
+				eventData.aimRate /= 1.5;
 			},
-			beginCycle: function(unit, eventData) {
-				var agiPenalty = Math.round(0.5 * this.severity * eventData.battlerInfo.stats.agi);
-				eventData.battlerInfo.stats.agi -= agiPenalty;
+			acting: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.filterBy('targetHint', 'selected')
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					var oldPower = effect.power;
+					effect.power *= 2;
+					if (effect.power != oldPower) {
+						Console.writeLine("POW modified by Drunk to " + effect.power);
+						Console.append("was: " + oldPower);
+					}
+					this.recoil += oldPower * unit.tier;
+				}.bind(this));
+			},
+			attacked: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.filterBy('targetHint', 'selected')
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					effect.power *= eventData.actingUnitInfo.stance == BattleStance.counter ? 2.0 : 1.0;
+				});
 			},
 			beginTurn: function(unit, eventData) {
-				this.severity -= 1.0 / this.turns;
-				if (this.severity <= 0.0) {
+				--this.turnsLeft;
+				if (this.turnsLeft <= 0) {
 					unit.liftStatus('drunk');
 				}
 			},
@@ -492,6 +512,12 @@ Game = {
 				if (Link(eventData.tags).contains('earth')) {
 					eventData.amount *= 1.5;
 				}
+			},
+			endTurn: function(unit, eventData) {
+				if (this.recoil > 0) {
+					unit.takeDamage(this.recoil, [ 'special' ]);
+				}
+				this.recoil = 0;
 			}
 		},
 		frostbite: {
@@ -606,7 +632,7 @@ Game = {
 			},
 			beginTurn: function(unit, eventData) {
 				++this.turnCount;
-				if (this.turnCount > 3) {
+				if (this.turnCount > 5) {
 					unit.liftStatus('immune');
 				}
 			}
@@ -1278,6 +1304,7 @@ Game = {
 			actions: [
 				{
 					announceAs: "Quickstrike",
+					ignoresGuard: true,
 					rank: 1,
 					accuracyType: 'sword',
 					effects: [
