@@ -30,7 +30,7 @@ function MoveMenu(unit, battle)
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
 	this.moveMenu = null;
 	this.selection = null;
-	this.stance = BattleStance.attack;
+	this.stance = null;
 	this.topCursor = 0;
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
@@ -156,7 +156,7 @@ function MoveMenu(unit, battle)
 	this.updateTurnPreview = function()
 	{
 		var nextMoveOrRank;
-		if (this.stance == BattleStance.attack) {
+		if (this.stance != BattleStance.guard) {
 			if (this.isExpanded) {
 				nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 			} else {
@@ -218,19 +218,6 @@ MoveMenu.prototype.getInput = function()
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
-	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_X)) {
-		if (this.stance == BattleStance.attack) {
-			this.stance = BattleStance.counter;
-		} else {
-			this.stance = BattleStance.attack;
-		}
-		this.lastStance = this.stance;
-		if (this.isExpanded) {
-			Link(this.moveMenu).each(function(entry) {
-				entry.isEnabled = entry.usable.isUsable(this.unit, this.stance);
-			}.bind(this));
-		}
-		this.updateTurnPreview();
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
 		this.stance = BattleStance.guard;
 		this.updateTurnPreview();
@@ -283,7 +270,7 @@ MoveMenu.prototype.open = function()
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;
-	this.stance = this.lastStance = BattleStance.attack;
+	this.stance = this.lastStance = this.unit.stance;
 	while (chosenTargets === null) {
 		this.expansion = 0.0;
 		this.isExpanded = false;
@@ -299,10 +286,14 @@ MoveMenu.prototype.open = function()
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
 				break;
 			case BattleStance.counter:
-				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name).open();
+				var targetMenu = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name);
+				targetMenu.lockTargets([ this.unit.counterTarget ]);
+				var chosenTargets = targetMenu.open();
 				break;
 			case BattleStance.guard:
-				var chosenTargets = new TargetMenu(this.unit, this.battle, null, "Guard").open();
+				var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
+				targetMenu.lockTargets([ this.unit ]);
+				var chosenTargets = targetMenu.open();
 				break;
 		}
 	}

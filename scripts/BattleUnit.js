@@ -44,10 +44,11 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.actor = null;
 	this.affinities = [];
 	this.ai = null;
+	this.allowGuardBreak = true;
 	this.allowTargetScan = false;
 	this.battle = battle;
 	this.battlerInfo = {};
-	this.counterDamage = 0;
+	this.counterTarget = null;
 	this.cv = 0;
 	this.hp = 0;
 	this.lastAttacker = null;
@@ -248,31 +249,6 @@ BattleUnit.prototype.endCycle = function()
 	if (!this.isAlive()) {
 		return;
 	}
-	if (this.stance == BattleStance.counter && this.isCounterReady) {
-		Console.writeLine(this.name + " is countering with " + this.counterMove.usable.name);
-		var multiplier = 1.0 + Game.math.counterBonus(this.counterDamage, this.battlerInfo);
-		this.newStance = BattleStance.attack;
-		this.queueMove(this.counterMove);
-		var action = this.getNextAction();
-		while (action != null) {
-			action.accuracyRate = 2.0;
-			var newPower;
-			var oldPower;
-			Link(action.effects)
-				.filterBy('type', 'damage')
-				.each(function(effect)
-			{
-				oldPower = effect.power;
-				effect.power = Math.round(effect.power * multiplier);
-				newPower = effect.power;
-			});
-			Console.writeLine("POW boosted by CS to " + newPower);
-			Console.append("was: " + oldPower);
-			this.performAction(action, this.counterMove);
-			action = this.getNextAction();
-		}
-		this.counterDamage = 0;
-	}
 	if (this.newStance !== this.stance) {
 		this.stance = this.newStance;
 		this.battle.stanceChanged.invoke(this.id, this.stance);
@@ -298,10 +274,7 @@ BattleUnit.prototype.endTargeting = function()
 BattleUnit.prototype.evade = function(attacker)
 {
 	Console.writeLine(this.name + " evaded " + attacker.name + "'s attack");
-	if (this.stance == BattleStance.counter) {
-		this.newStance = BattleStance.attack;
-		Console.writeLine(this.name + "'s Counter Stance was broken");
-	} else if (this.stance == BattleStance.guard) {
+	if (this.stance == BattleStance.guard && this.allowGuardBreak) {
 		this.newStance = BattleStance.attack;
 		Console.writeLine(this.name + "'s Guard Stance was broken");
 		this.resetCounter(Game.guardBreakRank);
@@ -474,6 +447,9 @@ BattleUnit.prototype.performAction = function(action, move)
 	this.raiseEvent('acting', eventData);
 	eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 	if (this.isAlive()) {
+		if (this.stance == BattleStance.counter) {
+			action.accuracyRate = 2.0;
+		}
 		var unitsHit = this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 		if (move.usable.givesExperience && unitsHit.length > 0) {
 			var allEnemies = this.battle.enemiesOf(this);
@@ -585,27 +561,6 @@ BattleUnit.prototype.restoreMP = function(percentage)
 	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
 };
 
-// .setCounter() method
-// Sets the unit into Counter Stance with a specified skill as the reprisal.
-// Arguments:
-//     skill: The SkillUsable representing the skill to use as the reprisal.
-// Remarks:
-//     If the unit is already in Counter Stance and ready to counterattack, this
-//     merely changes the reprisal without canceling the counterattack.
-BattleUnit.prototype.setCounter = function(skill)
-{
-	if (this.stance != BattleStance.counter) {
-		Console.writeLine(this.name + " will switch to Counter Stance");
-		this.newStance = BattleStance.counter;
-		this.counterMove = { usable: skill, targets: null };
-		this.isCounterReady = false;
-		this.resetCounter(Game.stanceChangeRank);
-	} else {
-		this.counterMove.usable = skill;
-	}
-	Console.writeLine(this.name + "'s reprisal set to " + this.counterMove.usable.name);
-}
-
 // .setGuard() method
 // Switches the unit into Guard Stance.
 BattleUnit.prototype.setGuard = function()
@@ -646,17 +601,22 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		amount = Math.round(eventData.amount);
 	}
 	if (amount >= 0) {
-		if (this.lastAttacker !== null) {
-			if (this.stance == BattleStance.counter) {
-				this.counterDamage += amount;
-				this.counterMove.targets = [ this.lastAttacker ];
-				this.isCounterReady = true;
-				Console.writeLine(this.name + " set to counter with " + this.counterMove.usable.name);
-				Console.append("targ: " + this.counterMove.targets[0].name);
-			} else if (this.stance == BattleStance.guard) {
-				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
-				this.newStance = BattleStance.attack;
-				Console.writeLine(this.name + "'s Guard Stance was broken, damage reduced");
+		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {
+			Console.writeLine(this.name + " hit from Counter Stance, damage increased");
+			amount = Math.round(amount * 2.0);
+		}
+		if (this.stance == BattleStance.guard && this.lastAttacker !== null) {
+			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
+			Console.writeLine(this.name + " is in Guard Stance, damage reduced");
+			if (this.allowGuardBreak) {
+				Console.writeLine(this.name + "'s Guard Stance has been broken");
+				Console.append("cause: " + this.lastAttacker.name);
+				this.newStance = Link(tags).some(Game.counterableDamage) ? BattleStance.counter : BattleStance.attack;
+				if (this.newStance == BattleStance.counter) {
+					this.counterTarget = this.lastAttacker;
+					Console.writeLine("Damage is counterable, Counter Stance activated");
+					Console.append("targ: " + this.counterTarget.name);
+				}
 				this.resetCounter(Game.guardBreakRank);
 			}
 		}
@@ -713,13 +673,12 @@ BattleUnit.prototype.tick = function()
 	--this.cv;
 	if (this.cv == 0) {
 		this.battle.suspend();
-		if (this.stance != BattleStance.attack) {
-			var stanceName = this.stance == BattleStance.guard ? "Guard"
-				: this.stance == BattleStance.counter ? "Counter"
-				: "Attack";
+		if (this.stance == BattleStance.guard) {
 			this.stance = this.newStance = BattleStance.attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
-			Console.writeLine(this.name + "'s " + stanceName + " Stance has expired");
+			Console.writeLine(this.name + "'s Guard Stance has expired");
+		} else if (this.stance == BattleStance.counter) {
+			this.newStance = BattleStance.attack;
 		}
 		Console.writeLine(this.name + "'s turn is up");
 		this.battle.unitReady.invoke(this.id);
@@ -746,17 +705,11 @@ BattleUnit.prototype.tick = function()
 			} else {
 				chosenMove = this.ai.getNextMove();
 			}
-			switch (chosenMove.stance) {
-				case BattleStance.attack:
-					this.queueMove(chosenMove);
-					action = this.getNextAction();
-					break;
-				case BattleStance.counter:
-					this.setCounter(chosenMove.usable);
-					break;
-				case BattleStance.guard:
-					this.setGuard();
-					break;
+			if (chosenMove.stance != BattleStance.guard) {
+				this.queueMove(chosenMove);
+				action = this.getNextAction();
+			} else {
+				this.setGuard();
 			}
 		}
 		if (this.isAlive()) {

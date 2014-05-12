@@ -22,7 +22,7 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
 	this.isTargetScanOn = Link(battle.alliesOf(unit)).pluck('allowTargetScan').contains(true);
-	this.isTargetLocked = usable === null;
+	this.isTargetLocked = false;
 	this.multiTarget = false;
 	this.name = moveName !== null ? moveName
 		: usable !== null ? usable.name
@@ -157,6 +157,13 @@ TargetMenu.prototype.getInput = function()
 	}
 };
 
+TargetMenu.prototype.lockTargets = function(targetUnits)
+{
+	this.targets = targetUnits;
+	this.isTargetLocked = true;
+};
+
+
 // .open() method
 // Opens the targeting menu and waits for the player to select a target.
 // Returns:
@@ -164,7 +171,11 @@ TargetMenu.prototype.getInput = function()
 TargetMenu.prototype.open = function()
 {
 	this.isChoiceMade = false;
-	this.targets = this.usable !== null ? this.usable.defaultTargets(this.unit) : [ this.unit ];
+	if (!this.isTargetLocked) {
+		this.targets = this.usable !== null
+			? this.usable.defaultTargets(this.unit)
+			: [ this.battle.enemiesOf(this.unit)[0] ];
+	}
 	this.multiTarget = this.targets.length > 1;
 	this.updateInfo();
 	while (AreKeysLeft()) {

@@ -410,6 +410,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		return [];
 	}
 	Link(targetsHit).invoke('beginTargeting', actingUnit);
+	Link(targetsHit).each(function(unit) {
+		unit.allowGuardBreak = !action.ignoresGuard;
+	});
 	Link(action.effects)
 		.filterBy('targetHint', 'selected')
 		.where(function(effect) { return effect.type != null; })
@@ -418,6 +421,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.writeLine("Applying effect '" + effect.type + "'");
 		Console.append("retarg: " + effect.targetHint);
 		Game.effects[effect.type](actingUnit, targetsHit, effect);
+	});
+	Link(targetsHit).each(function(unit) {
+		unit.allowGuardBreak = true;
 	});
 	Link(targetsHit).invoke('endTargeting');
 	return targetsHit;

@@ -11,14 +11,16 @@ RequireScript('AIs/Robert2AI.js');
 Game = {
 	title: "Spectacles: Bruce's Story",
 	
+	bossHPPerBar: 500,
+	partyHPPerBar: 250,
+	
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
 	guardBreakRank: 1,
 	stanceChangeRank: 5,
 	
-	bossHPPerBar: 500,
-	partyHPPerBar: 250,
+	counterableDamage: [ 'physical', 'sword' ],
 	
 	initialPartyMembers: [
 		'scott'
@@ -461,6 +463,7 @@ Game = {
 		drunk: {
 			name: "Drunk",
 			tags: [ 'acute', 'special' ],
+			overrules: [ 'disarray' ],
 			statModifiers: {
 				agi: 0.75
 			},
@@ -472,7 +475,6 @@ Game = {
 				'unitTargeted'
 			],
 			initialize: function(unit) {
-				this.turnsLeft = 10;
 				this.recoil = 0;
 			},
 			aiming: function(unit, eventData) {
@@ -487,26 +489,11 @@ Game = {
 					var oldPower = effect.power;
 					effect.power *= 2;
 					if (effect.power != oldPower) {
-						Console.writeLine("POW modified by Drunk to " + effect.power);
+						Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
 						Console.append("was: " + oldPower);
 					}
 					this.recoil += oldPower * unit.tier;
 				}.bind(this));
-			},
-			attacked: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('targetHint', 'selected')
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					effect.power *= eventData.actingUnitInfo.stance == BattleStance.counter ? 2.0 : 1.0;
-				});
-			},
-			beginTurn: function(unit, eventData) {
-				--this.turnsLeft;
-				if (this.turnsLeft <= 0) {
-					unit.liftStatus('drunk');
-				}
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {

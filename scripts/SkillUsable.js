@@ -96,14 +96,16 @@ SkillUsable.prototype.grow = function(amount)
 //     stance: The user's stance.
 // Returns:
 //     true if the skill can be used; false otherwise.
-SkillUsable.prototype.isUsable = function(user)
+SkillUsable.prototype.isUsable = function(user, stance)
 {
 	var userWeaponType = user.weapon != null ? user.weapon.type : null;
 	var skillWeaponType = this.skillInfo.weaponType;
 	if (skillWeaponType != null && userWeaponType != skillWeaponType) {
 		return false;
 	}
-	return this.mpCost(user) <= user.mpPool.availableMP;
+	return this.mpCost(user) <= user.mpPool.availableMP
+		&& (stance != BattleStance.counter || this.skillInfo.actions.length == 1)
+		&& stance != BattleStance.guard;
 }
 
 // .mpCost() method
