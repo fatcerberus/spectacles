@@ -52,7 +52,6 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.hp = 0;
 	this.lastAttacker = null;
 	this.lazarusFlag = false;
-	this.moveMenu = new MoveMenu(this, battle);
 	this.moveTargets = null;
 	this.mpPool = null;
 	this.newSkills = [];
@@ -111,6 +110,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.ai = new AIContext(this, battle, this.enemyInfo.aiType);
 	}
+	this.attackMenu = new MoveMenu(this, battle, BattleStance.attack);
+	this.counterMenu = new MoveMenu(this, battle, BattleStance.counter);
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
 		: new MPPool(this.id + "MP", Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
@@ -252,7 +253,7 @@ BattleUnit.prototype.endCycle = function()
 		if (this.ai == null) {
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 			Console.writeLine("Asking player for " + this.name + "'s counterattack");
-			chosenMove = this.moveMenu.open();
+			chosenMove = this.counterMenu.open();
 		} else {
 			chosenMove = this.ai.getNextMove();
 		}
@@ -726,7 +727,7 @@ BattleUnit.prototype.tick = function()
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				Console.writeLine("Asking player for " + this.name + "'s next move");
-				chosenMove = this.moveMenu.open();
+				chosenMove = this.attackMenu.open();
 			} else {
 				chosenMove = this.ai.getNextMove();
 			}

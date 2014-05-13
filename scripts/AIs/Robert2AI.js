@@ -332,7 +332,7 @@ Robert2AI.prototype.strategize = function()
 				this.ai.useSkill('omni');
 			} else {
 				var qsTurns = this.ai.predictSkillTurns('quickstrike');
-				this.ai.useSkill(qsTurns[0] === this.unit ? 'quickstrike' : 'swordSlash');
+				this.ai.useSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
 				break;
 			}
 	}

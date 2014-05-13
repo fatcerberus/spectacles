@@ -10,7 +10,8 @@ RequireScript("TargetMenu.js");
 // Arguments:
 //     unit:   The BattleUnit the menu belongs to.
 //     battle: The battle session during which the menu will be shown.
-function MoveMenu(unit, battle)
+//     stance: The stance this menu will be used for.
+function MoveMenu(unit, battle, stance)
 {
 	this.lockedCursorColor = CreateColor(0, 36, 72, 255);
 	this.moveRankColor = CreateColor(255, 255, 255, 255);
@@ -25,6 +26,7 @@ function MoveMenu(unit, battle)
 	this.font = GetSystemFont();
 	this.healthyColor
 	this.isExpanded = false;
+	this.menuStance = stance;
 	this.menuThread = null;
 	this.moveCursor = 0;
 	this.moveCursorColor = CreateColor(0, 0, 0, 0);
@@ -34,6 +36,26 @@ function MoveMenu(unit, battle)
 	this.topCursor = 0;
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
+	var drawerTable = {};
+	Link(this.unit.skills).each(function(skill) {
+		var category = skill.skillInfo.category;
+		if (!(category in drawerTable)) {
+			drawerTable[category] = {
+				name: Game.moveCategories[category],
+				contents: [],
+				cursor: 0
+			};
+		}
+		drawerTable[category].contents.push(skill);
+	});
+	this.drawers = [];
+	for (var category in drawerTable) {
+		this.drawers.push(drawerTable[category]);
+	}
+	if (stance == BattleStance.attack) {
+		this.drawers = this.drawers.concat([
+			{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
+	}
 	
 	this.chooseMove = new Scenario()
 		.fork()
@@ -160,7 +182,7 @@ function MoveMenu(unit, battle)
 			if (this.isExpanded) {
 				nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 			} else {
-				var drawer = this.drawers[this.topCursor]
+				var drawer = this.drawers[this.topCursor];
 				nextMoveOrRank = drawer.contents.length > 0 ? drawer.contents[drawer.cursor] : Game.defaultItemRank;
 			}
 		} else {
@@ -248,29 +270,10 @@ MoveMenu.prototype.getInput = function()
 // Opens the menu to allow the player to choose an action.
 MoveMenu.prototype.open = function()
 {
-	var drawerTable = {};
-	Link(this.unit.skills).each(function(skill) {
-		var category = skill.skillInfo.category;
-		if (!(category in drawerTable)) {
-			drawerTable[category] = {
-				name: Game.moveCategories[category],
-				contents: [],
-				cursor: 0
-			};
-		}
-		drawerTable[category].contents.push(skill);
-	});
-	this.drawers = [];
-	for (var category in drawerTable) {
-		this.drawers.push(drawerTable[category]);
-	}
-	this.drawers = this.drawers.concat([
-		{ name: "Item", contents: this.unit.stance == BattleStance.attack ? this.unit.items : [], cursor: 0 }
-	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);
 	var chosenTargets = null;
-	this.stance = this.lastStance = this.unit.stance;
+	this.stance = this.lastStance = this.menuStance;
 	while (chosenTargets === null) {
 		this.expansion = 0.0;
 		this.isExpanded = false;
