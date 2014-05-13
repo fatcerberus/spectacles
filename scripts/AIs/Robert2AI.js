@@ -74,7 +74,6 @@ Robert2AI.prototype.strategize = function()
 		this.unit.hp > this.phasePoints[1] ? 2 :
 		this.unit.hp > this.phasePoints[2] ? 3 :
 		4;
-	phaseToEnter = 4;
 	if (this.isAlcoholUsed) {
 		phaseToEnter = 5;
 	}
@@ -323,12 +322,12 @@ Robert2AI.prototype.strategize = function()
 				this.ai.useSkill('quake');
 				this.ai.useSkill('chill');
 				this.ai.useSkill('lightning');
-				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('swordSlash');
 				this.ai.useSkill('hellfire');
 				this.ai.useSkill('upheaval');
 				this.ai.useSkill('windchill');
 				this.ai.useSkill('electrocute');
-				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('swordSlash');
 				this.ai.useSkill('omni');
 				this.ai.useSkill('chargeSlash');
 			} else {
