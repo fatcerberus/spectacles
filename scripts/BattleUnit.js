@@ -617,7 +617,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	amount = Math.round(amount * multiplier);
 	if (amount > 0 && !isPriority) {
-		var eventData = { amount: amount, tags: tags };
+		var eventData = { amount: amount, tags: tags, actingUnit: this.lastAttacker };
 		this.raiseEvent('damaged', eventData);
 		amount = Math.round(eventData.amount);
 	}
@@ -664,7 +664,8 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 {
 	var eventData = {
 		actingUnitInfo: actingUnit.battlerInfo,
-		action: action
+		action: action,
+		stance: actingUnit.stance
 	};
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;

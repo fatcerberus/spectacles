@@ -20,7 +20,6 @@ function Robert2AI(battle, unit, aiContext)
 	this.isAlcoholUsed = false;
 	this.isNecroTonicItemPending = false;
 	this.isNecromancyPending = false;
-	this.isP5OpenerPending = true;
 	this.isScottZombie = false;
 	this.necroTonicItem = null;
 	this.necroTonicItemTarget = null
@@ -318,28 +317,24 @@ Robert2AI.prototype.strategize = function()
 			}
 			break;
 		case 5:
-			var qsTurns = this.ai.predictSkillTurns('quickstrike');
-			if (qsTurns[0].unit === this.unit) {
-				this.ai.useSkill('quickstrike');
-			} else {
+			if (this.phase > lastPhase) {
+				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('hellfire');
+				this.ai.useSkill('upheaval');
+				this.ai.useSkill('windchill');
+				this.ai.useSkill('electrocute');
 				this.ai.useSkill('swordSlash');
-				if (this.isP5OpenerPending) {
-					this.ai.useSkill('hellfire');
-					this.ai.useSkill('upheaval');
-					this.ai.useSkill('windchill');
-					this.ai.useSkill('electrocute');
-					this.ai.useSkill('omni');
-					this.ai.useSkill('chargeSlash');
-					this.isP5OpenerPending = false;
-				} else {
-					this.ai.useSkill('flare');
-					this.ai.useSkill('quake');
-					this.ai.useSkill('chill');
-					this.ai.useSkill('lightning');
-					this.ai.useSkill('chargeSlash');
-				}
+				this.ai.useSkill('flare');
+				this.ai.useSkill('quake');
+				this.ai.useSkill('chill');
+				this.ai.useSkill('lightning');
+				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('omni');
+			} else {
+				var qsTurns = this.ai.predictSkillTurns('quickstrike');
+				this.ai.useSkill(qsTurns[0] === this.unit ? 'quickstrike' : 'swordSlash');
+				break;
 			}
-			break;
 	}
 };
 

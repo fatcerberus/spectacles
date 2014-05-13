@@ -462,9 +462,6 @@ Game = {
 			name: "Drunk",
 			tags: [ 'acute', 'special' ],
 			overrules: [ 'disarray' ],
-			statModifiers: {
-				agi: 0.75
-			},
 			ignoreEvents: [
 				'itemUsed',
 				'skillUsed',
@@ -473,7 +470,7 @@ Game = {
 				'unitTargeted'
 			],
 			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.5;
+				eventData.aimRate /= 2.0;
 			},
 			acting: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -488,6 +485,11 @@ Game = {
 						Console.append("was: " + oldPower);
 					}
 				}.bind(this));
+			},
+			attacked: function(unit, eventData) {
+				if (eventData.stance == BattleStance.counter) {
+					unit.resetCounter(5);
+				}
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {
