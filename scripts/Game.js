@@ -461,7 +461,7 @@ Game = {
 		drunk: {
 			name: "Drunk",
 			tags: [ 'acute', 'special' ],
-			overrules: [ 'disarray' ],
+			overrules: [ 'crackdown', 'disarray' ],
 			statModifiers: {
 				agi: 0.75
 			},

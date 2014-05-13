@@ -82,7 +82,8 @@ Robert2AI.prototype.strategize = function()
 		case 1:
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('omni');
-				this.doChargeSlashNext = true;
+				this.ai.useSkill('chargeSlash');
+				this.doChargeSlashNext = false;
 				this.isComboStarted = false;
 				this.isNecromancyPending = true;
 			} else {
