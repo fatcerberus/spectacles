@@ -109,6 +109,17 @@ AIContext.prototype.hasStatus = function(statusID)
 	return this.unit.hasStatus(statusID);
 };
 
+// .isItemQueued() method
+// Checks whether a use of an item is already in the AI's move queue.
+// Arguments:
+//     itemID: The item ID of the item to check for.
+AIContext.prototype.isItemQueued = function(itemID)
+{
+	return Link(this.moveQueue)
+		.pluck('usable')
+		.some(function(usable) { return usable instanceof ItemUsable && usable.itemID == itemID; });
+};
+
 // .isItemUsable() method
 // Determines whether the controlled unit is able to use an item.
 // Arguments:

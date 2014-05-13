@@ -103,8 +103,10 @@ SkillUsable.prototype.isUsable = function(user, stance)
 	if (skillWeaponType != null && userWeaponType != skillWeaponType) {
 		return false;
 	}
+	var isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
+		&& this.skillInfo.actions.length == 1;
 	return this.mpCost(user) <= user.mpPool.availableMP
-		&& (stance != BattleStance.counter || this.skillInfo.actions.length == 1)
+		&& (stance != BattleStance.counter || isValidCounter)
 		&& stance != BattleStance.guard;
 }
 

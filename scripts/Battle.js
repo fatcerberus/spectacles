@@ -403,16 +403,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			targetsHit.push(targetUnits[i]);
 		} else {
 			Console.append("miss");
-			targetUnits[i].evade(actingUnit);
+			targetUnits[i].evade(actingUnit, action);
 		}
 	}
 	if (targetsHit.length == 0) {
 		return [];
 	}
 	Link(targetsHit).invoke('beginTargeting', actingUnit);
-	Link(targetsHit).each(function(unit) {
-		unit.allowGuardBreak = !action.ignoresGuard;
-	});
 	Link(action.effects)
 		.filterBy('targetHint', 'selected')
 		.where(function(effect) { return effect.type != null; })
@@ -421,9 +418,6 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.writeLine("Applying effect '" + effect.type + "'");
 		Console.append("retarg: " + effect.targetHint);
 		Game.effects[effect.type](actingUnit, targetsHit, effect);
-	});
-	Link(targetsHit).each(function(unit) {
-		unit.allowGuardBreak = true;
 	});
 	Link(targetsHit).invoke('endTargeting');
 	return targetsHit;

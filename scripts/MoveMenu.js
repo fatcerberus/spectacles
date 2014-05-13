@@ -161,7 +161,7 @@ function MoveMenu(unit, battle)
 				nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 			} else {
 				var drawer = this.drawers[this.topCursor]
-				nextMoveOrRank = drawer.contents[drawer.cursor];
+				nextMoveOrRank = drawer.contents.length > 0 ? drawer.contents[drawer.cursor] : Game.defaultItemRank;
 			}
 		} else {
 			nextMoveOrRank = Game.stanceChangeRank;
@@ -218,7 +218,7 @@ MoveMenu.prototype.getInput = function()
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
-	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y) && this.stance == BattleStance.attack) {
 		this.stance = BattleStance.guard;
 		this.updateTurnPreview();
 		this.showMoveList.stop();
@@ -265,7 +265,7 @@ MoveMenu.prototype.open = function()
 		this.drawers.push(drawerTable[category]);
 	}
 	this.drawers = this.drawers.concat([
-		{ name: "Item", contents: this.unit.items, cursor: 0 }
+		{ name: "Item", contents: this.unit.stance == BattleStance.attack ? this.unit.items : [], cursor: 0 }
 	]);
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit.name);

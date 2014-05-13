@@ -279,8 +279,6 @@ Robert2AI.prototype.strategize = function()
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('desperationSlash');
 				this.isAlcoholPending = true;
-				this.isQSComboPending = true;
-				this.isQSComboStarted = false;
 				this.isHolyWaterPending = this.ai.isItemUsable('holyWater');
 			} else {
 				if (this.isAlcoholPending) {
@@ -291,17 +289,13 @@ Robert2AI.prototype.strategize = function()
 						if (this.ai.isItemUsable('redBull')) {
 							this.ai.useItem('redBull');
 						}
-						this.ai.useSkill('omni');
 						this.ai.useSkill('hellfire');
-						this.ai.useSkill('electrocute');
-						this.ai.useSkill('windchill');
 						this.ai.useSkill('upheaval');
+						this.ai.useSkill('windchill');
+						this.ai.useSkill('electrocute');
 						this.ai.useSkill('omni');
+						this.ai.useSkill('chargeSlash');
 						this.isAlcoholPending = false;
-					} else if (this.isQSComboPending) {
-						this.isHolyWaterPending = false;
-						this.isQSComboStarted = true;
-						this.ai.useSkill('quickstrike');
 					} else {
 						this.ai.useItem('alcohol');
 					}
@@ -331,12 +325,18 @@ Robert2AI.prototype.strategize = function()
 				this.ai.useSkill('swordSlash');
 				if (this.isP5OpenerPending) {
 					this.ai.useSkill('hellfire');
-					this.ai.useSkill('electrocute');
-					this.ai.useSkill('windchill');
 					this.ai.useSkill('upheaval');
+					this.ai.useSkill('windchill');
+					this.ai.useSkill('electrocute');
 					this.ai.useSkill('omni');
 					this.ai.useSkill('chargeSlash');
 					this.isP5OpenerPending = false;
+				} else {
+					this.ai.useSkill('flare');
+					this.ai.useSkill('quake');
+					this.ai.useSkill('chill');
+					this.ai.useSkill('lightning');
+					this.ai.useSkill('chargeSlash');
 				}
 			}
 			break;
@@ -463,9 +463,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 	}
 	this.rezombieChance /= 2;
 	this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
-	if (unitID != 'robert2' && this.phase == 4 && this.isQSComboStarted) {
-		this.isQSComboPending = false;
-	} else if (unitID == 'robert2' && !this.ai.hasMovesQueued()) {
+	if (unitID == 'robert2' && !this.ai.hasMovesQueued()) {
 		if (this.isNecromancyPending && this.scottImmuneTurnsLeft <= 0) {
 			if (!this.isScottZombie) {
 				this.ai.useSkill('necromancy');
@@ -493,8 +491,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 						this.necroTonicItem = 'tonic';
 					} else if (this.ai.itemsLeft('alcohol') > 1) {
 						this.ai.useItem('alcohol', 'scott');
-						this.ai.useSkill('electrocute');
-						this.necroTonicItem = 'powerTonic';
+						this.ai.useSkill('upheaval');
 					} else {
 						if (this.ai.isItemUsable('redBull')) {
 							this.ai.useItem('redBull');

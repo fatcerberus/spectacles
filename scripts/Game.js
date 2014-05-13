@@ -20,8 +20,6 @@ Game = {
 	guardBreakRank: 1,
 	stanceChangeRank: 5,
 	
-	counterableDamage: [ 'physical', 'sword' ],
-	
 	initialPartyMembers: [
 		'scott'
 	],
@@ -474,9 +472,6 @@ Game = {
 				'unitHealed',
 				'unitTargeted'
 			],
-			initialize: function(unit) {
-				this.recoil = 0;
-			},
 			aiming: function(unit, eventData) {
 				eventData.aimRate /= 1.5;
 			},
@@ -492,19 +487,12 @@ Game = {
 						Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
 						Console.append("was: " + oldPower);
 					}
-					this.recoil += oldPower * unit.tier;
 				}.bind(this));
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {
-					eventData.amount *= 1.5;
+					eventData.amount *= 2.0;
 				}
-			},
-			endTurn: function(unit, eventData) {
-				if (this.recoil > 0) {
-					unit.takeDamage(this.recoil, [ 'special' ]);
-				}
-				this.recoil = 0;
 			}
 		},
 		frostbite: {
@@ -931,6 +919,7 @@ Game = {
 				{
 					announceAs: "Charging Up...",
 					rank: 2,
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: "user",
@@ -943,6 +932,7 @@ Game = {
 					announceAs: "Charge Slash",
 					rank: 3,
 					accuracyType: 'sword',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -981,6 +971,7 @@ Game = {
 			category: 'strategy',
 			targetType: 'single',
 			baseMPCost: 200,
+			allowAsCounter: false,
 			actions: [
 				{
 					announceAs: "Crackdown",
@@ -1004,6 +995,7 @@ Game = {
 				{
 					announceAs: "#9's Desperation...",
 					rank: 3,
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: 'user',
@@ -1016,6 +1008,7 @@ Game = {
 					announceAs: "Desperation Slash",
 					rank: 5,
 					accuracyType: 'sword',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -1058,6 +1051,7 @@ Game = {
 					announceAs: "Fat Slam",
 					rank: 3,
 					accuracyType: 'physical',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -1079,6 +1073,8 @@ Game = {
 					announceAs: "Fatseat",
 					rank: 2,
 					accuracyType: 'physical',
+					isMelee: true,
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -1101,6 +1097,7 @@ Game = {
 					announceAs: "Flame Breath",
 					rank: 2,
 					accuracyType: 'breath',
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -1190,6 +1187,7 @@ Game = {
 					announceAs: "Munch",
 					rank: 5,
 					accuracyType: 'devour',
+					isMelee: true,
 					effects: [
 						{
 							element: 'fat',
@@ -1206,6 +1204,7 @@ Game = {
 			category: 'strategy',
 			targetType: 'single',
 			baseMPCost: 25,
+			allowAsCounter: false,
 			actions: [
 				{
 					announceAs: "Necromancy",
@@ -1247,6 +1246,7 @@ Game = {
 			category: 'strategy',
 			targetType: 'ally',
 			baseMPCost: 200,
+			allowAsCounter: false,
 			actions: [
 				{
 					announceAs: "Protective Aura",
@@ -1291,7 +1291,8 @@ Game = {
 			actions: [
 				{
 					announceAs: "Quickstrike",
-					ignoresGuard: true,
+					isMelee: true,
+					preserveGuard: true,
 					rank: 1,
 					accuracyType: 'sword',
 					effects: [
@@ -1313,6 +1314,7 @@ Game = {
 				{
 					announceAs: "Rear Up",
 					rank: 1,
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: 'user',
@@ -1324,6 +1326,8 @@ Game = {
 				{
 					announceAs: "Rearing Kick",
 					rank: 2,
+					accuracyType: 'physical',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'user',
@@ -1409,6 +1413,7 @@ Game = {
 				{
 					announceAs: "Rear Up",
 					rank: 1,
+					preserveGuard: true,
 					effects: [
 						{
 							targetHint: 'user',
@@ -1420,6 +1425,8 @@ Game = {
 				{
 					announceAs: "Spectral Kick",
 					rank: 2,
+					accuracyType: 'physical',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'user',
@@ -1446,6 +1453,7 @@ Game = {
 					announceAs: "Sword Slash",
 					rank: 2,
 					accuracyType: 'sword',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'selected',
@@ -1466,6 +1474,7 @@ Game = {
 					announceAs: "Trample",
 					rank: 2,
 					accuracyType: 'physical',
+					isMelee: true,
 					effects: [
 						{
 							targetHint: 'selected',
