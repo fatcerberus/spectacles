@@ -319,21 +319,21 @@ Robert2AI.prototype.strategize = function()
 		case 5:
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('chargeSlash');
-				this.ai.useSkill('hellfire');
-				this.ai.useSkill('upheaval');
-				this.ai.useSkill('windchill');
-				this.ai.useSkill('electrocute');
-				this.ai.useSkill('swordSlash');
 				this.ai.useSkill('flare');
 				this.ai.useSkill('quake');
 				this.ai.useSkill('chill');
 				this.ai.useSkill('lightning');
 				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('hellfire');
+				this.ai.useSkill('upheaval');
+				this.ai.useSkill('windchill');
+				this.ai.useSkill('electrocute');
+				this.ai.useSkill('chargeSlash');
 				this.ai.useSkill('omni');
+				this.ai.useSkill('chargeSlash');
 			} else {
 				var qsTurns = this.ai.predictSkillTurns('quickstrike');
 				this.ai.useSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
-				break;
 			}
 	}
 };

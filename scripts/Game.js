@@ -462,6 +462,9 @@ Game = {
 			name: "Drunk",
 			tags: [ 'acute', 'special' ],
 			overrules: [ 'disarray' ],
+			statModifiers: {
+				agi: 0.75
+			},
 			ignoreEvents: [
 				'itemUsed',
 				'skillUsed',
@@ -469,6 +472,9 @@ Game = {
 				'unitHealed',
 				'unitTargeted'
 			],
+			initialize: function(unit) {
+				this.multiplier = 2.0;
+			},
 			aiming: function(unit, eventData) {
 				eventData.aimRate /= 2.0;
 			},
@@ -479,7 +485,7 @@ Game = {
 					.each(function(effect)
 				{
 					var oldPower = effect.power;
-					effect.power *= 2;
+					effect.power = Math.round(effect.power * this.multiplier);
 					if (effect.power != oldPower) {
 						Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
 						Console.append("was: " + oldPower);
@@ -488,6 +494,7 @@ Game = {
 			},
 			attacked: function(unit, eventData) {
 				if (eventData.stance == BattleStance.counter) {
+					this.multiplier /= 2.0;
 					unit.resetCounter(5);
 				}
 			},
