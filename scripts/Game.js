@@ -131,7 +131,7 @@ Game = {
 				} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
 					return baseDamage;
 				} else {
-					return baseDamage / 2;
+					return baseDamage / 1.5;
 				}
 			}
 		},
@@ -218,7 +218,6 @@ Game = {
 				'windchill',
 				'electrocute',
 				'upheaval',
-				'protectiveAura',
 				'necromancy',
 				'crackdown'
 			]
@@ -388,7 +387,7 @@ Game = {
 		blackout: {
 			name: "Blackout",
 			actionTaken: function(battle, eventData) {
-				if (eventData.targets.length == 1 && Math.random() < 0.75) {
+				if (eventData.targets.length == 1 && 0.66 > Math.random()) {
 					var target = eventData.targets[0];
 					var newTargets = Math.random() < 0.5
 						? battle.alliesOf(target)
@@ -428,11 +427,16 @@ Game = {
 				}.bind(this));
 			},
 			useSkill: function(unit, eventData) {
+				var oldMultiplier = this.multiplier;
 				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
-					: this.multiplier * 0.75;
+					: this.multiplier * 0.66;
 				this.lastSkillType = eventData.skill.category;
-				if (this.multiplier < 1.0) {
-					Console.writeLine("POW modifier for Crackdown is now at ~" + Math.round(this.multiplier * 100) + "%");
+				if (this.multiplier != oldMultiplier) {
+					if (this.multiplier < 1.0) {
+						Console.writeLine("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
+					} else {
+						Console.writeLine("Crackdown POW modifier reset to 100%");
+					}
 				}
 			}
 		},
@@ -463,7 +467,7 @@ Game = {
 			tags: [ 'acute', 'special' ],
 			overrules: [ 'crackdown', 'disarray' ],
 			statModifiers: {
-				agi: 0.75
+				agi: 0.66
 			},
 			ignoreEvents: [
 				'itemUsed',
@@ -473,10 +477,10 @@ Game = {
 				'unitTargeted'
 			],
 			initialize: function(unit) {
-				this.multiplier = 2.0;
+				this.multiplier = 1.5;
 			},
 			aiming: function(unit, eventData) {
-				eventData.aimRate /= 2.0;
+				eventData.aimRate /= 1.5;
 			},
 			acting: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -494,13 +498,13 @@ Game = {
 			},
 			attacked: function(unit, eventData) {
 				if (eventData.stance == BattleStance.counter) {
-					this.multiplier /= 2.0;
+					this.multiplier /= 1.5;
 					unit.resetCounter(5);
 				}
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {
-					eventData.amount *= 2.0;
+					eventData.amount *= 1.5;
 				}
 			}
 		},
@@ -529,14 +533,14 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
-					eventData.amount *= 2.0;
+					eventData.amount *= 1.5;
 					Console.writeLine("Frostbite neutralized by fire, damage increased");
 					unit.liftStatus('frostbite');
 				}
 			},
 			endTurn: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
+				this.multiplier = Math.min(this.multiplier + 0.1, 1.5);
 			}
 		},
 		ghost: {
@@ -575,7 +579,7 @@ Game = {
 			},
 			beginCycle: function(unit, eventData) {
 				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
-				this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
+				this.multiplier = Math.max(this.multiplier - 0.132, 0.66);
 			},
 			attacked: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -595,7 +599,7 @@ Game = {
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
-					eventData.amount *= 2.0;
+					eventData.amount *= 1.5;
 					Console.writeLine("Ignite neutralized by ice, damage increased");
 					unit.liftStatus('ignite');
 				}
@@ -632,7 +636,7 @@ Game = {
 			name: "Off Guard",
 			tags: [ 'special' ],
 			statModifiers: {
-				def: 0.75
+				def: 0.66
 			},
 			beginTurn: function(unit, eventData) {
 				unit.liftStatus('offGuard');
@@ -1610,7 +1614,7 @@ Game = {
 				bow: 1.5,
 				gun: 1.5,
 				fire: -1.0,
-				ice: 2.0,
+				ice: 1.5,
 				fat: 1.5
 			},
 			immunities: [],

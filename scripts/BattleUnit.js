@@ -250,6 +250,7 @@ BattleUnit.prototype.endCycle = function()
 		return;
 	}
 	if (this.stance == BattleStance.counter) {
+		this.cv = 0;
 		if (this.ai == null) {
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 			Console.writeLine("Asking player for " + this.name + "'s counterattack");
@@ -625,7 +626,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {
 			Console.writeLine(this.name + " hit from Counter Stance, damage increased");
-			amount = Math.round(amount * 2.0);
+			amount = Math.round(amount * 1.5);
 		}
 		if (this.stance != BattleStance.attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));

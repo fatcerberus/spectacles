@@ -297,18 +297,18 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
 		var bias = 0;
 		Link(this.enemyUnits, this.playerUnits)
+			.reject(function(unit) { return unit === actingUnit && turnIndex == 0; })
 			.each(function(unit)
 		{
 			++bias;
-			var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank, actingUnit === unit ? nextActions : null);
-			if (unit !== actingUnit || turnIndex > 0 || timeUntilUp > 0) {
-				forecast.push({
-					bias: bias,
-					remainingTime: timeUntilUp,
-					turnIndex: turnIndex,
-					unit: unit
-				});
-			}
+			var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
+				actingUnit === unit ? nextActions : null);
+			forecast.push({
+				bias: bias,
+				remainingTime: timeUntilUp,
+				turnIndex: turnIndex,
+				unit: unit
+			});
 		});
 	}
 	forecast.sort(function(a, b) {
