@@ -198,7 +198,7 @@ Robert2AI.prototype.strategize = function()
 		case 3:
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('protectiveAura');
-				this.ai.useSkill('upheaval');
+				this.ai.useSkill('electrocute');
 				if (this.ai.isItemUsable('redBull')) {
 					this.ai.useItem('redBull');
 				}
@@ -287,17 +287,12 @@ Robert2AI.prototype.strategize = function()
 			} else {
 				if (this.isAlcoholPending) {
 					if (this.isVaccinePending && this.unit.hasStatus('zombie')) {
-						this.ai.useItem('holyWater');
+						this.ai.useItem('vaccine');
 						this.isVaccinePending = false;
 					} else if (this.unit.hasStatus('zombie')) {
 						if (this.ai.isItemUsable('redBull')) {
 							this.ai.useItem('redBull');
 						}
-						this.ai.useSkill('hellfire');
-						this.ai.useSkill('upheaval');
-						this.ai.useSkill('windchill');
-						this.ai.useSkill('electrocute');
-						this.ai.useSkill('omni');
 						this.ai.useSkill('chargeSlash');
 						this.isAlcoholPending = false;
 					} else {
@@ -479,7 +474,7 @@ Robert2AI.prototype.onUnitReady = function(unitID)
 		} else if (this.zombieHealFixState !== null) {
 			switch (this.zombieHealFixState) {
 				case 'fixStatus':
-					this.ai.useItem(this.hasBeenZombieHealed && this.ai.isItemUsable('vaccine') ? 'vaccine' : 'holyWater');
+					this.ai.useItem(this.ai.isItemUsable('vaccine') ? 'vaccine' : 'holyWater');
 					this.zombieHealFixState = 'retaliate';
 					break;
 				case 'retaliate':
