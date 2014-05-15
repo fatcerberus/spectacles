@@ -205,6 +205,7 @@ Game = {
 				mag: 70,
 				agi: 70
 			},
+			autoScan: true,
 			startingWeapon: 'heirloom',
 			skills: [
 				'swordSlash',
@@ -280,7 +281,6 @@ Game = {
 		alcohol: {
 			name: "Alcohol",
 			tags: [ 'drink', 'curative' ],
-			uses: 2,
 			action: {
 				announceAs: "Alcohol",
 				effects: [
@@ -421,7 +421,7 @@ Game = {
 					var oldPower = effect.power;
 					effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
 					if (effect.power != oldPower) {
-						Console.writeLine("POW modified by Crackdown to " + effect.power);
+						Console.writeLine("Outgoing POW modified by Crackdown to " + effect.power);
 						Console.append("was: " + oldPower);
 					}
 				}.bind(this));
@@ -464,8 +464,8 @@ Game = {
 		},
 		drunk: {
 			name: "Drunk",
-			tags: [ 'acute', 'special' ],
-			overrules: [ 'crackdown', 'disarray' ],
+			tags: [ 'acute' ],
+			overrules: [ 'immune' ],
 			statModifiers: {
 				agi: 0.66
 			},
@@ -477,10 +477,7 @@ Game = {
 				'unitTargeted'
 			],
 			initialize: function(unit) {
-				this.multiplier = 1.5;
-			},
-			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.5;
+				this.turnsLeft = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100) + 1;
 			},
 			acting: function(unit, eventData) {
 				Link(eventData.action.effects)
@@ -489,22 +486,60 @@ Game = {
 					.each(function(effect)
 				{
 					var oldPower = effect.power;
-					effect.power = Math.round(effect.power * this.multiplier);
+					effect.power = Math.round(1.5 * effect.power);
 					if (effect.power != oldPower) {
 						Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
 						Console.append("was: " + oldPower);
 					}
 				}.bind(this));
 			},
-			attacked: function(unit, eventData) {
-				if (eventData.stance == BattleStance.counter) {
-					this.multiplier /= 1.5;
-					unit.resetCounter(5);
+			aiming: function(unit, eventData) {
+				eventData.aimRate /= 1.5;
+			},
+			beginTurn: function(unit, eventData) {
+				--this.turnsLeft;
+				if (this.turnsLeft <= 0) {
+					unit.liftStatus('drunk');
 				}
 			},
 			damaged: function(unit, eventData) {
 				if (Link(eventData.tags).contains('earth')) {
 					eventData.amount *= 1.5;
+				}
+			},
+		},
+		finalStand: {
+			name: "Final Stand",
+			tags: [ 'special' ],
+			overrules: [ 'crackdown', 'disarray' ],
+			initialize: function(unit) {
+				this.fatigue = 1.0;
+				this.knockback = 5;
+			},
+			acting: function(unit, eventData) {
+				Link(eventData.action.effects)
+					.filterBy('targetHint', 'selected')
+					.filterBy('type', 'damage')
+					.each(function(effect)
+				{
+					var oldPower = effect.power;
+					effect.power = Math.round(effect.power / this.fatigue);
+					if (effect.power != oldPower) {
+						Console.writeLine("Outgoing POW modified by Final Stand to " + effect.power);
+						Console.append("was: " + oldPower);
+					}
+				}.bind(this));
+			},
+			attacked: function(unit, eventData) {
+				if (eventData.stance == BattleStance.counter) {
+					this.fatigue *= 1.5;
+					unit.resetCounter(this.knockback);
+					++this.knockback;
+				}
+			},
+			damaged: function(unit, eventData) {
+				if (!Link(eventData.tags).contains('zombie')) {
+					eventData.amount *= this.fatigue;
 				}
 			}
 		},

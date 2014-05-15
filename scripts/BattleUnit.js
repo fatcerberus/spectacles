@@ -619,9 +619,13 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	amount = Math.round(amount * multiplier);
 	if (amount > 0 && !isPriority) {
-		var eventData = { amount: amount, tags: tags, actingUnit: this.lastAttacker };
+		var eventData = { amount: amount, tags: tags, actingUnit: this.lastAttacker, cancel: false };
 		this.raiseEvent('damaged', eventData);
-		amount = Math.round(eventData.amount);
+		if (!eventData.cancel) {
+			amount = Math.round(eventData.amount);
+		} else {
+			return;
+		}
 	}
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {

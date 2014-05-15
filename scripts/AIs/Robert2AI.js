@@ -4,7 +4,7 @@
 ***/
 
 // Robert2AI() constructor
-// Creates an AI to control Robert Spellbinder in the final battle.
+// Creates an AI to control Robert Spellbinder in the Spectacles I final battle.
 // Arguments:
 //     battle:    The battle session this AI is participating in.
 //     unit:      The battle unit to be controlled by this AI.
@@ -30,7 +30,7 @@ function Robert2AI(battle, unit, aiContext)
 	this.scottImmuneTurnsLeft = 0;
 	this.turnCount = {};
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 3000, 1500, 500 ];
+	this.phasePoints = [ 3000, 2000, 1000, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
@@ -72,10 +72,8 @@ Robert2AI.prototype.strategize = function()
 		this.unit.hp > this.phasePoints[0] ? 1 :
 		this.unit.hp > this.phasePoints[1] ? 2 :
 		this.unit.hp > this.phasePoints[2] ? 3 :
-		4;
-	if (this.isAlcoholUsed) {
-		phaseToEnter = 5;
-	}
+		this.unit.hp > this.phasePoints[3] ? 4 :
+		5;
 	this.phase = Math.max(phaseToEnter, lastPhase);
 	switch (this.phase) {
 		case 1:
@@ -198,10 +196,6 @@ Robert2AI.prototype.strategize = function()
 		case 3:
 			if (this.phase > lastPhase) {
 				this.ai.useSkill('protectiveAura');
-				this.ai.useSkill('electrocute');
-				if (this.ai.isItemUsable('redBull')) {
-					this.ai.useItem('redBull');
-				}
 				this.doChargeSlashNext = false;
 				this.elementalsTillRevenge = 2;
 				this.isChargeSlashPending = true;
@@ -271,7 +265,7 @@ Robert2AI.prototype.strategize = function()
 					}
 				} else {
 					var spells = [ 'flare', 'chill', 'lightning', 'quake' ];
-					var skillID = spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)]
+					var skillID = spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)];
 					this.ai.useSkill(skillID);
 					if (skillID == 'quake') {
 						this.ai.useSkill('upheaval');
@@ -281,59 +275,64 @@ Robert2AI.prototype.strategize = function()
 			break;
 		case 4:
 			if (this.phase > lastPhase) {
-				this.ai.useSkill('desperationSlash');
-				this.isAlcoholPending = true;
-				this.isVaccinePending = this.ai.isItemUsable('vaccine');
-			} else {
-				if (this.isAlcoholPending) {
-					if (this.isVaccinePending && this.unit.hasStatus('zombie')) {
-						this.ai.useItem('vaccine');
-						this.isVaccinePending = false;
-					} else if (this.unit.hasStatus('zombie')) {
-						if (this.ai.isItemUsable('redBull')) {
-							this.ai.useItem('redBull');
-						}
-						this.ai.useSkill('chargeSlash');
-						this.isAlcoholPending = false;
-					} else {
-						this.ai.useItem('alcohol');
-					}
-				} else {
-					if (0.5 > Math.random()) {
-						this.ai.useSkill('chargeSlash');
-					} else {
-						var spells = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
-						var skillID = spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)];
-						if (0.5 > Math.random() && this.ai.isSkillUsable(skillID)) {
-							this.ai.useSkill(skillID);
-						} else if (!this.unit.hasStatus('disarray')) {
-							var qsTurns = this.ai.predictSkillTurns('quickstrike');
-							this.ai.useSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : 'swordSlash');
-						} else {
-							this.ai.useSkill('swordSlash');
-						}
-					}
+				this.ai.useSkill('crackdown');
+				if (this.ai.isItemUsable('vaccine')) {
+					this.ai.useItem('vaccine');
 				}
+				this.ai.useSkill('chargeSlash');
+			} else {
+				var spells = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
+				var skillID = spells[Math.min(Math.floor(Math.random() * spells.length), spells.length - 1)];
+				var finisher = this.ai.isSkillUsable(skillID) ? skillID : 'swordSlash';
+				var qsTurns = this.ai.predictSkillTurns('quickstrike');
+				this.ai.useSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : finisher);
 			}
 			break;
 		case 5:
 			if (this.phase > lastPhase) {
-				this.ai.useSkill('chargeSlash');
-				this.ai.useSkill('flare');
-				this.ai.useSkill('quake');
-				this.ai.useSkill('chill');
-				this.ai.useSkill('lightning');
-				this.ai.useSkill('swordSlash');
-				this.ai.useSkill('hellfire');
-				this.ai.useSkill('upheaval');
-				this.ai.useSkill('windchill');
-				this.ai.useSkill('electrocute');
-				this.ai.useSkill('swordSlash');
-				this.ai.useSkill('omni');
-				this.ai.useSkill('chargeSlash');
+				this.ai.useSkill('desperationSlash');
+				if (this.unit.hasStatus('zombie') && this.ai.isItemUsable('holyWater')) {
+					this.ai.useItem('holyWater');
+				}
+				this.isAlcoholPending = true;
+				this.isDesperate = false;
+				this.isComboStarted = false;
 			} else {
-				var qsTurns = this.ai.predictSkillTurns('quickstrike');
-				this.ai.useSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
+				if (this.isAlcoholPending) {
+					if (this.unit.hasStatus('zombie')) {
+						if (this.ai.isSkillUsable('omni')) {
+							this.ai.useSkill('omni');
+						} else {
+							this.ai.useSkill('chargeSlash');
+						}
+						this.isAlcoholPending = false;
+						this.isDesperate = true;
+					} else {
+						this.isAlcoholPending = false;
+						this.ai.useItem('alcohol');
+						this.ai.useSkill('chargeSlash');
+						this.ai.useSkill('hellfire');
+						this.ai.useSkill('upheaval');
+						this.ai.useSkill('windchill');
+						this.ai.useSkill('electrocute');
+					}
+				} else if ((this.unit.hp <= 500 || this.unit.mpPool.availableMP < 200) && !this.isDesperate) {
+					this.isDesperate = true;
+					this.ai.useSkill('omni');
+				} else {
+					var qsTurns = this.ai.predictSkillTurns('quickstrike');
+					var moves = this.unit.mpPool.availableMP >= 200
+						? [ 'flare', 'chill', 'lightning', 'quake', 'quickstrike', 'chargeSlash' ]
+						: [ 'quickstrike', 'chargeSlash' ];
+					var skillID = moves[Math.min(Math.floor(Math.random() * moves.length), moves.length - 1)];
+					if (skillID == 'quickstrike' || this.isComboStarted) {
+						skillID = qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash';
+						this.isComboStarted = skillID == 'quickstrike';
+						this.ai.useSkill(skillID);
+					} else {
+						this.ai.useSkill(skillID);
+					}
+				}
 			}
 	}
 };
@@ -354,39 +353,45 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			this.hasZombieHealedSelf = true;
 		}
 	} else if (userID == 'robert2' && itemID == 'alcohol' && Link(targetIDs).contains('robert2')) {
+		this.unit.addStatus('finalStand');
 		new Scenario()
 			.adjustBGM(0.5, 5.0)
-			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! You have to "
-				+ "realize by now that matter what any of us do, Amanda is the Primus. None of us--nothing can "
-				+ "change that now.")
-			.talk("Robert", true, 2.0, "What, you really believe I'm about to turn tail and run when I've "
-				+ "already come this far? Believe what you want, but mark my words, so long as you continue to "
-				+ "stand in my way, this will never be over!")
-			.talk("Scott", true, 2.0, "If that's the way it has to be, Robert, fine. You think I haven't come "
-				+ "just as far as you? Do you truly believe I chose ANY of this? Instead... well, if only "
-				+ "it were that simple.",
-				"None of us chose our lots, Robert. Not Bruce, or Lauren, or Amanda. Not even you or me. "
-				+ "And yet, we all have to play with the hand we're dealt in the end, don't we?")
-			.talk("Robert", true, 2.0, "What's your point, #11?")
+			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
+				+ "realize by now that no matter what any of us do, Amanda is the Primus! None of us--nothing can "
+				+ "change that now!")
+			.talk("Robert", true, 2.0, "...")
+			.talk("Scott", true, 2.0, "You think I haven't come just as far as you? Is that it, Robert? You believe I "
+				+ "chose to be in the position I'm in? No... instead I can only stand here wishing it were so simple.",
+				"None of us chose our lots, Robert, not one. Not Bruce, Lauren, Amanda... not even you or me. All of us, "
+				+ "in the end, left with no choice but to try to play with the absurd hand we're dealt.")
+			.talk("Robert", true, 1.0, "...")
 			.fork()
 				.adjustBGM(0.0, 5.0)
 			.end()
-			.talk("Scott", true, 1.0, "Let the cards fall how they may.")
+			.talk("Scott", true, 2.0, "Let the cards fall how they may. I'm not backing down now. I owe myself far too much.")
 			.synchronize()
-			.pause(2.0)
+			.pause(1.0)
 			.playBGM("BasicInstinct")
 			.adjustBGM(1.0)
-			.talk("Robert", true, 2.0, "If that's how you want it, then so be it.")
+			.talk("Robert", true, 2.0, "If that's what you want, then so be it.")
 			.run(true);
 		this.isAlcoholUsed = true;
-		this.isAlcoholPending = false;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
-		if (this.phase <= 4 && Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie') && this.zombieHealFixState === null) {
-			this.zombieHealFixState = 'fixStatus';
-			if (this.hasBeenZombieHealed && this.ai.itemsLeft('alcohol') <= 1
-			    || !this.ai.isItemUsable('vaccine') && !this.ai.isItemUsable('holyWater'))
-			{
-				this.zombieHealFixState = 'retaliate';
+		if (Link(curativeIDs).contains(itemID) && this.unit.hasStatus('zombie')) {
+			if (this.phase <= 4 && this.zombieHealFixState === null) {
+				this.zombieHealFixState = 'fixStatus';
+				if (this.hasBeenZombieHealed && this.ai.itemsLeft('alcohol') <= 1
+					|| !this.ai.isItemUsable('vaccine') && !this.ai.isItemUsable('holyWater'))
+				{
+					this.zombieHealFixState = 'retaliate';
+				}
+			} else if (this.phase == 5 && !this.ai.hasMovesQueued()) {
+				if ((this.ai.isItemUsable('powerTonic') || this.ai.isItemUsable('tonic'))
+				    && this.unit.mpPool.availableMP >= 300)
+				{
+					this.ai.useSkill('electrocute');
+					this.ai.useItem(this.ai.isItemUsable('powerTonic') ? 'powerTonic' : 'tonic', 'scott');
+				}
 			}
 		}
 	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
