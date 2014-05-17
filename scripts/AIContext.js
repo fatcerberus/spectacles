@@ -10,14 +10,12 @@ RequireScript("SkillUsable.js");
 // Arguments:
 //     unit:   The unit whose actions are to be managed by the AI.
 //     battle: The battle session the unit is taking part in.
-//     aiType: The constructor for the AI which will control the enemy. The object created must,
+//     aiType: The constructor for the AI which will control the unit. The object created must,
 //             at the very least, include a parameterless function called 'strategize', which
-//             must queue at least one move (via AIContext.useSkill or AIContext.useItem) each
+//             MUST queue at least one move (via AIContext.queueSkill or AIContext.queueItem) each
 //             time it is called.
-//             Note: The constructor will be called the following arguments:
-//                 battle:    The battle context representing the battle the unit is participating in.
-//                 unit:      The battle unit to be controlled by the AI.
-//                 aiContext: The AI context hosting the AI.
+//             Note: The constructor will be called the following argument:
+//                 aiContext: The AIContext that is hosting the AI.
 function AIContext(unit, battle, aiType)
 {
 	Console.writeLine("Initializing AI context for " + unit.fullName);
@@ -28,7 +26,7 @@ function AIContext(unit, battle, aiType)
 	this.targets = null;
 	this.turnsTaken = 0;
 	this.unit = unit;
-	this.strategy = new aiType(this.battle, this.unit, this);
+	this.strategy = new aiType(this);
 }
 
 // .dispose() method
@@ -70,7 +68,7 @@ AIContext.prototype.getNextMove = function()
 			if (this.moveQueue.length == 0) {
 				Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
 				if (this.defaultSkillID !== null) {
-					this.useSkill(this.defaultSkillID);
+					this.queueSkill(this.defaultSkillID);
 				} else {
 					Abort("AIContext.getNextAction(): No moves were queued and there is no default skill set.");
 				}
@@ -247,7 +245,7 @@ AIContext.prototype.setTarget = function(targetID)
 	this.targets = unit !== null ? [ unit ] : null;
 };
 
-// .useItem() method
+// .queueItem() method
 // Adds the use of an item to the AI's move queue.
 // Arguments:
 //     itemID: The item ID of the item to use.
@@ -256,7 +254,7 @@ AIContext.prototype.setTarget = function(targetID)
 // Remarks:
 //     If no target has been set (as by calling .setTarget()), a random target will be
 //     selected.
-AIContext.prototype.useItem = function(itemID, unitID)
+AIContext.prototype.queueItem = function(itemID, unitID)
 {
 	unitID = unitID !== void null ? unitID : null;
 	
@@ -269,7 +267,7 @@ AIContext.prototype.useItem = function(itemID, unitID)
 		}
 	}
 	if (itemToUse == null) {
-		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an item (ID: '" + itemID + "') it didn't have");
+		Abort("AIContext.queueItem(): AI unit " + this.unit.name + " tried to use an item (ID: '" + itemID + "') it didn't have");
 	}
 	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 	var targets = this.targets !== null ? this.targets
@@ -283,15 +281,15 @@ AIContext.prototype.useItem = function(itemID, unitID)
 	});
 };
 
-// .useSkill() method
-// Adds the use of a skill to the AI's move queue.
+// .queueSkill() method
+// Adds the use of a skill to the AI context's move queue.
 // Arguments:
 //     skillID:   The ID of the skill to use, as defined in the gamedef.
 //     unitID:    Optional. The ID of the unit to use the skill on. If not provided or null, a
 //                default target (usually random) will be chosen.
 //     predicate: A function which will be called at the time the move is to be used. The function
 //                should return true to use the skill, or false to cancel it.
-AIContext.prototype.useSkill = function(skillID, unitID, predicate)
+AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 {
 	unitID = unitID !== void null ? unitID : null;
 	predicate = predicate !== void null ? predicate : function() { return true; };
@@ -305,7 +303,7 @@ AIContext.prototype.useSkill = function(skillID, unitID, predicate)
 		}
 	}
 	if (skillToUse == null) {
-		Abort("AIContext.useItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
+		Abort("AIContext.queueItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
 	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
 	var targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;

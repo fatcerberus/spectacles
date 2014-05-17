@@ -81,16 +81,17 @@ Scenario.defineCommand('resetBGM',
 
 Scenario.defineCommand('talk',
 {
-	start: function(scene, speaker, showSpeaker, textSpeed /*...pages*/) {
+	start: function(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
 		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
 		this.showSpeaker = showSpeaker;
 		this.textSpeed = textSpeed;
+		this.timeout = timeout;
 		this.font = GetSystemFont();
 		this.text = [];
 		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 		var textAreaWidth = GetScreenWidth() - 16;
-		for (i = 4; i < arguments.length; ++i) {
+		for (i = 5; i < arguments.length; ++i) {
 			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
 			var page = this.text.push([]) - 1;
@@ -168,6 +169,12 @@ Scenario.defineCommand('talk',
 	},
 	update: function(scene) {
 		switch (this.mode) {
+			case "idle":
+				if (this.currentPage >= this.text.length - 1) {
+					this.timeout -= 1.0 / Engine.frameRate;
+					this.mode = this.timeout > 0.0 ? this.mode : "hidetext";
+				}
+				break;
 			case "fadein":
 				if (!this.transition.isRunning()) {
 					this.mode = "write";
@@ -247,7 +254,7 @@ Scenario.defineCommand('talk',
 	getInput: function(scene) {
 		if (this.mode != "idle") return;
 		var key = AreKeysLeft() ? GetKey() : null;
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
+		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A) && this.timeout == Infinity) {
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
 				if (this.currentPage < this.text.length - 1) {
 					this.mode = "page";

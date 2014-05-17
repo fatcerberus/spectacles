@@ -62,6 +62,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.stance = BattleStance.attack;
 	this.stats = {};
 	this.statuses = [];
+	this.turnRatio = 1.0;
 	this.weapon = null;
 	
 	if (basis instanceof PartyMember) {
@@ -102,6 +103,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			}
 		}
 		this.tier = this.enemyInfo.tier;
+		this.turnRatio = 'turnRatio' in this.enemyInfo ? this.enemyInfo.turnRatio : this.tier;
 		this.maxHP = Math.round(Math.max(Game.math.hp(this.enemyInfo, battle.getLevel(), this.tier), 1));
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
@@ -117,12 +119,12 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		: new MPPool(this.id + "MP", Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
-		this.battle.ui.hud.setPartyMember(position, this.name, this.hp, this.maxHP);
+		this.battle.ui.hud.setPartyMember(position == 2 ? 0 : position == 0 ? 2 : position, this.name, this.hp, this.maxHP);
 	}
 	if (!this.isPartyMember()) {
 		this.actor.enter(true);
 	}
-	this.resetCounter(Game.defaultMoveRank);
+	this.resetCounter(Game.defaultMoveRank, true);
 	var unitType = this.ai === null ? "player" : "AI";
 	Console.writeLine("Created " + unitType + " unit '" + this.name + "'");
 	Console.append("hp: " + this.hp + "/" + this.maxHP);
@@ -560,17 +562,23 @@ BattleUnit.prototype.refreshInfo = function()
 // Resets the unit's counter value (CV) after an attack. The CV determines the number of
 // ticks that must elapse before the unit is able to act.
 // Arguments:
-//     rank: The rank of the action taken. The higher the rank, the longer the unit will have to
-//           wait for its next turn.
+//     rank:        The rank of the action taken. The higher the rank, the longer the unit will have to
+//                  wait for its next turn.
+//     isFirstTurn: Optional. If true, specifies that the CV is being initialized at the start of a battle.
+//                  This ensures that units' first turns are in proper speed order regardless of their turn ratio.
+//                  (default: false)
 // Remarks:
 //     Rank 0 is treated as a special case; passing 0 or less for rank will always give the unit
 //     its next turn immediately.
-BattleUnit.prototype.resetCounter = function(rank)
+BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
 {
+	isFirstTurn = isFirstTurn !== void null ? isFirstTurn : false;
+	
+	var divisor = isFirstTurn ? 1.0 : this.turnRatio;
 	this.cv = rank > 0
-		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1)
+		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 		: 1;
-	Console.writeLine(this.name + "'s CV reset to " + this.cv);
+	Console.writeLine(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv);
 	Console.append("rank: " + rank);
 };
 
@@ -787,7 +795,7 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 			rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank
 				: nextActions[i - 1];
 		}
-		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank)), 1);
+		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / this.turnRatio), 1);
 	}
 	return timeLeft;
 };

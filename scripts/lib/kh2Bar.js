@@ -33,7 +33,7 @@ function kh2Bar(capacity, sectorSize, color, maxSectors)
 	this.damage = 0;
 	this.damageColor = CreateColor(192, 0, 0, color.alpha);
 	this.damageFadeness = 1.0;
-	this.drainSpeed = 5.0;
+	this.drainSpeed = 2.0;
 	this.emptyColor = CreateColor(32, 32, 32, color.alpha);
 	this.fadeSpeed = 0.0;
 	this.fadeness = 1.0;

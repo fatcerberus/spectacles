@@ -173,7 +173,7 @@ BattleScreen.prototype.showTitle = function()
 		return;
 	}
 	new Scenario()
-		.marquee("Boss Battle: " + this.title, CreateColor(0, 0, 0, 128))
+		.marquee(this.title, CreateColor(0, 0, 0, 128))
 		.run(true);
 };
 

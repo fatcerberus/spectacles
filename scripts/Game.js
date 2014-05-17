@@ -3,9 +3,6 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('AIs/HeadlessHorseAI.js');
-RequireScript('AIs/Robert2AI.js');
-
 // Game object
 // Represents the game.
 Game = {
@@ -190,90 +187,6 @@ Game = {
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
 			return rank * 10000 / unitInfo.stats.agi;
-		}
-	},
-	
-	characters: {
-		scott: {
-			name: "Scott",
-			fullName: "Scott Starcross",
-			baseStats: {
-				vit: 70,
-				str: 70,
-				def: 70,
-				foc: 70,
-				mag: 70,
-				agi: 70
-			},
-			autoScan: true,
-			startingWeapon: 'heirloom',
-			skills: [
-				'swordSlash',
-				'quickstrike',
-				'chargeSlash',
-				'flare',
-				'chill',
-				'lightning',
-				'quake',
-				'hellfire',
-				'windchill',
-				'electrocute',
-				'upheaval',
-				'necromancy',
-				'crackdown'
-			]
-		},
-		bruce: {
-			name: "Bruce",
-			fullName: "Bruce Arsen",
-			baseStats: {
-				vit: 65,
-				str: 100,
-				def: 50,
-				foc: 80,
-				mag: 30,
-				agi: 55
-			},
-			autoScan: true,
-			startingWeapon: 'arsenRifle',
-			skills: [
-				'sharpshooter',
-				'shootout'
-			]
-		},
-		elysia: {
-			name: "Elysia",
-			fullName: "Elysia Ilapse",
-			baseStats: {
-				vit: 40,
-				str: 50,
-				def: 50,
-				foc: 90,
-				mag: 75,
-				agi: 100
-			},
-			startingWeapon: 'fireAndIce',
-			skills: [
-				'archery',
-				'flareShot',
-				'chillShot'
-			]
-		},
-		maggie: {
-			name: "maggie",
-			baseStats: {
-				vit: 100,
-				str: 90,
-				def: 85,
-				foc: 65,
-				mag: 30,
-				agi: 35
-			},
-			skills: [
-				'munch',
-				'fatseat',
-				'fatSlam'
-			]
 		}
 	},
 	
@@ -1628,102 +1541,9 @@ Game = {
 				'chargeSlash'
 			]
 		}
-	},
-	
-	enemies: {
-		headlessHorse: {
-			name: "H. Horse",
-			fullName: "Headless Horse",
-			aiType: HeadlessHorseAI,
-			hasLifeBar: true,
-			tier: 3,
-			baseStats: {
-				vit: 50,
-				str: 10,
-				def: 55,
-				foc: 65,
-				mag: 30,
-				agi: 70
-			},
-			damageModifiers: {
-				bow: 1.5,
-				gun: 1.5,
-				fire: -1.0,
-				ice: 1.5,
-				fat: 1.5
-			},
-			immunities: [],
-			munchData: {
-				skill: 'spectralDraw'
-			}
-		},
-		robert2: {
-			name: "Robert",
-			fullName: "Robert Spellbinder",
-			aiType: Robert2AI,
-			hasLifeBar: true,
-			tier: 3,
-			baseStats: {
-				vit: 75,
-				str: 75,
-				def: 75,
-				foc: 75,
-				mag: 75,
-				agi: 75
-			},
-			immunities: [],
-			weapon: 'rsbSword',
-			munchData: {
-				skill: 'omni'
-			},
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-				'alcohol'
-			]
-		}
-	},
-	
-	battles: {
-		headlessHorse: {
-			title: "Headless Horse",
-			bgm: 'ManorBoss',
-			battleLevel: 8,
-			enemies: [
-				'headlessHorse'
-			],
-			onStart: function() {
-				new Scenario()
-					.talk("maggie", true, 2.0,
-						"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. It won't hesitate to roast you--and then I'd have to eat you!")
-					.run(true);
-			}
-		},
-		robert2: {
-			title: "Robert Spellbinder",
-			bgm: 'ThePromise',
-			battleLevel: 50,
-			enemies: [
-				'robert2'
-			],
-			onStart: function() {
-				new Scenario()
-					.talk("Robert", true, 2.0,
-						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
-						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
-						+ "brazen as to face me alone?")
-					.talk("Scott", true, 2.0,
-						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
-						+ "Not now. Not when I know just what my world would become if I did!")
-					.pause(2.0)
-					.talk("Robert", true, 1.0, "What makes you so sure you have a choice?")
-					.synchronize()
-					.run(true);
-				this.playerUnits[0].addStatus('reGen');
-			}
-		}
 	}
 };
+
+EvaluateScript("GameDef/enemies.js");
+EvaluateScript("GameDef/battles.js");
+EvaluateScript("GameDef/characters.js");
