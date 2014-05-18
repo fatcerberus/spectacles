@@ -3,9 +3,9 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript("AIs/HeadlessHorseAI.js");
-RequireScript("AIs/Robert2AI.js");
-RequireScript("AIs/NumberElevenAI.js");
+RequireScript('AIs/HeadlessHorseAI.js');
+RequireScript('AIs/NumberElevenAI.js');
+RequireScript('AIs/Robert2AI.js');
 
 Game.enemies =
 {
@@ -27,11 +27,10 @@ Game.enemies =
 			agi: 70
 		},
 		damageModifiers: {
-			bow: 1.5,
-			gun: 1.5,
+			bow: 2.0,
+			gun: 2.0,
 			fire: -1.0,
-			ice: 1.5,
-			fat: 1.5
+			fat: 2.0
 		},
 		immunities: [],
 		munchData: {
@@ -46,7 +45,7 @@ Game.enemies =
 		fullName: "Robert Spellbinder",
 		aiType: Robert2AI,
 		hasLifeBar: true,
-		tier: 3,
+		tier: 4,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 75,
@@ -90,28 +89,5 @@ Game.enemies =
 		},
 		immunities: [],
 		weapon: 'templeSword',
-	},
-	
-	// Xemnas (Kingdom Hearts II)
-	// No idea what the heck this guy is doing here! My guess is he's probably
-	// going to get eaten. By a hunger-pig. Which will then, um, eat itself, for... some
-	// reason? Probably to show off.
-	xemnas: {
-		name: "Xemnas",
-		fullName: "Xemnas Xehanort Ansem",
-		aiType: NumberElevenAI,
-		hasLifeBar: true,
-		tier: 6,
-		turnRatio: 10.0,
-		baseStats: {
-			vit: 100,
-			str: 100,
-			def: 100,
-			foc: 100,
-			mag: 100,
-			agi: 100
-		},
-		immunities: [],
-		weapon: 'templeSword'
 	}
 };

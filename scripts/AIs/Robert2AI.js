@@ -26,7 +26,7 @@ function Robert2AI(aiContext)
 	this.turnCount = {};
 	this.zombieHealAlertLevel = 0.0;
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 2500, 1500, 1000, 500 ];
+	this.phasePoints = [ 4000, 2500, 1500, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
@@ -53,13 +53,13 @@ Robert2AI.prototype.strategize = function()
 {				
 	if ('maggie' in this.aic.enemies && this.aic.turnsTaken == 0) {
 		new Scenario()
-			.talk("Robert", true, 2.0, "Wait, hold on... what in Hades' name is SHE doing here?")
-			.talk("maggie", true, 2.0, "The same thing I'm always doing, having stuff for dinner. Like you!")
+			.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name is SHE doing here?")
+			.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
 			.call(function() { this.aic.unit.takeDamage(this.aic.unit.maxHP - 1); }.bind(this))
 			.playSound('Munch.wav')
-			.talk("Robert", true, 2.0, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
-			.talk("maggie", true, 2.0, "Tastes like chicken!")
-			.talk("Robert", true, 2.0, "...")
+			.talk("Robert", true, 2.0, Infinity, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
+			.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
+			.talk("Robert", true, 2.0, Infinity, "...")
 			.run(true);
 		this.aic.queueItem('alcohol');
 	}
@@ -350,24 +350,26 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		this.aic.unit.addStatus('finalStand');
 		new Scenario()
 			.adjustBGM(0.5, 5.0)
-			.talk("Scott", true, 2.0, "Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
+			.talk("Scott", true, 2.0, Infinity,
+				"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
 				+ "realize by now that no matter what any of us do, Amanda is the Primus! None of us--nothing can "
 				+ "change that now!")
 			.talk("Robert", true, 2.0, "...")
-			.talk("Scott", true, 2.0, "You think I haven't come just as far as you? Is that it, Robert? You believe I "
+			.talk("Scott", true, 2.0, Infinity,
+				"You think I haven't come just as far as you? Is that it, Robert? You believe I "
 				+ "chose to be in the position I'm in? No... instead I can only stand here wishing it were so simple.",
 				"None of us chose our lots, Robert, not one. Not Bruce, Lauren, Amanda... not even you or me. All of us, "
 				+ "in the end, left with no choice but to try to play with the absurd hand we're dealt.")
-			.talk("Robert", true, 1.0, "...")
+			.talk("Robert", true, 1.0, Infinity, "...")
 			.fork()
 				.adjustBGM(0.0, 5.0)
 			.end()
-			.talk("Scott", true, 2.0, "Let the cards fall how they may. I'm not backing down now. I owe myself far too much.")
+			.talk("Scott", true, 2.0, Infinity, "Let the cards fall how they may. I'm not backing down now. I owe myself far too much.")
 			.synchronize()
 			.pause(1.0)
 			.playBGM("BasicInstinct")
 			.adjustBGM(1.0)
-			.talk("Robert", true, 2.0, "If that's what you want, then so be it.")
+			.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 			.run(true);
 		this.isAlcoholUsed = true;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {

@@ -270,7 +270,7 @@ BattleUnit.prototype.endCycle = function()
 		var stanceName = this.stance == BattleStance.guard ? "Guard"
 			: this.stance == BattleStance.counter ? "Counter"
 			: "Attack";
-		Console.writeLine(this.name + " has switched to " + stanceName + " Stance");
+		Console.writeLine(this.name + " is now in " + stanceName + " Stance");
 	}
 };
 
@@ -293,17 +293,10 @@ BattleUnit.prototype.evade = function(actingUnit, action)
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	if (this.stance == BattleStance.guard && isGuardBroken) {
-		Console.writeLine(this.name + "'s Guard Stance was broken");
-		Console.append("by: " + actingUnit.name);
-		Console.append("counter: " + (isMelee ? "yes" : "no"));
-		this.stance = isMelee ? BattleStance.counter : this.stance;
-		this.newStance = BattleStance.attack;
-		if (this.stance == BattleStance.counter) {
-			this.counterTarget = actingUnit;
-		} else {
-			this.resetCounter(Game.guardBreakRank);
-		}
+	if (isMelee && this.stance == BattleStance.guard && isGuardBroken) {
+		this.stance = BattleStance.counter;
+		this.counterTarget = actingUnit;
+		Console.writeLine(this.name + "'s Counter Stance activated");
 	}
 };
 
@@ -638,7 +631,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {
 			Console.writeLine(this.name + " hit from Counter Stance, damage increased");
-			amount = Math.round(amount * 1.5);
+			amount = Math.round(amount * 2.0);
 		}
 		if (this.stance != BattleStance.attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
@@ -684,17 +677,14 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
+	if (this.stance == BattleStance.guard && isMelee) {
+		action.accuracyRate = 'accuracyRate' in action ? 0.75 * action.accuracyRate : 0.75;
+	}
 	if (this.stance == BattleStance.guard && isGuardBroken) {
 		Console.writeLine(this.name + "'s Guard Stance was broken");
 		Console.append("by: " + actingUnit.name);
-		Console.append("counter: " + (isMelee ? "yes" : "no"));
-		this.stance = isMelee ? BattleStance.counter : this.stance;
 		this.newStance = BattleStance.attack;
-		if (this.stance == BattleStance.counter) {
-			this.counterTarget = actingUnit;
-		} else {
-			this.resetCounter(Game.guardBreakRank);
-		}
+		this.resetCounter(Game.guardBreakRank);
 	}
 };
 

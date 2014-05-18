@@ -487,7 +487,7 @@ Battle.prototype.tick = function()
 Battle.prototype.update = function() {
 	switch (this.mode) {
 		case 'setup':
-			var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle) ? "Final Battle vs. " : "Boss Battle vs. ";
+			var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle) ? "Final Battle: " : "Boss Battle: ";
 			this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
 			var walkInThreads = [];
 			Link(this.enemyUnits, this.playerUnits)

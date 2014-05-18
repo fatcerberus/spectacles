@@ -14,7 +14,7 @@ Game = {
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
-	guardBreakRank: 1,
+	guardBreakRank: 2,
 	stanceChangeRank: 5,
 	
 	initialPartyMembers: [
@@ -128,7 +128,7 @@ Game = {
 				} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
 					return baseDamage;
 				} else {
-					return baseDamage / 1.5;
+					return baseDamage / 2.0;
 				}
 			}
 		},
@@ -300,7 +300,7 @@ Game = {
 		blackout: {
 			name: "Blackout",
 			actionTaken: function(battle, eventData) {
-				if (eventData.targets.length == 1 && 0.66 > Math.random()) {
+				if (eventData.targets.length == 1 && 0.75 > Math.random()) {
 					var target = eventData.targets[0];
 					var newTargets = Math.random() < 0.5
 						? battle.alliesOf(target)
@@ -314,404 +314,6 @@ Game = {
 			name: "G. Disarray",
 			actionTaken: function(battle, eventData) {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
-			}
-		}
-	},
-	
-	statuses: {
-		crackdown: {
-			name: "Crackdown",
-			tags: [ 'debuff' ],
-			initialize: function(unit) {
-				this.lastSkillType = null;
-				this.multiplier = 1.0;
-			},
-			acting: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					var oldPower = effect.power;
-					effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
-					if (effect.power != oldPower) {
-						Console.writeLine("Outgoing POW modified by Crackdown to " + effect.power);
-						Console.append("was: " + oldPower);
-					}
-				}.bind(this));
-			},
-			useSkill: function(unit, eventData) {
-				var oldMultiplier = this.multiplier;
-				this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
-					: this.multiplier * 0.66;
-				this.lastSkillType = eventData.skill.category;
-				if (this.multiplier != oldMultiplier) {
-					if (this.multiplier < 1.0) {
-						Console.writeLine("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
-					} else {
-						Console.writeLine("Crackdown POW modifier reset to 100%");
-					}
-				}
-			}
-		},
-		disarray: {
-			name: "Disarray",
-			tags: [ 'acute', 'ailment' ],
-			initialize: function(unit) {
-				this.actionsTaken = 0;
-			},
-			acting: function(unit, eventData) {
-				var oldRank = eventData.action.rank;
-				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
-				if (eventData.action.rank != oldRank) {
-					Console.writeLine("Rank modified by Disarray to " + eventData.action.rank);
-					Console.append("was: " + oldRank);
-				}
-				++this.actionsTaken;
-				Console.writeLine(this.actionsTaken < 3
-					? "Disarray will expire after " + (3 - this.actionsTaken) + " more action(s)"
-					: "Disarray has expired");
-				if (this.actionsTaken >= 3) {
-					unit.liftStatus('disarray');
-				}
-			}
-		},
-		drunk: {
-			name: "Drunk",
-			tags: [ 'acute' ],
-			overrules: [ 'immune' ],
-			statModifiers: {
-				agi: 0.66
-			},
-			ignoreEvents: [
-				'itemUsed',
-				'skillUsed',
-				'unitDamaged',
-				'unitHealed',
-				'unitTargeted'
-			],
-			initialize: function(unit) {
-				this.turnsLeft = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100) + 1;
-			},
-			acting: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('targetHint', 'selected')
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					var oldPower = effect.power;
-					effect.power = Math.round(1.5 * effect.power);
-					if (effect.power != oldPower) {
-						Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
-						Console.append("was: " + oldPower);
-					}
-				}.bind(this));
-			},
-			aiming: function(unit, eventData) {
-				eventData.aimRate /= 1.5;
-			},
-			beginTurn: function(unit, eventData) {
-				--this.turnsLeft;
-				if (this.turnsLeft <= 0) {
-					unit.liftStatus('drunk');
-				}
-			},
-			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('earth')) {
-					eventData.amount *= 1.5;
-				}
-			},
-		},
-		finalStand: {
-			name: "Final Stand",
-			tags: [ 'special' ],
-			overrules: [ 'crackdown', 'disarray' ],
-			initialize: function(unit) {
-				this.fatigue = 1.0;
-				this.knockback = 5;
-			},
-			acting: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('targetHint', 'selected')
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					var oldPower = effect.power;
-					effect.power = Math.round(effect.power / this.fatigue);
-					if (effect.power != oldPower) {
-						Console.writeLine("Outgoing POW modified by Final Stand to " + effect.power);
-						Console.append("was: " + oldPower);
-					}
-				}.bind(this));
-			},
-			attacked: function(unit, eventData) {
-				if (eventData.stance == BattleStance.counter) {
-					this.fatigue *= 1.5;
-					unit.resetCounter(this.knockback);
-					++this.knockback;
-				}
-			},
-			damaged: function(unit, eventData) {
-				if (!Link(eventData.tags).contains('zombie')) {
-					eventData.amount *= this.fatigue;
-				}
-			}
-		},
-		frostbite: {
-			name: "Frostbite",
-			tags: [ 'ailment', 'damage' ],
-			overrules: [ 'ignite' ],
-			initialize: function(unit) {
-				this.multiplier = 1.0;
-			},
-			attacked: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					if ('addStatus' in effect && effect.addStatus == 'ignite') {
-						delete effect.addStatus;
-					}
-				});
-				Link(eventData.action.effects)
-					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
-					.each(function(effect)
-				{
-					effect.type = null;
-				});
-			},
-			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
-					eventData.amount *= 1.5;
-					Console.writeLine("Frostbite neutralized by fire, damage increased");
-					unit.liftStatus('frostbite');
-				}
-			},
-			endTurn: function(unit, eventData) {
-				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
-				this.multiplier = Math.min(this.multiplier + 0.1, 1.5);
-			}
-		},
-		ghost: {
-			name: "Ghost",
-			tags: [ 'ailment', 'undead' ],
-			overrules: [ 'zombie' ],
-			aiming: function(unit, eventData) {
-				for (var i = 0; i < eventData.action.effects.length; ++i) {
-					var effect = eventData.action.effects[i];
-					if (effect.type != 'damage' || effect.damageType == 'magic') {
-						continue;
-					}
-					if (!Link(eventData.targetInfo.statuses).contains('ghost')) {
-						eventData.aimRate = 0.0;
-					}
-				}
-			},
-			attacked: function(unit, eventData) {
-				for (var i = 0; i < eventData.action.effects.length; ++i) {
-					var effect = eventData.action.effects[i];
-					if (effect.type != 'damage' || effect.damageType == 'magic') {
-						continue;
-					}
-					if (!Link(eventData.actingUnitInfo.statuses).contains('ghost')) {
-						eventData.action.accuracyRate = 0.0;
-					}
-				}
-			}
-		},
-		ignite: {
-			name: "Ignite",
-			tags: [ 'ailment', 'damage' ],
-			overrules: [ 'frostbite' ],
-			initialize: function(unit) {
-				this.multiplier = 1.0;
-			},
-			beginCycle: function(unit, eventData) {
-				unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
-				this.multiplier = Math.max(this.multiplier - 0.132, 0.66);
-			},
-			attacked: function(unit, eventData) {
-				Link(eventData.action.effects)
-					.filterBy('type', 'damage')
-					.each(function(effect)
-				{
-					if ('addStatus' in effect && effect.addStatus == 'frostbite') {
-						delete effect.addStatus;
-					}
-				});
-				Link(eventData.action.effects)
-					.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
-					.each(function(effect)
-				{
-					effect.type = null;
-				});
-			},
-			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
-					eventData.amount *= 1.5;
-					Console.writeLine("Ignite neutralized by ice, damage increased");
-					unit.liftStatus('ignite');
-				}
-			}
-		},
-		immune: {
-			name: "Immune",
-			tags: [ 'buff' ],
-			initialize: function(unit) {
-				this.turnCount = 0;
-			},
-			afflicted: function(unit, eventData) {
-				var statusDef = Game.statuses[eventData.statusID];
-				if (Link(statusDef.tags).contains('ailment')) {
-					Console.writeLine("Status " + statusDef.name + " was blocked by Immune");
-					eventData.statusID = null;
-				}
-			},
-			beginTurn: function(unit, eventData) {
-				++this.turnCount;
-				if (this.turnCount > 5) {
-					unit.liftStatus('immune');
-				}
-			}
-		},
-		lockstep: {
-			name: "Lockstep",
-			tags: [ 'debuff' ],
-			afflicted: function(unit, eventData) {
-				
-			}
-		},
-		offGuard: {
-			name: "Off Guard",
-			tags: [ 'special' ],
-			statModifiers: {
-				def: 0.66
-			},
-			beginTurn: function(unit, eventData) {
-				unit.liftStatus('offGuard');
-			}
-		},
-		protect: {
-			name: "Protect",
-			tags: [ 'buff' ],
-			initialize: function(unit) {
-				this.multiplier = 0.5;
-			},
-			damaged: function(unit, eventData) {
-				var isProtected = !Link(eventData.tags).some([ 'special', 'zombie' ]);
-				if (isProtected) {
-					eventData.amount *= this.multiplier;
-					this.multiplier += 0.05;
-					if (this.multiplier >= 1.0) {
-						unit.liftStatus('protect');
-					}
-				}
-			}
-		},
-		reGen: {
-			name: "ReGen",
-			tags: [ 'buff' ],
-			beginCycle: function(unit, eventData) {
-				unit.heal(0.01 * unit.maxHP, [ 'reGen' ]);
-			}
-		},
-		rearing: {
-			name: "Rearing",
-			category: [ 'special' ],
-			beginTurn: function(unit, eventData) {
-				unit.liftStatus('rearing');
-			},
-			damaged: function(unit, eventData) {
-				if (Link(eventData.tags).some([ 'physical', 'earth' ])) {
-					unit.clearQueue();
-					unit.liftStatus('rearing');
-					unit.resetCounter(5);
-				}
-				if (!Link(eventData.tags).some([ 'special', 'magic' ])) {
-					eventData.damage *= 1.5;
-				}
-			}
-		},
-		skeleton: {
-			name: "Skeleton",
-			tags: [ 'undead' ],
-			overrules: [ 'ghost', 'zombie' ],
-			statModifiers: {
-				str: 0.5,
-				mag: 0.5
-			},
-			initialize: function(unit) {
-				this.allowDeath = false;
-			},
-			cured: function(unit, eventData) {
-				if (eventData.statusID == 'skeleton') {
-					unit.heal(1, [], true);
-				}
-			},
-			damaged: function(unit, eventData) {
-				this.allowDeath = Link(eventData.tags)
-					.some([ 'zombie', 'physical', 'sword', 'earth', 'omni' ]);
-				if (!this.allowDeath) {
-					eventData.amount = 0;
-				}
-			},
-			dying: function(unit, eventData) {
-				eventData.cancel = !this.allowDeath;
-			},
-			healed: function(unit, eventData) {
-				if (Link(eventData.tags).contains('cure')) {
-					unit.takeDamage(eventData.amount, [ 'zombie' ]);
-				}
-				eventData.amount = 0;
-			}
-		},
-		sleep: {
-			name: "Sleep",
-			tags: [ 'acute' ],
-			overrules: [ 'drunk', 'offGuard' ],
-			initialize: function(unit) {
-				unit.actor.animate('sleep');
-				this.wakeChance = 0.0;
-			},
-			beginCycle: function(unit, eventData) {
-				if (Math.random() < this.wakeChance) {
-					unit.liftStatus('sleep');
-				}
-				this.wakeChance += 0.01;
-			},
-			beginTurn: function(unit, eventData) {
-				eventData.skipTurn = true;
-				unit.actor.animate('snore');
-			},
-			damaged: function(unit, eventData) {
-				var healthLost = 100 * eventData.amount / unit.maxHP;
-				if (Math.random() < healthLost * 5 * this.wakeChance
-				    && eventData.tags.indexOf('magic') === -1
-				    && eventData.tags.indexOf('special') === -1)
-				{
-					unit.liftStatus('sleep');
-				}
-			}
-		},
-		zombie: {
-			name: "Zombie",
-			tags: [ 'ailment', 'undead' ],
-			initialize: function(unit) {
-				this.allowDeath = false;
-			},
-			damaged: function(unit, eventData) {
-				this.allowDeath = Link(eventData.tags).contains('zombie');
-			},
-			dying: function(unit, eventData) {
-				if (!this.allowDeath) {
-					unit.addStatus('skeleton');
-					eventData.cancel = true;
-				}
-			},
-			healed: function(unit, eventData) {
-				if (Link(eventData.tags).some([ 'cure', 'reGen' ])) {
-					unit.takeDamage(eventData.amount, [ 'zombie' ]);
-					eventData.amount = 0;
-				}
 			}
 		}
 	},
@@ -1202,6 +804,27 @@ Game = {
 				}
 			]
 		},
+		potshot: {
+			name: "Potshot",
+			category: 'attack',
+			weaponType: 'pistol',
+			targetType: 'single',
+			actions: [
+				{
+					announceAs: "Potshot",
+					rank: 2,
+					accuracyType: 'pistol',
+					effects: [
+						{
+							targetHint: 'selected',
+							type: 'damage',
+							damageType: 'pistol',
+							power: 15
+						}
+					]
+				}
+			]
+		},
 		protectiveAura: {
 			name: "Protective Aura",
 			category: 'strategy',
@@ -1312,15 +935,26 @@ Game = {
 			targetType: 'single',
 			actions: [
 				{
-					announceAs: "Sharpshooter",
+					announceAs: "Lining Up...",
 					rank: 3,
-					accuracyType: 'pistol',
+					effects: [
+						{
+							targetHint: 'user',
+							type: 'addStatus',
+							status: 'offGuard'
+						}
+					]
+				},
+				{
+					announceAs: "Sharpshooter",
+					rank: 2,
+					accuracyRate: Infinity,
 					effects: [
 						{
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'pistol',
-							power: 20
+							power: 50
 						}
 					]
 				}
@@ -1341,7 +975,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'pistol',
-							power: 50
+							power: 15
 						}
 					]
 				}
@@ -1517,7 +1151,7 @@ Game = {
 		arsenRifle: {
 			name: "Arsen's Rifle",
 			type: 'rifle',
-			level: 5,
+			level: 60,
 			techniques: [
 				'sharpshooter'
 			]
@@ -1544,6 +1178,7 @@ Game = {
 	}
 };
 
-EvaluateScript("GameDef/enemies.js");
-EvaluateScript("GameDef/battles.js");
-EvaluateScript("GameDef/characters.js");
+EvaluateScript('GameDef/battles.js');
+EvaluateScript('GameDef/characters.js');
+EvaluateScript('GameDef/enemies.js');
+EvaluateScript('GameDef/statuses.js');

@@ -51,8 +51,9 @@ Game.characters =
 		autoScan: true,
 		startingWeapon: 'arsenRifle',
 		skills: [
-			'sharpshooter',
-			'shootout'
+			'potshot',
+			'shootout',
+			'sharpshooter'
 		]
 	},
 	

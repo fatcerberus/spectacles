@@ -62,9 +62,9 @@ function game()
 		party: {
 			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//elysia: { level: 10, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
+			//maggie: { level: 10, items: [ 'redBull', 'alcohol' ] },
 			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			maggie: { level: 60, items: [ 'redBull', 'alcohol' ] },
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) {
