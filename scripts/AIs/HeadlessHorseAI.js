@@ -9,33 +9,31 @@
 //     battle:    The battle session this AI is participating in.
 //     unit:      The battle unit to be controlled by this AI.
 //     aiContext: The AI context that this AI will execute under.
-function HeadlessHorseAI(battle, unit, aiContext)
+function HeadlessHorseAI(aiContext)
 {
-	this.battle = battle;
-	this.unit = unit;
-	this.ai = aiContext;
+	this.aic = aiContext;
 	this.damageTaken = {};
 	this.phase = 0;
 	this.phaseThreshold = Math.round(500 + 100 * (0.5 - Math.random()));
 	this.spectralDrawPending = true;
 	this.trampleTarget = null;
 	
-	this.battle.itemUsed.addHook(this, this.onItemUsed);
-	this.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.battle.unitDamaged.addHook(this, this.onUnitDamaged);
-	this.battle.unitReady.addHook(this, this.onUnitReady);
-	this.battle.unitTargeted.addHook(this, this.onUnitTargeted);
+	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
+	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
+	this.aic.battle.unitDamaged.addHook(this, this.onUnitDamaged);
+	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
+	this.aic.battle.unitTargeted.addHook(this, this.onUnitTargeted);
 }
 
 // .dispose() method
 // Relinquishes resources and shuts down the AI.
 HeadlessHorseAI.prototype.dispose = function()
 {
-	this.battle.itemUsed.removeHook(this, this.onItemUsed);
-	this.battle.skillUsed.removeHook(this, this.onSkillUsed);
-	this.battle.unitDamaged.removeHook(this, this.onUnitDamaged);
-	this.battle.unitReady.removeHook(this, this.onUnitReady);
-	this.battle.unitTargeted.removeHook(this, this.onUnitTargeted);
+	this.aic.battle.itemUsed.removeHook(this, this.onItemUsed);
+	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
+	this.aic.battle.unitDamaged.removeHook(this, this.onUnitDamaged);
+	this.aic.battle.unitReady.removeHook(this, this.onUnitReady);
+	this.aic.battle.unitTargeted.removeHook(this, this.onUnitTargeted);
 };
 
 // .strategize() method
@@ -43,22 +41,22 @@ HeadlessHorseAI.prototype.dispose = function()
 HeadlessHorseAI.prototype.strategize = function()
 {				
 	var lastPhase = this.phase;
-	var phaseToEnter = this.unit.hp > this.phaseThreshold ? 1 : 2;
+	var phaseToEnter = this.aic.unit.hp > this.phaseThreshold ? 1 : 2;
 	this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 	switch (this.phase) {
 		case 1:
 			if (this.phase > lastPhase) {
-				this.ai.useSkill('flameBreath');
+				this.aic.queueSkill('flameBreath');
 			} else {
-				var kickTurns = this.ai.predictSkillTurns('rearingKick');
-				var hellfireTurns = this.ai.predictSkillTurns('hellfire');
-				if (!this.unit.hasStatus('ignite')) {
-					this.ai.useSkill('hellfire', 'headlessHorse');
+				var kickTurns = this.aic.predictSkillTurns('rearingKick');
+				var hellfireTurns = this.aic.predictSkillTurns('hellfire');
+				if (!this.aic.unit.hasStatus('ignite')) {
+					this.aic.queueSkill('hellfire', 'headlessHorse');
 					if (Link(hellfireTurns).pluck('unit').pluck('id').contains('elysia')) {
-						this.ai.useSkill('spectralDraw', 'elysia');
+						this.aic.queueSkill('spectralDraw', 'elysia');
 					}
 				} else {
-					this.ai.useSkill('rearingKick');
+					this.aic.queueSkill('rearingKick');
 				}
 			}
 			break;
@@ -74,11 +72,11 @@ HeadlessHorseAI.prototype.strategize = function()
 						this.ghostTargetID = unitID;
 					}
 				}
-				this.ai.useSkill('spectralDraw', this.ghostTargetID);
+				this.aic.queueSkill('spectralDraw', this.ghostTargetID);
 				this.spectralDrawPending = false;
 				this.trampleTarget = null;
 			} else {
-				this.ai.useSkill('flare');
+				this.aic.queueSkill('flare');
 			}
 			break;
 	}
@@ -96,7 +94,7 @@ HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
 	if (Link(targetIDs).contains('headlessHorse')) {
 		var iceSkills = [ 'chillShot', 'chill', 'windchill' ];
-		if (Link(iceSkills).contains(skillID) && (this.unit.hasStatus('ignite') || this.unit.hasStatus('rearing'))) {
+		if (Link(iceSkills).contains(skillID) && (this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('rearing'))) {
 			this.trampleTarget = userID;
 		}
 	}
@@ -106,7 +104,7 @@ HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 // Allows the Headless Horse to react when someone takes damage.
 HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, attacker)
 {
-	if (unit === this.unit && attacker !== null) {
+	if (unit === this.aic.unit && attacker !== null) {
 		if (!(attacker.id in this.damageTaken)) {
 			this.damageTaken[attacker.id] = 0;
 		}
@@ -118,9 +116,9 @@ HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, attacker)
 // Allows the Headless Horse to react when a battler's turn arrives.
 HeadlessHorseAI.prototype.onUnitReady = function(unitID)
 {
-	if (unitID == 'headlessHorse' && !this.ai.hasMovesQueued() && this.phase > 0) {
+	if (unitID == 'headlessHorse' && !this.aic.hasMovesQueued() && this.phase > 0) {
 		if (this.trampleTarget !== null) {
-			this.ai.useSkill('trample', this.trampleTarget);
+			this.aic.queueSkill('trample', this.trampleTarget);
 			this.trampleTarget = null;
 		}
 	}
@@ -134,19 +132,19 @@ HeadlessHorseAI.prototype.onUnitReady = function(unitID)
 //     actingUnit: The unit performing the action.
 HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
-	if (unit === this.unit) {
+	if (unit === this.aic.unit) {
 		var isPhysical = Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical')
 		                 || Link(action.effects).filterBy('type', 'damage').pluck('element').contains('earth');
-		if (isPhysical && this.unit.hasStatus('rearing')) {
+		if (isPhysical && this.aic.unit.hasStatus('rearing')) {
 			if (this.trampleTarget === null) {
-				this.ai.useSkill('flameBreath');
+				this.aic.queueSkill('flameBreath');
 			} else if (this.trampleTarget !== null) {
 				this.trampleTarget = actingUnit.id;
 			}
 		}
 		var isMagic = Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('magic');
-		if (isMagic && this.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
-			this.ai.useSkill('spectralKick', actingUnit.id);
+		if (isMagic && this.aic.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
+			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}
 	}
 };

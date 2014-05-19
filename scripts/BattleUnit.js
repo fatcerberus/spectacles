@@ -678,7 +678,7 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
 	if (this.stance == BattleStance.guard && isMelee) {
-		action.accuracyRate = 'accuracyRate' in action ? 0.75 * action.accuracyRate : 0.75;
+		action.accuracyRate = 'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == BattleStance.guard && isGuardBroken) {
 		Console.writeLine(this.name + "'s Guard Stance was broken");

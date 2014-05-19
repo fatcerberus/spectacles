@@ -62,7 +62,6 @@ Game = {
 				return 1.0;
 			},
 			devour: function(userInfo, targetInfo) {
-				return 1.0;
 				return (100 - targetInfo.health) / 100 / targetInfo.tier
 					* userInfo.stats.agi / targetInfo.stats.agi;
 			},
@@ -183,7 +182,7 @@ Game = {
 			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
-			return Math.round((50 + baseStat / 2) * (10 + level) / 110);
+			return Math.round((25 + 0.75 * baseStat) * (10 + level) / 110);
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
 			return rank * 10000 / unitInfo.stats.agi;
@@ -501,7 +500,7 @@ Game = {
 							targetHint: 'selected',
 							type: 'damage',
 							damageType: 'sword',
-							power: 50
+							power: 75
 						}
 					]
 				}

@@ -26,7 +26,7 @@ function Robert2AI(aiContext)
 	this.turnCount = {};
 	this.zombieHealAlertLevel = 0.0;
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 4000, 2500, 1500, 500 ];
+	this.phasePoints = [ 3500, 2000, 1000, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
