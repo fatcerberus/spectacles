@@ -26,7 +26,7 @@ Game.battles =
 	// Robert Spellbinder (II) (Final Battle)
 	// Final Boss of Spectacles: Bruce's Story
 	robert2: {
-		title: "#9, Robert Spellbinder",
+		title: "Robert Spellbinder",
 		isFinalBattle: true,
 		bgm: 'ThePromise',
 		battleLevel: 50,
@@ -46,19 +46,23 @@ Game.battles =
 				.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
 				.synchronize()
 				.run(true);
-			this.playerUnits[0].addStatus('reGen');
+			this.findUnit('scott').addStatus('reGen');
 		}
 	},
 	
 	// Scott Starcross (Final Battle)
 	// Final Boss of Spectacles III: The Last Lucidan
 	numberEleven: {
-		title: "#11, Scott Starcross",
+		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'NaturalCorruption',
+		bgm: 'HymnOfLiberty',
 		battleLevel: 60,
 		enemies: [
 			'numberEleven'
-		]
+		],
+		onStart: function() {
+			var scottUnit = this.findUnit('numberEleven')
+			scottUnit.addStatus('reGen');
+		}
 	},
 };

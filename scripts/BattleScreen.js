@@ -152,9 +152,9 @@ BattleScreen.prototype.go = function(title)
 // Renders the BattleScreen.
 BattleScreen.prototype.render = function()
 {
-	/*Rectangle(0, 0, 320, 112, CreateColor(0, 128, 0, 255));
-	Rectangle(0, 112, 320, 16, CreateColor(64, 64, 64, 255));
-	Rectangle(0, 128, 320, 112, CreateColor(192, 128, 0, 255));*/
+	//Rectangle(0, 0, 320, 112, CreateColor(0, 128, 0, 255));
+	//Rectangle(0, 112, 320, 16, CreateColor(64, 64, 64, 255));
+	//Rectangle(0, 128, 320, 112, CreateColor(192, 128, 0, 255));
 	Rectangle(0, 0, 320, 112, CreateColor(128, 128, 128, 255));
 	Rectangle(0, 112, 320, 16, CreateColor(48, 48, 48, 255));
 	Rectangle(0, 128, 320, 112, CreateColor(64, 64, 64, 255));

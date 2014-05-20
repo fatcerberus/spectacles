@@ -125,4 +125,29 @@ Game.characters =
 			'crackdown'
 		]
 	},
+	
+	// Amanda Spellbinder
+	amanda: {
+		name: "Amanda",
+		fullName: "Amanda Spellbinder",
+		baseStats: {
+			vit: 65,
+			str: 60,
+			def: 75,
+			foc: 80,
+			mag: 100,
+			agi: 50
+		},
+		skills: [
+			'flare',
+			'chill',
+			'lightning',
+			'quake',
+			'hellfire',
+			'windchill',
+			'inferno',
+			'omni',
+			'protectiveAura'
+		]
+	}
 };

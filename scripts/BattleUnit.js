@@ -143,7 +143,7 @@ BattleUnit.prototype.dispose = function()
 // Afflicts the unit with a status effect.
 // Arguments:
 //     statusID:    The ID of the status to inflict.
-//     isGuardable: Optional. If true, indicates that the affliction can be blocked by use of
+//     isGuardable: Optional. If true, indicates that the affliction can be blocked by using
 //                  Guard Stance. (default: false)
 BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 {
@@ -237,11 +237,12 @@ BattleUnit.prototype.clearQueue = function()
 // Inflicts unconditional instant death on the battler.
 BattleUnit.prototype.die = function()
 {
-	Console.writeLine(this.fullName + " afflicted with death");
+	this.battle.unitKilled.invoke(this.id);
 	this.lazarusFlag = false;
 	this.hp = 0;
 	this.battle.ui.hud.setHP(this.name, this.hp);
 	this.actor.animate('die');
+	Console.writeLine(this.fullName + " afflicted with death");
 };
 
 // .endCycle() method

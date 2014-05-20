@@ -65,6 +65,7 @@ function game()
 			//maggie: { level: 8, items: [ 'redBull', 'alcohol' ] },
 			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) {

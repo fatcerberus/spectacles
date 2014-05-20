@@ -177,7 +177,7 @@ Game.statuses =
 			}
 		},
 		endTurn: function(unit, eventData) {
-			unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'ice', 'special' ]);
+			unit.takeDamage(0.02 * unit.maxHP * this.multiplier / unit.tier, [ 'ice', 'special' ]);
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
 		}
 	},
@@ -218,7 +218,7 @@ Game.statuses =
 			this.multiplier = 1.0;
 		},
 		beginCycle: function(unit, eventData) {
-			unit.takeDamage(0.01 * unit.maxHP * this.multiplier, [ 'fire', 'special' ]);
+			unit.takeDamage(0.02 * unit.maxHP * this.multiplier / unit.tier, [ 'fire', 'special' ]);
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
 		attacked: function(unit, eventData) {
@@ -282,7 +282,9 @@ Game.statuses =
 			unit.liftStatus('offGuard');
 		},
 		damaged: function(unit, eventData) {
-			eventData.amount *= 1.33;
+			if (eventData.attacker !== null) {
+				eventData.amount *= 1.33;
+			}
 		}
 	},
 	
@@ -308,7 +310,7 @@ Game.statuses =
 		name: "ReGen",
 		tags: [ 'buff' ],
 		beginCycle: function(unit, eventData) {
-			unit.heal(0.01 * unit.maxHP, [ 'reGen' ]);
+			unit.heal(0.01 * unit.maxHP / unit.tier, [ 'reGen' ]);
 		}
 	},
 	
@@ -361,6 +363,22 @@ Game.statuses =
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
 			}
 			eventData.amount = 0;
+		}
+	},
+	
+	sniper: {
+		name: "Sniper",
+		tags: [ 'special' ],
+		beginTurn: function(unit, eventData) {
+			unit.liftStatus('sniper');
+		},
+		damaged: function(unit, eventData) {
+			if (!Link(eventData.tags).some([ 'special', 'zombie' ])) {
+				eventData.amount *= 1.33;
+				unit.clearQueue();
+				unit.liftStatus('sniper');
+				unit.resetCounter(1);
+			}
 		}
 	},
 	

@@ -81,6 +81,12 @@ function Battle(session, battleID)
 	//     amount:   The number of hit points recovered.
 	this.unitHealed = new MultiDelegate();
 	
+	// .unitKilled event
+	// Occurs when a unit falls in battle.
+	// Arguments (for event handler):
+	//     unitID: The ID of the downed unit.
+	this.unitKilled = new MultiDelegate();
+	
 	// .unitReady event
 	// Occurs when a unit is about to take its turn.
 	// Arguments (for event handler):
