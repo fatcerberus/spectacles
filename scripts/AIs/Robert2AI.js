@@ -26,7 +26,7 @@ function Robert2AI(aiContext)
 	this.turnCount = {};
 	this.zombieHealAlertLevel = 0.0;
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 3500, 2000, 1000, 500 ];
+	this.phasePoints = [ 4000, 2500, 1500, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
@@ -210,14 +210,8 @@ Robert2AI.prototype.strategize = function()
 				} else if ((this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
 					--this.elementalsTillRevenge;
 					if (this.elementalsTillRevenge <= 0) {
-						if (this.aic.isItemUsable('vaccine')) {
-							this.aic.queueItem('vaccine');
-						}
-						if (this.aic.isSkillUsable('omni')) {
-							this.aic.queueSkill('omni');
-						} else {
-							this.aic.queueSkill('chargeSlash');
-						}
+						this.aic.queueSkill('electrocute');
+						this.necroTonicItem = 'powerTonic';
 					} else {
 						if (this.aic.unit.hasStatus('ignite')) {
 							this.aic.queueSkill('chill', 'robert2');
@@ -229,7 +223,7 @@ Robert2AI.prototype.strategize = function()
 					var forecast = this.aic.predictSkillTurns('chargeSlash');
 					if ((forecast[0].unit === this.aic.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 						this.isComboStarted = false;
-						if (forecast[0].unit === this.aic.unit && !this.aic.unit.hasStatus('disarray')) {
+						if (forecast[0].unit === this.aic.unit) {
 							this.aic.queueSkill('chargeSlash');
 						} else {
 							var spells = [ 'hellfire', 'windchill' ];
@@ -269,7 +263,6 @@ Robert2AI.prototype.strategize = function()
 			break;
 		case 4:
 			if (this.phase > lastPhase) {
-				this.aic.queueSkill('chargeSlash');
 				this.aic.queueSkill('crackdown');
 			} else {
 				var spells = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
@@ -285,8 +278,8 @@ Robert2AI.prototype.strategize = function()
 		case 5:
 			if (this.phase > lastPhase) {
 				this.aic.queueSkill('desperationSlash');
-				if (this.aic.unit.hasStatus('zombie') && this.aic.isItemUsable('holyWater')) {
-					this.aic.queueItem('holyWater');
+				if (this.aic.unit.hasStatus('zombie') && this.aic.isItemUsable('vaccine')) {
+					this.aic.queueItem('vaccine');
 				}
 				this.isAlcoholPending = true;
 				this.isDesperate = false;
@@ -296,9 +289,8 @@ Robert2AI.prototype.strategize = function()
 					if (this.aic.unit.hasStatus('zombie')) {
 						if (this.aic.isSkillUsable('omni')) {
 							this.aic.queueSkill('omni');
-						} else {
-							this.aic.queueSkill('chargeSlash');
 						}
+						this.aic.queueSkill('chargeSlash');
 						this.isAlcoholPending = false;
 						this.isDesperate = true;
 					} else {
@@ -354,7 +346,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 				"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
 				+ "realize by now that no matter what any of us do, Amanda is the Primus! None of us--nothing can "
 				+ "change that now!")
-			.talk("Robert", true, 2.0, "...")
+			.talk("Robert", true, 2.0, Infinity, "...")
 			.talk("Scott", true, 2.0, Infinity,
 				"You think I haven't come just as far as you? Is that it, Robert? You believe I "
 				+ "chose to be in the position I'm in? No... instead I can only stand here wishing it were so simple.",
@@ -401,7 +393,8 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 				this.isScottZombie = false;
 			}
 		} else if (this.phase <= 3 && Link(curativeIDs).contains(itemID) && !this.isNecromancyPending
-			&& !this.isScottZombie && !this.aic.isSkillQueued('necromancy') && this.zombieHealFixState === null)
+			&& !this.isScottZombie && !this.aic.isSkillQueued('necromancy') && !this.aic.isSkillQueued('electrocute')
+			&& this.zombieHealFixState === null)
 		{
 			this.necromancyChance += 0.25;
 			if ((this.necromancyChance > Math.random()) && !this.isNecroTonicItemPending) {
@@ -416,7 +409,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 // Allows Robert to react when someone in the battle uses an attack.
 Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (this.aic.unit.hasStatus('drunk')) {
+	if (this.aic.unit.hasStatus('drunk') || this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
 	if (userID == 'robert2') {
@@ -437,7 +430,7 @@ Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		}
 	} else if (userID == 'scott' && Link(targetIDs).contains('scott')) {
 		if (((skillID == 'flare' || skillID == 'hellfire') && this.nextElementalMove == 'hellfire')
-		    || ((skillID == 'chill' || skillID == 'windchill') && this.nextElementalMove == 'windchill'))
+			|| ((skillID == 'chill' || skillID == 'windchill') && this.nextElementalMove == 'windchill'))
 		{
 			this.nextElementalMove = null;
 		}

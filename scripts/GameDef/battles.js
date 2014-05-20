@@ -55,7 +55,7 @@ Game.battles =
 	numberEleven: {
 		title: "#11, Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'HymnOfLiberty',
+		bgm: 'NaturalCorruption',
 		battleLevel: 60,
 		enemies: [
 			'numberEleven'

@@ -182,7 +182,7 @@ Game = {
 			return rankTotal;
 		},
 		statValue: function(baseStat, level) {
-			return Math.round((25 + 0.75 * baseStat) * (10 + level) / 110);
+			return Math.round((50 + 0.5 * baseStat) * (10 + level) / 110);
 		},
 		timeUntilNextTurn: function(unitInfo, rank) {
 			return rank * 10000 / unitInfo.stats.agi;

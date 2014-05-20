@@ -17,7 +17,6 @@ Game.characters =
 			mag: 70,
 			agi: 70
 		},
-		autoScan: true,
 		startingWeapon: 'heirloom',
 		skills: [
 			'swordSlash',

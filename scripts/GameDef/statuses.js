@@ -278,11 +278,11 @@ Game.statuses =
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
-		statModifiers: {
-			def: 0.5
-		},
 		beginTurn: function(unit, eventData) {
 			unit.liftStatus('offGuard');
+		},
+		damaged: function(unit, eventData) {
+			eventData.amount *= 1.33;
 		}
 	},
 	
