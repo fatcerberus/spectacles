@@ -77,7 +77,7 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'restore',
+			'heal',
 			'rejuvenate',
 			'renewal',
 			'convalesce'
@@ -151,13 +151,13 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
+			'heal',
 			'hellfire',
 			'windchill',
 			'inferno',
-			'omni',
-			'restore',
 			'rejuvenate',
 			'renewal',
+			'omni',
 			'protectiveAura'
 		]
 	}

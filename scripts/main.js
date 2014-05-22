@@ -62,11 +62,11 @@ function game()
 		battleID: 'robert2',
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			elysia: { level: 50, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			maggie: { level: 50, items: [ 'redBull', 'alcohol' ] },
-			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
+			//elysia: { level: 50, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
+			//bruce: { level: 50, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			//robert: { level: 50, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
+			//amanda: { level: 50, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
 	};
 	Link(Game.initialPartyMembers).each(function(id) {

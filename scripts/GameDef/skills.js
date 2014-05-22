@@ -385,21 +385,21 @@ Game.skills =
 			}
 		]
 	},
-	restore: {
-		name: "Restore",
+	heal: {
+		name: "Heal",
 		category: 'magic',
 		targetType: 'ally',
 		baseMPCost: 25,
 		actions: [
 			{
-				announceAs: "Restore",
-				rank: 1,
+				announceAs: "Heal",
+				rank: 2,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 33,
+						power: 25,
 						element: 'cure'
 					}
 				]
@@ -458,17 +458,17 @@ Game.skills =
 		name: "Rejuvenate",
 		category: 'magic',
 		targetType: 'ally',
-		baseMPCost: 75,
+		baseMPCost: 40,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
-				rank: 1,
+				rank: 2,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 67,
+						power: 50,
 						element: 'cure'
 					}
 				]
@@ -549,17 +549,17 @@ Game.skills =
 		name: "Renewal",
 		category: 'magic',
 		targetType: 'ally',
-		baseMPCost: 150,
+		baseMPCost: 75,
 		actions: [
 			{
 				announceAs: "Renewal",
-				rank: 1,
+				rank: 2,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 100,
+						power: 80,
 						element: 'cure'
 					}
 				]

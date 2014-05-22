@@ -294,13 +294,13 @@ BattleUnit.prototype.evade = function(actingUnit, action)
 {
 	this.actor.showDamage("miss");
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
-	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
+	/*var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
 	if (isMelee && this.stance == BattleStance.guard && isGuardBroken) {
 		this.stance = BattleStance.counter;
 		this.counterTarget = actingUnit;
 		Console.writeLine(this.name + "'s Counter Stance activated");
-	}
+	}*/
 };
 
 // .getHealth() method
@@ -680,14 +680,20 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	if (this.stance == BattleStance.guard && isMelee) {
+	/*if (this.stance == BattleStance.guard && isMelee) {
 		action.accuracyRate = 'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
-	}
+	}*/
 	if (this.stance == BattleStance.guard && isGuardBroken) {
 		Console.writeLine(this.name + "'s Guard Stance was broken");
 		Console.append("by: " + actingUnit.name);
 		this.newStance = BattleStance.attack;
-		this.resetCounter(Game.guardBreakRank);
+		if (isMelee) {
+			this.stance = BattleStance.counter;
+			this.counterTarget = actingUnit;
+			Console.writeLine(this.name + "'s Counter Stance activated");
+		} else {
+			this.resetCounter(Game.guardBreakRank);
+		}
 	}
 };
 
