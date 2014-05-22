@@ -89,5 +89,28 @@ Game.enemies =
 		},
 		immunities: [],
 		weapon: 'templeSword',
+	},
+
+	// Xemnas (Kingdom Hearts II)
+	// No idea what the heck this guy is doing here! My guess is he's probably
+	// going to get eaten. By a hunger-pig. Which will then, um, eat itself, for... some
+	// reason? Probably to show off.
+	xemnas: {
+		name: "Xemnas",
+		fullName: "Xemnas Xehanort Ansem",
+		aiType: NumberElevenAI,
+		hasLifeBar: true,
+		tier: 5,
+		turnRatio: 100.0,
+		baseStats: {
+			vit: 100,
+			str: 100,
+			def: 100,
+			foc: 100,
+			mag: 100,
+			agi: 100
+		},
+		immunities: [],
+		weapon: 'arsenRifle'
 	}
 };

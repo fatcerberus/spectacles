@@ -58,11 +58,31 @@ Game.battles =
 		bgm: 'HymnOfLiberty',
 		battleLevel: 60,
 		enemies: [
-			'numberEleven'
+			'numberEleven',
+			'xemnas'
 		],
 		onStart: function() {
-			var scottUnit = this.findUnit('numberEleven')
+			var xemnasUnit = this.findUnit('xemnas');
+			var maggieUnit = this.findUnit('maggie');
+			new Scenario()
+				.talk("Xemnas", true, 1.0, Infinity, "Nothingness is eternal...!")
+				.talk("maggie", true, 2.0, Infinity, "Where the hell did this guy come from? Screw this, I'ma eat him!")
+				.fork()
+					.pause(1.5)
+					.call(function() { xemnasUnit.takeDamage(xemnasUnit.hp, [], true); })
+					.playSound("Munch.wav")
+				.end()
+				.talk("Xemnas", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
+				.synchronize()
+				.talk("Scott", true, 2.0, Infinity, "Can I get back to fighting Bruce and Robert now? Sheesh, talk about empty calories...")
+				.talk("maggie", true, 2.0, Infinity, "Yeah, you know what? I'm still hungry. Watch this trick!")
+				.call(function() { maggieUnit.takeDamage(maggieUnit.hp, [], true); })
+				.playSound("Munch.wav")
+				.talk("Scott", true, 0.5, Infinity, "...")
+				.talk("Scott", true, 2.0, Infinity, "No comment.")
+				.run(true);
+			var scottUnit = this.findUnit('numberEleven');
 			scottUnit.addStatus('reGen');
 		}
-	},
+	}
 };
