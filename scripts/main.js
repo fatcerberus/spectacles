@@ -9,6 +9,7 @@ RequireScript('lib/json3.js');
 RequireScript('lib/link.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
+RequireScript('lib/SpriteImage.js');
 
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
@@ -62,9 +63,9 @@ function game()
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
+			maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
 	};

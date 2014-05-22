@@ -255,6 +255,7 @@ BattleUnit.prototype.endCycle = function()
 	if (this.stance == BattleStance.counter) {
 		this.cv = 0;
 		if (this.ai == null) {
+			this.actor.animate('active');
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 			Console.writeLine("Asking player for " + this.name + "'s counterattack");
 			chosenMove = this.counterMenu.open();
@@ -263,6 +264,7 @@ BattleUnit.prototype.endCycle = function()
 		}
 		this.queueMove(chosenMove);
 		this.performAction(this.getNextAction(), chosenMove);
+		this.actor.animate('dormant');
 		this.newStance = BattleStance.attack;
 	}
 	if (this.newStance !== this.stance) {
@@ -711,6 +713,7 @@ BattleUnit.prototype.tick = function()
 			this.newStance = BattleStance.attack;
 		}
 		Console.writeLine(this.name + "'s turn is up");
+		this.actor.animate('active');
 		this.battle.unitReady.invoke(this.id);
 		var eventData = { skipTurn: false };
 		this.raiseEvent('beginTurn', eventData);
@@ -748,6 +751,7 @@ BattleUnit.prototype.tick = function()
 			}
 			this.raiseEvent('endTurn');
 		}
+		this.actor.animate('dormant');
 		this.battle.resume();
 		return true;
 	} else {

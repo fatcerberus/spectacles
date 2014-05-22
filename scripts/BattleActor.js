@@ -23,8 +23,10 @@ function BattleActor(name, position, row, isEnemy)
 	this.name = name;
 	this.position = isEnemy ? position : 2 - position;
 	this.row = row;
-	this.x = isEnemy ? -16 : 320;
-	this.y = 192 - position * 32;
+	this.sprite = new SpriteImage('battlers/' + name + '.rss');
+	this.sprite.direction = isEnemy ? 'east' : 'west';
+	this.x = isEnemy ? -32 : 320;
+	this.y = 208 - position * 32;
 };
 
 // .animate() method
@@ -59,18 +61,16 @@ BattleActor.prototype.enter = function(isImmediate)
 	if (this.hasEntered) {
 		return;
 	}
-	var newX = this.isEnemy ? 48 - this.row * 16 : 256 + this.row * 16;
+	var newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
 	var threadID = null;
 	if (!isImmediate) {
 		var entrance = new Scenario()
-			.tween(this, 1.0, 'linear', { x: newX })
-			.run();
-		threadID = Threads.doWith(entrance, function() {
-			return this.isRunning();
-		});
+			.tween(this, 1.5, 'linear', { x: newX })
+			.run(true);
 	} else {
 		this.x = newX;
 	}
+	this.sprite.stop();
 	this.hasEntered = true;
 	return threadID;
 };
@@ -82,12 +82,10 @@ BattleActor.prototype.render = function()
 	if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0) {
 		return;
 	}
-	OutlinedRectangle(this.x, this.y, 16, 32, CreateColor(0, 0, 0, 255));
-	Rectangle(this.x + 1, this.y + 1, 14, 30, CreateColor(32, 32, 32, 255));
-	DrawTextEx(this.messageFont, this.x + 5, this.y + 17, this.name[0], CreateColor(128, 128, 128, 255));
+	this.sprite.blit(this.x, this.y);
 	for (var i = 0; i < this.damages.length; ++i) {
 		var text = this.damages[i].text;
-		var x = this.x + 8 - this.messageFont.getStringWidth(text) / 2;
+		var x = this.x + 16 - this.messageFont.getStringWidth(text) / 2;
 		for (var i2 = 0; i2 < text.length; ++i2) {
 			var yName = 'y' + i2.toString();
 			var y = this.y + this.damages[i][yName];
@@ -97,7 +95,7 @@ BattleActor.prototype.render = function()
 	}
 	for (var i = 0; i < this.healings.length; ++i) {
 		var y = this.y + this.healings[i].y;
-		DrawTextEx(this.messageFont, this.x + 8, y, this.healings[i].amount, CreateColor(64, 255, 128, this.healings[i].alpha), 1, 'center');
+		DrawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, CreateColor(64, 255, 128, this.healings[i].alpha), 1, 'center');
 	}
 };
 
@@ -140,6 +138,7 @@ BattleActor.prototype.showHealing = function(amount)
 // Updates the entity's state for the next frame.
 BattleActor.prototype.update = function()
 {
+	this.sprite.update();
 	for (var i = 0; i < this.damages.length; ++i) {
 		var data = this.damages[i];
 		var finalY = 20 - 11 * i;

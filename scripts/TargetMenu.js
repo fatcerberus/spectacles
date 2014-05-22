@@ -38,7 +38,7 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.drawCursor = function(unit)
 	{
 		var width = this.cursorFont.getStringWidth(this.name) + 10;
-		var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 21 : unit.actor.x - 5 - width;
+		var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
 		var y = unit.actor.y + 6;
 		Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
 		OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
