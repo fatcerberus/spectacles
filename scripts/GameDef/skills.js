@@ -381,7 +381,28 @@ Game.skills =
 						power: 25,
 						element: 'earth'
 					}
-				],
+				]
+			}
+		]
+	},
+	restore: {
+		name: "Restore",
+		category: 'magic',
+		targetType: 'ally',
+		baseMPCost: 25,
+		actions: [
+			{
+				announceAs: "Restore",
+				rank: 1,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 33,
+						element: 'cure'
+					}
+				]
 			}
 		]
 	},
@@ -428,6 +449,27 @@ Game.skills =
 						power: 50,
 						element: 'fire',
 						addStatus: 'ignite'
+					}
+				]
+			}
+		]
+	},
+	rejuvenate: {
+		name: "Rejuvenate",
+		category: 'magic',
+		targetType: 'ally',
+		baseMPCost: 75,
+		actions: [
+			{
+				announceAs: "Rejuvenate",
+				rank: 1,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 67,
+						element: 'cure'
 					}
 				]
 			}
@@ -481,28 +523,6 @@ Game.skills =
 	},
 	
 	// Rank 4 magic - damage + status, group-cast
-	blizzard: {
-		name: "Blizzard",
-		category: 'magic',
-		targetType: 'allEnemies',
-		baseMPCost: 125,
-		actions: [
-			{
-				announceAs: "Blizzard",
-				rank: 4,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 80,
-						element: 'ice',
-						addStatus: 'frostbite'
-					}
-				]
-			}
-		]
-	},
 	inferno: {
 		name: "Inferno",
 		category: 'magic',
@@ -520,6 +540,49 @@ Game.skills =
 						power: 80,
 						element: 'fire',
 						addStatus: 'ignite'
+					}
+				]
+			}
+		]
+	},
+	renewal: {
+		name: "Renewal",
+		category: 'magic',
+		targetType: 'ally',
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Renewal",
+				rank: 1,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 100,
+						element: 'cure'
+					}
+				]
+			}
+		]
+	},
+	subzero: {
+		name: "Subzero",
+		category: 'magic',
+		targetType: 'allEnemies',
+		baseMPCost: 125,
+		actions: [
+			{
+				announceAs: "Subzero",
+				rank: 4,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 80,
+						element: 'ice',
+						addStatus: 'frostbite'
 					}
 				]
 			}
@@ -573,6 +636,28 @@ Game.skills =
 	},
 	
 	// Status-inducing techniques
+	convalesce: {
+		name: "Convalesce",
+		category: 'strategy',
+		targetType: 'ally',
+		baseMPCost: 100,
+		allowAsCounter: false,
+		actions: [
+			{
+				announceAs: "Convalesce",
+				rank: 3,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'reGen',
+						element: 'cure'
+					}
+				]
+			}
+		]
+	},
 	crackdown: {
 		name: "Crackdown",
 		category: 'strategy',

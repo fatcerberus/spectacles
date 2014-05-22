@@ -35,6 +35,7 @@ Game = {
 		ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
 		lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
 		earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
+		cure: { name: "Cure", color: CreateColor(64, 255, 128, 255) },
 		omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
 		fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) }
 	},
@@ -118,6 +119,11 @@ Game = {
 				return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
 					userInfo.stats.str, targetInfo.stats.def);
 			}
+		},
+		healing: function(userInfo, targetInfo, power) {
+			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+				userInfo.stats.mag,
+				Game.math.statValue(0, targetInfo.level));
 		},
 		guardStance: {
 			damageTaken: function(baseDamage, tags) {
@@ -368,6 +374,20 @@ Game = {
 				unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
 			});
 		},
+		heal: function(actor, targets, effect) {
+			var userInfo = actor.battlerInfo;
+			for (var i = 0; i < targets.length; ++i) {
+				var targetInfo = targets[i].battlerInfo;
+				var healing = Math.max(Math.round(Game.math.healing(userInfo, targetInfo, effect.power)), 1);
+				targets[i].heal(Math.max(healing + healing * 0.2 * (Math.random() - 0.5), 1), [ 'cure' ]);
+				if ('addStatus' in effect) {
+					var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
+					if (statusChance > Math.random()) {
+						targets[i].addStatus(effect.addStatus);
+					}
+				}
+			}
+		},
 		instaKill: function(actor, targets, effect) {
 			for (var i = 0; i < targets.length; ++i) {
 				targets[i].takeDamage(Math.max(targets[i].hp, 1), [ effect.damageType, 'deathblow' ]);
@@ -428,7 +448,7 @@ Game = {
 		fireAndIce: {
 			name: "Fire & Ice",
 			type: 'bow',
-			level: 5,
+			level: 50,
 			techniques: [
 				'archery',
 				'flareShot',
@@ -437,7 +457,7 @@ Game = {
 		},
 		rsbSword: {
 			type: 'sword',
-			level: 60,
+			level: 50,
 			techniques: [
 				'swordSlash',
 				'quickStrike',

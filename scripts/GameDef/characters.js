@@ -72,7 +72,15 @@ Game.characters =
 		skills: [
 			'archery',
 			'flareShot',
-			'chillShot'
+			'chillShot',
+			'flare',
+			'chill',
+			'lightning',
+			'quake',
+			'restore',
+			'rejuvenate',
+			'renewal',
+			'convalesce'
 		]
 	},
 	
@@ -147,6 +155,9 @@ Game.characters =
 			'windchill',
 			'inferno',
 			'omni',
+			'restore',
+			'rejuvenate',
+			'renewal',
 			'protectiveAura'
 		]
 	}
