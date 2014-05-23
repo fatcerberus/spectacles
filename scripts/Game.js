@@ -319,10 +319,24 @@ Game = {
 			actionTaken: function(battle, eventData) {
 				eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			}
+		},
+		healingAura: {
+			name: "Healing Aura",
+			beginCycle: function(battle, eventData) {
+				Link(battle.battleUnits)
+					.where(function(unit) { return unit.isAlive(); })
+					.each(function(unit)
+				{
+					unit.heal(0.01 * unit.maxHP / unit.tier, [ 'reGen' ]);
+				});
+			}
 		}
 	},
 	
 	effects: {
+		addCondition: function(actor, targets, effect) {
+			actor.battle.addCondition(effect.condition);
+		},
 		addStatus: function(actor, targets, effect) {
 			Link(targets).invoke('addStatus', effect.status);
 		},
@@ -419,7 +433,7 @@ Game = {
 		heirloom: {
 			name: "Heirloom",
 			type: 'sword',
-			level: 5,
+			level: 10,
 			techniques: [
 				'swordSlash',
 				'quickstrike'
@@ -438,7 +452,7 @@ Game = {
 		arsenRifle: {
 			name: "Arsen's Rifle",
 			type: 'gun',
-			level: 50,
+			level: 10,
 			techniques: [
 				'potshot',
 				'sharpshooter',

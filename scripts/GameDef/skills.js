@@ -341,6 +341,27 @@ Game.skills =
 			}
 		]
 	},
+	heal: {
+		name: "Heal",
+		category: 'magic',
+		targetType: 'ally',
+		baseMPCost: 20,
+		actions: [
+			{
+				announceAs: "Heal",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 25,
+						element: 'cure'
+					}
+				]
+			}
+		]
+	},
 	lightning: {
 		name: "Lightning",
 		category: 'magic',
@@ -380,27 +401,6 @@ Game.skills =
 						damageType: 'magic',
 						power: 25,
 						element: 'earth'
-					}
-				]
-			}
-		]
-	},
-	heal: {
-		name: "Heal",
-		category: 'magic',
-		targetType: 'ally',
-		baseMPCost: 25,
-		actions: [
-			{
-				announceAs: "Heal",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'heal',
-						power: 25,
-						element: 'cure'
 					}
 				]
 			}
@@ -458,18 +458,19 @@ Game.skills =
 		name: "Rejuvenate",
 		category: 'magic',
 		targetType: 'ally',
-		baseMPCost: 40,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
-				rank: 2,
+				rank: 3,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
 						power: 50,
-						element: 'cure'
+						element: 'cure',
+						addStatus: 'reGen'
 					}
 				]
 			}
@@ -527,7 +528,7 @@ Game.skills =
 		name: "Inferno",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 125,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "Inferno",
@@ -548,12 +549,12 @@ Game.skills =
 	renewal: {
 		name: "Renewal",
 		category: 'magic',
-		targetType: 'ally',
-		baseMPCost: 75,
+		targetType: 'allAllies',
+		baseMPCost: 200,
 		actions: [
 			{
 				announceAs: "Renewal",
-				rank: 2,
+				rank: 4,
 				accuracyType: 'magic',
 				effects: [
 					{
@@ -561,6 +562,11 @@ Game.skills =
 						type: 'heal',
 						power: 80,
 						element: 'cure'
+					},
+					{
+						targetHint: 'user',
+						type: 'addCondition',
+						condition: 'healingAura'
 					}
 				]
 			}
@@ -570,7 +576,7 @@ Game.skills =
 		name: "Subzero",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 125,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "Subzero",
@@ -592,7 +598,7 @@ Game.skills =
 		name: "10.5",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 125,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "10.5",
@@ -603,8 +609,12 @@ Game.skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 80,
-						element: 'earth',
-						addStatus: 'disarray'
+						element: 'earth'
+					},
+					{
+						targetHint: 'user',
+						type: 'addCondition',
+						condition: 'generalDisarray'
 					}
 				]
 			}
@@ -640,7 +650,7 @@ Game.skills =
 		name: "Convalesce",
 		category: 'strategy',
 		targetType: 'ally',
-		baseMPCost: 100,
+		baseMPCost: 75,
 		allowAsCounter: false,
 		actions: [
 			{

@@ -465,6 +465,7 @@ Battle.prototype.tick = function()
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	Link(unitLists).unroll().invoke('beginCycle');
 	Link(this.conditions).invoke('beginCycle');
+	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
 		Link(unitLists).unroll().each(function(unit) {
