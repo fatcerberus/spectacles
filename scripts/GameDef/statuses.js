@@ -134,7 +134,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			if (eventData.stance == BattleStance.counter) {
-				this.fatigue *= 1.33;
+				this.fatigue *= Math.sqrt(Game.bonusMultiplier);
 				unit.resetCounter(this.knockback);
 				++this.knockback;
 			}
@@ -171,7 +171,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
-				eventData.amount *= 2.0;
+				eventData.amount *= Game.bonusMultiplier;
 				Console.writeLine("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
 			}
@@ -241,7 +241,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
-				eventData.amount *= 2.0;
+				eventData.amount *= Game.bonusMultiplier;
 				Console.writeLine("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
 			}

@@ -11,21 +11,12 @@ Game = {
 	bossHPPerBar: 500,
 	partyHPPerBar: 250,
 	
-	counterBonus: 2.0,
+	bonusMultiplier: 1.5,
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
 	guardBreakRank: 1,
 	stanceChangeRank: 5,
-	
-	namedStats: {
-		vit: "Vitality",
-		str: "Strength",
-		def: "Defense",
-		foc: "Focus",
-		mag: "Magic",
-		agi: "Agility"
-	},
 };
 
 EvaluateScript('GameDef/battles.js');
@@ -37,4 +28,5 @@ EvaluateScript('GameDef/math.js');
 EvaluateScript('GameDef/moveEffects.js');
 EvaluateScript('GameDef/skills.js');
 EvaluateScript('GameDef/statuses.js');
+EvaluateScript('GameDef/stats.js');
 EvaluateScript('GameDef/weapons.js');

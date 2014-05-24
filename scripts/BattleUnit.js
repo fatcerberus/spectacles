@@ -80,7 +80,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.skills.push(skills[i]);
 		}
 		this.items = clone(this.partyMember.items);
-		for (var stat in Game.namedStats) {
+		for (var stat in basis.stats) {
 			this.stats[stat] = basis.stats[stat];
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
@@ -93,7 +93,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
-		for (var stat in Game.namedStats) {
+		for (var stat in this.enemyInfo.baseStats) {
 			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
 		}
 		this.items = [];
@@ -202,7 +202,7 @@ BattleUnit.prototype.beginCycle = function()
 	var baseStatSum = 0;
 	var statSum = 0;
 	var numStats = 0;
-	for (var stat in Game.namedStats) {
+	for (var stat in this.battlerInfo.stats) {
 		++numStats;
 		this.battlerInfo.stats[stat] = Math.round(this.battlerInfo.stats[stat]);
 		statSum += this.battlerInfo.stats[stat];
@@ -477,7 +477,7 @@ BattleUnit.prototype.performAction = function(action, move)
 			var experience = {};
 			for (var i = 0; i < unitsHit.length; ++i) {
 				if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-					for (var statID in Game.namedStats) {
+					for (var statID in this.battlerInfo.stats) {
 						if (!(statID in experience)) {
 							experience[statID] = 0;
 						}
@@ -487,7 +487,7 @@ BattleUnit.prototype.performAction = function(action, move)
 			}
 			for (var statID in experience) {
 				this.stats[statID].grow(experience[statID]);
-				Console.writeLine(this.name + " got " + experience[statID] + " EXP for " + Game.namedStats[statID]);
+				Console.writeLine(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID]);
 				Console.append("value: " + this.stats[statID].getValue());
 			}
 		}
@@ -541,10 +541,10 @@ BattleUnit.prototype.refreshInfo = function()
 	this.battlerInfo.tier = this.tier;
 	this.battlerInfo.baseStats = {};
 	this.battlerInfo.stats = { maxHP: this.maxHP };
-	for (var stat in Game.namedStats) {
-		this.battlerInfo.baseStats[stat] = this.isPartyMember() ?
-			this.character.baseStats[stat] :
-			this.enemyInfo.baseStats[stat];
+	var baseStatTable = this.isPartyMember() ? this.character.baseStats
+		: this.enemyInfo.baseStats;
+	for (var stat in baseStatTable) {
+		this.battlerInfo.baseStats[stat] = baseStatTable[stat];
 		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
 	}
 	this.battlerInfo.statuses = [];

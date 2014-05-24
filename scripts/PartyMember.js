@@ -29,8 +29,8 @@ function PartyMember(characterID, level)
 	
 	var character = Game.characters[this.characterID];
 	this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
-	for (var name in Game.namedStats) {
-		this.stats[name] = new Stat(character.baseStats[name], level, true, 1.0);
+	for (var statID in character.baseStats) {
+		this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
 	}
 	Console.writeLine("Created new PC " + this.name);
 	Console.append("lvl: " + this.getLevel());
@@ -52,9 +52,9 @@ PartyMember.prototype.getInfo = function()
 	}
 	info.baseStats = {};
 	info.stats = {};
-	for (var stat in Game.namedStats) {
-		info.baseStats[stat] = this.characterDef.baseStats[stat];
-		info.stats[stat] = this.stats[stat].getValue();
+	for (var statID in this.characterDef.baseStats) {
+		info.baseStats[statID] = this.characterDef.baseStats[statID];
+		info.stats[statID] = this.stats[statID].getValue();
 	}
 	return info;
 };
