@@ -72,26 +72,6 @@ Game.math =
 		}
 	},
 	
-	// Healing output functions
-	healing: function(userInfo, targetInfo, power) {
-		return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
-			userInfo.stats.mag,
-			Game.math.statValue(0, targetInfo.level));
-	},
-	
-	// Guard Stance-related functions
-	guardStance: {
-		damageTaken: function(baseDamage, tags) {
-			if (Link(tags).contains('deathblow')) {
-				return baseDamage - 1;
-			} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
-				return baseDamage;
-			} else {
-				return baseDamage / 2.0;
-			}
-		}
-	},
-	
 	// Battle experience functions
 	experience: {
 		skill: function(skillInfo, userInfo, targetsInfo) {
@@ -108,6 +88,26 @@ Game.math =
 		stat: function(statID, enemyUnitInfo) {
 			return enemyUnitInfo.level * enemyUnitInfo.baseStats[statID];
 		}
+	},
+	
+	// Guard Stance-related functions
+	guardStance: {
+		damageTaken: function(baseDamage, tags) {
+			if (Link(tags).contains('deathblow')) {
+				return baseDamage - 1;
+			} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
+				return baseDamage;
+			} else {
+				return baseDamage / 2.0;
+			}
+		}
+	},
+	
+	// Healing output functions
+	healing: function(userInfo, targetInfo, power) {
+		return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
+			userInfo.stats.mag,
+			Game.math.statValue(0, targetInfo.level));
 	},
 	
 	// .hp() function

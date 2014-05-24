@@ -30,7 +30,7 @@ Game.conditions =
 		name: "G. Disarray",
 		
 		actionTaken: function(battle, eventData) {
-			eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+			eventData.action.rank = Math.min(Math.floor(Math.random() * 5 + 1), 5);
 		}
 	},
 	

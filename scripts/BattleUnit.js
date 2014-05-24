@@ -69,6 +69,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.partyMember = basis;
 		this.id = this.partyMember.characterID;
 		this.character = Game.characters[this.partyMember.characterID];
+		this.baseStats = this.character.baseStats;
 		this.tier = 1;
 		this.maxHP = Math.round(Math.max(Game.math.hp(this.character, this.partyMember.getLevel(), this.tier), 1));
 		this.hp = this.maxHP;
@@ -80,8 +81,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			this.skills.push(skills[i]);
 		}
 		this.items = clone(this.partyMember.items);
-		for (var stat in basis.stats) {
-			this.stats[stat] = basis.stats[stat];
+		for (var statID in this.baseStats) {
+			this.stats[statID] = this.partyMember.stats[statID];
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
 	} else {
@@ -89,12 +90,13 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
 		}
 		this.enemyInfo = Game.enemies[basis];
+		this.baseStats = this.enemyInfo.baseStats;
 		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];
 		this.id = basis;
 		this.name = this.enemyInfo.name;
 		this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
-		for (var stat in this.enemyInfo.baseStats) {
-			this.stats[stat] = new Stat(this.enemyInfo.baseStats[stat], battle.getLevel(), false);
+		for (var statID in this.baseStats) {
+			this.stats[statID] = new Stat(this.baseStats[statID], battle.getLevel(), false);
 		}
 		this.items = [];
 		if ('items' in this.enemyInfo) {
@@ -202,12 +204,12 @@ BattleUnit.prototype.beginCycle = function()
 	var baseStatSum = 0;
 	var statSum = 0;
 	var numStats = 0;
-	for (var stat in this.battlerInfo.stats) {
+	for (var statID in this.baseStats) {
 		++numStats;
-		this.battlerInfo.stats[stat] = Math.round(this.battlerInfo.stats[stat]);
-		statSum += this.battlerInfo.stats[stat];
-		this.battlerInfo.baseStats[stat] = Math.round(this.battlerInfo.baseStats[stat]);
-		baseStatSum += this.battlerInfo.baseStats[stat];
+		this.battlerInfo.stats[statID] = Math.round(this.battlerInfo.stats[statID]);
+		statSum += this.battlerInfo.stats[statID];
+		this.battlerInfo.baseStats[statID] = Math.round(this.battlerInfo.baseStats[statID]);
+		baseStatSum += this.battlerInfo.baseStats[statID];
 	}
 	this.battlerInfo.statAverage = Math.round(statSum / numStats);
 	this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
@@ -477,7 +479,7 @@ BattleUnit.prototype.performAction = function(action, move)
 			var experience = {};
 			for (var i = 0; i < unitsHit.length; ++i) {
 				if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-					for (var statID in this.battlerInfo.stats) {
+					for (var statID in unitsHit[i].baseStats) {
 						if (!(statID in experience)) {
 							experience[statID] = 0;
 						}
@@ -541,11 +543,9 @@ BattleUnit.prototype.refreshInfo = function()
 	this.battlerInfo.tier = this.tier;
 	this.battlerInfo.baseStats = {};
 	this.battlerInfo.stats = { maxHP: this.maxHP };
-	var baseStatTable = this.isPartyMember() ? this.character.baseStats
-		: this.enemyInfo.baseStats;
-	for (var stat in baseStatTable) {
-		this.battlerInfo.baseStats[stat] = baseStatTable[stat];
-		this.battlerInfo.stats[stat] = this.stats[stat].getValue();
+	for (var statID in this.baseStats) {
+		this.battlerInfo.baseStats[statID] = this.baseStats[statID];
+		this.battlerInfo.stats[statID] = this.stats[statID].getValue();
 	}
 	this.battlerInfo.statuses = [];
 	Link(this.statuses).pluck('statusID').each(function(statusID) {
@@ -634,7 +634,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {
 			Console.writeLine(this.name + " hit from Counter Stance, damage increased");
-			amount = Math.round(amount * Game.counterBonus);
+			amount = Math.round(amount * Game.bonusMultiplier);
 		}
 		if (this.stance != BattleStance.attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));

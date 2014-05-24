@@ -27,8 +27,9 @@ Game.statuses =
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
-			this.multiplier = eventData.skill.category != this.lastSkillType ? 1.0
-				: this.multiplier * 0.75;
+			this.multiplier = eventData.skill.category == this.lastSkillType
+				? this.multiplier / Math.sqrt(Game.bonusMultiplier)
+				: 1.0;
 			this.lastSkillType = eventData.skill.category;
 			if (this.multiplier != oldMultiplier) {
 				if (this.multiplier < 1.0) {
@@ -68,7 +69,7 @@ Game.statuses =
 		tags: [ 'acute' ],
 		overrules: [ 'immune' ],
 		statModifiers: {
-			agi: 0.66
+			agi: 1 / Game.bonusMultiplier
 		},
 		ignoreEvents: [
 			'itemUsed',
@@ -87,7 +88,7 @@ Game.statuses =
 				.each(function(effect)
 			{
 				var oldPower = effect.power;
-				effect.power = Math.round(2 * effect.power);
+				effect.power = Math.round(Game.bonusMultiplier * effect.power);
 				if (effect.power != oldPower) {
 					Console.writeLine("Outgoing POW modified by Drunk to " + effect.power);
 					Console.append("was: " + oldPower);
@@ -95,7 +96,7 @@ Game.statuses =
 			}.bind(this));
 		},
 		aiming: function(unit, eventData) {
-			eventData.aimRate *= 0.75;
+			eventData.aimRate /= Math.sqrt(Game.bonusMultiplier);
 		},
 		beginTurn: function(unit, eventData) {
 			--this.turnsLeft;
@@ -105,7 +106,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (Link(eventData.tags).contains('earth')) {
-				eventData.amount *= 2;
+				eventData.amount *= Game.bonusMultiplier;
 			}
 		},
 	},
@@ -285,7 +286,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (eventData.attacker !== null) {
-				eventData.amount *= 1.33;
+				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
 			}
 		}
 	},
@@ -294,13 +295,14 @@ Game.statuses =
 		name: "Protect",
 		tags: [ 'buff' ],
 		initialize: function(unit) {
-			this.multiplier = 0.5;
+			this.multiplier = 1 / Game.bonusMultiplier;
+			this.lossPerHit = (1.0 - this.multiplier) / 10;
 		},
 		damaged: function(unit, eventData) {
 			var isProtected = !Link(eventData.tags).some([ 'special', 'zombie' ]);
 			if (isProtected) {
 				eventData.amount *= this.multiplier;
-				this.multiplier += 0.05;
+				this.multiplier += this.lossPerHit;
 				if (this.multiplier >= 1.0) {
 					unit.liftStatus('protect');
 				}
@@ -312,7 +314,8 @@ Game.statuses =
 		name: "ReGen",
 		tags: [ 'buff' ],
 		beginCycle: function(unit, eventData) {
-			unit.heal(0.01 * unit.maxHP / unit.tier, [ 'reGen' ]);
+			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			unit.heal(0.25 * vit, [ 'reGen' ]);
 		}
 	},
 	
