@@ -3,9 +3,16 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
+Game.initialParty =
+[
+	'scott'
+];
+
 Game.characters =
 {
 	// Scott Starcross
+	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
+	// naive to a fault.
 	scott: {
 		name: "Scott",
 		fullName: "Scott Starcross",
@@ -26,7 +33,6 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
 			'hellfire',
 			'windchill',
 			'electrocute',
@@ -78,10 +84,7 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
-			'rejuvenate',
-			'renewal',
-			'convalesce'
+			'heal'
 		]
 	},
 	

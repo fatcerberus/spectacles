@@ -41,7 +41,7 @@ function MoveMenu(unit, battle, stance)
 		var category = skill.skillInfo.category;
 		if (!(category in drawerTable)) {
 			drawerTable[category] = {
-				name: Game.moveCategories[category],
+				name: Game.skillCategories[category],
 				contents: [],
 				cursor: 0
 			};

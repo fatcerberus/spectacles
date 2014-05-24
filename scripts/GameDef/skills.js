@@ -1,3 +1,15 @@
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2013 Power-Command
+***/
+
+Game.skillCategories =
+{
+	attack: "Attack",
+	magic: "Magic",
+	strategy: "Strategy"
+};
+
 Game.skills =
 {
 	// Sword/slashing techniques
@@ -29,7 +41,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 50
+						power: 80
 					}
 				]
 			}
@@ -63,7 +75,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 75
+						power: 50
 					}
 				]
 			}
@@ -268,7 +280,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 75
+						power: 80
 					}
 				]
 			}

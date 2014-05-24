@@ -177,7 +177,8 @@ Game.statuses =
 			}
 		},
 		endTurn: function(unit, eventData) {
-			unit.takeDamage(0.02 * unit.maxHP * this.multiplier / unit.tier, [ 'ice', 'special' ]);
+			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			unit.takeDamage(0.5 * vit * this.multiplier, [ 'ice', 'special' ]);
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
 		}
 	},
@@ -218,7 +219,8 @@ Game.statuses =
 			this.multiplier = 1.0;
 		},
 		beginCycle: function(unit, eventData) {
-			unit.takeDamage(0.02 * unit.maxHP * this.multiplier / unit.tier, [ 'fire', 'special' ]);
+			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			unit.takeDamage(0.5 * vit * this.multiplier, [ 'fire', 'special' ]);
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
 		attacked: function(unit, eventData) {

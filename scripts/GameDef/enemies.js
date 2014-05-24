@@ -16,7 +16,7 @@ Game.enemies =
 		fullName: "Headless Horse",
 		aiType: HeadlessHorseAI,
 		hasLifeBar: true,
-		tier: 3,
+		tier: 2,
 		turnRatio: 3.0,
 		baseStats: {
 			vit: 50,
@@ -45,7 +45,7 @@ Game.enemies =
 		fullName: "Robert Spellbinder",
 		aiType: Robert2AI,
 		hasLifeBar: true,
-		tier: 4,
+		tier: 3,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 75,
@@ -77,7 +77,7 @@ Game.enemies =
 		fullName: "Scott Starcross",
 		aiType: NumberElevenAI,
 		hasLifeBar: true,
-		tier: 4,
+		tier: 3,
 		turnRatio: 3.0,
 		baseStats: {
 			vit: 80,
@@ -100,7 +100,7 @@ Game.enemies =
 		fullName: "Xemnas Xehanort Ansem",
 		aiType: NumberElevenAI,
 		hasLifeBar: true,
-		tier: 5,
+		tier: 4,
 		turnRatio: 100.0,
 		baseStats: {
 			vit: 100,

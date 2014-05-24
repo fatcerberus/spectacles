@@ -294,13 +294,13 @@ BattleUnit.prototype.evade = function(actingUnit, action)
 {
 	this.actor.showDamage("miss");
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
-	/*var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
+	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
 	if (isMelee && this.stance == BattleStance.guard && isGuardBroken) {
 		this.stance = BattleStance.counter;
 		this.counterTarget = actingUnit;
 		Console.writeLine(this.name + "'s Counter Stance activated");
-	}*/
+	}
 };
 
 // .getHealth() method
@@ -634,7 +634,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.counter) {
 			Console.writeLine(this.name + " hit from Counter Stance, damage increased");
-			amount = Math.round(amount * 2.0);
+			amount = Math.round(amount * Game.counterBonus);
 		}
 		if (this.stance != BattleStance.attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
@@ -680,20 +680,14 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	/*if (this.stance == BattleStance.guard && isMelee) {
-		action.accuracyRate = 'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
-	}*/
+	if (this.stance == BattleStance.guard && isMelee) {
+		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
+	}
 	if (this.stance == BattleStance.guard && isGuardBroken) {
 		Console.writeLine(this.name + "'s Guard Stance was broken");
 		Console.append("by: " + actingUnit.name);
 		this.newStance = BattleStance.attack;
-		if (isMelee) {
-			this.stance = BattleStance.counter;
-			this.counterTarget = actingUnit;
-			Console.writeLine(this.name + "'s Counter Stance activated");
-		} else {
-			this.resetCounter(Game.guardBreakRank);
-		}
+		this.resetCounter(Game.guardBreakRank);
 	}
 };
 

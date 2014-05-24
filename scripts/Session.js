@@ -26,10 +26,9 @@ function Session(difficulty)
 	
 	this.difficulty = difficulty;
 	this.party = new Party();
-	for (var i = 0; i < Game.initialPartyMembers.length; ++i) {
-		var name = Game.initialPartyMembers[i];
-		this.party.add(name);
-	}
+	Link(Game.initialParty).each(function(characterID) {
+		this.party.add(characterID);
+	}.bind(this));
 }
 
 // Session.fromFile() constructor

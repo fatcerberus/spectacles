@@ -17,7 +17,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = true;
+var DBG_LOG_CONSOLE_OUTPUT = false;
 var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
@@ -62,14 +62,14 @@ function game()
 		battleID: 'robert2',
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//elysia: { level: 50, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			//bruce: { level: 50, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			//elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
+			//bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//robert: { level: 50, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//maggie: { level: 50, items: [ 'redBull', 'alcohol' ] },
+			//maggie: { level: 8, items: [ 'redBull', 'alcohol' ] },
 			//amanda: { level: 50, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
 	};
-	Link(Game.initialPartyMembers).each(function(id) {
+	Link(Game.initialParty).each(function(id) {
 		session.party.remove(id);
 	});
 	for (var id in setup.party) {

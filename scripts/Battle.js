@@ -379,7 +379,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		var effectHandler = Game.effects[effect.type];
+		var effectHandler = Game.moveEffects[effect.type];
 		Console.writeLine("Applying effect '" + effect.type + "'");
 		Console.append("retarg: " + effect.targetHint);
 		effectHandler(actingUnit, [ actingUnit ], effect);
@@ -424,7 +424,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	{
 		Console.writeLine("Applying effect '" + effect.type + "'");
 		Console.append("retarg: " + effect.targetHint);
-		Game.effects[effect.type](actingUnit, targetsHit, effect);
+		Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
 	});
 	Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
