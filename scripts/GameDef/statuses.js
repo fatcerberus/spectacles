@@ -5,6 +5,9 @@
 
 Game.statuses =
 {
+	// Crackdown status
+	// Progressively lowers the efficacy of attacks when the same type of
+	// attack is used in succession.
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'debuff' ],
@@ -41,6 +44,9 @@ Game.statuses =
 		}
 	},
 	
+	// Disarray status
+	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
+	// Lasts for 3 attacks.
 	disarray: {
 		name: "Disarray",
 		tags: [ 'acute', 'ailment' ],
@@ -64,6 +70,9 @@ Game.statuses =
 		}
 	},
 	
+	// Drunk status
+	// Increases attack power, but reduces the affected unit's speed and accuracy and
+	// creates a weakness to Earth damage.
 	drunk: {
 		name: "Drunk",
 		tags: [ 'acute' ],
@@ -111,6 +120,9 @@ Game.statuses =
 		},
 	},
 	
+	// Final Stand status
+	// Progressively weakens the affected unit and causes knockback delay when an
+	// attack is countered.
 	finalStand: {
 		name: "Final Stand",
 		tags: [ 'special' ],
@@ -147,6 +159,9 @@ Game.statuses =
 		}
 	},
 	
+	// Frostbite status
+	// Inflicts a small amount of Ice damage at the end of the affected unit's turn.
+	// The effect progressively worsens, up to double its original severity.
 	frostbite: {
 		name: "Frostbite",
 		tags: [ 'ailment', 'damage' ],
@@ -184,6 +199,9 @@ Game.statuses =
 		}
 	},
 	
+	// Ghost status
+	// Prevents the affected unit from being hit with physical or projectile attacks
+	// from a non-Ghost and vice versa.
 	ghost: {
 		name: "Ghost",
 		tags: [ 'ailment', 'undead' ],
@@ -212,6 +230,9 @@ Game.statuses =
 		}
 	},
 	
+	// Ignite status
+	// Inflicts a small amount of Fire damage on the affected unit once per cycle. The
+	// effect progressively diminishes, ultimately settling at half of its initial severity.
 	ignite: {
 		name: "Ignite",
 		tags: [ 'ailment', 'damage' ],
@@ -249,6 +270,9 @@ Game.statuses =
 		}
 	},
 	
+	// Immune status
+	// Grants the affected unit full immunity to most negative status afflictions
+	// for a limited time.
 	immune: {
 		name: "Immune",
 		tags: [ 'buff' ],
@@ -270,14 +294,9 @@ Game.statuses =
 		}
 	},
 	
-	lockstep: {
-		name: "Lockstep",
-		tags: [ 'debuff' ],
-		afflicted: function(unit, eventData) {
-			
-		}
-	},
-	
+	// Off Guard status
+	// Imbued as part of several two-turn attacks such as Charge Slash. If the unit
+	// is damaged by an attack while Off Guard, the damage will be increased.
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
@@ -291,6 +310,9 @@ Game.statuses =
 		}
 	},
 	
+	// Protect status
+	// Reduces damage from attacks. Each time the Protected unit is damaged by an attack,
+	// the effectiveness of Protect is reduced.
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
@@ -310,6 +332,9 @@ Game.statuses =
 		}
 	},
 	
+	// ReGen status
+	// Restores a small amount of HP to the affected unit at the beginning of each
+	// cycle.
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
@@ -337,13 +362,16 @@ Game.statuses =
 		}
 	},
 	
+	// Skeleton status
+	// The affected unit is still able to battle at 0 HP, but with reduced STR and MAG stats.
+	// Taking physical or slash damage in this state will result in death.
 	skeleton: {
 		name: "Skeleton",
 		tags: [ 'undead' ],
 		overrules: [ 'ghost', 'zombie' ],
 		statModifiers: {
-			str: 0.5,
-			mag: 0.5
+			str: 1 / Game.bonusMultiplier,
+			mag: 1 / Game.bonusMultiplier
 		},
 		initialize: function(unit) {
 			this.allowDeath = false;
@@ -416,6 +444,11 @@ Game.statuses =
 		}
 	},
 	
+	// Zombie status
+	// Causes curative magic and items to inflict damage instead of healing.
+	// If the affected unit reaches 0 HP, this status will progress to Skeleton and
+	// the unit will be allowed to continue battling. Converted restoratives will
+	// kill outright, however.
 	zombie: {
 		name: "Zombie",
 		tags: [ 'ailment', 'undead' ],
