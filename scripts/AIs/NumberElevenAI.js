@@ -11,13 +11,32 @@
 //     aiContext: The AI context that this AI will execute under.
 function NumberElevenAI(aiContext)
 {
+	this.movePool = [
+		{ id: 'omni', weight: 1 },
+		{ id: 'necromancy', weight: 3 },
+		{ id: 'crackdown', weight: 2 },
+		{ id: 'inferno', weight: 5 },
+		{ id: 'subzero', weight: 3 },
+		{ id: 'zappytimes', weight: 2 },
+		{ id: 'tenPointFive', weight: 4 },
+		{ id: 'hellfire', weight: 7 },
+		{ id: 'windchill', weight: 5 },
+		{ id: 'electrocute', weight: 3 },
+		{ id: 'upheaval', weight: 5 },
+		{ id: 'flare', weight: 6 },
+		{ id: 'chill', weight: 6 },
+		{ id: 'lightning', weight: 7 },
+		{ id: 'quake', weight: 6 },
+		{ id: 'berserkCharge', weight: 2 },
+		{ id: 'swordSlash', weight: 15 },
+		{ id: 'quickstrike', weight: 10 },
+		{ id: 'chargeSlash', weight: 8 },
+	];
 	this.aic = aiContext;
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.aic.battle.unitKilled.addHook(this, this.onUnitKilled);
 	this.cadavers = [];
-	this.isOmniPending = true;
 	this.isOpenerPending = true;
-	this.qsTarget = null;
 }
 
 // .dispose() method
@@ -28,6 +47,23 @@ NumberElevenAI.prototype.dispose = function()
 	this.aic.battle.unitKilled.removeHook(this, this.onUnitKilled);
 };
 
+// .selectMove() method
+// Selects a random move from Scott's move pool.
+NumberElevenAI.prototype.selectMove = function()
+{
+	var weightSum = Link(this.movePool)
+		.reduce(function(value, item)
+	{
+		return value + item.weight;
+	}, 0);
+	var selector = Math.min(Math.floor(Math.random() * weightSum), weightSum - 1);
+	var move = Link(this.movePool).first(function(item) {
+		selector -= item.weight;
+		return selector < 0;
+	});
+	return move.id;
+};
+
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
 NumberElevenAI.prototype.strategize = function()
@@ -36,39 +72,13 @@ NumberElevenAI.prototype.strategize = function()
 		this.isOpenerPending = false;
 		this.aic.queueSkill('berserkCharge');
 	} else {
-		if (this.qsTarget !== null) {
-			var qsTurns = this.aic.predictSkillTurns('quickstrike');
-			var skillID = qsTurns[0].unit === this.aic.unit ? 'quickstrike' : 'swordSlash';
-			this.aic.queueSkill(skillID, this.qsTarget);
-			this.qsTarget = skillID == 'quickstrike' ? this.qsTarget : null;
-		} else if (this.cadavers.length > 1 && this.isOmniPending) {
-			this.isOmniPending = false;
-			this.aic.queueSkill('omni');
-		} else {
-			this.aic.queueSkill('swordSlash');
-		}
-		if (this.cadavers.length < 2) {
-			this.isOmniPending = true;
-		}
+		var skillID = this.selectMove();
+		this.aic.queueSkill(skillID);
 	}
 };
 
 NumberElevenAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (this.aic.unit.hasStatus('offGuard')) {
-		return;
-	}
-	if (Link(targetIDs).contains('numberEleven')) {
-		if (skillID == 'omni') {
-			if (this.qsTarget !== null) {
-				this.qsTarget = userID;
-			} else {
-				this.aic.queueSkill('inferno');
-			}
-		} else if (skillID == 'sharpshooter') {
-			this.qsTarget = userID;
-		}
-	}
 };
 
 NumberElevenAI.prototype.onUnitKilled = function(unitID)
