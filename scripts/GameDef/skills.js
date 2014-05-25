@@ -535,7 +535,7 @@ Game.skills =
 		]
 	},
 	
-	// Rank 4 magic - damage + status, group-cast
+	// Rank 4 magic - damage + field condition, group-cast
 	inferno: {
 		name: "Inferno",
 		category: 'magic',
@@ -551,8 +551,12 @@ Game.skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 80,
-						element: 'fire',
-						addStatus: 'ignite'
+						element: 'fire'
+					},
+					{
+						targetHint: 'user',
+						type: 'addCondition',
+						condition: 'inferno'
 					}
 				]
 			}
@@ -599,8 +603,12 @@ Game.skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 80,
-						element: 'ice',
-						addStatus: 'frostbite'
+						element: 'ice'
+					},
+					{
+						targetHint: 'user',
+						type: 'addCondition',
+						condition: 'subzero'
 					}
 				]
 			}
@@ -627,6 +635,32 @@ Game.skills =
 						targetHint: 'user',
 						type: 'addCondition',
 						condition: 'generalDisarray'
+					}
+				]
+			}
+		]
+	},
+	zappyTimes: {
+		name: "Zappy Times",
+		category: 'magic',
+		targetType: 'allEnemies',
+		baseMPCost: 100,
+		actions: [
+			{
+				announceAs: "Zappy Times",
+				rank: 4,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 80,
+						element: 'lightning'
+					},
+					{
+						targetHint: 'user',
+						type: 'addCondition',
+						condition: 'thunderstorm'
 					}
 				]
 			}

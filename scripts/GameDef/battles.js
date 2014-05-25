@@ -65,7 +65,7 @@ Game.battles =
 			var katelynUnit = this.findUnit('katelyn');
 			var maggieUnit = this.findUnit('maggie');
 			new Scenario()
-				.talk("Katelyn", true, 1.0, Infinity, "Hey guys! What'cha doing?")
+				.talk("Katelyn", true, 2.0, Infinity, "Hey guys! What'cha doing?")
 				.talk("maggie", true, 2.0, Infinity, "Where the hell did this girl come from? Screw this, I'ma eat her!")
 				.fork()
 					.pause(1.5)

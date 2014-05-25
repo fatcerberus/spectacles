@@ -623,7 +623,12 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	amount = Math.round(amount * multiplier);
 	if (amount > 0 && !isPriority) {
-		var eventData = { amount: amount, tags: tags, actingUnit: this.lastAttacker, cancel: false };
+		var eventData = {
+			unit: this, amount: amount, tags: tags,
+			actingUnit: this.lastAttacker,
+			cancel: false
+		};
+		this.battle.raiseEvent('unitDamaged', eventData);
 		this.raiseEvent('damaged', eventData);
 		if (!eventData.cancel) {
 			amount = Math.round(eventData.amount);
@@ -751,6 +756,8 @@ BattleUnit.prototype.tick = function()
 			}
 			this.raiseEvent('endTurn');
 		}
+		var eventData = { actingUnit: this };
+		this.battle.raiseEvent('endTurn', eventData);
 		this.actor.animate('dormant');
 		this.battle.resume();
 		return true;

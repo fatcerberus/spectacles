@@ -269,9 +269,9 @@ Battle.prototype.isActive = function()
 // Removes a battle condition from play.
 // Arguments:
 //     conditionID: The ID of the battle condition, as defined in the gamedef.
-Battle.prototype.liftCondition = function()
+Battle.prototype.liftCondition = function(conditionID)
 {
-	for (var i = 0; i < this.condition.length; ++i) {
+	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
 			Console.writeLine("Battle condition " + this.conditions[i].name + " lifted");
 			this.conditions.splice(i, 1);

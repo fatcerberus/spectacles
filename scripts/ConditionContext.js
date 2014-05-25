@@ -11,14 +11,14 @@
 function ConditionContext(conditionID, battle)
 {
 	if (!(conditionID in Game.conditions)) {
-		Abort("ConditionContext(): The battle condition definition '" + conditionID + "' doesn't exist!");
+		Abort("ConditionContext(): The field condition definition '" + conditionID + "' doesn't exist!");
 	}
 	this.battle = battle;
 	this.context = {};
 	this.name = Game.conditions[conditionID].name;
 	this.conditionDef = Game.conditions[conditionID];
 	this.conditionID = conditionID;
-	Console.writeLine("Initializing BC context " + this.name);
+	Console.writeLine("Initializing FC context " + this.name);
 	if ('overrules' in this.conditionDef) {
 		for (var i = 0; i < this.conditionDef.overrules.length; ++i) {
 			this.battle.liftCondition(this.conditionDef.overrules[i]);
@@ -55,7 +55,7 @@ ConditionContext.prototype.invoke = function(eventID, data)
 	if (!(eventID in this.conditionDef)) {
 		return;
 	}
-	Console.writeLine("Invoking BC " + this.name);
+	Console.writeLine("Invoking FC " + this.name);
 	Console.append("evt: " + eventID);
 	this.conditionDef[eventID].call(this.context, this.battle, data);
 };
