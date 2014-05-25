@@ -4,8 +4,9 @@
 ***/
 
 // Game object
-// Represents the game.
-Game = {
+// Defines basic gameplay parameters.
+Game =
+{
 	title: "Spectacles: Bruce's Story",
 	
 	bossHPPerBar: 500,

@@ -8,6 +8,7 @@ Game.weaponTypes =
 	bow: "Bow",
 	guitar: "Guitar",
 	gun: "Gun",
+	staff: "Staff",
 	sword: "Sword"
 };
 
@@ -17,7 +18,7 @@ Game.weapons =
 	heirloom: {
 		name: "Heirloom",
 		type: 'sword',
-		level: 10,
+		level: 5,
 		techniques: [
 			'swordSlash',
 			'quickstrike'
@@ -48,7 +49,7 @@ Game.weapons =
 	arsenRifle: {
 		name: "Arsen's Rifle",
 		type: 'gun',
-		level: 10,
+		level: 5,
 		techniques: [
 			'potshot',
 			'sharpshooter',
@@ -60,11 +61,18 @@ Game.weapons =
 	fireAndIce: {
 		name: "Fire & Ice",
 		type: 'bow',
-		level: 10,
+		level: 5,
 		techniques: [
 			'archery',
 			'flareShot',
 			'chillShot'
 		]
+	},
+	
+	// Staves
+	luckyStaff: {
+		name: "Lucky Staff",
+		type: 'staff',
+		level: 5
 	}
 };

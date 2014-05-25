@@ -12,13 +12,13 @@ RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = true;
-var DBG_DISABLE_TEXTBOXES = true;
+var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
-var DBG_DISABLE_TRANSITIONS = true;
+var DBG_DISABLE_TRANSITIONS = false;
 var DBG_LOG_CONSOLE_OUTPUT = false;
-var DBG_SHOW_CONSOLE = true;
+var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
@@ -59,14 +59,14 @@ function game()
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
 	var setup = {
-		battleID: 'robert2',
+		battleID: 'numberEleven',
 		party: {
-			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			//bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			//robert: { level: 50, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//maggie: { level: 8, items: [ 'redBull', 'alcohol' ] },
-			//amanda: { level: 50, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
+			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
+			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
 	};
 	Link(Game.initialParty).each(function(id) {

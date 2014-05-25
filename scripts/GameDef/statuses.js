@@ -6,8 +6,7 @@
 Game.statuses =
 {
 	// Crackdown status
-	// Progressively lowers the efficacy of attacks when the same type of
-	// attack is used in succession.
+	// Progressively lowers attack power when the same type of attack is used in succession.
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'debuff' ],
@@ -121,7 +120,7 @@ Game.statuses =
 	},
 	
 	// Final Stand status
-	// Progressively weakens the affected unit and causes knockback delay when an
+	// Progressively weakens and causes knockback delay to the affected unit when an
 	// attack is countered.
 	finalStand: {
 		name: "Final Stand",
@@ -364,7 +363,8 @@ Game.statuses =
 	
 	// Skeleton status
 	// The affected unit is still able to battle at 0 HP, but with reduced STR and MAG stats.
-	// Taking physical or slash damage in this state will result in death.
+	// Taking physical or slash damage, or being hit with an HP restorative, while in this state will
+	// result in death.
 	skeleton: {
 		name: "Skeleton",
 		tags: [ 'undead' ],
@@ -407,7 +407,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (!Link(eventData.tags).some([ 'special', 'zombie' ])) {
-				eventData.amount *= 1.33;
+				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
 				unit.clearQueue();
 				unit.liftStatus('sniper');
 				unit.resetCounter(1);
@@ -445,9 +445,9 @@ Game.statuses =
 	},
 	
 	// Zombie status
-	// Causes curative magic and items to inflict damage instead of healing.
+	// Causes magic and items which restore HP to inflict an equal amount of damage instead.
 	// If the affected unit reaches 0 HP, this status will progress to Skeleton and
-	// the unit will be allowed to continue battling. Converted restoratives will
+	// the unit will be allowed to continue battling. Converted HP restoratives will
 	// kill outright, however.
 	zombie: {
 		name: "Zombie",

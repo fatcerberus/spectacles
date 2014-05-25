@@ -27,10 +27,10 @@ Game.enemies =
 			agi: 70
 		},
 		damageModifiers: {
-			bow: 2.0,
-			gun: 2.0,
+			bow: Game.bonusMultiplier,
+			gun: Game.bonusMultiplier,
 			fire: -1.0,
-			fat: 2.0
+			fat: Game.bonusMultiplier
 		},
 		immunities: [],
 		munchData: {
@@ -77,8 +77,8 @@ Game.enemies =
 		fullName: "Scott Starcross",
 		aiType: NumberElevenAI,
 		hasLifeBar: true,
-		tier: 3,
-		turnRatio: 3.0,
+		tier: 4,
+		turnRatio: 2.0,
 		baseStats: {
 			vit: 80,
 			str: 80,
@@ -90,27 +90,26 @@ Game.enemies =
 		immunities: [],
 		weapon: 'templeSword',
 	},
-
-	// Xemnas (Kingdom Hearts II)
-	// No idea what the heck this guy is doing here! My guess is he's probably
+	
+	// Katelyn (Spectacles III)
+	// No idea what the heck this girl is doing here! My guess is she's probably
 	// going to get eaten. By a hunger-pig. Which will then, um, eat itself, for... some
 	// reason? Probably to show off.
-	xemnas: {
-		name: "Xemnas",
-		fullName: "Xemnas Xehanort Ansem",
+	katelyn: {
+		name: "Katelyn",
+		fullName: "Katelyn Ignoto",
 		aiType: NumberElevenAI,
 		hasLifeBar: true,
-		tier: 4,
-		turnRatio: 100.0,
+		tier: 1,
 		baseStats: {
-			vit: 100,
-			str: 100,
-			def: 100,
-			foc: 100,
-			mag: 100,
-			agi: 100
+			vit: 50,
+			str: 50,
+			def: 50,
+			foc: 50,
+			mag: 50,
+			agi: 50
 		},
 		immunities: [],
-		weapon: 'arsenRifle'
+		weapon: 'heirloom'
 	}
 };

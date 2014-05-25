@@ -154,12 +154,9 @@ BattleScreen.prototype.go = function(title)
 BattleScreen.prototype.render = function()
 {
 	this.background.blit(0, -16);
-	/*Rectangle(0, 0, 320, 112, CreateColor(0, 128, 0, 255));
-	Rectangle(0, 112, 320, 32, CreateColor(64, 64, 64, 255));
-	Rectangle(0, 144, 320, 96, CreateColor(192, 128, 0, 255));
-	Rectangle(0, 0, 320, 112, CreateColor(128, 128, 128, 255));
-	Rectangle(0, 112, 320, 16, CreateColor(48, 48, 48, 255));
-	Rectangle(0, 128, 320, 112, CreateColor(64, 64, 64, 255));*/
+	Rectangle(0, 0, 320, 128, CreateColor(128, 128, 128, 255));
+	Rectangle(0, 128, 320, 16, CreateColor(48, 48, 48, 255));
+	Rectangle(0, 144, 320, 96, CreateColor(64, 64, 64, 255));
 	for (var type in this.actorTypes) {
 		for (var i = 0; i < this.actors[type].length; ++i) {
 			this.actors[type][i].render();
