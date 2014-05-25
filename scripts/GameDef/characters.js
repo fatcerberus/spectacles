@@ -59,7 +59,11 @@ Game.characters =
 		skills: [
 			'potshot',
 			'shootout',
-			'sharpshooter'
+			'sharpshooter',
+			'flare',
+			'chill',
+			'lightning',
+			'quake'
 		]
 	},
 	
