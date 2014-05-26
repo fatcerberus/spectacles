@@ -357,7 +357,7 @@ Game.skills =
 		name: "Heal",
 		category: 'magic',
 		targetType: 'ally',
-		baseMPCost: 20,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Heal",

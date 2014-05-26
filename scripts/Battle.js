@@ -195,7 +195,9 @@ Battle.prototype.go = function()
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
-		partyMaxMP += Math.round(Game.math.mp.capacity(battlerInfo));
+		var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
+		partyMaxMP += mpDonated;
+		Console.writeLine(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
