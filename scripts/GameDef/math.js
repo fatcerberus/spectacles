@@ -106,7 +106,7 @@ Game.math =
 	// Healing output functions
 	healing: function(userInfo, targetInfo, power) {
 		return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
-			userInfo.stats.mag,
+			Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
 			Game.math.statValue(0, targetInfo.level));
 	},
 	

@@ -156,7 +156,8 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	}
 	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
 	if (!isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
-		var eventData = { statusID: statusID };
+		var eventData = { unit: this, statusID: statusID };
+		this.battle.raiseEvent('unitAfflicted', eventData);
 		this.raiseEvent('afflicted', eventData);
 		if (eventData.statusID === null) {
 			return;
@@ -386,9 +387,20 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 	isPriority = isPriority !== void null ? isPriority : false;
 	
 	if (!isPriority) {
-		var eventData = { amount: Math.round(amount), tags: tags };
-		this.raiseEvent('healed', eventData);
-		amount = Math.round(eventData.amount);
+		var eventData = {
+			unit: this,
+			amount: Math.round(amount), tags: tags,
+			cancel: false
+		};
+		this.battle.raiseEvent('unitHealed', eventData);
+		if (!eventData.cancel) {
+			this.raiseEvent('healed', eventData);
+		}
+		if (!eventData.cancel) {
+			amount = Math.round(eventData.amount);
+		} else {
+			return;
+		}
 	}
 	if (amount > 0) {
 		this.hp = Math.min(this.hp + amount, this.maxHP);
@@ -426,7 +438,10 @@ BattleUnit.prototype.liftStatus = function(statusID)
 		statusID: statusID,
 		cancel: false
 	};
-	this.raiseEvent('cured', eventData);
+	this.raiseEvent('unitCured', eventData);
+	if (!eventData.cancel) {
+		this.raiseEvent('cured', eventData);
+	}
 	if (!eventData.cancel) {
 		for (var i = 0; i < this.statuses.length; ++i) {
 			if (statusID == this.statuses[i].statusID) {
@@ -629,7 +644,9 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			cancel: false
 		};
 		this.battle.raiseEvent('unitDamaged', eventData);
-		this.raiseEvent('damaged', eventData);
+		if (!eventData.cancel) {
+			this.raiseEvent('damaged', eventData);
+		}
 		if (!eventData.cancel) {
 			amount = Math.round(eventData.amount);
 		} else {
@@ -656,13 +673,16 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
 			Console.writeLine(this.name + " dying due to lack of HP");
-			var eventData = { cancel: false };
-			this.raiseEvent('dying', eventData);
+			var eventData = { unit: this, cancel: false };
+			this.battle.raiseEvent('unitDying', eventData);
+			if (!eventData.cancel) {
+				this.raiseEvent('dying', eventData);
+			}
 			this.lazarusFlag = eventData.cancel;
 			if (!this.lazarusFlag) {
 				this.die();
 			} else {
-				Console.writeLine(this.name + "'s death suppressed by status effect");
+				Console.writeLine(this.name + "'s death suppressed by status/FC");
 			}
 		}
 	} else if (amount < 0) {

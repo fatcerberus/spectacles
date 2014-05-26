@@ -63,7 +63,10 @@ Game.characters =
 			'flare',
 			'chill',
 			'lightning',
-			'quake'
+			'quake',
+			'heal',
+			'rejuvenate',
+			'renewal'
 		]
 	},
 	

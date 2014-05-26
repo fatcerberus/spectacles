@@ -46,7 +46,7 @@ Game.battles =
 				.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
 				.synchronize()
 				.run(true);
-			this.findUnit('scott').addStatus('reGen');
+			this.findUnit('scott').addStatus('specsAura');
 		}
 	},
 	
@@ -59,7 +59,7 @@ Game.battles =
 		battleLevel: 60,
 		enemies: [
 			'numberEleven',
-			'katelyn'
+			//'katelyn'
 		],
 		onStart: function() {
 			var katelynUnit = this.findUnit('katelyn');
@@ -80,9 +80,9 @@ Game.battles =
 				.playSound("Munch.wav")
 				.talk("Scott", true, 0.5, Infinity, "...")
 				.talk("Scott", true, 2.0, Infinity, "No comment.")
-				.run(true);
+				//.run(true);
 			var scottUnit = this.findUnit('numberEleven');
-			scottUnit.addStatus('reGen');
+			scottUnit.addStatus('specsAura');
 		}
 	}
 };

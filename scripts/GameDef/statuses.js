@@ -45,7 +45,7 @@ Game.statuses =
 	
 	// Disarray status
 	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
-	// Lasts for 3 attacks.
+	// Expires after 3 actions.
 	disarray: {
 		name: "Disarray",
 		tags: [ 'acute', 'ailment' ],
@@ -61,8 +61,8 @@ Game.statuses =
 			}
 			++this.actionsTaken;
 			Console.writeLine(this.actionsTaken < 3
-				? "Disarray will expire after " + (3 - this.actionsTaken) + " more action(s)"
-				: "Disarray has expired");
+				? unit.name + "'s Disarray will expire in " + (3 - this.actionsTaken) + " more action(s)"
+				: unit.name + "'s Disarray has expired");
 			if (this.actionsTaken >= 3) {
 				unit.liftStatus('disarray');
 			}
@@ -333,13 +333,23 @@ Game.statuses =
 	
 	// ReGen status
 	// Restores a small amount of HP to the affected unit at the beginning of each
-	// cycle.
+	// cycle. Wears off after 10 cycles.
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
+		initialize: function(unit) {
+			this.turnsLeft = 10;
+		},
 		beginCycle: function(unit, eventData) {
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(0.25 * vit, [ 'reGen' ]);
+			unit.heal(vit, [ 'reGen' ]);
+			--this.turnsLeft;
+			if (this.turnsLeft <= 0) {
+				Console.writeLine(unit.name + "'s ReGen has expired");
+				unit.liftStatus('reGen');
+			} else {
+				Console.writeLine(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
+			}
 		}
 	},
 	
@@ -444,6 +454,19 @@ Game.statuses =
 		}
 	},
 	
+	// Specs Aura status
+	// Restores a small amount of HP to the affected unit at the beginning of each
+	// cycle. Similar to ReGen, except the effect is perpetual and less HP is recovered per
+	// cycle.
+	specsAura: {
+		name: "Specs Aura",
+		tags: [ 'buff' ],
+		beginCycle: function(unit, eventData) {
+			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			unit.heal(0.25 * vit, [ 'reGen' ]);
+		}
+	},
+	
 	// Zombie status
 	// Causes magic and items which restore HP to inflict an equal amount of damage instead.
 	// If the affected unit reaches 0 HP, this status will progress to Skeleton and
@@ -467,7 +490,7 @@ Game.statuses =
 		healed: function(unit, eventData) {
 			if (Link(eventData.tags).some([ 'cure', 'reGen' ])) {
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
-				eventData.amount = 0;
+				eventData.cancel = true;
 			}
 		}
 	}
