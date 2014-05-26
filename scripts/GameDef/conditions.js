@@ -6,10 +6,14 @@
 Game.conditions =
 {
 	// Blackout field condition
-	// Lowers accuracy and sometimes retargets attacks.
+	// Lowers accuracy and sometimes retargets attacks. Wears off after 10 actions.
 	blackout:
 	{
 		name: "Blackout",
+		
+		initialize: function(battle) {
+			this.actionsLeft = 10;
+		},
 		
 		actionTaken: function(battle, eventData) {
 			if (eventData.targets.length == 1 && 0.5 > Math.random()) {
@@ -19,6 +23,13 @@ Game.conditions =
 					: battle.enemiesOf(target);
 				var targetID = Math.min(Math.floor(Math.random() * newTargets.length), newTargets.length - 1);
 				eventData.targets = [ newTargets[targetID] ];
+			}
+			--this.actionsLeft;
+			if (this.actionsLeft <= 0) {
+				Console.writeLine("Blackout has expired");
+				battle.liftCondition('blackout');
+			} else {
+				Console.writeLine("Blackout will expire in " + this.actionsLeft + " more action(s)");
 			}
 		}
 	},
@@ -154,20 +165,32 @@ Game.conditions =
 	
 	// Thunderstorm field condition
 	// Strikes a battler every so often at the end of their turn, dealing a small amount
-	// of lightning damage and inflicting Zombie status.
+	// of lightning damage and inflicting Zombie status. Wears off after 10 strikes.
 	thunderstorm:
 	{
 		name: "Thunderstorm",
 		
+		initialize: function(battle) {
+			this.strikesLeft = 10;
+		}
+		
 		endTurn: function(battle, eventData) {
 			if (0.1 > Math.random()) {
 				var unit = eventData.actingUnit;
+				Console.writeLine(unit.name + " struck by lightning from Thunderstorm");
 				var level = battle.getLevel();
 				var attack = Game.math.statValue(100, level);
 				var defense = Game.math.statValue(0, level);
 				var damage = Game.math.damage.calculate(5, battle.getLevel(), unit.tier, attack, defense);
 				unit.takeDamage(damage, [ 'special', 'lightning' ]);
 				unit.addStatus('zombie');
+				--this.strikesLeft;
+				if (this.strikesLeft <= 0) {
+					Console.writeLine("Thunderstorm has expired");
+					battle.liftCondition('thunderstorm');
+				} else {
+					Console.writeLine("Thunderstorm will expire in " + this.strikesLeft + " more strike(s)");
+				}
 			}
 		}
 	}
