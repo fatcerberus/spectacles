@@ -11,7 +11,8 @@ Game.elements =
 	earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
 	cure: { name: "Cure", color: CreateColor(64, 255, 128, 255) },
 	omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
-	fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) }
+	fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) },
+	zombie: { name: "Zombie", color: CreateColor(128, 255, 0, 255) }
 };
 
 Game.moveEffects =
