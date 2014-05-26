@@ -298,7 +298,7 @@ BattleUnit.prototype.endTargeting = function()
 //     action:     The action attempted to be performed on the unit.
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
-	this.actor.showDamage("miss");
+	this.actor.showDamage("miss", CreateColor(128, 128, 128, 255));
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
@@ -671,7 +671,14 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		Console.writeLine(this.name + " took " + amount + " HP damage");
 		Console.append("left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
-			this.actor.showDamage(amount);
+			var damageColor = CreateColor(255, 255, 255, 255);
+			Link(tags)
+				.where(function(tag) { return tag in Game.elements; })
+				.each(function(tag)
+			{
+				damageColor = BlendColors(damageColor, Game.elements[tag].color);
+			});
+			this.actor.showDamage(amount, damageColor);
 		}
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {

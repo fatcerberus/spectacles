@@ -89,7 +89,9 @@ BattleActor.prototype.render = function()
 		for (var i2 = 0; i2 < text.length; ++i2) {
 			var yName = 'y' + i2.toString();
 			var y = this.y + this.damages[i][yName];
-			DrawTextEx(this.messageFont, x, y, text[i2], CreateColor(255, 255, 255, 255), 1);
+			var color = this.damages[i].color !== null ? this.damages[i].color
+				: CreateColor(255, 255, 255, 255);
+			DrawTextEx(this.messageFont, x, y, text[i2], color, 1);
 			x += this.messageFont.getStringWidth(text[i2]);
 		}
 	}
@@ -103,10 +105,14 @@ BattleActor.prototype.render = function()
 // Displays damage taken.
 // Arguments:
 //     amount: The number of hit points lost.
-BattleActor.prototype.showDamage = function(amount)
+//     color:  Optional. The color of the damage message. If this is not provided
+//             or is null, the damage will be shown in the default color.
+BattleActor.prototype.showDamage = function(amount, color)
 {
+	color = color !== void null ? color : null;
+	
 	var finalY = 20 - 11 * this.damages.length;
-	var data = { text: amount.toString(), finalY: finalY };
+	var data = { text: amount.toString(), color: color, finalY: finalY };
 	var tweenInfo = {};
 	for (var i = 0; i < data.text.length; ++i) {
 		var yName = 'y' + i.toString();
