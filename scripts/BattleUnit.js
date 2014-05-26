@@ -156,19 +156,22 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	}
 	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
 	if (!isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
-		var eventData = { unit: this, statusID: statusID };
+		var eventData = { unit: this, statusID: statusID, cancel: false };
 		this.battle.raiseEvent('unitAfflicted', eventData);
-		this.raiseEvent('afflicted', eventData);
-		if (eventData.statusID === null) {
-			return;
+		if (!eventData.cancel) {
+			this.raiseEvent('afflicted', eventData);
 		}
-		var effect = new StatusContext(eventData.statusID, this);
-		this.statuses.push(effect);
-		this.battlerInfo.statuses = [];
-		Link(this.statuses).pluck('statusID').each(function(statusID) {
-			this.battlerInfo.statuses.push(statusID);
-		}.bind(this));
-		Console.writeLine(this.name + " took on status " + effect.name);
+		if (!eventData.cancel) {
+			var effect = new StatusContext(eventData.statusID, this);
+			this.statuses.push(effect);
+			this.battlerInfo.statuses = [];
+			Link(this.statuses).pluck('statusID').each(function(statusID) {
+				this.battlerInfo.statuses.push(statusID);
+			}.bind(this));
+			Console.writeLine(this.name + " took on status " + effect.name);
+		} else {
+			Console.writeLine("Affliction (ID: " + statusID + ") canceled by existing status");
+		}
 	}
 };
 

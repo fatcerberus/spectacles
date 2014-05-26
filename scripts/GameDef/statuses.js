@@ -282,7 +282,7 @@ Game.statuses =
 			var statusDef = Game.statuses[eventData.statusID];
 			if (Link(statusDef.tags).contains('ailment')) {
 				Console.writeLine("Status " + statusDef.name + " was blocked by Immune");
-				eventData.statusID = null;
+				eventData.cancel = true;
 			}
 		},
 		beginTurn: function(unit, eventData) {

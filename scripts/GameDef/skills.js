@@ -554,7 +554,7 @@ Game.skills =
 						element: 'fire'
 					},
 					{
-						targetHint: 'user',
+						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'inferno'
 					}
@@ -580,7 +580,7 @@ Game.skills =
 						element: 'cure'
 					},
 					{
-						targetHint: 'user',
+						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'healingAura'
 					}
@@ -606,7 +606,7 @@ Game.skills =
 						element: 'ice'
 					},
 					{
-						targetHint: 'user',
+						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'subzero'
 					}
@@ -632,7 +632,7 @@ Game.skills =
 						element: 'earth'
 					},
 					{
-						targetHint: 'user',
+						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'generalDisarray'
 					}
@@ -658,7 +658,7 @@ Game.skills =
 						element: 'lightning'
 					},
 					{
-						targetHint: 'user',
+						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'thunderstorm'
 					}

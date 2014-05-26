@@ -81,7 +81,6 @@ Game.conditions =
 	inferno:
 	{
 		name: "Inferno",
-		overrules: [ 'subzero' ],
 		
 		initialize: function(battle) {
 			this.multipliers = {};
@@ -100,6 +99,14 @@ Game.conditions =
 			this.multipliers[unit.id] = Math.max(this.multipliers[unit.id] - 0.05, 0.5);
 		},
 		
+		conditionInstalled: function(battle, eventData) {
+			if (eventData.conditionID == 'subzero') {
+				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
+				eventData.cancel = true;
+				battle.liftCondition('inferno');
+			}
+		},
+		
 		unitDamaged: function(battle, eventData) {
 			if (Link(eventData.tags).contains('ice') && eventData.unit.stance != BattleStance.guard) {
 				eventData.amount *= Game.bonusMultiplier;
@@ -115,21 +122,25 @@ Game.conditions =
 	subzero:
 	{
 		name: "Subzero",
-		overrules: [ 'inferno' ],
 		
 		initialize: function(battle) {
-			this.multipliers = {};
+			this.multiplier = 1.0
+		},
+		
+		conditionInstalled: function(battle, eventData) {
+			if (eventData.conditionID == 'inferno') {
+				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
+				eventData.cancel = true;
+				battle.liftCondition('subzero');
+			}
 		},
 		
 		endTurn: function(battle, eventData) {
 			var unit = eventData.actingUnit;
 			if (unit.isAlive()) {
 				var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-				if (!(unit.id in this.multipliers)) {
-					this.multipliers[unit.id] = 1.0;
-				}
-				unit.takeDamage(vit * this.multipliers[unit.id], [ 'special', 'ice' ]);
-				this.multipliers[unit.id] = Math.max(this.multipliers[unit.id] + 0.10, 2.0);
+				unit.takeDamage(vit * this.multiplier, [ 'special', 'ice' ]);
+				this.multiplier = Math.max(this.multiplier + 0.10, 2.0);
 			}
 		},
 		

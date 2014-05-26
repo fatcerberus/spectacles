@@ -106,17 +106,23 @@ function Battle(session, battleID)
 }
 
 // .addCondition() method
-// Installs a new battle condition.
+// Installs a new field condition.
 // Argument:
-//     conditionID: The ID of the battle condition, as defined in the gamedef.
+//     conditionID: The ID of the field condition, as defined in the gamedef.
 Battle.prototype.addCondition = function(conditionID)
 {
 	if (this.hasCondition(conditionID)) {
 		return;
 	}
-	var effect = new ConditionContext(conditionID, this);
-	this.conditions.push(effect);
-	Console.writeLine("Installed battle condition " + effect.name);
+	var eventData = { conditionID: conditionID, cancel: false };
+	this.raiseEvent('conditionInstalled', eventData);
+	if (!eventData.cancel) {
+		var effect = new ConditionContext(eventData.conditionID, this);
+		this.conditions.push(effect);
+		Console.writeLine("Installed field condition " + effect.name);
+	} else {
+		Console.writeLine("FC installation (ID: " + conditionID + ") canceled by existing FC");
+	}
 };
 
 // .alliesOf() method
@@ -230,9 +236,9 @@ Battle.prototype.go = function()
 };
 
 // .hasCondition() method
-// Determines whether a specific battle condition is in play.
+// Determines whether a specific field condition is in play.
 // Arguments:
-//     conditionID: The ID of the battle condition to test for, as defined in the gamedef.
+//     conditionID: The ID of the field condition to test for, as defined in the gamedef.
 Battle.prototype.hasCondition = function(conditionID)
 {
 	return Link(this.conditions).pluck('conditionID').contains(conditionID);
@@ -266,7 +272,7 @@ Battle.prototype.isActive = function()
 };
 
 // .liftCondition() method
-// Removes a battle condition from play.
+// Removes a field condition from play.
 // Arguments:
 //     conditionID: The ID of the battle condition, as defined in the gamedef.
 Battle.prototype.liftCondition = function(conditionID)
