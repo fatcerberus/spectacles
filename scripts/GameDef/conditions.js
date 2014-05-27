@@ -172,7 +172,7 @@ Game.conditions =
 		
 		initialize: function(battle) {
 			this.strikesLeft = 10;
-		}
+		},
 		
 		endTurn: function(battle, eventData) {
 			if (0.1 > Math.random()) {
