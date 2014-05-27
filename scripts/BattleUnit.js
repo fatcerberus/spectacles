@@ -155,7 +155,8 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 		return;
 	}
 	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
-	if (!isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
+	var isImmune = !this.isPartyMember() && Link(this.enemyInfo.immunities).contains(statusID);
+	if (!isImmune && !isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
 		var eventData = { unit: this, statusID: statusID, cancel: false };
 		this.battle.raiseEvent('unitAfflicted', eventData);
 		if (!eventData.cancel) {
@@ -172,6 +173,8 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 		} else {
 			Console.writeLine("Affliction (ID: " + statusID + ") canceled by existing status");
 		}
+	} else {
+		this.actor.showHealing("ward", CreateColor(160, 160, 160, 255));
 	}
 };
 
@@ -298,7 +301,7 @@ BattleUnit.prototype.endTargeting = function()
 //     action:     The action attempted to be performed on the unit.
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
-	this.actor.showDamage("miss", CreateColor(128, 128, 128, 255));
+	this.actor.showHealing("miss", CreateColor(160, 160, 160, 255));
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
