@@ -460,7 +460,7 @@ Game.statuses =
 	// cycle.
 	specsAura: {
 		name: "Specs Aura",
-		tags: [ 'buff' ],
+		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(0.25 * vit, [ 'reGen' ]);

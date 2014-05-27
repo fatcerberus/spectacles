@@ -10,35 +10,31 @@ Game.initialParty =
 
 Game.characters =
 {
-	// Scott Starcross
-	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
-	// naive to a fault.
-	scott: {
-		name: "Scott",
-		fullName: "Scott Starcross",
+	// Amanda Spellbinder
+	amanda: {
+		name: "Amanda",
+		fullName: "Amanda Spellbinder",
 		baseStats: {
-			vit: 70,
-			str: 70,
-			def: 70,
-			foc: 70,
-			mag: 70,
-			agi: 70
+			vit: 65,
+			str: 60,
+			def: 75,
+			foc: 80,
+			mag: 100,
+			agi: 50
 		},
-		startingWeapon: 'heirloom',
 		skills: [
-			'swordSlash',
-			'quickstrike',
-			'chargeSlash',
 			'flare',
 			'chill',
 			'lightning',
 			'quake',
+			'heal',
 			'hellfire',
 			'windchill',
-			'electrocute',
-			'upheaval',
-			'necromancy',
-			'crackdown'
+			'inferno',
+			'rejuvenate',
+			'renewal',
+			'omni',
+			'protectiveAura'
 		]
 	},
 	
@@ -77,7 +73,7 @@ Game.characters =
 			str: 50,
 			def: 50,
 			foc: 90,
-			mag: 75,
+			mag: 65,
 			agi: 100
 		},
 		startingWeapon: 'fireAndIce',
@@ -90,8 +86,40 @@ Game.characters =
 			'lightning',
 			'quake',
 			'heal',
+			'hellfire',
+			'windchill',
+			'electrocute',
+			'upheaval',
 			'rejuvenate',
 			'renewal'
+		]
+	},
+	
+	// Justin Ilapse
+	// Father of Elysia Ilapse. Has good intentions, but doesn't always know the right way
+	// to act on them and often makes poor decisions as a result. In battle, Justin
+	// plays the role of a healer and status manipulator; outside of his healing magic,
+	// his most valuable asset is Purify, which instantly removes buffs such as ReGen.
+	justin: {
+		name: "Justin",
+		fullName: "Justin Ilapse",
+		baseStats: {
+			vit: 50,
+			str: 35,
+			def: 60,
+			foc: 75,
+			mag: 100,
+			agi: 60
+		},
+		skills: [
+			'flare',
+			'chill',
+			'lightning',
+			'quake',
+			'heal',
+			'rejuvenate',
+			'crackdown',
+			'purify'
 		]
 	},
 	
@@ -145,31 +173,35 @@ Game.characters =
 		]
 	},
 	
-	// Amanda Spellbinder
-	amanda: {
-		name: "Amanda",
-		fullName: "Amanda Spellbinder",
+	// Scott Starcross
+	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
+	// naive to a fault.
+	scott: {
+		name: "Scott",
+		fullName: "Scott Starcross",
 		baseStats: {
-			vit: 65,
-			str: 60,
-			def: 75,
-			foc: 80,
-			mag: 100,
-			agi: 50
+			vit: 70,
+			str: 70,
+			def: 70,
+			foc: 70,
+			mag: 70,
+			agi: 70
 		},
+		startingWeapon: 'heirloom',
 		skills: [
+			'swordSlash',
+			'quickstrike',
+			'chargeSlash',
 			'flare',
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
 			'hellfire',
 			'windchill',
-			'inferno',
-			'rejuvenate',
-			'renewal',
-			'omni',
-			'protectiveAura'
+			'electrocute',
+			'upheaval',
+			'necromancy',
+			'crackdown'
 		]
 	}
 };

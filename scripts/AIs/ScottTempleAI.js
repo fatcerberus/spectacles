@@ -33,9 +33,25 @@ ScottTempleAI.prototype.strategize = function()
 		case 1:
 			if (this.phase > lastPhase) {
 				this.aic.queueSkill('omni');
-				this.aic.queueSkill(RandomOf('inferno', 'subzero', 'discharge', 'tenPointFive'));
+				this.aic.queueSkill(RandomOf('inferno', 'subzero'));
+				this.aic.queueSkill('chargeSlash');
 			} else {
-				
+				var csTurns = this.aic.predictSkillTurns('chargeSlash');
+				if (csTurns[0].unit === this.aic.unit) {
+					this.aic.queueSkill('chargeSlash');
+				} else {
+					if (0.25 > Math.random()) {
+						if (this.aic.battle.hasCondition('inferno')) {
+							this.aic.queueSkill('windchill');
+						} else if (this.aic.battle.hasCondition('subzero')) {
+							this.aic.queueSkill('hellfire');
+						} else {
+							this.aic.queueSkill(RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval'));
+						}
+					} else {
+						this.aic.queueSkill(RandomOf('flare', 'chill', 'lightning', 'quake'));
+					}
+				}
 			}
 			break;
 		case 2:

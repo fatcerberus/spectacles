@@ -776,6 +776,28 @@ Game.skills =
 		]
 	},
 	
+	// Tactical techniques
+	purify: {
+		name: "Purify",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Purify",
+				rank: 4,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'buff' ]
+					}
+				]
+			}
+		]
+	},
+	
 	// Physical-contact techniques
 	fatSlam: {
 		name: "Fat Slam",
@@ -795,7 +817,7 @@ Game.skills =
 						power: 75,
 						element: 'fat'
 					}
-				],
+				]
 			}
 		]
 	},
@@ -817,7 +839,7 @@ Game.skills =
 						power: 25,
 						element: 'fat'
 					}
-				],
+				]
 			}
 		]
 	},
@@ -838,7 +860,7 @@ Game.skills =
 						type: 'devour',
 						successRate: 1.0
 					}
-				],
+				]
 			}
 		]
 	},
@@ -864,7 +886,7 @@ Game.skills =
 						element: 'fire',
 						addStatus: 'ignite'
 					}
-				],
+				]
 			}
 		]
 	},
