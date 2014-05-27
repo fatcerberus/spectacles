@@ -97,7 +97,10 @@ BattleActor.prototype.render = function()
 	}
 	for (var i = 0; i < this.healings.length; ++i) {
 		var y = this.y + this.healings[i].y;
-		DrawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, CreateColor(64, 255, 128, this.healings[i].alpha), 1, 'center');
+		var color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
+		var textColor = BlendColors(color, color);
+		textColor.alpha *= this.healings[i].alpha / 255;
+		DrawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
 	}
 };
 
@@ -130,9 +133,13 @@ BattleActor.prototype.showDamage = function(amount, color)
 // Displays recovered HP.
 // Arguments:
 //     amount: The number of hit points recovered.
-BattleActor.prototype.showHealing = function(amount)
+//     color:  Optional. The color of the healing indicator. If this is not provided
+//             or is null, the indicator will be shown in the default color.
+BattleActor.prototype.showHealing = function(amount, color)
 {
-	var data = { amount: amount, y: 20, alpha: 255 };
+	color = color !== void null ? color : null;
+	
+	var data = { amount: amount, color: color, y: 20, alpha: 255 };
 	data.scene = new Scenario()
 		.tween(data, 1.0, 'easeOutExpo', { y: -11 * this.healings.length })
 		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
