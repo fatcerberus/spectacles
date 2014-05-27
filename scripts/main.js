@@ -59,12 +59,12 @@ function game()
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
 	var setup = {
-		battleID: 'numberEleven',
+		battleID: 'scottTemple',
 		party: {
 			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			//elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'redBull', 'holyWater' ] },
-			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			elysia: { level: 60, weapon: 'fireAndIce', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] }
 		}
@@ -137,6 +137,13 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	font.setColorMask(oldColorMask);
 }
 
+function RandomOf(/*...*/)
+{
+	var count = arguments.length;
+	var index = Math.min(Math.floor(Math.random() * count), count - 1);
+	return arguments[index];
+}
+
 // clone() function
 // Creates a deep copy of an object, preserving circular references.
 // Arguments:
@@ -165,4 +172,4 @@ function clone(o)
 	} else {
 		return o;
 	}
-};
+}

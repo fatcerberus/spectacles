@@ -50,6 +50,18 @@ Game.battles =
 		}
 	},
 	
+	// Scott Temple (Boss Battle)
+	// Penultimate Boss of Spectacles III
+	scottTemple: {
+		title: "Scott Temple, the First Lucidan",
+		isFinalBattle: false,
+		bgm: 'ForeverInTheDark',
+		battleLevel: 60,
+		enemies: [
+			'scottTemple'
+		]
+	},
+	
 	// Scott Starcross (Final Battle)
 	// Final Boss of Spectacles III: The Last Lucidan
 	numberEleven: {

@@ -6,10 +6,11 @@
 RequireScript('AIs/HeadlessHorseAI.js');
 RequireScript('AIs/NumberElevenAI.js');
 RequireScript('AIs/Robert2AI.js');
+RequireScript('AIs/ScottTempleAI.js');
 
 Game.enemies =
 {
-	// Headless Horse (Spectacles I)
+	// Headless Horse (Spectacles: Bruce's Story)
 	// Manor Boss of Lexington Manor
 	headlessHorse: {
 		name: "H. Horse",
@@ -38,7 +39,7 @@ Game.enemies =
 		}
 	},
 	
-	// Robert Spellbinder (II) (Spectacles I)
+	// Robert Spellbinder (II) (Spectacles: Bruce's Story)
 	// Final Boss of Spectacles: Bruce's Story
 	robert2: {
 		name: "Robert",
@@ -70,8 +71,29 @@ Game.enemies =
 		]
 	},
 	
+	// Scott Temple (Spectacles III)
+	// Penultimate Boss of Spectacles III
+	scottTemple: {
+		name: "Scott T",
+		fullName: "Scott Victor Temple",
+		aiType: ScottTempleAI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 1.0,
+		baseStats: {
+			vit: 100,
+			str: 85,
+			def: 80,
+			foc: 60,
+			mag: 90,
+			agi: 70
+		},
+		immunities: [ 'zombie' ],
+		weapon: 'templeSword'
+	},
+	
 	// Scott Starcross (Spectacles III)
-	// Final Boss of Spectacles III: The Last Lucidan
+	// Final Boss of Spectacles III
 	numberEleven: {
 		name: "Scott",
 		fullName: "Scott Starcross",
@@ -88,7 +110,7 @@ Game.enemies =
 			agi: 80
 		},
 		immunities: [],
-		weapon: 'templeSword',
+		weapon: 'templeSword'
 	},
 	
 	// Katelyn (Spectacles III)

@@ -89,7 +89,9 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal'
+			'heal',
+			'rejuvenate',
+			'renewal'
 		]
 	},
 	
