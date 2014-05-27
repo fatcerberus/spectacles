@@ -17,7 +17,7 @@ function NumberElevenAI(aiContext)
 		{ id: 'crackdown', weight: 2 },
 		{ id: 'inferno', weight: 5 },
 		{ id: 'subzero', weight: 3 },
-		{ id: 'zappyTimes', weight: 2 },
+		{ id: 'discharge', weight: 2 },
 		{ id: 'tenPointFive', weight: 4 },
 		{ id: 'hellfire', weight: 7 },
 		{ id: 'windchill', weight: 5 },

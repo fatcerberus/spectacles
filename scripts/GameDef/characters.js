@@ -64,9 +64,7 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
-			'rejuvenate',
-			'renewal'
+			'protectiveAura'
 		]
 	},
 	

@@ -135,7 +135,7 @@ Game.conditions =
 		name: "Subzero",
 		
 		initialize: function(battle) {
-			this.multiplier = 1.0
+			this.multiplier = 1.0;
 		},
 		
 		conditionInstalled: function(battle, eventData) {

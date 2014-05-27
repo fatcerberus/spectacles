@@ -640,14 +640,14 @@ Game.skills =
 			}
 		]
 	},
-	zappyTimes: {
-		name: "Zappy Times",
+	discharge: {
+		name: "Discharge",
 		category: 'magic',
 		targetType: 'allEnemies',
 		baseMPCost: 100,
 		actions: [
 			{
-				announceAs: "Zappy Times",
+				announceAs: "Discharge",
 				rank: 4,
 				effects: [
 					{
@@ -758,7 +758,7 @@ Game.skills =
 	protectiveAura: {
 		name: "Protective Aura",
 		category: 'strategy',
-		targetType: 'ally',
+		targetType: 'allAllies',
 		baseMPCost: 200,
 		allowAsCounter: false,
 		actions: [

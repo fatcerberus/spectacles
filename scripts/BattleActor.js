@@ -134,7 +134,7 @@ BattleActor.prototype.showHealing = function(amount)
 {
 	var data = { amount: amount, y: 20, alpha: 255 };
 	data.scene = new Scenario()
-		.tween(data, 1.0, 'easeOutExpo', { y: 11 - 11 * this.healings.length })
+		.tween(data, 1.0, 'easeOutExpo', { y: -11 * this.healings.length })
 		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
 	data.scene.run();
 	this.healings.push(data);
