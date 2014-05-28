@@ -10,6 +10,7 @@
 function ScottTempleAI(aiContext)
 {
 	this.aic = aiContext;
+	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.phase = 0;
 }
@@ -18,6 +19,7 @@ function ScottTempleAI(aiContext)
 // Relinquishes resources and shuts down the AI.
 ScottTempleAI.prototype.dispose = function()
 {
+	this.aic.battle.itemUsed.removeHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
 };
 
@@ -87,6 +89,22 @@ ScottTempleAI.prototype.strategize = function()
 	}
 };
 
+// .onItemUsed() event handler
+// Allows Temple to react when someone in the battle uses an item.
+ScottTempleAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
+{
+	if (this.aic.unit.hasStatus('offGuard')) {
+		return;
+	}
+	if (Link([ 'tonic', 'powerTonic' ]).contains(itemID) && Link(targetIDs).none('scottTemple')
+		&& 0.5 > Math.random())
+	{
+		this.aic.queueSkill('electrocute', targetIDs[0]);
+	}
+};
+
+// .onSkillUsed() event handler
+// Allows Temple to react when someone in the battle uses an attack.
 ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
 	if (this.aic.unit.hasStatus('offGuard')) {

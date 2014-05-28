@@ -651,10 +651,11 @@ Game.skills =
 		category: 'heal',
 		targetType: 'single',
 		baseMPCost: 150,
+		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Dispel",
-				rank: 4,
+				rank: 3,
 				preserveGuard: true,
 				effects: [
 					{
@@ -695,7 +696,7 @@ Game.skills =
 		actions: [
 			{
 				announceAs: "Purify",
-				rank: 4,
+				rank: 3,
 				preserveGuard: true,
 				effects: [
 					{
