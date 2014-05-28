@@ -60,6 +60,9 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
+			'heal',
+			'rejuvenate',
+			'renewal',
 			'protectiveAura'
 		]
 	},
@@ -96,10 +99,10 @@ Game.characters =
 	},
 	
 	// Justin Ilapse
-	// Father of Elysia Ilapse. Has good intentions, but doesn't always know the right way
-	// to act on them and often makes poor decisions as a result. In battle, Justin
-	// plays the role of a healer and status manipulator; outside of his healing magic,
-	// his most valuable asset is Purify, which instantly removes buffs such as ReGen.
+	// Father of Elysia Ilapse. Justin has good intentions, but doesn't always know the right
+	// way to act on them and often makes poor decisions as a result. In battle, he plays the
+	// dual role of healer and saboteur, removing the enemy's enhancements while piling on
+	// status afflictions of his own.
 	justin: {
 		name: "Justin",
 		fullName: "Justin Ilapse",
@@ -117,13 +120,19 @@ Game.characters =
 			'lightning',
 			'quake',
 			'heal',
+			'electrocute',
+			'upheaval',
 			'rejuvenate',
-			'crackdown',
-			'purify'
+			'dispel',
+			'necromancy',
+			'crackdown'
 		]
 	},
 	
 	// maggie
+	// An overweight hunger-pig and former leader of the neo-Hippos. She has renounced her role in the
+	// group due to disagreement over their methods, particularly her sister's stubborn persecution of
+	// Elysia Ilapse. In battle, maggie can devour her enemies, often gaining new skills in the process.
 	maggie: {
 		name: "maggie",
 		baseStats: {
@@ -175,7 +184,8 @@ Game.characters =
 	
 	// Scott Starcross
 	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
-	// naive to a fault.
+	// naive to a fault. In battle, Scott wields a balanced set of sword techniques,
+	// elemental and status-inducing magicks.
 	scott: {
 		name: "Scott",
 		fullName: "Scott Starcross",

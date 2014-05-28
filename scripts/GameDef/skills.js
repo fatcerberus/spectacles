@@ -777,6 +777,27 @@ Game.skills =
 	},
 	
 	// Tactical techniques
+	dispel: {
+		name: "Dispel",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Dispel",
+				rank: 4,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'buff' ]
+					}
+				]
+			}
+		]
+	},
+	
 	purify: {
 		name: "Purify",
 		category: 'strategy',
@@ -791,7 +812,7 @@ Game.skills =
 					{
 						targetHint: 'selected',
 						type: 'liftStatusTags',
-						tags: [ 'buff' ]
+						tags: [ 'undead' ]
 					}
 				]
 			}

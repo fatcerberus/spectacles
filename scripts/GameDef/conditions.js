@@ -112,6 +112,12 @@ Game.conditions =
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'subzero') {
+				var units = Link(battle.battleUnits)
+					.where(function(unit) { return unit.isAlive(); })
+					.each(function(unit)
+				{
+					unit.addStatus('zombie');
+				});
 				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
@@ -140,6 +146,12 @@ Game.conditions =
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'inferno') {
+				var units = Link(battle.battleUnits)
+					.where(function(unit) { return unit.isAlive(); })
+					.each(function(unit)
+				{
+					unit.addStatus('zombie');
+				});
 				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
