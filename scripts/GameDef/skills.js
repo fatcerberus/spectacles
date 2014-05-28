@@ -7,6 +7,7 @@ Game.skillCategories =
 {
 	attack: "Attack",
 	magic: "Magic",
+	heal: "Heal",
 	strategy: "Strategy"
 };
 
@@ -353,27 +354,6 @@ Game.skills =
 			}
 		]
 	},
-	heal: {
-		name: "Heal",
-		category: 'magic',
-		targetType: 'ally',
-		baseMPCost: 50,
-		actions: [
-			{
-				announceAs: "Heal",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'heal',
-						power: 25,
-						element: 'cure'
-					}
-				]
-			}
-		]
-	},
 	lightning: {
 		name: "Lightning",
 		category: 'magic',
@@ -466,28 +446,6 @@ Game.skills =
 			}
 		]
 	},
-	rejuvenate: {
-		name: "Rejuvenate",
-		category: 'magic',
-		targetType: 'ally',
-		baseMPCost: 100,
-		actions: [
-			{
-				announceAs: "Rejuvenate",
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'heal',
-						power: 50,
-						element: 'cure',
-						addStatus: 'reGen'
-					}
-				]
-			}
-		]
-	},
 	upheaval: {
 		name: "Upheaval",
 		category: 'magic',
@@ -557,32 +515,6 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'addCondition',
 						condition: 'inferno'
-					}
-				]
-			}
-		]
-	},
-	renewal: {
-		name: "Renewal",
-		category: 'magic',
-		targetType: 'allAllies',
-		baseMPCost: 200,
-		actions: [
-			{
-				announceAs: "Renewal",
-				rank: 4,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'heal',
-						power: 80,
-						element: 'cure'
-					},
-					{
-						targetHint: 'selected',
-						type: 'addCondition',
-						condition: 'healingAura'
 					}
 				]
 			}
@@ -691,10 +623,10 @@ Game.skills =
 		]
 	},
 	
-	// Status-inducing techniques
+	// Curative/healing magicks
 	convalesce: {
 		name: "Convalesce",
-		category: 'strategy',
+		category: 'heal',
 		targetType: 'ally',
 		baseMPCost: 75,
 		allowAsCounter: false,
@@ -714,6 +646,117 @@ Game.skills =
 			}
 		]
 	},
+	dispel: {
+		name: "Dispel",
+		category: 'heal',
+		targetType: 'single',
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Dispel",
+				rank: 4,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'buff' ]
+					}
+				]
+			}
+		]
+	},
+	heal: {
+		name: "Heal",
+		category: 'heal',
+		targetType: 'ally',
+		baseMPCost: 50,
+		actions: [
+			{
+				announceAs: "Heal",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 25,
+						element: 'cure'
+					}
+				]
+			}
+		]
+	},
+	purify: {
+		name: "Purify",
+		category: 'heal',
+		targetType: 'single',
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Purify",
+				rank: 4,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'undead' ]
+					}
+				]
+			}
+		]
+	},
+	rejuvenate: {
+		name: "Rejuvenate",
+		category: 'heal',
+		targetType: 'ally',
+		baseMPCost: 100,
+		actions: [
+			{
+				announceAs: "Rejuvenate",
+				rank: 3,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 50,
+						element: 'cure',
+						addStatus: 'reGen'
+					}
+				]
+			}
+		]
+	},
+	renewal: {
+		name: "Renewal",
+		category: 'heal',
+		targetType: 'allAllies',
+		baseMPCost: 200,
+		actions: [
+			{
+				announceAs: "Renewal",
+				rank: 4,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 80,
+						element: 'cure'
+					},
+					{
+						targetHint: 'selected',
+						type: 'addCondition',
+						condition: 'healingAura'
+					}
+				]
+			}
+		]
+	},
+	
+	// Status-inducing techniques
 	crackdown: {
 		name: "Crackdown",
 		category: 'strategy',
@@ -770,49 +813,6 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'protect'
-					}
-				]
-			}
-		]
-	},
-	
-	// Tactical techniques
-	dispel: {
-		name: "Dispel",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 150,
-		actions: [
-			{
-				announceAs: "Dispel",
-				rank: 4,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'liftStatusTags',
-						tags: [ 'buff' ]
-					}
-				]
-			}
-		]
-	},
-	
-	purify: {
-		name: "Purify",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 150,
-		actions: [
-			{
-				announceAs: "Purify",
-				rank: 4,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'liftStatusTags',
-						tags: [ 'undead' ]
 					}
 				]
 			}

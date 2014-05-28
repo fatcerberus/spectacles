@@ -59,15 +59,15 @@ function game()
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
 	var setup = {
-		battleID: 'numberEleven',
+		battleID: 'scottTemple',
 		party: {
 			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
-			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			//elysia: { level: 60, weapon: 'fireAndIce', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			//justin: { level: 60, items: [ 'tonic', 'powerTonic' ] },
+			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			elysia: { level: 60, weapon: 'fireAndIce', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			justin: { level: 60, items: [ 'tonic', 'powerTonic' ] },
 			//maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
-			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 		}
 	};
 	Link(Game.initialParty).each(function(id) {

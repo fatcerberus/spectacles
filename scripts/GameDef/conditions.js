@@ -87,14 +87,36 @@ Game.conditions =
 	
 	// Inferno field condition
 	// Inflicts a small amount of Fire damage on all battlers at the beginning of a
-	// cycle. The effect diminishes over time, settling at half its original
-	// damage output.
+	// cycle and boosts any Fire attacks performed. Residual damage from Inferno diminishes
+	// over time, eventually settling at half the original output.
 	inferno:
 	{
 		name: "Inferno",
 		
 		initialize: function(battle) {
-			this.multipliers = {};
+			this.multiplier = 1.0;
+			Link(battle.battleUnits)
+				.where(function(unit) { return unit.isAlive(); })
+				.each(function(unit)
+			{
+				if (unit.hasStatus('frostbite')) {
+					Console.writeLine(unit.name + "'s Frostbite nullified by Inferno installation");
+					unit.liftStatus('frostbite');
+				}
+			});
+		},
+		
+		actionTaken: function(battle, eventData) {
+			Link(eventData.action.effects)
+				.filterBy('type', 'damage')
+				.filterBy('element', 'fire')
+				.each(function(effect)
+			{
+				var oldPower = effect.power;
+				effect.power = Math.round(effect.power * Game.bonusMultiplier);
+				Console.writeLine("Inferno in effect, POW of Fire attack boosted to " + effect.power);
+				Console.append("was: " + oldPower);
+			});
 		},
 		
 		beginCycle: function(battle, eventData) {
@@ -103,31 +125,31 @@ Game.conditions =
 				.toArray();
 			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			if (!(unit.id in this.multipliers)) {
-				this.multipliers[unit.id] = 1.0;
-			}
-			unit.takeDamage(vit * this.multipliers[unit.id], [ 'special', 'fire' ]);
-			this.multipliers[unit.id] = Math.max(this.multipliers[unit.id] - 0.05, 0.5);
+			unit.takeDamage(vit * this.multiplier, [ 'special', 'fire' ]);
+			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'subzero') {
-				var units = Link(battle.battleUnits)
+				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
+				eventData.cancel = true;
+				battle.liftCondition('inferno');
+				Link(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
 					unit.addStatus('zombie');
 				});
-				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
-				eventData.cancel = true;
-				battle.liftCondition('inferno');
 			}
 		},
 		
-		unitDamaged: function(battle, eventData) {
-			if (Link(eventData.tags).contains('ice') && eventData.unit.stance != BattleStance.guard) {
-				eventData.amount *= Game.bonusMultiplier;
-				Console.writeLine("Ice damage taken during Inferno, damage increased");
+		unitAfflicted: function(battle, eventData) {
+			if (eventData.statusID == 'frostbite') {
+				eventData.cancel = true;
+				Console.writeLine("Frostbite incompatible with Inferno, infliction canceled");
+			} else if (eventData.statusID == 'ignite') {
+				eventData.cancel = true;
+				Console.writeLine("Ignite impossible under Subzero, infliction canceled");
 			}
 		}
 	},
@@ -142,19 +164,45 @@ Game.conditions =
 		
 		initialize: function(battle) {
 			this.multiplier = 1.0;
+			Link(battle.battleUnits)
+				.where(function(unit) { return unit.isAlive(); })
+				.each(function(unit)
+			{
+				if (unit.hasStatus('frostbite')) {
+					Console.writeLine(unit.name + "'s Frostbite overruled by Subzero installation");
+					unit.liftStatus('frostbite');
+				}
+				if (unit.hasStatus('ignite')) {
+					Console.writeLine(unit.name + "'s Ignite nullified by Subzero installation");
+					unit.liftStatus('ignite');
+				}
+			});
+		},
+		
+		actionTaken: function(battle, eventData) {
+			Link(eventData.action.effects)
+				.filterBy('type', 'damage')
+				.filterBy('element', 'ice')
+				.each(function(effect)
+			{
+				var oldPower = effect.power;
+				effect.power = Math.round(effect.power * Game.bonusMultiplier);
+				Console.writeLine("Subzero in effect, POW of Ice attack boosted to " + effect.power);
+				Console.append("was: " + oldPower);
+			});
 		},
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'inferno') {
-				var units = Link(battle.battleUnits)
+				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
+				eventData.cancel = true;
+				battle.liftCondition('subzero');
+				Link(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
 					unit.addStatus('zombie');
 				});
-				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
-				eventData.cancel = true;
-				battle.liftCondition('subzero');
 			}
 		},
 		
@@ -167,10 +215,13 @@ Game.conditions =
 			}
 		},
 		
-		unitDamaged: function(battle, eventData) {
-			if (Link(eventData.tags).contains('fire') && eventData.unit.stance != BattleStance.guard) {
-				eventData.amount *= Game.bonusMultiplier;
-				Console.writeLine("Fire damage taken during Subzero, damage increased");
+		unitAfflicted: function(battle, eventData) {
+			if (eventData.statusID == 'frostbite') {
+				eventData.cancel = true;
+				Console.writeLine("Frostbite overruled by Subzero, infliction canceled");
+			} else if (eventData.statusID == 'ignite') {
+				eventData.cancel = true;
+				Console.writeLine("Ignite incompatible with Subzero, infliction canceled");
 			}
 		}
 	},

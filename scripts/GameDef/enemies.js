@@ -79,7 +79,7 @@ Game.enemies =
 		aiType: ScottTempleAI,
 		hasLifeBar: true,
 		tier: 3,
-		turnRatio: 1.0,
+		turnRatio: 2.0,
 		baseStats: {
 			vit: 100,
 			str: 85,

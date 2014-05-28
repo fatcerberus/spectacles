@@ -55,7 +55,7 @@ Game.battles =
 	scottTemple: {
 		title: "Scott Temple, the First Lucidan",
 		isFinalBattle: false,
-		bgm: 'ForeverInTheDark',
+		bgm: 'TheQuantumEnigma',
 		battleLevel: 60,
 		enemies: [
 			'scottTemple'
