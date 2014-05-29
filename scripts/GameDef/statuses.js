@@ -295,7 +295,7 @@ Game.statuses =
 	
 	// Off Guard status
 	// Imbued as part of several two-turn attacks such as Charge Slash. If the unit
-	// is damaged by an attack while Off Guard, the damage will be increased.
+	// is attacked while Off Guard, the damage from the attack will be increased.
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
@@ -303,7 +303,7 @@ Game.statuses =
 			unit.liftStatus('offGuard');
 		},
 		damaged: function(unit, eventData) {
-			if (eventData.attacker !== null) {
+			if (eventData.actingUnit !== null) {
 				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
 			}
 		}

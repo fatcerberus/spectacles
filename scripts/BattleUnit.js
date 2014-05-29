@@ -154,9 +154,19 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	if (this.hasStatus(statusID)) {
 		return;
 	}
+	var statusName = Game.statuses[statusID].name;
 	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
-	var isImmune = !this.isPartyMember() && Link(this.enemyInfo.immunities).contains(statusID);
-	if (!isImmune && !isOverruled && (this.stance !== BattleStance.guard || !isGuardable)) {
+	if (!this.isPartyMember() && Link(this.enemyInfo.immunities).contains(statusID)) {
+		if (!isGuardable) {
+			this.actor.showHealing("immune", CreateColor(160, 160, 160, 255));
+		}
+		Console.writeLine(this.name + " is immune to " + statusName);
+	} else if (isOverruled) {
+		if (!isGuardable) {
+			this.actor.showHealing("ward", CreateColor(160, 160, 160, 255));
+		}
+		Console.writeLine(statusName + " overruled by another of " + this.name + "'s statuses");
+	} else if (this.stance !== BattleStance.guard || !isGuardable) {
 		var eventData = { unit: this, statusID: statusID, cancel: false };
 		this.battle.raiseEvent('unitAfflicted', eventData);
 		if (!eventData.cancel) {
@@ -171,11 +181,13 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 			}.bind(this));
 			Console.writeLine(this.name + " took on status " + effect.name);
 		} else {
-			this.actor.showHealing("<ward>", CreateColor(160, 160, 160, 255));
-			Console.writeLine("Status affliction (ID: " + statusID + ") blocked by existing status");
+			if (!isGuardable) {
+				this.actor.showHealing("ward", CreateColor(160, 160, 160, 255));
+			}
+			Console.writeLine(this.name + "'s infliction with " + statusName + " blocked by status/FC");
 		}
 	} else {
-		this.actor.showHealing("<ward>", CreateColor(160, 160, 160, 255));
+		Console.writeLine(this.name + "'s infliction with " + statusName + " blocked by Guard Stance");
 	}
 };
 

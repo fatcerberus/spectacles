@@ -36,9 +36,9 @@ ScottTempleAI.prototype.strategize = function()
 	switch (this.phase) {
 		case 1:
 			if (this.phase > lastPhase) {
-				this.aic.queueSkill('omni', 'elysia');
+				this.aic.queueSkill('omni');
 				this.aic.queueSkill(RandomOf('inferno', 'subzero'));
-				this.aic.queueSkill('chargeSlash', 'justin');
+				this.aic.queueSkill('chargeSlash');
 			} else {
 				var qsTurns = this.aic.predictSkillTurns('quickstrike');
 				if (qsTurns[0].unit === this.aic.unit) {
@@ -96,7 +96,7 @@ ScottTempleAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	if (this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
-	if (Link([ 'tonic', 'powerTonic' ]).contains(itemID) && Link(targetIDs).none('scottTemple')
+	if (Link([ 'tonic', 'powerTonic' ]).contains(itemID) && !Link(targetIDs).contains('scottTemple')
 		&& 0.5 > Math.random())
 	{
 		this.aic.queueSkill('electrocute', targetIDs[0]);
@@ -111,7 +111,8 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		return;
 	}
 	if (this.phase >= 2 && skillID == 'rejuvenate'
-		&& userID != 'scottTemple' && Link(targetIDs).none('scottTemple'))
+		&& userID != 'scottTemple' && !Link(targetIDs).contains('scottTemple')
+		&& 0.25 > Math.random())
 	{
 		this.aic.queueSkill('necromancy', targetIDs[0]);
 	}

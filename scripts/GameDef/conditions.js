@@ -147,9 +147,6 @@ Game.conditions =
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
 				Console.writeLine("Frostbite incompatible with Inferno, infliction canceled");
-			} else if (eventData.statusID == 'ignite') {
-				eventData.cancel = true;
-				Console.writeLine("Ignite impossible under Subzero, infliction canceled");
 			}
 		}
 	},
@@ -211,7 +208,7 @@ Game.conditions =
 			if (unit.isAlive()) {
 				var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 				unit.takeDamage(vit * this.multiplier, [ 'special', 'ice' ]);
-				this.multiplier = Math.max(this.multiplier + 0.10, 2.0);
+				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
 			}
 		},
 		
