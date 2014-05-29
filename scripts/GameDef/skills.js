@@ -650,7 +650,7 @@ Game.skills =
 		name: "Dispel",
 		category: 'heal',
 		targetType: 'single',
-		baseMPCost: 150,
+		baseMPCost: 50,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -688,11 +688,31 @@ Game.skills =
 			}
 		]
 	},
+	lazarus: {
+		name: "Lazarus",
+		category: 'heal',
+		targetType: 'ally',
+		allowDeadTarget: true,
+		baseMPCost: 150,
+		actions: [
+			{
+				announceAs: "Lazarus",
+				rank: 4,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'revive',
+						element: 'cure'
+					}
+				]
+			}
+		]
+	},
 	purify: {
 		name: "Purify",
 		category: 'heal',
 		targetType: 'single',
-		baseMPCost: 150,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Purify",

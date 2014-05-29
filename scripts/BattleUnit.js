@@ -263,6 +263,7 @@ BattleUnit.prototype.die = function()
 	this.lazarusFlag = false;
 	this.hp = 0;
 	this.battle.ui.hud.setHP(this.name, this.hp);
+	this.statuses = [];
 	this.actor.animate('die');
 	Console.writeLine(this.fullName + " afflicted with death");
 };
@@ -622,6 +623,25 @@ BattleUnit.prototype.restoreMP = function(percentage)
 	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
 };
 
+// .resurrect() method
+// Resurrects the unit from a dead state.
+// Arguments:
+//     isFullHeal: Optional. Specifies whether the resurrection should include a full
+//                 HP restoration. If not specified or false, the unit is restored with
+//                 only 33% of its maximum HP. (default: false)
+// Remarks:
+//     This method does nothing if the unit is still alive.
+BattleUnit.prototype.resurrect = function(isFullHeal)
+{
+	isFullHeal = isFullHeal !== void null ? isFullHeal : false;
+	
+	this.lazarusFlag = false;
+	this.heal(isFullHeal ? this.maxHP : Math.round(0.33 * this.maxHP), [], true);
+	this.actor.animate('revive');
+	this.resetCounter(Game.reviveRank);
+	Console.writeLine(this.name + " brought back from the dead");
+};
+
 // .setGuard() method
 // Switches the unit into Guard Stance.
 BattleUnit.prototype.setGuard = function()
@@ -708,7 +728,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			if (!this.lazarusFlag) {
 				this.die();
 			} else {
-				Console.writeLine(this.name + "'s death suppressed by status/FC");
+				Console.writeLine(this.name + "'s death suspended by status/FC");
 			}
 		}
 	} else if (amount < 0) {
@@ -833,17 +853,21 @@ BattleUnit.prototype.timeUntilTurn = function(turnIndex, assumedRank, nextAction
 	assumedRank = assumedRank !== void null ? assumedRank : Game.defaultMoveRank;
 	nextActions = nextActions !== void null ? nextActions : null;
 	
-	nextActions = nextActions !== null
-		? this.actionQueue.concat(nextActions)
-		: this.actionQueue;
-	var timeLeft = this.cv;
-	for (var i = 1; i <= turnIndex; ++i) {
-		var rank = assumedRank;
-		if (i <= nextActions.length) {
-			rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank
-				: nextActions[i - 1];
+	if (this.isAlive()) {
+		nextActions = nextActions !== null
+			? this.actionQueue.concat(nextActions)
+			: this.actionQueue;
+		var timeLeft = this.cv;
+		for (var i = 1; i <= turnIndex; ++i) {
+			var rank = assumedRank;
+			if (i <= nextActions.length) {
+				rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank
+					: nextActions[i - 1];
+			}
+			timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / this.turnRatio), 1);
 		}
-		timeLeft += Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / this.turnRatio), 1);
+		return timeLeft;
+	} else {
+		return Infinity;
 	}
-	return timeLeft;
 };

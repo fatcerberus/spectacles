@@ -24,13 +24,16 @@ function SpriteImage(filename)
 			}
 		}
 		if (!wasFound) {
-			throw "Direction \"" + value + "\" not found in spriteset!";
+			Abort("SpriteImage(): Direction \"" + value + "\" not found in spriteset!");
 		}
 	};
 	
-	this.blit = function(x, y)
+	this.blit = function(x, y, alpha)
 	{
-		this.spriteset.images[this.spriteset.directions[this.directionID].frames[this.frameID].index].blit(x, y);
+		alpha = alpha !== void null ? alpha : 255;
+		
+		this.spriteset.images[this.spriteset.directions[this.directionID].frames[this.frameID].index]
+			.blitMask(x, y, CreateColor(255, 255, 255, alpha));
 	};
 	
 	this.reset = function()

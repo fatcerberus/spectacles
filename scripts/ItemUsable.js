@@ -21,6 +21,9 @@ function ItemUsable(itemID)
 	this.itemID = itemID;
 	this.name = this.itemDef.name;
 	this.useAiming = false;
+	this.allowDeadTarget = 'allowDeadTarget' in this.itemDef
+		? this.itemDef.allowDeadTarget
+		: false;
 	this.usesLeft = 'uses' in this.itemDef ? this.itemDef.uses : 1;
 }
 

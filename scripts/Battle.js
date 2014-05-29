@@ -468,8 +468,6 @@ Battle.prototype.tick = function()
 	Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
-	this.enemyUnits = Link(this.enemyUnits).where(isUnitAlive).toArray();
-	this.playerUnits = Link(this.playerUnits).where(isUnitAlive).toArray();
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	Link(unitLists).unroll().invoke('beginCycle');
 	Link(this.conditions).invoke('beginCycle');

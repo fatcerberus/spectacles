@@ -15,12 +15,14 @@
 function BattleActor(name, position, row, isEnemy)
 {
 	this.damages = [];
+	this.fadeScene = null;
 	this.hasEntered = false;
 	this.healings = [];
 	this.isEnemy = isEnemy;
 	this.isVisible = true;
 	this.messageFont = GetSystemFont();
 	this.name = name;
+	this.opacity = 1.0;
 	this.position = isEnemy ? position : 2 - position;
 	this.row = row;
 	this.sprite = new SpriteImage('battlers/' + name + '.rss');
@@ -38,7 +40,14 @@ BattleActor.prototype.animate = function(animationID)
 	// TODO: implement me!
 	switch (animationID) {
 		case 'die':
-			this.isVisible = false;
+			new Scenario()
+				.tween(this, 1.0, 'easeInOutSine', { opacity: 0.25 })
+				.run();
+			break;
+		case 'revive':
+			new Scenario()
+				.tween(this, 1.0, 'easeInOutSine', { opacity: 1.0 })
+				.run();
 			break;
 		case 'sleep':
 			new Scenario()
@@ -82,7 +91,7 @@ BattleActor.prototype.render = function()
 	if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0) {
 		return;
 	}
-	this.sprite.blit(this.x, this.y);
+	this.sprite.blit(this.x, this.y, this.opacity * 255);
 	for (var i = 0; i < this.damages.length; ++i) {
 		var text = this.damages[i].text;
 		var x = this.x + 16 - this.messageFont.getStringWidth(text) / 2;

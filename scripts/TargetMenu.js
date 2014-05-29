@@ -6,11 +6,11 @@
 // TargetMenu() constructor
 // Creates an object representing a move targeting menu.
 // Arguments:
-//     unit:     The battler whose move's target will be selected.
-//     battle:   The battle session during which the menu will be shown.
-//     usable:   Optional. If specified and not null, the Usable move whose target is being determined.
-//     moveName: Optional. The move name displayed while selecting a target. If not specified or null,
-//               the move name will be taken from the Usable.
+//     unit:      The battler whose move's target will be selected.
+//     battle:    The battle session during which the menu will be shown.
+//     usable:    Optional. If specified and not null, the Usable move whose target is being determined.
+//     moveName:  Optional. The move name displayed while selecting a target. If not specified or null,
+//                the move name will be taken from the Usable.
 function TargetMenu(unit, battle, usable, moveName)
 {
 	usable = usable !== void null ? usable : null;
@@ -21,19 +21,22 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
-	this.isTargetScanOn = Link(battle.alliesOf(unit)).pluck('allowTargetScan').contains(true);
+	this.isTargetScanOn = Link(battle.alliesOf(unit))
+		.where(function(unit) { return unit.isAlive(); })
+		.pluck('allowTargetScan').some(true);
 	this.isTargetLocked = false;
 	this.multiTarget = false;
 	this.name = moveName !== null ? moveName
 		: usable !== null ? usable.name
 		: unit.name;
-	this.statusInfo = null;
+	this.statusNames = null;
 	this.cursorFont = GetSystemFont();
 	this.infoFont = GetSystemFont();
 	this.targets = [];
 	this.unit = unit;
 	this.unitToShowInfo = null;
 	this.usable = usable;
+	this.allowDeadUnits = usable !== null ? usable.allowDeadTarget : false;
 	
 	this.drawCursor = function(unit)
 	{
@@ -65,7 +68,9 @@ function TargetMenu(unit, battle, usable, moveName)
 				position < 0 ? 2 :
 				position;
 			for (var i = 0; i < candidates.length; ++i) {
-				if (position == candidates[i].actor.position) {
+				if (position == candidates[i].actor.position
+					&& (candidates[i].isAlive() || this.allowDeadUnits))
+				{
 					unitToSelect = candidates[i];
 					break;
 				}
@@ -89,7 +94,15 @@ function TargetMenu(unit, battle, usable, moveName)
 			.end()
 			.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
 			.synchronize()
-			.call(function() { this.unitToShowInfo = unit; }.bind(this))
+			.call(function() {
+				this.unitToShowInfo = unit;
+				if (this.unitToShowInfo !== null) {
+					this.statusNames = !this.unitToShowInfo.isAlive() ? [ "Knocked Out" ] : [];
+					for (var i = 0; i < this.unitToShowInfo.statuses.length; ++i) {
+						this.statusNames.push(this.unitToShowInfo.statuses[i].name);
+					}
+				}
+			}.bind(this))
 			.fork()
 				.tween(this, 0.25, 'easeOutBack', { infoBoxFadeness: 0.0 })
 			.end()	
@@ -198,17 +211,16 @@ TargetMenu.prototype.render = function()
 		SetClippingRectangle(0, 16, 160, GetScreenHeight() - 16);
 		var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 		if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
-			var statuses = this.unitToShowInfo.statuses;
-			var nameBoxHeight = 20 + 12 * statuses.length;
+			var nameBoxHeight = 20 + 12 * this.statusNames.length;
 			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
 			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 			this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
 			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
-			var statusColor = this.unitToShowInfo.statuses.length == 0 ?
+			var statusColor = this.statusNames.length == 0 ?
 				CreateColor(96, 192, 96, textAlpha) :
 				CreateColor(192, 192, 96, textAlpha);
-			for (var i = 0; i < statuses.length; ++i) {
-				DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, statuses[i].name, CreateColor(192, 192, 96, textAlpha), 1, 'center');
+			for (var i = 0; i < this.statusNames.length; ++i) {
+				DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], CreateColor(192, 192, 96, textAlpha), 1, 'center');
 			}
 			this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);
 			DrawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');

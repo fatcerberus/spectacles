@@ -17,6 +17,7 @@ Game =
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
 	guardBreakRank: 1,
+	reviveRank: 2,
 	stanceChangeRank: 5,
 };
 

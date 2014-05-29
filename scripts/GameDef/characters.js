@@ -94,7 +94,8 @@ Game.characters =
 			'electrocute',
 			'upheaval',
 			'rejuvenate',
-			'renewal'
+			'renewal',
+			'lazarus'
 		]
 	},
 	

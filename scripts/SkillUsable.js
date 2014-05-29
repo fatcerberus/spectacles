@@ -28,6 +28,9 @@ function SkillUsable(skillID, level)
 	this.skillInfo = Game.skills[skillID];
 	this.skillID = skillID;
 	this.useAiming = true;
+	this.allowDeadTarget = 'allowDeadTarget' in this.skillInfo
+		? this.skillInfo.allowDeadTarget
+		: false;
 }
 
 // .defaultTargets() method
@@ -45,14 +48,30 @@ SkillUsable.prototype.defaultTargets = function(user)
 	switch (this.skillInfo.targetType) {
 		case 'single':
 			var enemies = user.battle.enemiesOf(user);
-			var index = Math.min(Math.floor(Math.random() * enemies.length), enemies.length - 1);
-			return [ enemies[index] ];
+			var target = Link(enemies).sample(1)[0];
+			if (this.allowDeadTarget && Link(enemies).some(function(unit) { return !unit.isAlive(); })) {
+				target = Link(enemies)
+					.where(function(unit) { return !unit.isAlive(); })
+					.sample(1)[0];
+			}
+			return [ target ];
 		case 'ally':
-			return [ user ];
+			var allies = user.battle.alliesOf(user);
+			var target = user;
+			if (this.allowDeadTarget && Link(allies).some(function(unit) { return !unit.isAlive(); })) {
+				target = Link(allies)
+					.where(function(unit) { return !unit.isAlive(); })
+					.sample(1)[0];
+			}
+			return [ target ];
 		case 'allEnemies':
-			return user.battle.enemiesOf(user);
+			return Link(user.battle.enemiesOf(user))
+				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
+				.toArray();
 		case 'allAllies':
-			return user.battle.alliesOf(user);
+			return Link(user.battle.alliesOf(user))
+				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
+				.toArray();
 		default:
 			return user;
 	}

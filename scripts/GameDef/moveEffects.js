@@ -119,5 +119,9 @@ Game.moveEffects =
 	
 	recoverMP: function(actor, targets, effect) {
 		Link(targets).invoke('restoreMP', effect.strength);
+	},
+	
+	revive: function(actor, targets, effect) {
+		Link(targets).invoke('resurrect');
 	}
 };
