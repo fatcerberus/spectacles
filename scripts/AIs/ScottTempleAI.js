@@ -72,15 +72,10 @@ ScottTempleAI.prototype.strategize = function()
 					this.aic.queueSkill('rejuvenate');
 					this.aic.queueSkill('chargeSlash');
 					this.turnsTillReGen = 7 + Math.min(Math.floor(Math.random() * 4), 3);
-				} else if (!this.aic.battle.hasCondition('generalDisarray')
-					&& !this.aic.battle.hasCondition('thunderstorm')
-					&& 0.25 > Math.random())
-				{
-					this.aic.queueSkill(RandomOf('discharge', 'tenPointFive'));
 				} else {
 					var skillToUse = this.aic.unit.hasStatus('reGen')
-						? RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval')
-						: RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval', 'heal');
+						? RandomOf('hellfire', 'windchill', 'upheaval')
+						: RandomOf('hellfire', 'windchill', 'upheaval', 'heal');
 					this.aic.queueSkill(skillToUse);
 				}
 			}
@@ -89,7 +84,11 @@ ScottTempleAI.prototype.strategize = function()
 			if (this.phase > lastPhase) {
 				this.aic.queueSkill('renewal');
 			} else {
-				
+				if (!this.aic.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
+					this.aic.queueSkill('tenPointFive');
+				} else {
+					this.aic.queueSkill(RandomOf('hellfire', 'windchill', 'upheaval', 'flare', 'chill', 'lightning', 'quake', 'heal'));
+				}
 			}
 			break;
 	}
@@ -122,6 +121,10 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		} else if (this.phase >= 2 && 0.25 > Math.random) {
 			this.aic.queueSkill('necromancy', targetIDs[0]);
 		}
-	} else if (skillID == 'dispel' && Link(targetIDs).contains('scottTemple')) {
+	} else if (skillID == 'dispel' && Link(targetIDs).contains('scottTemple')
+		&& this.aic.unit.hasStatus('reGen'))
+	{
+		this.aic.queueSkill('electrocute', userID);
+		this.aic.queueSkill('heal', userID);
 	}
 };

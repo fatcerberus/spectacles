@@ -120,6 +120,7 @@ Game.characters =
 			mag: 100,
 			agi: 60
 		},
+		autoScan: true,
 		skills: [
 			'flare',
 			'chill',
