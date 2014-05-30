@@ -158,12 +158,12 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	var isOverruled = Link(this.statuses).some(function(status) { return status.overrules(statusID); });
 	if (!this.isPartyMember() && Link(this.enemyInfo.immunities).contains(statusID)) {
 		if (!isGuardable) {
-			this.actor.showHealing("immune", CreateColor(160, 160, 160, 255));
+			this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
 		}
 		Console.writeLine(this.name + " is immune to " + statusName);
 	} else if (isOverruled) {
 		if (!isGuardable) {
-			this.actor.showHealing("ward", CreateColor(160, 160, 160, 255));
+			this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 		}
 		Console.writeLine(statusName + " overruled by another of " + this.name + "'s statuses");
 	} else if (this.stance !== BattleStance.guard || !isGuardable) {
@@ -182,7 +182,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 			Console.writeLine(this.name + " took on status " + effect.name);
 		} else {
 			if (!isGuardable) {
-				this.actor.showHealing("ward", CreateColor(160, 160, 160, 255));
+				this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 			}
 			Console.writeLine(this.name + "'s infliction with " + statusName + " blocked by status/FC");
 		}
@@ -315,7 +315,7 @@ BattleUnit.prototype.endTargeting = function()
 //     action:     The action attempted to be performed on the unit.
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
-	this.actor.showHealing("<miss>", CreateColor(160, 160, 160, 255));
+	this.actor.showHealing("miss", CreateColor(192, 192, 192, 255));
 	Console.writeLine(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
@@ -627,19 +627,23 @@ BattleUnit.prototype.restoreMP = function(percentage)
 // Resurrects the unit from a dead state.
 // Arguments:
 //     isFullHeal: Optional. Specifies whether the resurrection should include a full
-//                 HP restoration. If not specified or false, the unit is restored with
-//                 only 33% of its maximum HP. (default: false)
+//                 HP restoration. If not specified or false, the unit will be revived
+//                 with 1 HP. (default: false)
 // Remarks:
 //     This method does nothing if the unit is still alive.
 BattleUnit.prototype.resurrect = function(isFullHeal)
 {
 	isFullHeal = isFullHeal !== void null ? isFullHeal : false;
 	
-	this.lazarusFlag = false;
-	this.heal(isFullHeal ? this.maxHP : Math.round(0.33 * this.maxHP), [], true);
-	this.actor.animate('revive');
-	this.resetCounter(Game.reviveRank);
-	Console.writeLine(this.name + " brought back from the dead");
+	if (!this.isAlive()) {
+		this.lazarusFlag = true;
+		this.heal(isFullHeal ? this.maxHP : 1);
+		this.actor.animate('revive');
+		this.resetCounter(Game.reviveRank);
+		Console.writeLine(this.name + " brought back from the dead");
+	} else {
+		this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
+	}
 };
 
 // .setGuard() method

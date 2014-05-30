@@ -232,6 +232,28 @@ Game.skills =
 			}
 		]
 	},
+	tripleShot: {
+		name: "Triple Shot",
+		category: 'attack',
+		weaponType: 'bow',
+		targetType: 'allEnemies',
+		actions: [
+			{
+				announceAs: "Triple Shot",
+				rank: 2,
+				accuracyType: 'bow',
+				accuracyRate: 1 / Math.sqrt(Game.bonusMultiplier),
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'bow',
+						power: 25
+					}
+				],
+			}
+		]
+	},
 	
 	// Gun techniques
 	potshot: {
@@ -697,11 +719,12 @@ Game.skills =
 		actions: [
 			{
 				announceAs: "Lazarus",
-				rank: 4,
+				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'revive',
+						healToFull: false,
 						element: 'cure'
 					}
 				]

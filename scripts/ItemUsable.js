@@ -44,7 +44,14 @@ ItemUsable.prototype.clone = function()
 //     An array of battle unit references specifying the default targets.
 ItemUsable.prototype.defaultTargets = function(user)
 {
-	return [ user ];
+	var target = user;
+	var allies = user.battle.alliesOf(user);
+	if (this.allowDeadTarget && Link(allies).some(function(unit) { return !unit.isAlive(); })) {
+		target = Link(allies)
+			.where(function(unit) { return !unit.isAlive(); })
+			.sample(1)[0];
+	}
+	return [ target ];
 };
 
 // .getRank() method

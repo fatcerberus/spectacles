@@ -111,8 +111,8 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		return;
 	}
 	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !Link(targetIDs).contains('scottTemple')) {
-		if (this.phase <= 1) {
-			this.aic.queueSkill('chargeSlash');
+		if (this.phase <= 1 && !this.aic.isSkillQueued('chargeSlash')) {
+			this.aic.queueSkill('chargeSlash', userID);
 		} else if (this.phase >= 2 && 0.25 > Math.random) {
 			this.aic.queueSkill('necromancy', targetIDs[0]);
 		}

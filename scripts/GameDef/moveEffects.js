@@ -122,6 +122,6 @@ Game.moveEffects =
 	},
 	
 	revive: function(actor, targets, effect) {
-		Link(targets).invoke('resurrect');
+		Link(targets).invoke('resurrect', effect.healToFull);
 	}
 };

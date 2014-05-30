@@ -43,6 +43,22 @@ Game.items =
 			]
 		}
 	},
+	lazarusPotion: {
+		name: "Lazarus Potion",
+		tags: [ 'drink', 'curative' ],
+		allowDeadTarget: true,
+		uses: 1,
+		action: {
+			announceAs: "Lazarus Potion",
+			effects: [
+				{
+					targetHint: 'selected',
+					type: 'revive',
+					healToFull: true
+				}
+			]
+		}
+	},
 	powerTonic: {
 		name: "Power Tonic",
 		tags: [ 'drink', 'curative' ],
