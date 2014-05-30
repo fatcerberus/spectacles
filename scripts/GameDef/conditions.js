@@ -109,13 +109,19 @@ Game.conditions =
 		actionTaken: function(battle, eventData) {
 			Link(eventData.action.effects)
 				.filterBy('type', 'damage')
-				.filterBy('element', 'fire')
 				.each(function(effect)
 			{
-				var oldPower = effect.power;
-				effect.power = Math.round(effect.power * Game.bonusMultiplier);
-				Console.writeLine("Inferno in effect, POW of Fire attack boosted to " + effect.power);
-				Console.append("was: " + oldPower);
+				if (effect.element == 'fire') {
+					var oldPower = effect.power;
+					effect.power = Math.round(effect.power * Game.bonusMultiplier);
+					Console.writeLine("Fire attack strengthened by Inferno to " + effect.power + " POW");
+					Console.append("was: " + oldPower);
+				} else if (effect.element == 'ice') {
+					var oldPower = effect.power;
+					effect.power = Math.round(effect.power / Game.bonusMultiplier);
+					Console.writeLine("Ice attack weakened by Inferno to " + effect.power + " POW");
+					Console.append("was: " + oldPower);
+				}
 			});
 		},
 		
@@ -138,7 +144,7 @@ Game.conditions =
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
-					unit.addStatus('zombie');
+					unit.addStatus('zombie', true);
 				});
 			}
 		},
@@ -146,7 +152,7 @@ Game.conditions =
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
-				Console.writeLine("Frostbite incompatible with Inferno, infliction canceled");
+				Console.writeLine("Frostbite is incompatible with Inferno");
 			}
 		}
 	},
@@ -182,10 +188,17 @@ Game.conditions =
 				.filterBy('element', 'ice')
 				.each(function(effect)
 			{
-				var oldPower = effect.power;
-				effect.power = Math.round(effect.power * Game.bonusMultiplier);
-				Console.writeLine("Subzero in effect, POW of Ice attack boosted to " + effect.power);
-				Console.append("was: " + oldPower);
+				if (effect.element == 'ice') {
+					var oldPower = effect.power;
+					effect.power = Math.round(effect.power * Game.bonusMultiplier);
+					Console.writeLine("Ice attack strengthened by Subzero to " + effect.power + " POW");
+					Console.append("was: " + oldPower);
+				} else if (effect.element == 'fire') {
+					var oldPower = effect.power;
+					effect.power = Math.round(effect.power / Game.bonusMultiplier);
+					Console.writeLine("Fire attack weakened by Subzero to " + effect.power + " POW");
+					Console.append("was: " + oldPower);
+				}
 			});
 		},
 		
@@ -198,7 +211,7 @@ Game.conditions =
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
-					unit.addStatus('zombie');
+					unit.addStatus('zombie', true);
 				});
 			}
 		},
@@ -215,10 +228,10 @@ Game.conditions =
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
-				Console.writeLine("Frostbite overruled by Subzero, infliction canceled");
+				Console.writeLine("Frostbite infliction overruled by Subzero");
 			} else if (eventData.statusID == 'ignite') {
 				eventData.cancel = true;
-				Console.writeLine("Ignite incompatible with Subzero, infliction canceled");
+				Console.writeLine("Ignite is incompatible with Subzero");
 			}
 		}
 	},

@@ -455,7 +455,7 @@ Game.statuses =
 	},
 	
 	// Specs Aura status
-	// Restores a small amount of HP to the affected unit at the beginning of each
+	// Restores a tiny amount of HP to the affected unit at the beginning of each
 	// cycle. Similar to ReGen, except the effect is perpetual and less HP is recovered per
 	// cycle.
 	specsAura: {

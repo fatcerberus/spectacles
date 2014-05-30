@@ -9,6 +9,10 @@
 //     aiContext: The AI context hosting this AI.
 function ScottTempleAI(aiContext)
 {
+	this.phasePoints = [ 3000, 1000 ];
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+	}
 	this.aic = aiContext;
 	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
@@ -29,16 +33,17 @@ ScottTempleAI.prototype.strategize = function()
 {
 	var lastPhase = this.phase;
 	var phaseToEnter =
-		this.aic.unit.getHealth() > 65 ? 1
-		: this.aic.unit.getHealth() > 25 ? 2
+		this.aic.unit.hp > this.phasePoints[0] ? 1
+		: this.aic.unit.hp > this.phasePoints[1] ? 2
 		: 3;
 	this.phase = phaseToEnter > lastPhase ? phaseToEnter : lastPhase;
 	switch (this.phase) {
 		case 1:
 			if (this.phase > lastPhase) {
-				this.aic.queueSkill('omni');
-				this.aic.queueSkill(RandomOf('inferno', 'subzero'));
-				this.aic.queueSkill('chargeSlash');
+				this.aic.queueSkill('omni', 'elysia');
+				var spellID = RandomOf('inferno', 'subzero');
+				this.phase2Opener = spellID != 'inferno' ? 'inferno' : 'subzero';
+				this.aic.queueSkill(spellID);
 			} else {
 				var qsTurns = this.aic.predictSkillTurns('quickstrike');
 				if (qsTurns[0].unit === this.aic.unit) {
@@ -58,24 +63,25 @@ ScottTempleAI.prototype.strategize = function()
 			break;
 		case 2:
 			if (this.phase > lastPhase) {
-				if (this.aic.battle.hasCondition('inferno')) {
-					this.aic.queueSkill('subzero');
-				} else {
-					this.aic.queueSkill('inferno');
-				}
 				this.aic.queueSkill('rejuvenate');
+				this.aic.queueSkill(this.phase2Opener);
+				this.turnsTillReGen = 7 + Math.min(Math.floor(Math.random() * 4), 3);
 			} else {
-				if (!this.aic.battle.hasCondition('generalDisarray')
+				--this.turnsTillReGen;
+				if (this.turnsTillReGen <= 0) {
+					this.aic.queueSkill('rejuvenate');
+					this.aic.queueSkill('chargeSlash');
+					this.turnsTillReGen = 7 + Math.min(Math.floor(Math.random() * 4), 3);
+				} else if (!this.aic.battle.hasCondition('generalDisarray')
 					&& !this.aic.battle.hasCondition('thunderstorm')
 					&& 0.25 > Math.random())
 				{
 					this.aic.queueSkill(RandomOf('discharge', 'tenPointFive'));
 				} else {
-					var skillToUse = RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval', 'heal', 'rejuvenate');
+					var skillToUse = this.aic.unit.hasStatus('reGen')
+						? RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval')
+						: RandomOf('hellfire', 'windchill', 'electrocute', 'upheaval', 'heal');
 					this.aic.queueSkill(skillToUse);
-					if (skillToUse == 'rejuvenate') {
-						this.aic.queueSkill('chargeSlash');
-					}
 				}
 			}
 			break;
@@ -112,9 +118,10 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	}
 	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !Link(targetIDs).contains('scottTemple')) {
 		if (this.phase <= 1 && !this.aic.isSkillQueued('chargeSlash')) {
-			this.aic.queueSkill('chargeSlash', userID);
+			this.aic.queueSkill('chargeSlash', targetIDs[0]);
 		} else if (this.phase >= 2 && 0.25 > Math.random) {
 			this.aic.queueSkill('necromancy', targetIDs[0]);
 		}
+	} else if (skillID == 'dispel' && Link(targetIDs).contains('scottTemple')) {
 	}
 };

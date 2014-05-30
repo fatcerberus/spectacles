@@ -53,7 +53,7 @@ Game.battles =
 	// Scott Temple (Boss Battle)
 	// Penultimate Boss of Spectacles III
 	scottTemple: {
-		title: "Scott Temple, the First Lucidan",
+		title: "First Lucidan Scott Temple",
 		isFinalBattle: false,
 		bgm: 'TheQuantumEnigma',
 		battleLevel: 60,

@@ -242,7 +242,7 @@ Game.skills =
 				announceAs: "Triple Shot",
 				rank: 2,
 				accuracyType: 'bow',
-				accuracyRate: 1 / Math.sqrt(Game.bonusMultiplier),
+				accuracyRate: 1 / Game.bonusMultiplier,
 				effects: [
 					{
 						targetHint: 'selected',
