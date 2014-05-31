@@ -40,13 +40,15 @@ BattleActor.prototype.animate = function(animationID)
 	// TODO: implement me!
 	switch (animationID) {
 		case 'die':
+			this.sprite.direction = 'north';
 			new Scenario()
-				.tween(this, 1.0, 'easeInOutSine', { opacity: 0.25 })
+				.tween(this, 1.0, 'easeInOutSine', { opacity: 0.1 })
 				.run();
 			break;
 		case 'revive':
 			new Scenario()
 				.tween(this, 1.0, 'easeInOutSine', { opacity: 1.0 })
+				.call(function() { this.sprite.direction = this.isEnemy ? 'east' : 'west'; }.bind(this))
 				.run();
 			break;
 		case 'sleep':

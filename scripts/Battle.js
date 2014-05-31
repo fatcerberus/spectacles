@@ -29,10 +29,6 @@ function Battle(session, battleID)
 	}
 	Console.writeLine("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
-	this.conditions = [];
-	this.battleUnits = [];
-	this.enemyUnits = [];
-	this.playerUnits = [];
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
 	this.partyMPPool = null;
@@ -211,6 +207,7 @@ Battle.prototype.go = function()
 	this.battleUnits = [];
 	this.playerUnits = [];
 	this.enemyUnits = [];
+	this.conditions = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyID = this.parameters.enemies[i];
 		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
