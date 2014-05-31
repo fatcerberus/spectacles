@@ -65,29 +65,59 @@ ScottTempleAI.prototype.strategize = function()
 			if (this.phase > lastPhase) {
 				this.aic.queueSkill('rejuvenate');
 				this.aic.queueSkill(this.phase2Opener);
-				this.turnsTillReGen = 7 + Math.min(Math.floor(Math.random() * 4), 3);
+				this.isQSComboStarted = false;
+				this.movesTillReGen = 5 + Math.min(Math.floor(Math.random() * 3), 2);
 			} else {
-				--this.turnsTillReGen;
-				if (this.turnsTillReGen <= 0) {
+				if (this.isQSComboStarted) {
+					var qsTurns = this.aic.predictSkillTurns('quickstrike');
+					if (qsTurns[0].unit === this.aic.unit) {
+						this.aic.queueSkill('quickstrike');
+					} else {
+						this.aic.queueSkill(RandomOf('flare', 'chill', 'lightning', 'quake'));
+					}
+				} else if (this.movesTillReGen <= 0) {
 					this.aic.queueSkill('rejuvenate');
 					this.aic.queueSkill('chargeSlash');
-					this.turnsTillReGen = 7 + Math.min(Math.floor(Math.random() * 4), 3);
+					this.movesTillReGen = 5 + Math.min(Math.floor(Math.random() * 3), 2);
 				} else {
+					--this.movesTillReGen;
 					var skillToUse = this.aic.unit.hasStatus('reGen')
-						? RandomOf('hellfire', 'windchill', 'upheaval')
-						: RandomOf('hellfire', 'windchill', 'upheaval', 'heal');
-					this.aic.queueSkill(skillToUse);
+						? RandomOf('hellfire', 'windchill', 'upheaval', 'quickstrike')
+						: RandomOf('hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal');
+					if (skillToUse != 'quickstrike') {
+						this.aic.queueSkill(skillToUse);
+					} else {
+						var qsTurns = this.aic.predictSkillTurns(skillToUse);
+						if (qsTurns[0].unit === this.aic.unit) {
+							this.isQSComboStarted = true;
+							this.aic.queueSkill(skillToUse);
+						} else {
+							this.aic.queueSkill('chargeSlash');
+						}
+					}
 				}
 			}
 			break;
 		case 3:
 			if (this.phase > lastPhase) {
 				this.aic.queueSkill('renewal');
+				this.isQSComboStarted = false;
 			} else {
-				if (!this.aic.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
+				if (this.isQSComboStarted) {
+					var qsTurns = this.aic.predictSkillTurns('quickstrike');
+					this.aic.queueSkill(qsTurns[0].unit === this.aic.unit ? 'quickstrike' : 'swordSlash');
+				} else if (!this.aic.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
 					this.aic.queueSkill('tenPointFive');
 				} else {
-					this.aic.queueSkill(RandomOf('hellfire', 'windchill', 'upheaval', 'flare', 'chill', 'lightning', 'quake', 'heal'));
+					var skillToUse = RandomOf('quickstrike',
+						'hellfire', 'windchill', 'electrocute', 'upheaval',
+						'flare', 'chill', 'lightning', 'quake', 'heal');
+					this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse
+						: RandomOf('swordSlash', 'quickstrike', 'chargeSlash'));
+					if (this.aic.isSkillQueued('quickstrike')) {
+						var qsTurns = this.aic.predictSkillTurns('quickstrike');
+						this.isQSComboStarted = qsTurns[0].unit === this.aic.unit;
+					}
 				}
 			}
 			break;
