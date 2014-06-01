@@ -73,9 +73,10 @@ ScottTempleAI.prototype.strategize = function()
 					if (qsTurns[0].unit === this.aic.unit) {
 						this.aic.queueSkill('quickstrike');
 					} else {
-						this.aic.queueSkill(RandomOf('flare', 'chill', 'lightning', 'quake'));
+						var skillToUse = RandomOf('flare', 'chill', 'lightning', 'quake')
+						this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
 					}
-				} else if (this.movesTillReGen <= 0) {
+				} else if (this.movesTillReGen <= 0 && this.aic.isSkillUsable('rejuvenate')) {
 					this.aic.queueSkill('rejuvenate');
 					this.aic.queueSkill('chargeSlash');
 					this.movesTillReGen = 5 + Math.min(Math.floor(Math.random() * 3), 2);
@@ -84,6 +85,7 @@ ScottTempleAI.prototype.strategize = function()
 					var skillToUse = this.aic.unit.hasStatus('reGen')
 						? RandomOf('hellfire', 'windchill', 'upheaval', 'quickstrike')
 						: RandomOf('hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal');
+					skillToUse = this.aic.isSkillUsable(skillToUse) ? skillToUse : 'quickstrike';
 					if (skillToUse != 'quickstrike') {
 						this.aic.queueSkill(skillToUse);
 					} else {
@@ -100,7 +102,8 @@ ScottTempleAI.prototype.strategize = function()
 			break;
 		case 3:
 			if (this.phase > lastPhase) {
-				this.aic.queueSkill('renewal');
+				this.aic.queueSkill(this.aic.isSkillUsable('renewal')
+					? 'renewal' : 'chargeSlash');
 				this.isQSComboStarted = false;
 			} else {
 				if (this.isQSComboStarted) {

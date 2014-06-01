@@ -43,6 +43,34 @@ Game.statuses =
 		}
 	},
 	
+	// Curse status
+	// Prevents the affected unit from taking on beneficial statuses such as ReGen and Protect.
+	// Wears off after 5 turns.
+	curse: {
+		name: "Curse",
+		tags: [ 'debuff' ],
+		initialize: function(unit) {
+			unit.liftStatusTags([ 'buff' ]);
+			this.turnsLeft = 5;
+		},
+		afflicted: function(unit, eventData) {
+			var statusDef = Game.statuses[eventData.statusID];
+			if (Link(statusDef.tags).contains('buff')) {
+				Console.writeLine("Status " + statusDef.name + " was blocked by Curse");
+				eventData.cancel = true;
+			}
+		},
+		beginTurn: function(unit, eventData) {
+			if (this.turnsLeft <= 0) {
+				Console.writeLine(unit.name + "'s Curse has expired");
+				unit.liftStatus('curse');
+			} else {
+				Console.writeLine(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
+			}
+			--this.turnsLeft;
+		}
+	},
+	
 	// Disarray status
 	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
 	// Expires after 3 actions.

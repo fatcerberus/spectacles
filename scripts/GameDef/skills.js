@@ -672,7 +672,7 @@ Game.skills =
 		name: "Dispel",
 		category: 'heal',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 25,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -817,6 +817,27 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'crackdown'
+					}
+				]
+			}
+		]
+	},
+	curse: {
+		name: "Curse",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 100,
+		allowAsCounter: false,
+		actions: [
+			{
+				announceAs: "Curse",
+				rank: 3,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'curse'
 					}
 				]
 			}

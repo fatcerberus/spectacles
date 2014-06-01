@@ -167,6 +167,7 @@ Game.conditions =
 		
 		initialize: function(battle) {
 			this.multiplier = 1.0;
+			this.rank = 0;
 			Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
@@ -183,6 +184,7 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
+			this.rank = eventData.action.rank;
 			Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.filterBy('element', 'ice')
@@ -218,11 +220,13 @@ Game.conditions =
 		
 		endTurn: function(battle, eventData) {
 			var unit = eventData.actingUnit;
-			if (unit.isAlive()) {
+			if (unit.isAlive() && this.rank != 0) {
 				var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-				unit.takeDamage(vit * this.multiplier, [ 'special', 'ice' ]);
-				this.multiplier = Math.min(this.multiplier + 0.10, 2.0);
+				unit.takeDamage(this.rank * vit * this.multiplier / 5, [ 'special', 'ice' ]);
+				var increment = 0.1 * this.rank / 5;
+				this.multiplier = Math.min(this.multiplier + increment, 2.0);
 			}
+			this.rank = 0;
 		},
 		
 		unitAfflicted: function(battle, eventData) {

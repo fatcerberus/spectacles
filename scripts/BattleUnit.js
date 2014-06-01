@@ -722,6 +722,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		this.battle.ui.hud.setHP(this.name, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
 			Console.writeLine(this.name + " dying due to lack of HP");
+			this.lazarusFlag = true;
 			var eventData = { unit: this, cancel: false };
 			this.battle.raiseEvent('unitDying', eventData);
 			if (!eventData.cancel) {
@@ -828,6 +829,7 @@ BattleUnit.prototype.tick = function()
 		var eventData = { actingUnit: this };
 		this.battle.raiseEvent('endTurn', eventData);
 		this.actor.animate('dormant');
+		Console.writeLine("End of " + this.name + "'s turn");
 		this.battle.resume();
 		return true;
 	} else {

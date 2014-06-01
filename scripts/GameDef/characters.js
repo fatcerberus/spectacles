@@ -132,7 +132,8 @@ Game.characters =
 			'rejuvenate',
 			'dispel',
 			'necromancy',
-			'crackdown'
+			'crackdown',
+			'curse'
 		]
 	},
 	
