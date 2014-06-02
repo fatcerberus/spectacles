@@ -71,20 +71,20 @@ Game.battles =
 		battleLevel: 60,
 		enemies: [
 			'numberEleven',
-			//'katelyn'
+			//'xemnas'
 		],
 		onStart: function() {
-			var katelynUnit = this.findUnit('katelyn');
+			var xemnasUnit = this.findUnit('xemnas');
 			var maggieUnit = this.findUnit('maggie');
 			new Scenario()
-				.talk("Katelyn", true, 2.0, Infinity, "Hey guys! What'cha doing?")
-				.talk("maggie", true, 2.0, Infinity, "Where the hell did this girl come from? Screw this, I'ma eat her!")
+				.talk("Xemnas", true, 0.5, Infinity, "Nothingness... is... eternal...!")
+				.talk("maggie", true, 2.0, Infinity, "Where the hell did this guy come from? Screw this, I'ma eat him!")
 				.fork()
 					.pause(1.5)
-					.call(function() { katelynUnit.takeDamage(katelynUnit.hp, [], true); })
+					.call(function() { xemnasUnit.takeDamage(xemnasUnit.hp, [], true); })
 					.playSound("Munch.wav")
 				.end()
-				.talk("Katelyn", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
+				.talk("Xemnas", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
 				.synchronize()
 				.talk("Scott", true, 2.0, Infinity, "Can I get back to fighting Bruce and Robert now? Sheesh, talk about empty calories...")
 				.talk("maggie", true, 2.0, Infinity, "Yeah, you know what? I'm still hungry. Watch this trick!")

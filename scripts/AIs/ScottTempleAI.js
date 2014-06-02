@@ -66,7 +66,7 @@ ScottTempleAI.prototype.strategize = function()
 				this.aic.queueSkill('rejuvenate');
 				this.aic.queueSkill(this.phase2Opener);
 				this.isQSComboStarted = false;
-				this.movesTillReGen = 5 + Math.min(Math.floor(Math.random() * 3), 2);
+				this.movesTillReGen = 3 + Math.min(Math.floor(Math.random() * 3), 2);
 			} else {
 				if (this.isQSComboStarted) {
 					var qsTurns = this.aic.predictSkillTurns('quickstrike');
@@ -79,7 +79,7 @@ ScottTempleAI.prototype.strategize = function()
 				} else if (this.movesTillReGen <= 0 && this.aic.isSkillUsable('rejuvenate')) {
 					this.aic.queueSkill('rejuvenate');
 					this.aic.queueSkill('chargeSlash');
-					this.movesTillReGen = 5 + Math.min(Math.floor(Math.random() * 3), 2);
+					this.movesTillReGen = 3 + Math.min(Math.floor(Math.random() * 3), 2);
 				} else {
 					--this.movesTillReGen;
 					var skillToUse = this.aic.unit.hasStatus('reGen')

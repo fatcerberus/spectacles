@@ -11,32 +11,8 @@
 //     aiContext: The AI context that this AI will execute under.
 function NumberElevenAI(aiContext)
 {
-	this.movePool = [
-		{ id: 'omni', weight: 1 },
-		{ id: 'necromancy', weight: 3 },
-		{ id: 'crackdown', weight: 2 },
-		{ id: 'inferno', weight: 5 },
-		{ id: 'subzero', weight: 3 },
-		{ id: 'discharge', weight: 2 },
-		{ id: 'tenPointFive', weight: 4 },
-		{ id: 'hellfire', weight: 7 },
-		{ id: 'windchill', weight: 5 },
-		{ id: 'electrocute', weight: 3 },
-		{ id: 'upheaval', weight: 5 },
-		{ id: 'flare', weight: 6 },
-		{ id: 'chill', weight: 6 },
-		{ id: 'lightning', weight: 7 },
-		{ id: 'quake', weight: 6 },
-		{ id: 'berserkCharge', weight: 2 },
-		{ id: 'swordSlash', weight: 15 },
-		{ id: 'quickstrike', weight: 10 },
-		{ id: 'chargeSlash', weight: 8 },
-	];
-	
 	this.aic = aiContext;
-	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.aic.battle.unitKilled.addHook(this, this.onUnitKilled);
-	this.cadavers = [];
+	this.comboStarter = null;
 	this.isOpenerPending = true;
 }
 
@@ -44,8 +20,6 @@ function NumberElevenAI(aiContext)
 // Relinquishes resources and shuts down the AI.
 NumberElevenAI.prototype.dispose = function()
 {
-	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
-	this.aic.battle.unitKilled.removeHook(this, this.onUnitKilled);
 };
 
 // .selectMove() method
@@ -73,17 +47,36 @@ NumberElevenAI.prototype.strategize = function()
 		this.isOpenerPending = false;
 		this.aic.queueSkill('berserkCharge');
 	} else {
-		var skillID = this.selectMove();
-		this.aic.queueSkill(skillID);
+		var health = this.aic.unit.getHealth();
+		var skillToUse = health > 10 ? 'chargeSlash' : 'berserkCharge';
+		var target1ID = RandomOf('bruce', 'robert');
+		var target2ID = target1ID != 'bruce' ? 'bruce' : 'robert';
+		if (skillToUse != 'berserkCharge') {
+			this.aic.queueSkill(skillToUse, target1ID);
+		} else {
+			this.aic.queueSkill(skillToUse);
+		}
+		var comboID = Math.min(Math.floor(Math.random() * 2), 1);
+		switch (comboID) {
+			case 0:
+				if (health > 10) {
+					this.aic.queueSkill(health > 60 ? 'necromancy' : 'electrocute', target1ID);
+				} else {
+					this.aic.queueSkill('discharge');
+				}
+				this.aic.queueSkill(health > 50 ? 'flare' : 'hellfire', target2ID);
+				this.aic.queueSkill(health > 50 ? 'chill' : 'windchill', target2ID);
+				if (health > 10) {
+					this.aic.queueSkill(health > 40 ? 'heal' : 'rejuvenate', target1ID);
+				} else {
+					this.aic.queueSkill('renewal');
+				}
+				break;
+			case 1:
+				this.aic.queueSkill(health > 50 ? 'lightning' : 'electrocute', target2ID);
+				this.aic.queueSkill('hellfire', target1ID);
+				this.aic.queueSkill('windchill', target1ID);
+				break;
+		}
 	}
-};
-
-NumberElevenAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
-{
-	
-};
-
-NumberElevenAI.prototype.onUnitKilled = function(unitID)
-{
-	this.cadavers.push(unitID);
 };

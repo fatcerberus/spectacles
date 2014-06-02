@@ -84,7 +84,7 @@ Game.statuses =
 			var oldRank = eventData.action.rank;
 			eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
 			if (eventData.action.rank != oldRank) {
-				Console.writeLine("Rank modified by Disarray to " + eventData.action.rank);
+				Console.writeLine("Rank of action changed by Disarray to " + eventData.action.rank);
 				Console.append("was: " + oldRank);
 			}
 			++this.actionsTaken;

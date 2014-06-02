@@ -27,14 +27,12 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
 			'hellfire',
-			'windchill',
 			'inferno',
-			'rejuvenate',
-			'renewal',
 			'omni',
-			'protectiveAura'
+			'dispel',
+			'protectiveAura',
+			'curse'
 		]
 	},
 	

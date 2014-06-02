@@ -36,7 +36,7 @@ Game.conditions =
 	
 	// General Disarray field condition
 	// Randomizes the move rank of any skill or item used. Wears off after
-	// 15 actions.
+	// 15 actions have been taken.
 	generalDisarray:
 	{
 		name: "G. Disarray",
@@ -46,7 +46,12 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
+			var oldRank = eventData.action.rank
 			eventData.action.rank = Math.min(Math.floor(Math.random() * 5 + 1), 5);
+			if (eventData.action.rank != oldRank) {
+				Console.writeLine("Rank of action changed by G. Disarray to " + eventData.action.rank);
+				Console.append("was: " + oldRank);
+			}
 			--this.actionsLeft;
 			if (this.actionsLeft > 0) {
 				Console.writeLine("G. Disarray will expire in " + this.actionsLeft + " more action(s)");
@@ -94,7 +99,6 @@ Game.conditions =
 		name: "Inferno",
 		
 		initialize: function(battle) {
-			this.multiplier = 1.0;
 			Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
@@ -131,8 +135,7 @@ Game.conditions =
 				.toArray();
 			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.takeDamage(vit * this.multiplier, [ 'special', 'fire' ]);
-			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
+			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
 		
 		conditionInstalled: function(battle, eventData) {
@@ -241,7 +244,7 @@ Game.conditions =
 	},
 	
 	// Thunderstorm field condition
-	// Strikes a battler every so often at the end of their turn, dealing a small amount
+	// Sometimes drops a lightning bolt on a unit at the end of their turn, dealing a small amount
 	// of lightning damage and inflicting Zombie status. Wears off after 10 strikes.
 	thunderstorm:
 	{
@@ -252,7 +255,7 @@ Game.conditions =
 		},
 		
 		endTurn: function(battle, eventData) {
-			if (0.1 > Math.random()) {
+			if (0.5 > Math.random()) {
 				var unit = eventData.actingUnit;
 				Console.writeLine(unit.name + " struck by lightning from Thunderstorm");
 				var level = battle.getLevel();
@@ -260,7 +263,7 @@ Game.conditions =
 				var defense = Game.math.statValue(0, level);
 				var damage = Game.math.damage.calculate(5, battle.getLevel(), unit.tier, attack, defense);
 				unit.takeDamage(damage, [ 'special', 'lightning' ]);
-				unit.addStatus('zombie');
+				unit.liftStatusTags('buff');
 				--this.strikesLeft;
 				if (this.strikesLeft <= 0) {
 					Console.writeLine("Thunderstorm has expired");

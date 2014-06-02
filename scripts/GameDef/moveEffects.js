@@ -50,21 +50,19 @@ Game.moveEffects =
 	},
 	
 	devour: function(actor, targets, effect) {
-		var healAmount = 0;
 		for (var i = 0; i < targets.length; ++i) {
 			if (!targets[i].isPartyMember()) {
 				var munchData = targets[i].enemyInfo.munchData;
 				var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
 				actor.growSkill(munchData.skill, experience);
 			}
-			healAmount += Math.round(targets[i].maxHP / 10);
 			Console.writeLine(targets[i].fullName + " got eaten by " + actor.name);
 			new Scenario()
 				.playSound("Munch.wav")
 				.run();
 			targets[i].die();
 		}
-		actor.heal(healAmount, [ 'munch' ]);
+		actor.heal(actor.maxHP - actor.hp, [], true);
 	},
 	
 	fullRecover: function(actor, targets, effect) {
