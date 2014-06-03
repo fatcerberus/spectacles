@@ -18,6 +18,7 @@ function ItemUsable(itemID)
 	if (!('rank' in this.itemDef.action)) {
 		this.itemDef.action.rank = Game.defaultItemRank;
 	}
+	this.isGroupCast = false;
 	this.itemID = itemID;
 	this.name = this.itemDef.name;
 	this.useAiming = false;

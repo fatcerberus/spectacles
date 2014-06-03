@@ -100,7 +100,6 @@ Game.enemies =
 		aiType: NumberElevenAI,
 		hasLifeBar: true,
 		tier: 4,
-		turnRatio: 2.0,
 		baseStats: {
 			vit: 80,
 			str: 80,

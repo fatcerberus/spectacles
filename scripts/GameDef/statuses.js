@@ -174,7 +174,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			if (eventData.stance == BattleStance.counter) {
-				this.fatigue *= Math.sqrt(Game.bonusMultiplier);
+				this.fatigue *= Game.bonusMultiplier;
 				unit.resetCounter(this.knockback);
 				++this.knockback;
 			}
@@ -298,13 +298,13 @@ Game.statuses =
 	},
 	
 	// Immune status
-	// Grants the affected unit full immunity to most negative status afflictions
-	// for a limited time.
+	// Grants the affected unit full immunity to most negative status afflictions.
+	// Wears off after 5 turns.
 	immune: {
 		name: "Immune",
 		tags: [ 'buff' ],
 		initialize: function(unit) {
-			this.turnCount = 0;
+			this.turnsLeft = 5;
 		},
 		afflicted: function(unit, eventData) {
 			var statusDef = Game.statuses[eventData.statusID];
@@ -314,10 +314,13 @@ Game.statuses =
 			}
 		},
 		beginTurn: function(unit, eventData) {
-			++this.turnCount;
-			if (this.turnCount > 5) {
+			if (this.turnsLeft <= 0) {
+				Console.writeLine(unit.name + "'s Immune has expired");
 				unit.liftStatus('immune');
+			} else {
+				Console.writeLine(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
 			}
+			--this.turnsLeft;
 		}
 	},
 	
@@ -370,7 +373,7 @@ Game.statuses =
 		},
 		beginCycle: function(unit, eventData) {
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(vit, [ 'reGen' ]);
+			unit.heal(vit, [ 'cure' ]);
 			--this.turnsLeft;
 			if (this.turnsLeft <= 0) {
 				Console.writeLine(unit.name + "'s ReGen has expired");
@@ -423,7 +426,7 @@ Game.statuses =
 			this.allowDeath = Link(eventData.tags)
 				.some([ 'zombie', 'physical', 'sword', 'earth', 'omni' ]);
 			if (!this.allowDeath) {
-				eventData.amount = 0;
+				eventData.cancel = true;
 			}
 		},
 		dying: function(unit, eventData) {
@@ -433,7 +436,7 @@ Game.statuses =
 			if (Link(eventData.tags).contains('cure')) {
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
 			}
-			eventData.amount = 0;
+			eventData.cancel = true;
 		}
 	},
 	
@@ -491,7 +494,7 @@ Game.statuses =
 		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(0.25 * vit, [ 'reGen' ]);
+			unit.heal(0.25 * vit, [ 'specs' ]);
 		}
 	},
 	
@@ -507,7 +510,8 @@ Game.statuses =
 			this.allowDeath = false;
 		},
 		damaged: function(unit, eventData) {
-			this.allowDeath = Link(eventData.tags).contains('zombie');
+			this.allowDeath = Link(eventData.tags).contains('zombie')
+				&& !Link(eventData.tags).contains('specs');
 		},
 		dying: function(unit, eventData) {
 			if (!this.allowDeath) {
@@ -516,8 +520,10 @@ Game.statuses =
 			}
 		},
 		healed: function(unit, eventData) {
-			if (Link(eventData.tags).some([ 'cure', 'reGen' ])) {
-				unit.takeDamage(eventData.amount, [ 'zombie' ]);
+			if (Link(eventData.tags).some([ 'cure', 'specs' ])) {
+				var damageTags = Link(eventData.tags).contains('specs')
+					? [ 'zombie', 'specs' ] : [ 'zombie' ];
+				unit.takeDamage(eventData.amount, damageTags);
 				eventData.cancel = true;
 			}
 		}

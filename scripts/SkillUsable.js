@@ -22,10 +22,12 @@ function SkillUsable(skillID, level)
 		var xpNeeded = Math.ceil(i > 1 ? Math.pow(i, 3) : 0);
 		this.levelUpTable[i] = xpNeeded;
 	}
+	this.skillInfo = Game.skills[skillID];
 	this.experience = this.levelUpTable[level];
 	this.givesExperience = true;
-	this.name = Game.skills[skillID].name;
-	this.skillInfo = Game.skills[skillID];
+	this.isGroupCast = Link([ 'allEnemies', 'allAllies' ])
+		.contains(this.skillInfo.targetType);
+	this.name = this.skillInfo.name;
 	this.skillID = skillID;
 	this.useAiming = true;
 	this.allowDeadTarget = 'allowDeadTarget' in this.skillInfo

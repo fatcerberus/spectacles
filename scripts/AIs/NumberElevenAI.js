@@ -56,21 +56,14 @@ NumberElevenAI.prototype.strategize = function()
 		} else {
 			this.aic.queueSkill(skillToUse);
 		}
+		this.aic.queueSkill('omni', target1ID);
 		var comboID = Math.min(Math.floor(Math.random() * 2), 1);
 		switch (comboID) {
 			case 0:
-				if (health > 10) {
-					this.aic.queueSkill(health > 60 ? 'necromancy' : 'electrocute', target1ID);
-				} else {
-					this.aic.queueSkill('discharge');
-				}
+				this.aic.queueSkill(health > 60 ? 'necromancy' : this.health > 25 ? 'electrocute' : 'discharge', target1ID);
 				this.aic.queueSkill(health > 50 ? 'flare' : 'hellfire', target2ID);
 				this.aic.queueSkill(health > 50 ? 'chill' : 'windchill', target2ID);
-				if (health > 10) {
-					this.aic.queueSkill(health > 40 ? 'heal' : 'rejuvenate', target1ID);
-				} else {
-					this.aic.queueSkill('renewal');
-				}
+				this.aic.queueSkill(health > 40 ? 'heal' : health > 10 ? 'rejuvenate' : 'renewal', target1ID);
 				break;
 			case 1:
 				this.aic.queueSkill(health > 50 ? 'lightning' : 'electrocute', target2ID);

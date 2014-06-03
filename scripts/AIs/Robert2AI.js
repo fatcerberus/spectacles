@@ -4,12 +4,24 @@
 ***/
 
 // Robert2AI() constructor
-// Creates an AI to control Robert Spellbinder in the Spectacles I final battle.
+// Creates an AI to control Robert Spellbinder in the final battle.
 // Arguments:
-//     aiContext: The AI context that this AI will execute under.
+//     aiContext: The AI context hosting this AI.
 function Robert2AI(aiContext)
 {
 	this.aic = aiContext;
+	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
+	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
+	this.aic.battle.stanceChanged.addHook(this, this.onStanceChanged);
+	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
+	
+	// HP thresholds for phase transitions
+	this.phasePoints = [ 3000, 2000, 1000, 500 ];
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+	}
+	
+	// AI state variables
 	this.hasZombieHealedSelf = false;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
@@ -26,15 +38,9 @@ function Robert2AI(aiContext)
 	this.turnCount = {};
 	this.zombieHealAlertLevel = 0.0;
 	this.zombieHealFixState = null;
-	this.phasePoints = [ 3000, 2000, 1000, 500 ];
-	for (var i = 0; i < this.phasePoints.length; ++i) {
-		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
-	}
 	
-	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
-	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.aic.battle.stanceChanged.addHook(this, this.onStanceChanged);
-	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
+	// Prepare the AI for use
+	this.aic.setDefaultSkill('swordSlash');
 }
 
 // .dispose() method

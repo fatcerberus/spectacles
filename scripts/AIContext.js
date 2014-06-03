@@ -10,12 +10,13 @@ RequireScript("SkillUsable.js");
 // Arguments:
 //     unit:   The unit whose actions are to be managed by the AI.
 //     battle: The battle session the unit is taking part in.
-//     aiType: The constructor for the AI which will control the unit. The object created must,
-//             at the very least, include a parameterless function called 'strategize', which
-//             MUST queue at least one move (via AIContext.queueSkill or AIContext.queueItem) each
+//     aiType: The constructor for the AI which will control the unit. The object it creates must,
+//             at the very least, include a parameterless method named 'strategize', which
+//             is required to queue at least one move (via AIContext.queueSkill or AIContext.queueItem) each
 //             time it is called.
-//             Note: The constructor will be called the following argument:
-//                 aiContext: The AIContext that is hosting the AI.
+// Remarks:
+//     Note: aiType will be called as a constructor (that is, via new) with the following argument:
+//               aiContext: The AIContext that is hosting the AI.
 function AIContext(unit, battle, aiType)
 {
 	Console.writeLine("Initializing AI context for " + unit.fullName);
@@ -40,9 +41,16 @@ AIContext.prototype.dispose = function()
 };
 
 // .getNextMove() method
-// Gets the next skill to be executed or item to be used by the AI.
+// Gets the next move to be performed by the controlled unit.
 // Returns:
-//     An object with properties specifying the AI's next move.
+//     An object containing the following properties:
+//         usable:  The Usable object representing the skill or item to be used.
+//         stance:  The battle stance the unit is switching to.
+//         targets: An array of BattleUnits specifying the units targeted by the
+//                  move.
+// Remarks:
+//     If no usable move is queued and the default skill is selected, a random target
+//     will be chosen for it.
 AIContext.prototype.getNextMove = function()
 {
 	var moveToUse = null;
@@ -197,54 +205,6 @@ AIContext.prototype.predictSkillTurns = function(skillID)
 	return forecast;
 };
 
-// .setCounter() method
-// Instructs the AI to put the unit into counterattacking stance.
-// Arguments:
-//     skillID: The ID of the skill to counter with, as defined in the gamedef.
-AIContext.prototype.setCounter = function(skillID)
-{
-	var skill = new SkillUsable(skillID, 100);
-	this.moveQueue.push({
-		usable: skill,
-		stance: BattleStance.counter,
-		predicate: function() { return true; }
-	});
-};
-
-// .setDefaultSkill() method
-// Sets the skill to be used when no specific moves are queued.
-// Arguments:
-//     skillID: The ID of the skill to use, as defined in the gamedef.
-// Remarks:
-//     If no target has been set (as by calling .setTarget()) at the time this skill is
-//     used, a random target will be selected.
-AIContext.prototype.setDefaultSkill = function(skillID)
-{
-	this.defaultSkillID = skillID;
-	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
-};
-
-// .setGuard() method
-// Instructs the AI to put the unit into a defensive stance.
-AIContext.prototype.setGuard = function()
-{
-	this.moveQueue.push({
-		usable: null,
-		stance: BattleStance.guard,
-		predicate: function() { return true; }
-	});
-};
-
-// .setTarget() method
-// Sets the battler to be targeted by the AI's actions.
-// Arguments:
-//     targetID: The enemy or character ID of the unit to target.
-AIContext.prototype.setTarget = function(targetID)
-{
-	var unit = this.battle.findUnit(targetID);
-	this.targets = unit !== null ? [ unit ] : null;
-};
-
 // .queueItem() method
 // Adds the use of an item to the AI's move queue.
 // Arguments:
@@ -316,4 +276,49 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 		targets: targets,
 		predicate: predicate
 	});
+};
+
+// .setCounter() method
+// Instructs the AI to put the unit into counterattacking stance.
+// Arguments:
+//     skillID: The ID of the skill to counter with, as defined in the gamedef.
+AIContext.prototype.setCounter = function(skillID)
+{
+	var skill = new SkillUsable(skillID, 100);
+	this.moveQueue.push({
+		usable: skill,
+		stance: BattleStance.counter,
+		predicate: function() { return true; }
+	});
+};
+
+// .setDefaultSkill() method
+// Sets the skill to be used when no specific moves are queued.
+// Arguments:
+//     skillID: The ID of the skill to use, as defined in the gamedef.
+AIContext.prototype.setDefaultSkill = function(skillID)
+{
+	this.defaultSkillID = skillID;
+	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
+};
+
+// .setGuard() method
+// Instructs the AI to put the unit into a defensive stance.
+AIContext.prototype.setGuard = function()
+{
+	this.moveQueue.push({
+		usable: null,
+		stance: BattleStance.guard,
+		predicate: function() { return true; }
+	});
+};
+
+// .setTarget() method
+// Sets the battler to be targeted by the AI's actions.
+// Arguments:
+//     targetID: The enemy or character ID of the unit to target.
+AIContext.prototype.setTarget = function(targetID)
+{
+	var unit = this.battle.findUnit(targetID);
+	this.targets = unit !== null ? [ unit ] : null;
 };
