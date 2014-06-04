@@ -22,6 +22,7 @@ function Robert2AI(aiContext)
 	}
 	
 	// AI state variables
+	this.phase = 0;
 	this.hasZombieHealedSelf = false;
 	this.isAlcoholPending = false;
 	this.isAlcoholUsed = false;
@@ -31,7 +32,6 @@ function Robert2AI(aiContext)
 	this.necroTonicItem = null;
 	this.necromancyChance = 0.0;
 	this.nextElementalMove = null;
-	this.phase = 0;
 	this.rezombieChance = 0.0;
 	this.scottStance = BattleStance.attack;
 	this.scottImmuneTurnsLeft = 0;

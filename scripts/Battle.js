@@ -64,10 +64,10 @@ function Battle(session, battleID)
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
 	// Arguments (for event handler):
-	//     unit:     The unit taking damage.
-	//     amount:   The amount of damage taken.
-	//     attacker: The unit responsible for inflicting the damage. In the case of residual
-	//               (e.g. status-induced) damage, this will be null.
+	//     unit:       The unit taking damage.
+	//     amount:     The amount of damage taken.
+	//     actingUnit: The unit responsible for inflicting the damage. In the case of residual
+	//                 (e.g. status-induced) damage, this will be null.
 	this.unitDamaged = new MultiDelegate();
 	
 	// .unitHealed event

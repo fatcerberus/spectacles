@@ -25,7 +25,7 @@ function TargetMenu(unit, battle, usable, moveName)
 		.where(function(unit) { return unit.isAlive(); })
 		.pluck('allowTargetScan').some(true);
 	this.isTargetLocked = false;
-	this.multiTarget = false;
+	this.isGroupCast = false;
 	this.name = moveName !== null ? moveName
 		: usable !== null ? usable.name
 		: unit.name;
@@ -56,7 +56,7 @@ function TargetMenu(unit, battle, usable, moveName)
 	
 	this.moveCursor = function(direction)
 	{
-		if (this.targets.length > 1) {
+		if (this.isGroupCast) {
 			return;
 		}
 		var position = this.targets[0].actor.position;
@@ -149,7 +149,7 @@ TargetMenu.prototype.getInput = function()
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
 			if (!this.isTargetLocked) {
-				if (!this.multiTarget) {
+				if (!this.isGroupCast) {
 					this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
 				} else {
 					this.targets = this.battle.enemiesOf(this.unit);
@@ -159,7 +159,7 @@ TargetMenu.prototype.getInput = function()
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
 			if (!this.isTargetLocked) {
-				if (!this.multiTarget) {
+				if (!this.isGroupCast) {
 					this.targets = [ this.unit ];
 				} else {
 					this.targets = this.battle.alliesOf(this.unit);
@@ -189,7 +189,7 @@ TargetMenu.prototype.open = function()
 			? this.usable.defaultTargets(this.unit)
 			: [ this.battle.enemiesOf(this.unit)[0] ];
 	}
-	this.multiTarget = this.targets.length > 1;
+	this.isGroupCast = this.usable !== null ? this.usable.isGroupCast : false;
 	this.updateInfo();
 	while (AreKeysLeft()) {
 		GetKey();

@@ -538,6 +538,9 @@ BattleUnit.prototype.performAction = function(action, move)
 BattleUnit.prototype.queueMove = function(move)
 {
 	this.moveUsed = move;
+	this.moveUsed.targets = this.moveUsed.usable.isGroupCast
+		? this.battle.alliesOf(this.moveUsed.targets[0])
+		: this.moveUsed.targets;
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 	this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 	for (var i = 0; i < nextActions.length; ++i) {

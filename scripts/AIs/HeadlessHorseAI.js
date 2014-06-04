@@ -12,17 +12,27 @@
 function HeadlessHorseAI(aiContext)
 {
 	this.aic = aiContext;
-	this.damageTaken = {};
-	this.phase = 0;
-	this.phaseThreshold = Math.round(500 + 100 * (0.5 - Math.random()));
-	this.spectralDrawPending = true;
-	this.trampleTarget = null;
-	
 	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
 	this.aic.battle.unitDamaged.addHook(this, this.onUnitDamaged);
 	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
 	this.aic.battle.unitTargeted.addHook(this, this.onUnitTargeted);
+
+	// HP thresholds for phase transitions
+	this.phasePoints = [ 500 ];  // (starting with P2)
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 100 * (0.5 - Math.random()));
+	}
+	
+	// AI state variables
+	this.phase = 0;
+	this.damageTaken = {};
+	this.ghosts = [];
+	this.spectralDrawPending = true;
+	this.trampleTarget = null;
+	
+	// Prepare the AI for use
+	this.aic.setDefaultSkill('trample');
 }
 
 // .dispose() method
@@ -41,7 +51,7 @@ HeadlessHorseAI.prototype.dispose = function()
 HeadlessHorseAI.prototype.strategize = function()
 {				
 	var lastPhase = this.phase;
-	var phaseToEnter = this.aic.unit.hp > this.phaseThreshold ? 1 : 2;
+	var phaseToEnter = this.aic.unit.hp > this.phasePoints[0] ? 1 : 2;
 	this.phase = lastPhase > phaseToEnter ? lastPhase : phaseToEnter;
 	switch (this.phase) {
 		case 1:
@@ -102,10 +112,13 @@ HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 
 // .onUnitDamaged() event handler
 // Allows the Headless Horse to react when someone takes damage.
-HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, attacker)
+HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, actingUnit)
 {
-	if (unit === this.aic.unit && attacker !== null) {
-		if (!(attacker.id in this.damageTaken)) {
+	if (unit === this.aic.unit && actingUnit !== null) {
+		if (Link(tags).contains('magic') && Link(this.ghosts).contains(actingUnit.id)) {
+			this.aic.queueSkill('spectralKick', actingUnit.id);
+		}
+		if (!(actingUnit.id in this.damageTaken)) {
 			this.damageTaken[attacker.id] = 0;
 		}
 		this.damageTaken[attacker.id] += amount;

@@ -9,13 +9,17 @@
 //     aiContext: The AI context hosting this AI.
 function ScottTempleAI(aiContext)
 {
-	this.phasePoints = [ 3000, 1000 ];
-	for (var i = 0; i < this.phasePoints.length; ++i) {
-		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
-	}
 	this.aic = aiContext;
 	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
+	
+	// HP thresholds for phase transitions
+	this.phasePoints = [ 3000, 1000 ];  // (starting with P2)
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+	}
+	
+	// AI state variables
 	this.phase = 0;
 }
 

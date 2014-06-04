@@ -3,28 +3,30 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-// NumberElevenAI() constructor
+// ScottStarcrossAI() constructor
 // Creates an AI to control Scott Starcross in the Spectacles III final battle.
 // Arguments:
 //     battle:    The battle session this AI is participating in.
 //     unit:      The battle unit to be controlled by this AI.
 //     aiContext: The AI context that this AI will execute under.
-function NumberElevenAI(aiContext)
+function ScottStarcrossAI(aiContext)
 {
 	this.aic = aiContext;
+	
+	// AI state variables
 	this.comboStarter = null;
 	this.isOpenerPending = true;
 }
 
 // .dispose() method
 // Relinquishes resources and shuts down the AI.
-NumberElevenAI.prototype.dispose = function()
+ScottStarcrossAI.prototype.dispose = function()
 {
 };
 
 // .selectMove() method
 // Selects a random move from Scott's move pool.
-NumberElevenAI.prototype.selectMove = function()
+ScottStarcrossAI.prototype.selectMove = function()
 {
 	var weightSum = Link(this.movePool)
 		.reduce(function(value, item)
@@ -41,7 +43,7 @@ NumberElevenAI.prototype.selectMove = function()
 
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
-NumberElevenAI.prototype.strategize = function()
+ScottStarcrossAI.prototype.strategize = function()
 {
 	if (this.isOpenerPending) {
 		this.isOpenerPending = false;

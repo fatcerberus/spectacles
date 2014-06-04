@@ -64,13 +64,13 @@ Game.battles =
 	
 	// Scott Starcross (Final Battle)
 	// Final Boss of Spectacles III: The Last Lucidan
-	numberEleven: {
+	scottStarcross: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
 		bgm: 'HymnOfLiberty',
 		battleLevel: 60,
 		enemies: [
-			'numberEleven',
+			'scottStarcross',
 			//'xemnas'
 		],
 		onStart: function() {
@@ -93,7 +93,7 @@ Game.battles =
 				.talk("Scott", true, 0.5, Infinity, "...")
 				.talk("Scott", true, 2.0, Infinity, "No comment.")
 				//.run(true);
-			var scottUnit = this.findUnit('numberEleven');
+			var scottUnit = this.findUnit('scottStarcross');
 			scottUnit.addStatus('specsAura');
 		}
 	}

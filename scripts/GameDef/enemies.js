@@ -4,9 +4,9 @@
 ***/
 
 RequireScript('AIs/HeadlessHorseAI.js');
-RequireScript('AIs/NumberElevenAI.js');
 RequireScript('AIs/Robert2AI.js');
 RequireScript('AIs/ScottTempleAI.js');
+RequireScript('AIs/ScottStarcrossAI.js');
 
 Game.enemies =
 {
@@ -94,10 +94,10 @@ Game.enemies =
 	
 	// Scott Starcross (Spectacles III)
 	// Final Boss of Spectacles III
-	numberEleven: {
+	scottStarcross: {
 		name: "Scott",
 		fullName: "Scott Starcross",
-		aiType: NumberElevenAI,
+		aiType: ScottStarcrossAI,
 		hasLifeBar: true,
 		tier: 4,
 		baseStats: {
@@ -119,7 +119,7 @@ Game.enemies =
 	xemnas: {
 		name: "Xemnas",
 		fullName: "Xemnas Ignoto",
-		aiType: NumberElevenAI,
+		aiType: ScottStarcrossAI,
 		hasLifeBar: true,
 		tier: 4,
 		baseStats: {
