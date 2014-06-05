@@ -23,6 +23,7 @@ var DBG_SHOW_CONSOLE = false;
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
 RequireScript('Core/Console.js');
+RequireScript('Core/RNG.js');
 RequireScript('Core/Threads.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
@@ -61,7 +62,7 @@ function game()
 	var setup = {
 		battleID: 'scottStarcross',
 		party: {
-			//scott: { level: 8, weapon: 'heirloom', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//justin: { level: 60, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
@@ -136,13 +137,6 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	font.setColorMask(color);
 	font.drawText(x, y, text);
 	font.setColorMask(oldColorMask);
-}
-
-function RandomOf(/*...*/)
-{
-	var count = arguments.length;
-	var index = Math.min(Math.floor(Math.random() * count), count - 1);
-	return arguments[index];
 }
 
 // clone() function

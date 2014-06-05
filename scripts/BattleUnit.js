@@ -713,13 +713,16 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		Console.writeLine(this.name + " took " + amount + " HP damage");
 		Console.append("left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
-			var damageColor = CreateColor(255, 255, 255, 255);
+			var damageColor = null;
 			Link(tags)
 				.where(function(tag) { return tag in Game.elements; })
 				.each(function(tag)
 			{
-				damageColor = BlendColors(damageColor, Game.elements[tag].color);
+				damageColor = damageColor !== null ? BlendColors(damageColor, Game.elements[tag].color)
+					: Game.elements[tag].color;
 			});
+			damageColor = damageColor !== null ? BlendColorsWeighted(damageColor, CreateColor(255, 255, 255, 255), 33, 66)
+				: CreateColor(255, 255, 255, 255);
 			this.actor.showDamage(amount, damageColor);
 		}
 		this.battle.ui.hud.setHP(this.name, this.hp);

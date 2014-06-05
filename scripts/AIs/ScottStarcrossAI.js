@@ -13,9 +13,40 @@ function ScottStarcrossAI(aiContext)
 {
 	this.aic = aiContext;
 	
+	// HP thresholds for phase transitions
+	this.phasePoints = [ 4000, 3000, 2000, 1000, 500 ];
+	for (var i = 0; i < this.phasePoints.length; ++i) {
+		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
+	}
+	
+	// Scott's move combos
+	// Each entry should have the following components:
+	//     phase:  The earliest phase in which the combination will be used.
+	//     moves:  The list of moves that make up the combination. Moves will be performed
+	//             in the order they are listed.
+	//     weight: The relative weight of the combination. Combos with heavier weights will
+	//             be selected more often.
+	// Remarks:
+	//     The AI will consider combinations earlier in the list to be more devastating.
+	this.combos = [
+		{ phase: 1, moves: [ 'necromancy', 'heal' ], weight: 1 },
+		{ phase: 2, moves: [ 'hellfire', 'windchill' ], weight: 1 },
+		{ phase: 2, moves: [ 'windchill', 'hellfire' ], weight: 1 },
+		{ phase: 3, moves: [ 'electrocute', 'heal', 'rejuvenate' ], weight: 1 },
+		{ phase: 5, moves: [ 'inferno', 'subzero', 'omni', 'renewal' ], weight: 1 },
+		{ phase: 6, moves: [ 'necromancy', 'berserkCharge' ], weight: 1 }
+	];
+	
 	// AI state variables
-	this.comboStarter = null;
+	this.phase = 0;
+	this.mainTactic = null;
+	this.decoyTactic = null;
 	this.isOpenerPending = true;
+	this.targetingMode = 'random';
+	this.targetID = 'robert';
+	
+	// Prepare the AI for use
+	this.aic.setDefaultSkill('berserkCharge');
 }
 
 // .dispose() method
@@ -24,54 +55,43 @@ ScottStarcrossAI.prototype.dispose = function()
 {
 };
 
-// .selectMove() method
-// Selects a random move from Scott's move pool.
-ScottStarcrossAI.prototype.selectMove = function()
+// .selectCombo() method
+// Returns a random, combo from Scott's the list of combos. The current
+// phase will be accounted for when selecting.
+ScottStarcrossAI.prototype.selectCombo = function()
 {
-	var weightSum = Link(this.movePool)
-		.reduce(function(value, item)
-	{
-		return value + item.weight;
-	}, 0);
-	var selector = Math.min(Math.floor(Math.random() * weightSum), weightSum - 1);
-	var move = Link(this.movePool).first(function(item) {
-		selector -= item.weight;
-		return selector < 0;
-	});
-	return move.id;
+	var candidate;
+	do {
+		candidate = RNG.fromArray(this.combos);
+	} while (this.phase < candidate.phase);
+	return candidate;
 };
 
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
 ScottStarcrossAI.prototype.strategize = function()
 {
+	var milestone = Link(this.phasePoints)
+		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))
+		.last()[0];
+	var phaseToEnter = 2 + Link(this.phasePoints).indexOf(milestone);
+	var lastPhase = this.phase;
+	this.phase = Math.max(phaseToEnter, this.phase);
 	if (this.isOpenerPending) {
-		this.isOpenerPending = false;
 		this.aic.queueSkill('berserkCharge');
+		this.isOpenerPending = false;
 	} else {
-		var health = this.aic.unit.getHealth();
-		var skillToUse = health > 10 ? 'chargeSlash' : 'berserkCharge';
-		var target1ID = RandomOf('bruce', 'robert');
-		var target2ID = target1ID != 'bruce' ? 'bruce' : 'robert';
-		if (skillToUse != 'berserkCharge') {
-			this.aic.queueSkill(skillToUse, target1ID);
-		} else {
-			this.aic.queueSkill(skillToUse);
+		var decoyComboIndex = Math.floor(Math.random() * this.combos.length);
+		var mainComboIndex = Math.floor(Math.random() * this.combos.length);
+		if (mainComboIndex < decoyComboIndex) {
+			var newMainIndex = decoyComboIndex;
+			decoyComboIndex = mainComboIndex;
+			mainComboIndex = newMainIndex;
 		}
-		this.aic.queueSkill('omni', target1ID);
-		var comboID = Math.min(Math.floor(Math.random() * 2), 1);
-		switch (comboID) {
-			case 0:
-				this.aic.queueSkill(health > 60 ? 'necromancy' : this.health > 25 ? 'electrocute' : 'discharge', target1ID);
-				this.aic.queueSkill(health > 50 ? 'flare' : 'hellfire', target2ID);
-				this.aic.queueSkill(health > 50 ? 'chill' : 'windchill', target2ID);
-				this.aic.queueSkill(health > 40 ? 'heal' : health > 10 ? 'rejuvenate' : 'renewal', target1ID);
-				break;
-			case 1:
-				this.aic.queueSkill(health > 50 ? 'lightning' : 'electrocute', target2ID);
-				this.aic.queueSkill('hellfire', target1ID);
-				this.aic.queueSkill('windchill', target1ID);
-				break;
+		if (this.targetingMode == 'random') {
+			this.targetID = RNG.fromArray([ 'bruce', 'robert' ]);
 		}
+		this.mainTactic = { moves: this.combos[mainComboIndex], moveIndex: 0 };
+		this.decoyTactic = { moves: this.combos[decoyComboIndex], moveIndex: 0 };
 	}
 };

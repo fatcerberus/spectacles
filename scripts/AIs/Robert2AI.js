@@ -69,14 +69,12 @@ Robert2AI.prototype.strategize = function()
 			.run(true);
 		this.aic.queueItem('alcohol');
 	}
+	var milestone = Link(this.phasePoints)
+		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))
+		.last()[0];
+	var phaseToEnter = 2 + Link(this.phasePoints).indexOf(milestone);
 	var lastPhase = this.phase;
-	var phaseToEnter =
-		this.aic.unit.hp > this.phasePoints[0] ? 1 :
-		this.aic.unit.hp > this.phasePoints[1] ? 2 :
-		this.aic.unit.hp > this.phasePoints[2] ? 3 :
-		this.aic.unit.hp > this.phasePoints[3] ? 4 :
-		5;
-	this.phase = Math.max(phaseToEnter, lastPhase);
+	this.phase = Math.max(phaseToEnter, this.phase);
 	switch (this.phase) {
 		case 1:
 			if (this.phase > lastPhase) {
