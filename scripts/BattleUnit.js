@@ -543,7 +543,7 @@ BattleUnit.prototype.queueMove = function(move)
 		.where(function(unit) { return unit.isAlive(); })
 		.toArray();
 	this.moveUsed.targets = this.moveUsed.usable.isGroupCast
-		? this.moveUsed.usable.allowDeadTargets ? alliesInBattle : alliesAlive
+		? this.moveUsed.usable.allowDeadTarget ? alliesInBattle : alliesAlive
 		: this.moveUsed.targets;
 	if (!this.moveUsed.usable.isGroupCast && !this.moveUsed.targets[0].isAlive()
 		&& !this.moveUsed.usable.allowDeadTarget)
