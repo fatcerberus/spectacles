@@ -7,6 +7,16 @@
 // Encapsulates the random number generator.
 RNG = new (function()
 {
+	// .chance() method
+	// Tests a chance.
+	// Arguments:
+	//     odds: The odds of the chance passing, specified as a decimal from 0 to 1.
+	//           Chances <= 0 will never pass, and >= 1 will always pass.
+	this.chance = function(odds)
+	{
+		return odds > Math.random();
+	};
+	
 	// .fromArray() method
 	// Returns a random entry selected from an array.
 	// Arguments:

@@ -14,7 +14,7 @@ function ScottStarcrossAI(aiContext)
 	this.aic = aiContext;
 	
 	// HP thresholds for phase transitions
-	this.phasePoints = [ 4000, 3000, 2000, 1000, 500 ];
+	this.phasePoints = [ 4000, 2000, 500 ];
 	for (var i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
 	}
@@ -24,17 +24,17 @@ function ScottStarcrossAI(aiContext)
 	//     phase:  The earliest phase in which the combination will be used.
 	//     moves:  The list of moves that make up the combination. Moves will be performed
 	//             in the order they are listed.
-	//     weight: The relative weight of the combination. Combos with heavier weights will
-	//             be selected more often.
-	// Remarks:
-	//     The AI will consider combinations earlier in the list to be more devastating.
+	//     rating: The power rating of the combination. When combos are chosen at the
+	//             start of a combo cycle, the lower-rated combo will typically be used as a
+	//             decoy.
 	this.combos = [
-		{ phase: 1, moves: [ 'necromancy', 'heal' ], weight: 1 },
-		{ phase: 2, moves: [ 'hellfire', 'windchill' ], weight: 1 },
-		{ phase: 2, moves: [ 'windchill', 'hellfire' ], weight: 1 },
-		{ phase: 3, moves: [ 'electrocute', 'heal', 'rejuvenate' ], weight: 1 },
-		{ phase: 5, moves: [ 'inferno', 'subzero', 'omni', 'renewal' ], weight: 1 },
-		{ phase: 6, moves: [ 'necromancy', 'berserkCharge' ], weight: 1 }
+		{ phase: 1, moves: [ 'electrocute', 'heal' ], rating: 1 },
+		{ phase: 1, moves: [ 'hellfire', 'windchill' ], rating: 2 },
+		{ phase: 1, moves: [ 'windchill', 'hellfire' ], rating: 2 },
+		{ phase: 2, moves: [ 'necromancy', 'rejuvenate' ], rating: 3 },
+		{ phase: 3, moves: [ 'necromancy', 'rejuvenate', 'renewal' ], rating: 4 },
+		{ phase: 3, moves: [ 'electrocute', 'heal', 'rejuvenate' ], rating: 4 },
+		{ phase: 4, moves: [ 'inferno', 'subzero', 'renewal' ], rating: 5 }
 	];
 	
 	// AI state variables
@@ -43,7 +43,6 @@ function ScottStarcrossAI(aiContext)
 	this.decoyTactic = null;
 	this.isOpenerPending = true;
 	this.targetingMode = 'random';
-	this.targetID = 'robert';
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('berserkCharge');
@@ -55,16 +54,11 @@ ScottStarcrossAI.prototype.dispose = function()
 {
 };
 
-// .selectCombo() method
-// Returns a random, combo from Scott's the list of combos. The current
-// phase will be accounted for when selecting.
 ScottStarcrossAI.prototype.selectCombo = function()
 {
-	var candidate;
-	do {
-		candidate = RNG.fromArray(this.combos);
-	} while (this.phase < candidate.phase);
-	return candidate;
+	return Link(this.combos)
+		.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
+		.random(1)[0];
 };
 
 // .strategize() method
@@ -81,17 +75,27 @@ ScottStarcrossAI.prototype.strategize = function()
 		this.aic.queueSkill('berserkCharge');
 		this.isOpenerPending = false;
 	} else {
-		var decoyComboIndex = Math.floor(Math.random() * this.combos.length);
-		var mainComboIndex = Math.floor(Math.random() * this.combos.length);
-		if (mainComboIndex < decoyComboIndex) {
-			var newMainIndex = decoyComboIndex;
-			decoyComboIndex = mainComboIndex;
-			mainComboIndex = newMainIndex;
+		if (this.mainTactic === null) {
+			var combos = [ this.selectCombo(), this.selectCombo() ]
+				.sort(function(a, b) { return b.rating - a.rating });
+			var targetID = RNG.fromArray([ 'bruce', 'robert' ]);
+			var decoyID = targetID != 'bruce' ? 'bruce' : 'robert';
+			this.mainTactic = { moves: combos[0].moves, moveIndex: 0, unitID: targetID };
+			this.decoyTactic = { moves: combos[1].moves, moveIndex: 0, unitID: decoyID };
 		}
-		if (this.targetingMode == 'random') {
-			this.targetID = RNG.fromArray([ 'bruce', 'robert' ]);
+		var tactic = RNG.chance(0.5) ? this.mainTactic : this.decoyTactic;
+		if (tactic == this.mainTactic && tactic.moveIndex == tactic.moves.length - 1
+			&& this.decoyTactic.moveIndex < this.decoyTactic.moves.length)
+		{
+			tactic = this.decoyTactic;
 		}
-		this.mainTactic = { moves: this.combos[mainComboIndex], moveIndex: 0 };
-		this.decoyTactic = { moves: this.combos[decoyComboIndex], moveIndex: 0 };
+		if (tactic == this.decoyTactic && tactic.moveIndex == tactic.moves.length) {
+			tactic = this.mainTactic;
+		}
+		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unitID);
+		++tactic.moveIndex;
+		if (this.mainTactic.moveIndex == this.mainTactic.moves.length) {
+			this.mainTactic = null;
+		}
 	}
 };
