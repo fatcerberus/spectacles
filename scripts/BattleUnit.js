@@ -538,9 +538,18 @@ BattleUnit.prototype.performAction = function(action, move)
 BattleUnit.prototype.queueMove = function(move)
 {
 	this.moveUsed = move;
+	var alliesInBattle = this.battle.alliesOf(this.moveUsed.targets[0]);
+	var alliesAlive = Link(alliesInBattle)
+		.where(function(unit) { return unit.isAlive(); })
+		.toArray();
 	this.moveUsed.targets = this.moveUsed.usable.isGroupCast
-		? this.battle.alliesOf(this.moveUsed.targets[0])
+		? this.moveUsed.usable.allowDeadTargets ? alliesInBattle : alliesAlive
 		: this.moveUsed.targets;
+	if (!this.moveUsed.usable.isGroupCast && !this.moveUsed.targets[0].isAlive()
+		&& !this.moveUsed.usable.allowDeadTarget)
+	{
+		this.moveUsed.targets[0] = RNG.fromArray(alliesAlive);
+	}
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 	this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 	for (var i = 0; i < nextActions.length; ++i) {
