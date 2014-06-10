@@ -54,13 +54,6 @@ ScottStarcrossAI.prototype.dispose = function()
 {
 };
 
-ScottStarcrossAI.prototype.selectCombo = function()
-{
-	return Link(this.combos)
-		.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
-		.random(1)[0];
-};
-
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
 ScottStarcrossAI.prototype.strategize = function()
@@ -76,8 +69,10 @@ ScottStarcrossAI.prototype.strategize = function()
 		this.isOpenerPending = false;
 	} else {
 		if (this.mainTactic === null) {
-			var combos = [ this.selectCombo(), this.selectCombo() ]
-				.sort(function(a, b) { return b.rating - a.rating });
+			var combos = Link(Link(this.combos)
+				.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
+				.random(2))
+				.sort(function(a, b) { return b.rating - a.rating; });
 			var targetID = RNG.fromArray([ 'bruce', 'robert' ]);
 			var decoyID = targetID != 'bruce' ? 'bruce' : 'robert';
 			this.mainTactic = { moves: combos[0].moves, moveIndex: 0, unitID: targetID };

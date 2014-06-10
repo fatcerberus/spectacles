@@ -40,7 +40,7 @@ function Robert2AI(aiContext)
 	this.zombieHealFixState = null;
 	
 	// Prepare the AI for use
-	this.aic.setDefaultSkill('swordSlash');
+	this.aic.setDefaultSkill('quickstrike');
 }
 
 // .dispose() method

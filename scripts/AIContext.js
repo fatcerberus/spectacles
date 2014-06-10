@@ -74,7 +74,7 @@ AIContext.prototype.getNextMove = function()
 			this.targets = null;
 			this.strategy.strategize();
 			if (this.moveQueue.length == 0) {
-				Console.writeLine(this.unit.name + " didn't queue any actions, defaulting");
+				Console.writeLine("No moves queued for " + this.unit.name + ", using default");
 				if (this.defaultSkillID !== null) {
 					this.queueSkill(this.defaultSkillID);
 				} else {
@@ -86,9 +86,10 @@ AIContext.prototype.getNextMove = function()
 		var isMoveUsable;
 		do {
 			candidateMove = this.moveQueue.shift();
-			var isMoveUsable = candidateMove.predicate();
+			var isMoveUsable = candidateMove.usable.isUsable(this.unit, this.unit.stance)
+				&& candidateMove.predicate();
 			if (!isMoveUsable) {
-				Console.writeLine("Discarding " + this.unit + "'s " + candidateMove.usable.name + ", precondition not met");
+				Console.writeLine("Discarding " + this.unit + "'s " + candidateMove.usable.name + ", not usable");
 			}
 		} while (!isMoveUsable && this.moveQueue.length > 0);
 		if (isMoveUsable) {
@@ -132,10 +133,9 @@ AIContext.prototype.isItemQueued = function(itemID)
 //     itemID: The ID of the item to be tested for usability.
 AIContext.prototype.isItemUsable = function(itemID)
 {
-	var user = this.unit;
 	return Link(this.unit.items)
 		.filterBy('itemID', itemID)
-		.some(function(item) { return item.isUsable(user) });
+		.some(function(item) { return item.isUsable(this, this.unit.stance) }.bind(this));
 };
 
 // .isSkillQueued() method
@@ -156,7 +156,7 @@ AIContext.prototype.isSkillQueued = function(skillID)
 AIContext.prototype.isSkillUsable = function(skillID)
 {
 	var skillToUse = new SkillUsable(skillID, 100);
-	return skillToUse.isUsable(this.unit);
+	return skillToUse.isUsable(this.unit, this.unit.stance);
 };
 
 // .itemsLeft() method
@@ -165,7 +165,6 @@ AIContext.prototype.isSkillUsable = function(skillID)
 //     itemID: The ID of the item to check.
 AIContext.prototype.itemsLeft = function(itemID)
 {
-	var user = this.unit;
 	var itemUsable = Link(this.unit.items).filterBy('itemID', itemID).first();
 	Console.writeLine(this.unit.name + " requested item count for " + itemUsable.name);
 	Console.append("left: " + itemUsable.usesLeft);
@@ -221,7 +220,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 	var itemToUse = null;
 	for (var i = 0; i < this.unit.items.length; ++i) {
 		var item = this.unit.items[i];
-		if (item.itemID == itemID && item.isUsable(this.unit)) {
+		if (item.itemID == itemID && item.isUsable(this.unit, this.unit.stance)) {
 			itemToUse = item;
 			break;
 		}

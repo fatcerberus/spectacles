@@ -80,6 +80,8 @@ ItemUsable.prototype.isUsable = function(user, stance)
 
 // .mpCost() method
 // Calculates the MP cost of using the item.
+// Remarks:
+//     Item use does not require MP, so this method will always return 0.
 ItemUsable.prototype.mpCost = function(user)
 {
 	return 0;

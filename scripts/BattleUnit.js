@@ -625,13 +625,15 @@ BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
 };
 
 // .restoreMP() method
-// Restores a percentage of MP to the unit's assigned MP pool.
+// Restores magic points to the unit's assigned MP pool.
 // Arguments:
-//     percentage: The percentage of MP to restore, from 0 to 100.
-BattleUnit.prototype.restoreMP = function(percentage)
+//     amount: The number of magic points to restore.
+BattleUnit.prototype.restoreMP = function(amount)
 {
-	percentage = Math.min(Math.max(percentage, 0), 100);
-	this.mpPool.restore(this.mpPool.capacity * percentage / 100);
+	amount = Math.round(amount);
+	this.mpPool.restore(amount);
+	var color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
+	this.actor.showHealing(amount + "MP", color);
 };
 
 // .resurrect() method

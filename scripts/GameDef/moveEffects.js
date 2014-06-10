@@ -116,7 +116,10 @@ Game.moveEffects =
 	},
 	
 	recoverMP: function(actor, targets, effect) {
-		Link(targets).invoke('restoreMP', effect.strength);
+		Link(targets).each(function(unit) {
+			var amount = Math.round(Game.math.mp.capacity(unit.battlerInfo));
+			unit.restoreMP(amount);
+		});
 	},
 	
 	revive: function(actor, targets, effect) {
