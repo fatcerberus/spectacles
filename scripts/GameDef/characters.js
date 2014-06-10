@@ -83,6 +83,8 @@ Game.characters =
 			'tripleShot',
 			'flareShot',
 			'chillShot',
+			'joltShot',
+			'seismicShot',
 			'flare',
 			'chill',
 			'lightning',

@@ -61,11 +61,24 @@ Game.weapons =
 	fireAndIce: {
 		name: "Fire & Ice",
 		type: 'bow',
-		level: 50,
+		level: 5,
 		techniques: [
 			'archery',
 			'flareShot',
 			'chillShot'
+		]
+	},
+	
+	powerBow: {
+		name: "Power Bow",
+		type: 'bow',
+		level: 75,
+		techniques: [
+			'archery',
+			'flareShot',
+			'chillShot',
+			'joltShot',
+			'seismicShot'
 		]
 	},
 	

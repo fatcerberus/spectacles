@@ -16,10 +16,9 @@ function Robert2AI(aiContext)
 	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
 	
 	// HP thresholds for phase transitions
-	this.phasePoints = [ 3000, 2000, 1000, 500 ];
-	for (var i = 0; i < this.phasePoints.length; ++i) {
-		this.phasePoints[i] = Math.round(this.phasePoints[i] + 200 * (0.5 - Math.random()));
-	}
+	this.phasePoints = Link([ 3000, 2000, 1000, 500 ])
+		.map(function(value) { return Math.round(RNG.vary(value, 100)); })
+		.toArray();
 	
 	// AI state variables
 	this.phase = 0;

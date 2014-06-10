@@ -14,12 +14,12 @@ function ScottStarcrossAI(aiContext)
 	this.aic = aiContext;
 	
 	// HP thresholds for phase transitions
-	this.phasePoints = Link([ 4000, 2000, 500 ])
+	this.phasePoints = Link([ 4500, 2500, 1000 ])
 		.map(function(value) { return Math.round(RNG.vary(value, 100)); })
 		.toArray();
 	
 	// Scott's move combos
-	// Each entry should have the following components:
+	// Each entry should include the following properties:
 	//     phase:  The earliest phase in which the combination will be used.
 	//     moves:  The list of moves that make up the combination. Moves will be performed
 	//             in the order they are listed.

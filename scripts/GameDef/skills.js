@@ -201,7 +201,7 @@ Game.skills =
 						power: 10,
 						element: 'ice',
 						addStatus: 'frostbite',
-						statusChance: 50
+						statusChance: 25
 					}
 				],
 			}
@@ -226,7 +226,57 @@ Game.skills =
 						power: 10,
 						element: 'fire',
 						addStatus: 'ignite',
-						statusChance: 50
+						statusChance: 25
+					}
+				],
+			}
+		]
+	},
+	joltShot: {
+		name: "Jolt Shot",
+		category: 'attack',
+		weaponType: 'bow',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Jolt Shot",
+				rank: 2,
+				accuracyType: 'bow',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'bow',
+						power: 10,
+						element: 'lightning',
+						addStatus: 'zombie',
+						statusChance: 25
+					}
+				],
+			}
+		]
+	},
+	seismicShot: {
+		name: "Seismic Shot",
+		category: 'attack',
+		weaponType: 'bow',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Seismic Shot",
+				rank: 2,
+				accuracyType: 'bow',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'bow',
+						power: 10,
+						element: 'earth',
+						addStatus: 'disarray',
+						statusChance: 25
 					}
 				],
 			}
