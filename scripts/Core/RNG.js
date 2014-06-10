@@ -7,6 +7,8 @@
 // Encapsulates the random number generator.
 RNG = new (function()
 {
+	this.nextND = null;
+	
 	// .chance() method
 	// Tests a chance.
 	// Arguments:
@@ -27,8 +29,26 @@ RNG = new (function()
 		return candidates[index];
 	};
 	
+	// .fromNormal() method
+	// Returns a random deviate from the standard normal distribution.
+	this.fromNormal = function()
+	{
+		if (this.nextND === null) {
+			var u = Math.random();
+			var v = Math.random();
+			var x = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+			var y = Math.sqrt(-2 * Math.log(u)) * Math.sin(2 * Math.PI * v);
+			this.nextND = y;
+			return x;
+		} else {
+			var y = this.nextND;
+			this.nextND = null;
+			return y;
+		}
+	};
+	
 	// .fromRange() method
-	// Returns a random integer from a specified range.
+	// Returns a random integer within a specified range.
 	// Arguments:
 	//     minValue: The minimum value in the range.
 	//     maxValue: The maximum value in the range.
@@ -39,20 +59,16 @@ RNG = new (function()
 	};
 	
 	// .vary() method
-	// Applies random variance to a number.
+	// Applies uniform random variance to a specified value.
 	// Arguments:
 	//     value:     The value on which to apply variance.
-	//     tolerance: The maximum amount of divergence, specified as a decimal. For example,
-	//                for 10% of tolerance, this should be 0.1.
+	//     tolerance: The maximum amount by which the output can diverge from the original
+	//                value, in either direction.
 	// Returns:
-	//     The new value after random variance is applied.
-	// Remarks:
-	//     The tolerance is interpreted as meaning "give or take". For example, if 5%
-	//     of variance is requested, the final value can diverge by up to 5% in either
-	//     direction.
+	//     The new value after random variance has been applied.
 	this.vary = function(value, tolerance)
 	{
-		var divergence = tolerance * 2 * (0.5 - Math.random());
-		return value + value * divergence;
+		var error = tolerance * 2 * (0.5 - Math.random());
+		return value + error;
 	};
 });
