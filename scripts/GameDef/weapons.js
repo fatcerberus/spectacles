@@ -9,6 +9,7 @@ Game.weaponTypes =
 	guitar: "Guitar",
 	gun: "Gun",
 	staff: "Staff",
+	shuriken: "Shuriken",
 	sword: "Sword"
 };
 
@@ -79,6 +80,17 @@ Game.weapons =
 			'chillShot',
 			'joltShot',
 			'seismicShot'
+		]
+	},
+	
+	// Shuriken
+	risingSun: {
+		name: "Rising Sun",
+		type: 'shuriken',
+		level: 75,
+		techniques: [
+			'starToss',
+			'starVolley'
 		]
 	},
 	

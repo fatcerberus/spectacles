@@ -4,6 +4,7 @@
 ***/
 
 RequireScript('AIs/HeadlessHorseAI.js');
+RequireScript('AIs/Robert1AI.js');
 RequireScript('AIs/Robert2AI.js');
 RequireScript('AIs/ScottTempleAI.js');
 RequireScript('AIs/ScottStarcrossAI.js');
@@ -11,7 +12,7 @@ RequireScript('AIs/ScottStarcrossAI.js');
 Game.enemies =
 {
 	// Headless Horse (Spectacles: Bruce's Story)
-	// Manor Boss of Lexington Manor
+	// Fought in the courtyard of Lexington Manor
 	headlessHorse: {
 		name: "H. Horse",
 		fullName: "Headless Horse",
@@ -37,6 +38,35 @@ Game.enemies =
 		munchData: {
 			skill: 'spectralDraw'
 		}
+	},
+	
+	// Robert Spellbinder (I) (Spectacles: Bruce's Story)
+	// Fought on the balcony of Temple Manor
+	robert1: {
+		name: "Robert",
+		fullName: "Robert Spellbinder",
+		aiType: Robert1AI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 3.0,
+		baseStats: {
+			vit: 75,
+			str: 75,
+			def: 75,
+			foc: 75,
+			mag: 75,
+			agi: 75
+		},
+		immunities: [],
+		weapon: 'rsbSword',
+		munchData: {
+			skill: 'omni'
+		},
+		items: [
+			'tonic',
+			'powerTonic',
+			'vaccine'
+		]
 	},
 	
 	// Robert Spellbinder (II) (Spectacles: Bruce's Story)

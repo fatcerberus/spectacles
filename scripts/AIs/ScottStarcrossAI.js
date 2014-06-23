@@ -15,7 +15,7 @@ function ScottStarcrossAI(aiContext)
 	
 	// HP thresholds for phase transitions
 	this.phasePoints = Link([ 4500, 2500, 1000 ])
-		.map(function(value) { return Math.round(RNG.vary(value, 100)); })
+		.map(function(value) { return Math.round(RNG.fromNormal(value, 50)); })
 		.toArray();
 	
 	// Scott's move combos
@@ -38,8 +38,7 @@ function ScottStarcrossAI(aiContext)
 	
 	// AI state variables
 	this.phase = 0;
-	this.mainTactic = null;
-	this.decoyTactic = null;
+	this.tactics = null;
 	this.isOpenerPending = true;
 	this.targetingMode = 'random';
 	
@@ -67,29 +66,29 @@ ScottStarcrossAI.prototype.strategize = function()
 		this.aic.queueSkill('berserkCharge');
 		this.isOpenerPending = false;
 	} else {
-		if (this.mainTactic === null) {
+		if (this.tactics === null) {
+			var party = Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
 			var combos = Link(Link(this.combos)
 				.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
-				.random(2))
+				.random(party.length))
 				.sort(function(a, b) { return b.rating - a.rating; });
-			var targetID = RNG.fromArray([ 'bruce', 'robert' ]);
-			var decoyID = targetID != 'bruce' ? 'bruce' : 'robert';
-			this.mainTactic = { moves: combos[0].moves, moveIndex: 0, unitID: targetID };
-			this.decoyTactic = { moves: combos[1].moves, moveIndex: 0, unitID: decoyID };
+			this.tactics = [];
+			for (var i = 0; i < party.length; ++i) {
+				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: party[i] });
+			}
 		}
-		var tactic = RNG.chance(0.5) ? this.mainTactic : this.decoyTactic;
-		if (tactic == this.mainTactic && tactic.moveIndex == tactic.moves.length - 1
-			&& this.decoyTactic.moveIndex < this.decoyTactic.moves.length)
-		{
-			tactic = this.decoyTactic;
-		}
-		if (tactic == this.decoyTactic && tactic.moveIndex == tactic.moves.length) {
-			tactic = this.mainTactic;
-		}
-		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unitID);
+		var validTactics = Link(this.tactics)
+			.where(function(tactic) { return tactic.unit.isAlive(); })
+			.where(function(tactic) { return tactic.moveIndex < tactic.moves.length; })
+			.toArray();
+		var tactic;
+		do {
+			tactic = RNG.fromArray(validTactics);
+		} while (tactic === this.tactics[0] && tactic.moveIndex == tactic.moves.length - 1 && validTactics.length > 1);
+		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unit.id);
 		++tactic.moveIndex;
-		if (this.mainTactic.moveIndex == this.mainTactic.moves.length) {
-			this.mainTactic = null;
+		if (this.tactics[0].moveIndex == this.tactics[0].moves.length) {
+			this.tactics = null;
 		}
 	}
 };

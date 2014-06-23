@@ -26,6 +26,9 @@ Game.math =
 		physical: function(userInfo, targetInfo) {
 			return 1.0;
 		},
+		shuriken: function(userInfo, targetInfo) {
+			return userInfo.level / userInfo.weapon.level;
+		},
 		sword: function(userInfo, targetInfo) {
 			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
 		}
@@ -65,6 +68,10 @@ Game.math =
 		physicalRecoil: function(userInfo, targetInfo, power) {
 			return Game.math.damage.calculate(power / 2, userInfo.level, targetInfo.tier,
 				targetInfo.stats.str, userInfo.stats.str);
+		},
+		shuriken: function(userInfo, targetInfo, power) {
+			return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+				userInfo.stats.foc, targetInfo.stats.def);
 		},
 		sword: function(userInfo, targetInfo, power) {
 			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,

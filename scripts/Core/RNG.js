@@ -30,20 +30,27 @@ RNG = new (function()
 	};
 	
 	// .fromNormal() method
-	// Returns a random deviate from the standard normal distribution.
-	this.fromNormal = function()
+	// Generates a random value from a normal probability distribution.
+	// Arguments:
+	//     mean:  The mean (expected) value of the distribution.
+	//     sigma: The standard deviation.
+	this.fromNormal = function(mean, sigma)
 	{
 		if (this.nextND === null) {
-			var u = Math.random();
-			var v = Math.random();
-			var x = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-			var y = Math.sqrt(-2 * Math.log(u)) * Math.sin(2 * Math.PI * v);
-			this.nextND = y;
-			return x;
+			var u, v, w;
+			do {
+				u = 2.0 * Math.random() - 1.0;
+				v = 2.0 * Math.random() - 1.0;
+				w = u * u + v * v;
+			} while (w >= 1.0);
+			w = Math.sqrt(-2 * Math.log(w) / w);
+			var x = u * w;
+			this.nextND = v * w;
+			return mean + sigma * x;
 		} else {
 			var y = this.nextND;
 			this.nextND = null;
-			return y;
+			return mean + sigma * y;
 		}
 	};
 	
@@ -54,15 +61,15 @@ RNG = new (function()
 	//     maxValue: The maximum value in the range.
 	this.fromRange = function(minValue, maxValue)
 	{
-		var rangeSize = maxValue - minValue + 1;
-		return minValue + Math.min(Math.floor(Math.random() * rangeSize), rangeSize - 1);
+		var width = maxValue - minValue + 1;
+		return minValue + Math.min(Math.floor(Math.random() * width), width - 1);
 	};
 	
 	// .vary() method
 	// Applies uniform random variance to a specified value.
 	// Arguments:
 	//     value:     The value on which to apply variance.
-	//     tolerance: The maximum amount by which the output can diverge from the original
+	//     tolerance: The maximum amount by which the output can deviate from the original
 	//                value, in either direction.
 	// Returns:
 	//     The new value after random variance has been applied.

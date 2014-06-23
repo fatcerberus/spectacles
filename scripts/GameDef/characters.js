@@ -137,6 +137,32 @@ Game.characters =
 		]
 	},
 	
+	// Lauren Adora
+	// Scott's love interest and one of the three initial party members. She tends keep to herself
+	// (except where maggie is involved) and often keeps quiet about things she really should
+	// divulge in a misguided attempt to prevent what she sees as unnecessary turmoil. In battle,
+	// she assails her enemies with throwing stars.
+	lauren: {
+		name: "Lauren",
+		fullName: "Lauren Tusgafas",
+		baseStats: {
+			vit: 30,
+			str: 60,
+			def: 40,
+			foc: 90,
+			mag: 70,
+			agi: 70
+		},
+		skills: [
+			'starToss',
+			'starVolley',
+			'flare',
+			'chill',
+			'lightning',
+			'quake'
+		],
+	},
+	
 	// maggie
 	// An overweight hunger-pig and former leader of the neo-Hippos. She has renounced her role in the
 	// group due to disagreement over their methods, particularly her sister's stubborn persecution of

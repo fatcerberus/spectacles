@@ -6,7 +6,6 @@
 Game.battles =
 {
 	// Headless Horse (Boss Battle)
-	// Boss of Lexington Manor
 	headlessHorse: {
 		title: "Headless Horse",
 		bgm: 'ManorBoss',
@@ -21,6 +20,16 @@ Game.battles =
 					+ "It won't hesitate to roast you--and then I'd have to eat you!")
 				.run(true);
 		}
+	},
+	
+	// Robert Spellbinder (I) (Boss Battle)
+	robert1: {
+		title: "Robert Spellbinder",
+		bgm: 'MyDreamsButADropOfFuel',
+		battleLevel: 45,
+		enemies: [
+			'robert1'
+		]
 	},
 	
 	// Robert Spellbinder (II) (Final Battle)

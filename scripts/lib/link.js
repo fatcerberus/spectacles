@@ -1,7 +1,7 @@
 /**
 * Script: Link.js
 * Written by: Andrew Helenius
-* Updated: Jun/07/2014
+* Updated: Jun/08/2014
 * Version: 0.2.15
 * Desc: Link.js is a very fast general-purpose functional programming library.
 		Still somewhat experimental, and still under construction.
@@ -162,6 +162,17 @@ var Link = (function() {
 			obj[this.args[i]] = item[this.args[i]];
 		}
 		this.next.exec(obj);
+	}
+	
+	function ArrayJoinPoint(delim) { // end point
+		this.next  = null;
+		this.env   = null;
+		this.delim = delim;
+		this.text  = "";
+	}
+	
+	ArrayJoinPoint.prototype.exec = function(item) {
+		this.text += item + this.delim;
 	}
 	
 	function JoinPoint(other, cond) {
@@ -706,6 +717,21 @@ var Link = (function() {
 		while (i < l) b[i] = a[i++];
 	}
 	
+	function SplitPoint(delim) {
+		this.env  = null;
+		this.next = null;
+		this.del  = delim;
+		this.word = "";
+	}
+	
+	SplitPoint.prototype.exec = function(ch) {
+		if (ch == this.del || ch == "\0") {
+			this.next.exec(this.word);
+			this.word = "";
+		}
+		else this.word += ch;
+	}
+	
 	/** Functional Layer **/
 
 	function PushPoint(point) {
@@ -890,7 +916,7 @@ var Link = (function() {
 	}
 	
 	function Concat(array) {
-		if (array instanceof Link) array = array.toArray();
+		if (array instanceof Chain) array = array.toArray();
 		return Link(this.toArray(), array);
 	}
 	
@@ -943,6 +969,7 @@ var Link = (function() {
 	}
 	
 	function Zip(array) {
+		if (array instanceof Chain) array = array.toArray();
 		this.pushPoint(new ZipPoint(array));
 		return this;
 	}
@@ -990,9 +1017,22 @@ var Link = (function() {
 		return this;
 	}
 	
-	function Join(other, func) {
-		this.pushPoint(new JoinPoint(other, func));
+	function Split(delim) {
+		this.target += "\0";
+		this.pushPoint(new SplitPoint(delim));
 		return this;
+	}
+	
+	function Join(obj, func) {
+		if (!func) {
+			var point = new ArrayJoinPoint(obj);
+			this.run(point);
+			return point.text;
+		}
+		else {
+			this.pushPoint(new JoinPoint(obj, func));
+			return this;
+		}
 	}
 	
 	function Take(n) {
@@ -1016,6 +1056,17 @@ var Link = (function() {
 	function Sort(f) {
 		var v = this.toArray();
 		if (f) v.sort(f); else v.sort();
+		return v;
+	}
+	
+	function Shuffle() {
+		var v = this.toArray();
+		for (var i = v.length - 1; i > 0; --i) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var tmp = v[i];
+			v[i] = v[j];
+			v[j] = tmp;
+		}
 		return v;
 	}
 	
@@ -1071,11 +1122,13 @@ var Link = (function() {
 		reject    : Reject,
 		sample    : Sample,
 		select    : Select,
+		shuffle   : Shuffle,
 		size      : Length,
 		skip      : Skip,
 		slice     : Slice,
 		some      : Contains,
 		sort      : Sort,
+		split     : Split,
 		take      : Take,
 		toArray   : ToArray,
 		type      : Type,

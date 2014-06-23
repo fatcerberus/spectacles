@@ -381,6 +381,51 @@ Game.skills =
 		]
 	},
 	
+	// Shuriken (throwing star) techniques
+	starToss: {
+		name: "Star Toss",
+		category: 'attack',
+		weaponType: 'shuriken',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Star Toss",
+				rank: 1,
+				accuracyType: 'shuriken',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'shuriken',
+						power: 15
+					}
+				]
+			}
+		]
+	},
+	starVolley: {
+		name: "Star Volley",
+		category: 'attack',
+		weaponType: 'shuriken',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Star Volley",
+				rank: 2,
+				accuracyType: 'shuriken',
+				hits: 5,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'shuriken',
+						power: 10
+					}
+				]
+			}
+		]
+	},
+	
 	// Rank 2 magic - damage only, 25 POW
 	chill: {
 		name: "Chill",

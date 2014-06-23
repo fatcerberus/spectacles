@@ -17,7 +17,7 @@ function Robert2AI(aiContext)
 	
 	// HP thresholds for phase transitions
 	this.phasePoints = Link([ 3000, 2000, 1000, 500 ])
-		.map(function(value) { return Math.round(RNG.vary(value, 100)); })
+		.map(function(value) { return Math.round(RNG.fromNormal(value, 50)); })
 		.toArray();
 	
 	// AI state variables
