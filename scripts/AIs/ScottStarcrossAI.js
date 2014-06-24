@@ -67,24 +67,24 @@ ScottStarcrossAI.prototype.strategize = function()
 		this.isOpenerPending = false;
 	} else {
 		if (this.tactics === null) {
-			var party = Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
+			var targets = Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
 			var combos = Link(Link(this.combos)
 				.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
-				.random(party.length))
+				.random(targets.length))
 				.sort(function(a, b) { return b.rating - a.rating; });
 			this.tactics = [];
-			for (var i = 0; i < party.length; ++i) {
-				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: party[i] });
+			for (var i = 0; i < targets.length; ++i) {
+				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: targets[i] });
 			}
 		}
-		var validTactics = Link(this.tactics)
+		this.tactics = Link(this.tactics)
 			.where(function(tactic) { return tactic.unit.isAlive(); })
 			.where(function(tactic) { return tactic.moveIndex < tactic.moves.length; })
 			.toArray();
 		var tactic;
 		do {
-			tactic = RNG.fromArray(validTactics);
-		} while (tactic === this.tactics[0] && tactic.moveIndex == tactic.moves.length - 1 && validTactics.length > 1);
+			tactic = RNG.fromArray(this.tactics);
+		} while (tactic === this.tactics[0] && tactic.moveIndex == tactic.moves.length - 1 && this.tactics.length > 1);
 		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unit.id);
 		++tactic.moveIndex;
 		if (this.tactics[0].moveIndex == this.tactics[0].moves.length) {
