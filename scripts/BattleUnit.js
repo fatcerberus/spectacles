@@ -666,7 +666,7 @@ BattleUnit.prototype.setGuard = function()
 	Console.writeLine(this.name + " will switch to Guard Stance");
 	this.newStance = BattleStance.guard;
 	this.resetCounter(Game.stanceChangeRank);
-}
+};
 
 // .takeDamage() method
 // Inflicts damage on the battler.

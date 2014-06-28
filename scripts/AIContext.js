@@ -89,11 +89,13 @@ AIContext.prototype.getNextMove = function()
 			var isMoveUsable = candidateMove.usable.isUsable(this.unit, this.unit.stance)
 				&& candidateMove.predicate();
 			if (!isMoveUsable) {
-				Console.writeLine("Discarding " + this.unit + "'s " + candidateMove.usable.name + ", not usable");
+				Console.writeLine("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
 			}
 		} while (!isMoveUsable && this.moveQueue.length > 0);
 		if (isMoveUsable) {
 			moveToUse = candidateMove;
+		} else if (this.defaultSkillID !== null) {
+			this.queueSkill(this.defaultSkillID);
 		}
 	} while (moveToUse === null);
 	++this.turnsTaken;
