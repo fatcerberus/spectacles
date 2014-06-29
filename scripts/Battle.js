@@ -377,8 +377,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	this.raiseEvent('actionTaken', eventData);
 	targetUnits = eventData.targets;
 	if ('announceAs' in action && action.announceAs != null) {
-		var bannerColor = actingUnit.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
-		this.ui.announceAction(action.announceAs, actingUnit.isPartyMember() ? 'party' : 'enemy', bannerColor);
+		actingUnit.announce(action.announceAs);
 	}
 	Link(action.effects)
 		.filterBy('targetHint', 'user')

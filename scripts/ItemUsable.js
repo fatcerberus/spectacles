@@ -109,7 +109,7 @@ ItemUsable.prototype.peekActions = function()
 //     be freely modified without changing the underlying item definition.
 ItemUsable.prototype.use = function(unit, targets)
 {
-	if (!this.isUsable(unit)) {
+	if (!this.isUsable(unit, unit.stance)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
 	Console.writeLine(unit.name + " is using " + this.name);

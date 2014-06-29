@@ -16,6 +16,7 @@ Game =
 	defaultBattleBGM: null,
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
+	equipWeaponRank: 2,
 	guardBreakRank: 1,
 	reviveRank: 2,
 	stanceChangeRank: 5,

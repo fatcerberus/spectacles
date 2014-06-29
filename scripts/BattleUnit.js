@@ -190,21 +190,10 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	}
 };
 
-// .announce() method
-// Announces in-battle events.  For AI-controlled units, any announcement will
-// also passed on to the AI unless the unit is afflicted with a status that
-// suppresses it.
-// Arguments:
-//     eventID:   The ID of the event to announce, e.g. 'unitDamaged'.
-//     eventData: An object with data required to process the event. For instance, for a unitDamaged
-//                event, eventData should include the ID of the damaged unit (.unitID) and the amount
-//                of damage sustained (.amount).
-// Remarks:
-//     Unlike with statuses, the eventData for announcements should always be treated as read-only.
-//     In most cases, to prevent AI units from cheating, any changes to its members will be ignored.
-BattleUnit.prototype.announce = function(eventID, eventData)
+BattleUnit.prototype.announce = function(text)
 {
-	
+	var bannerColor = this.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
+	this.battle.ui.announceAction(text, this.isPartyMember() ? 'party' : 'enemy', bannerColor);
 };
 
 // .beginCycle() method
@@ -551,12 +540,16 @@ BattleUnit.prototype.queueMove = function(move)
 		this.moveUsed.targets[0] = RNG.fromArray(alliesAlive);
 	}
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
-	this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
-	for (var i = 0; i < nextActions.length; ++i) {
-		this.actionQueue.push(nextActions[i]);
-	}
-	if (this.actionQueue.length > 0) {
-		Console.writeLine("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
+	if (nextActions !== null) {
+		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
+		for (var i = 0; i < nextActions.length; ++i) {
+			this.actionQueue.push(nextActions[i]);
+		}
+		if (this.actionQueue.length > 0) {
+			Console.writeLine("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
+		}
+	} else {
+		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns());
 	}
 };
 
@@ -664,8 +657,22 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 BattleUnit.prototype.setGuard = function()
 {
 	Console.writeLine(this.name + " will switch to Guard Stance");
+	this.announce("Guard");
 	this.newStance = BattleStance.guard;
 	this.resetCounter(Game.stanceChangeRank);
+};
+
+// .setWeapon() method
+// Equips the unit with a specified weapon.
+// Arguments:
+//     weaponID: The weapon ID of the weapon to equip.
+BattleUnit.prototype.setWeapon = function(weaponID)
+{
+	var weaponDef = Game.weapons[weaponID];
+	this.announce("Equip");
+	this.weapon = weaponDef;
+	Console.writeLine(this.name + " equipped weapon " + weaponDef.name);
+	this.resetCounter(Game.equipWeaponRank);
 };
 
 // .takeDamage() method

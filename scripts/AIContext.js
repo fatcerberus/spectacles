@@ -3,7 +3,9 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript("SkillUsable.js");
+RequireScript('ItemUsable.js');
+RequireScript('SkillUsable.js');
+RequireScript('WeaponUsable.js');
 
 // AIContext() constructor
 // Creates an object representing a context for an enemy AI.
@@ -230,7 +232,6 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 	if (itemToUse == null) {
 		Abort("AIContext.queueItem(): AI unit " + this.unit.name + " tried to use an item (ID: '" + itemID + "') it didn't have");
 	}
-	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 	var targets = this.targets !== null ? this.targets
 		: unitID !== null ? [ this.battle.findUnit(unitID) ]
 		: itemToUse.defaultTargets(this.unit);
@@ -240,6 +241,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 		targets: targets,
 		predicate: function() { return true; }
 	});
+	Console.writeLine(this.unit.name + " queued use of item " + itemToUse.name);
 };
 
 // .queueSkill() method
@@ -266,7 +268,6 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 	if (skillToUse == null) {
 		Abort("AIContext.queueItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
 	}*/
-	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
 	var targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;
 	var targets = this.targets !== null ? this.targets
 		: targetUnit !== null ? [ targetUnit ]
@@ -277,20 +278,24 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 		targets: targets,
 		predicate: predicate
 	});
+	Console.writeLine(this.unit.name + " queued use of skill " + skillToUse.name);
 };
 
-// .setCounter() method
-// Instructs the AI to put the unit into counterattacking stance.
+// .queueWeapon() method
+// Adds a weapon-change action to the AI's move queue.
 // Arguments:
-//     skillID: The ID of the skill to counter with, as defined in the gamedef.
-AIContext.prototype.setCounter = function(skillID)
+//     weaponID: The weapon ID of the weapon to be equipped.
+AIContext.prototype.queueWeapon = function(weaponID)
 {
-	var skill = new SkillUsable(skillID, 100);
+	var weaponUsable = new WeaponUsable(weaponID);
 	this.moveQueue.push({
-		usable: skill,
-		stance: BattleStance.counter,
+		usable: weaponUsable,
+		stance: BattleStance.attack,
+		targets: weaponUsable.defaultTargets(this.unit),
 		predicate: function() { return true; }
 	});
+	var weaponDef = Game.weapons[weaponID];
+	Console.writeLine(this.unit.name + " queued weapon change to " + weaponDef.name);
 };
 
 // .setDefaultSkill() method

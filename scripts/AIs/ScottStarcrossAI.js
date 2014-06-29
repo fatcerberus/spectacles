@@ -63,6 +63,7 @@ ScottStarcrossAI.prototype.strategize = function()
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	if (this.isOpenerPending) {
+		this.aic.queueWeapon('templeSword');
 		this.aic.queueSkill('berserkCharge');
 		this.isOpenerPending = false;
 	} else {

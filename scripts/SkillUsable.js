@@ -162,7 +162,7 @@ SkillUsable.prototype.peekActions = function()
 //     be safely modified without affecting the underlying skill definition.
 SkillUsable.prototype.use = function(unit, targets)
 {
-	if (!this.isUsable(unit)) {
+	if (!this.isUsable(unit, unit.stance)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (this is usually due to insufficient MP).");
 	}
 	Console.writeLine(unit.name + " is using " + this.name);
