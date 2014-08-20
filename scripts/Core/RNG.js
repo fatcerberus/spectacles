@@ -10,7 +10,7 @@ RNG = new (function()
 	this.nextND = null;
 	
 	// .chance() method
-	// Tests a chance.
+	// Tests a percentage chance.
 	// Arguments:
 	//     odds: The odds of the chance passing, specified as a decimal from 0 to 1.
 	//           Chances <= 0 will never pass, and >= 1 will always pass.
@@ -32,7 +32,7 @@ RNG = new (function()
 	// .fromNormal() method
 	// Generates a random value from a normal probability distribution.
 	// Arguments:
-	//     mean:  The mean (expected) value of the distribution.
+	//     mean:  The mean (expected) value around which random values will be centered.
 	//     sigma: The standard deviation.
 	this.fromNormal = function(mean, sigma)
 	{

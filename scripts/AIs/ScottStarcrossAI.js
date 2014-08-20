@@ -30,6 +30,7 @@ function ScottStarcrossAI(aiContext)
 		{ phase: 1, moves: [ 'electrocute', 'heal' ], rating: 1 },
 		{ phase: 1, moves: [ 'hellfire', 'windchill' ], rating: 2 },
 		{ phase: 1, moves: [ 'windchill', 'hellfire' ], rating: 2 },
+		{ phase: 2, weaponID: 'powerBow', moves: [ 'flareShot', 'chillShot' ], rating: 2 },
 		{ phase: 2, moves: [ 'necromancy', 'rejuvenate' ], rating: 3 },
 		{ phase: 3, moves: [ 'necromancy', 'rejuvenate', 'renewal' ], rating: 4 },
 		{ phase: 3, moves: [ 'electrocute', 'heal', 'rejuvenate' ], rating: 4 },
@@ -41,6 +42,7 @@ function ScottStarcrossAI(aiContext)
 	this.tactics = null;
 	this.isOpenerPending = true;
 	this.targetingMode = 'random';
+	this.weaponID = 'templeSword';
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('berserkCharge');
@@ -63,7 +65,6 @@ ScottStarcrossAI.prototype.strategize = function()
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	if (this.isOpenerPending) {
-		this.aic.queueWeapon('templeSword');
 		this.aic.queueSkill('berserkCharge');
 		this.isOpenerPending = false;
 	} else {

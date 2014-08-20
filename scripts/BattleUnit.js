@@ -182,10 +182,10 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				if (!isGuardable) {
 					this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 				}
-				Console.writeLine(this.name + "'s infliction with " + statusName + " blocked by status/FC");
+				Console.writeLine(this.name + "'s " + statusName + " infliction blocked by status/FC");
 			}
 		} else {
-			Console.writeLine(this.name + "'s infliction with " + statusName + " blocked by Guard Stance");
+			Console.writeLine(this.name + " in GS, " + statusName + " infliction blocked");
 		}
 	}
 };
@@ -669,7 +669,7 @@ BattleUnit.prototype.setGuard = function()
 BattleUnit.prototype.setWeapon = function(weaponID)
 {
 	var weaponDef = Game.weapons[weaponID];
-	this.announce("Equip");
+	this.announce("equip " + weaponDef.name);
 	this.weapon = weaponDef;
 	Console.writeLine(this.name + " equipped weapon " + weaponDef.name);
 	this.resetCounter(Game.equipWeaponRank);
