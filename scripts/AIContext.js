@@ -13,19 +13,31 @@ RequireScript('WeaponUsable.js');
 //     unit:   The unit whose actions are to be managed by the AI.
 //     battle: The battle session the unit is taking part in.
 //     aiType: The constructor for the AI which will control the unit. The object it creates must,
-//             at the very least, include a parameterless method named 'strategize', which
-//             is required to queue at least one move (via AIContext.queueSkill or AIContext.queueItem) each
-//             time it is called.
+//             at the very least, include a method named 'strategize', which is required to queue
+//             at least one move (via AIContext.queueSkill or AIContext.queueItem) each time it
+//             is called. strategize() will be passed the following argument:
+//                 phase: The number of the current attack phase. If no phases are defined, this
+//                        will always be 1.
 // Remarks:
 //     Note: aiType will be called as a constructor (that is, via new) with the following argument:
 //               aiContext: The AIContext that is hosting the AI.
 function AIContext(unit, battle, aiType)
 {
+	// .phaseChanged event
+	// Occurs when the AI's phase is advanced.
+	// Arguments (for event handler):
+	//     aiContext: The AIContext that triggered the phase change.
+	//     newPhase:  The phase the AI context is switching to.
+	//     lastPhase: The phase being exited.
+	this.phaseChanged = new MultiDelegate();
+	
 	Console.writeLine("Initializing AI context for " + unit.fullName);
 	this.battle = battle;
 	this.data = {};
 	this.defaultSkillID = null;
 	this.moveQueue = [];
+	this.phase = 0;
+	this.phasePoints = null;
 	this.targets = null;
 	this.turnsTaken = 0;
 	this.unit = unit;
@@ -41,6 +53,64 @@ AIContext.prototype.dispose = function()
 		this.strategy.dispose();
 	}
 };
+
+// .checkPhase() method
+// Checks the state of the controlled unit and updates the current phase as
+// necessary.
+// Arguments:
+//     allowEvents: Optional. If this is true, a phaseChanged event will be raised
+//                  if the phase is advanced. (default: true)
+// Remarks:
+//     Phases are ratcheting; once a threshold is passed and the phase increased, it
+//     will not decrease even if the damage that triggered the phase change is healed.
+AIContext.prototype.checkPhase = function(allowEvents)
+{
+	allowEvents = allowEvents !== void null ? allowEvents : true;
+	
+	var phaseToEnter;
+	if (this.phasePoints !== null) {
+		var milestone = Link(this.phasePoints)
+			.where(function(value) { return value >= this.unit.hp; }.bind(this))
+			.last()[0];
+		phaseToEnter = 2 + Link(this.phasePoints).indexOf(milestone);
+	} else {
+		phaseToEnter = 1;
+	}
+	var lastPhase = this.phase;
+	this.phase = Math.max(phaseToEnter, this.phase);
+	if (allowEvents && this.phase > lastPhase) {
+		Console.writeLine(this.unit.name + " is entering Phase " + this.phase);
+		Console.append("prev: " + (lastPhase > 0 ? lastPhase : "none"));
+		this.phaseChanged.invoke(this, this.phase, lastPhase);
+	}
+};
+
+// .definePhases() method
+// Defines HP thresholds for phase changes. Phases are useful when designing, for
+// example, boss AIs.
+// Arguments:
+//     thresholds: An array specifying the HP thresholds for all phase transitions.
+//     sigma:      Optional. The standard deviation for calculated HP thresholds. If this is
+//                 zero, no variance will be applied. (default: 0)        
+// Remarks:
+//     Calling this method after phases have already been set up is not recommended as it will
+//     replace the existing HP thresholds with the new set and force the phase to be recalculated,
+//     overriding the usual ratcheting behavior.
+AIContext.prototype.definePhases = function(thresholds, sigma)
+{
+	sigma = sigma !== void null ? sigma : 0;
+	
+	Console.writeLine("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
+	this.phasePoints = Link(thresholds)
+		.map(function(value) { return Math.round(RNG.fromNormal(value, sigma)); })
+		.toArray();
+	var phaseIndex = 1;
+	Link(this.phasePoints).each(function(milestone) {
+		++phaseIndex;
+		Console.writeLine("Phase " + phaseIndex + " will start at <= " + milestone + " HP");
+	});
+	this.phase = 0;
+}
 
 // .getNextMove() method
 // Gets the next move to be performed by the controlled unit.
@@ -74,7 +144,10 @@ AIContext.prototype.getNextMove = function()
 				this.allies[ally.id] = ally;
 			}
 			this.targets = null;
-			this.strategy.strategize();
+			this.checkPhase();
+			if (this.moveQueue.length == 0) {
+				this.strategy.strategize(this.phase);
+			}
 			if (this.moveQueue.length == 0) {
 				Console.writeLine("No moves queued for " + this.unit.name + ", using default");
 				if (this.defaultSkillID !== null) {
