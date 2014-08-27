@@ -34,8 +34,8 @@ function Robert2AI(aiContext)
 	this.zombieHealFixState = null;
 	
 	// Prepare the AI for use
-	this.aic.definePhases([ 3000, 2000, 1000, 500 ], 50);
 	this.aic.setDefaultSkill('quickstrike');
+	this.aic.definePhases([ 3000, 2000, 1000, 500 ], 50);
 }
 
 // .dispose() method
@@ -46,6 +46,7 @@ Robert2AI.prototype.dispose = function()
 	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
 	this.aic.battle.stanceChanged.removeHook(this, this.onStanceChanged);
 	this.aic.battle.unitReady.removeHook(this, this.onUnitReady);
+	this.aic.phaseChanged.removeHook(this, this.onPhaseChanged);
 };
 
 // .strategize() method
@@ -54,18 +55,6 @@ Robert2AI.prototype.dispose = function()
 //     phase: The AI's current attack phase.
 Robert2AI.prototype.strategize = function(phase)
 {				
-	if ('maggie' in this.aic.enemies && this.aic.turnsTaken == 0) {
-		new Scenario()
-			.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name is SHE doing here?")
-			.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
-			.call(function() { this.aic.unit.takeDamage(this.aic.unit.hp - 1); }.bind(this))
-			.playSound('Munch.wav')
-			.talk("Robert", true, 2.0, Infinity, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
-			.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
-			.talk("Robert", true, 2.0, Infinity, "...")
-			.run(true);
-		this.aic.queueItem('alcohol');
-	}
 	switch (phase) {
 		case 1:
 			if (this.doChargeSlashNext) {
@@ -367,6 +356,18 @@ Robert2AI.prototype.onPhaseChanged = function(aiContext, newPhase, lastPhase)
 {
 	switch (newPhase) {
 		case 1:
+			if ('maggie' in this.aic.enemies) {
+				new Scenario()
+					.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name is SHE doing here?")
+					.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
+					.call(function() { this.aic.unit.takeDamage(this.aic.unit.hp - 1); }.bind(this))
+					.playSound('Munch.wav')
+					.talk("Robert", true, 2.0, Infinity, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
+					.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
+					.talk("Robert", true, 2.0, Infinity, "...")
+					.run(true);
+				this.aic.queueItem('alcohol');
+			}
 			this.aic.queueSkill('omni');
 			this.doChargeSlashNext = true;
 			this.isComboStarted = false;
