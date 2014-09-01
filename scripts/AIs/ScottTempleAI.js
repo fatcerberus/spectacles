@@ -12,6 +12,7 @@ function ScottTempleAI(aiContext)
 	this.aic = aiContext;
 	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
+	this.aic.phaseChanged.addHook(this, this.onPhaseChanged);
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('swordSlash');
@@ -24,6 +25,7 @@ ScottTempleAI.prototype.dispose = function()
 {
 	this.aic.battle.itemUsed.removeHook(this, this.onItemUsed);
 	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
+	this.aic.phaseChanged.removeHook(this, this.onPhaseChanged);
 };
 
 // .strategize() method
