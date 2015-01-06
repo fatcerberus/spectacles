@@ -120,10 +120,13 @@ BGM = new (function()
 			this.stream.stop();
 		}
 		if (trackName !== null) {
+			Console.writeLine("Playing BGM " + trackName);
+			Console.append("vol: ~" + Math.floor(this.volume * 100) + "%");
 			this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
 			this.stream.setVolume(this.volume * 255);
 			if (!DBG_DISABLE_BGM) this.stream.play(true);
 		} else {
+			Console.writeLine("BGM has been stopped");
 			this.stream = null;
 		}
 	};

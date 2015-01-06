@@ -17,7 +17,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = false;
+var DBG_LOG_CONSOLE_OUTPUT = true;
 var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
@@ -90,7 +90,7 @@ function game()
 	new Scenario()
 		.battle(setup.battleID)
 		.run(true);*/
-	new FieldEngine().run('main');
+	new FieldEngine().run('testville');
 	//MapEngine('main.rmp', Engine.frameRate);
 }
 

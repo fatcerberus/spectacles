@@ -87,6 +87,7 @@ Scenario.defineCommand('talk',
 		this.showSpeaker = showSpeaker;
 		this.textSpeed = textSpeed;
 		this.timeout = timeout;
+		this.timeoutLeft = this.timeout;
 		this.font = GetSystemFont();
 		this.text = [];
 		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
@@ -170,9 +171,20 @@ Scenario.defineCommand('talk',
 	update: function(scene) {
 		switch (this.mode) {
 			case "idle":
-				if (this.currentPage >= this.text.length - 1) {
-					this.timeout -= 1.0 / Engine.frameRate;
-					this.mode = this.timeout > 0.0 ? this.mode : "hidetext";
+				this.timeoutLeft -= 1.0 / Engine.frameRate;
+				if (this.timeoutLeft <= 0.0) {
+					if (this.topLine + 3 >= this.text[this.currentPage].length) {
+						if (this.currentPage < this.text.length - 1) {
+							this.mode = "page";
+						} else {
+							this.mode = "hidetext";
+						}
+					} else {
+						this.mode = "nextline";
+						this.numLinesToDraw = 0;
+						this.lineVisibility = 0.0;
+					}
+					this.timeoutLeft = this.timeout;
 				}
 				break;
 			case "fadein":

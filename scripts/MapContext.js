@@ -8,13 +8,15 @@ function MapContext(mapID)
 	if (!(mapID in Game.maps)) {
 		Abort("MapContext(): The map definition '" + mapID + "' doesn't exist!");
 	}
-	this.mapDef = Game.maps[mapID];
+	this.mapID = mapID;
+	this.mapDef = Game.maps[this.mapID];
 	this.state = {};
 }
 
-MapContext.prototype.invoke = function(eventID)
+MapContext.prototype.invoke = function(eventID, field)
 {
 	if (eventID in this.mapDef) {
-		this.mapDef[eventID].call(this.state);
+		Console.writeLine("Invoking map event " + this.mapID + "->" + eventID);
+		this.mapDef[eventID].call(this.state, field);
 	}
 };
