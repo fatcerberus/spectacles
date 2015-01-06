@@ -13,7 +13,7 @@ Game =
 	partyHPPerBar: 250,
 	
 	bonusMultiplier: 1.5,
-	defaultBattleBGM: null,
+	defaultBattleBGM: 'ManorBoss',
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
 	equipWeaponRank: 2,
@@ -27,6 +27,7 @@ EvaluateScript('GameDef/characters.js');
 EvaluateScript('GameDef/conditions.js');
 EvaluateScript('GameDef/enemies.js');
 EvaluateScript('GameDef/items.js');
+EvaluateScript('GameDef/maps.js');
 EvaluateScript('GameDef/math.js');
 EvaluateScript('GameDef/moveEffects.js');
 EvaluateScript('GameDef/skills.js');

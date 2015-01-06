@@ -20,7 +20,7 @@ RequireScript('WeaponUsable.js');
 //                        will always be 1.
 // Remarks:
 //     Note: aiType will be called as a constructor (that is, via new) with the following argument:
-//               aiContext: The AIContext that is hosting the AI.
+//               aiContext: The AIContext that is hosting the new AI.
 function AIContext(unit, battle, aiType)
 {
 	// .phaseChanged event
@@ -93,9 +93,9 @@ AIContext.prototype.checkPhase = function(allowEvents)
 //     sigma:      Optional. The standard deviation for calculated HP thresholds. If this is
 //                 zero, no variance will be applied. (default: 0)        
 // Remarks:
-//     Calling this method after phases have already been set up is not recommended as it will
-//     replace the existing HP thresholds with the new set and force the phase to be recalculated,
-//     overriding the usual ratcheting behavior.
+//     Calling this method after phases have already been established is not recommended as it
+//     will replace the existing HP thresholds with the new set and force the phase to be
+//     recalculated, overriding the usual ratcheting behavior.
 AIContext.prototype.definePhases = function(thresholds, sigma)
 {
 	sigma = sigma !== void null ? sigma : 0;
@@ -249,7 +249,7 @@ AIContext.prototype.itemsLeft = function(itemID)
 };
 
 // .predictItemTurns() method
-// Gets a turn order prediction for the use of a specified skill.
+// Gets a turn order prediction for the use of a specified item.
 // Arguments:
 //     itemID: The ID, as defined in the gamedef, of the item whose effects on
 //             the turn order are to be tested.
@@ -282,7 +282,7 @@ AIContext.prototype.predictSkillTurns = function(skillID)
 };
 
 // .queueItem() method
-// Adds the use of an item to the AI's move queue.
+// Adds the use of an item to the AI move queue.
 // Arguments:
 //     itemID: The item ID of the item to use.
 //     unitID: Optional. The ID of the unit to use the item on. If not provided or null, a
@@ -318,7 +318,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 };
 
 // .queueSkill() method
-// Adds the use of a skill to the AI context's move queue.
+// Adds the use of a skill to the AI move queue.
 // Arguments:
 //     skillID:   The ID of the skill to use, as defined in the gamedef.
 //     unitID:    Optional. The ID of the unit to use the skill on. If not provided or null, a
@@ -355,7 +355,7 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 };
 
 // .queueWeapon() method
-// Adds a weapon-change action to the AI's move queue.
+// Adds a weapon-change action to the AI move queue.
 // Arguments:
 //     weaponID: The weapon ID of the weapon to be equipped.
 AIContext.prototype.queueWeapon = function(weaponID)

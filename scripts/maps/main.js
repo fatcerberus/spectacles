@@ -6,7 +6,7 @@
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)
-			.talk("Bruce", false, 1.0,
+			.talk("Bruce", false, 1.0, 1.0,
 				"I tried so hard to make him understand, but for so long, he refused to listen...",
 				"So many times I said to myself, \"Bruce, why do you even bother?\" Anything to prove to myself that I wasn't the one at fault--that the reason he wouldn't listen was because of his own denial, not because I was pushing far too hard...",
 				"I was so intent on convincing him of Spellbinder's dishonesty that I didn't step back to take a look at the bigger picture. I refused to. And in the end, I wasn't the one hurt by it.")
@@ -65,8 +65,13 @@
 	
 	enter: function(map, world)
 	{
-		CreatePerson('hero', 'invisible.rss', false);
+		
+		CreatePerson('hero', 'battlers/Scott.rss', false);
 		AttachCamera('hero');
-		SetDelayScript(0, 'analogue.map().showOpening();');
+		world.scrambler = new Scrambler('hero');
+		world.scrambler.setBattles([ 'headlessHorse' ]);
+		world.scrambler.start();
+		//SetDelayScript(0, 'analogue.map().showOpening();');
+		SetDelayScript(0, 'new Scenario().changeMap(\'Portentia.rmp\').run(true); AttachInput(\'hero\');');
 	}
 })

@@ -4,6 +4,7 @@
 ***/
 
 RequireScript('AIs/HeadlessHorseAI.js');
+RequireScript('AIs/LumisquirrelAI.js');
 RequireScript('AIs/Robert1AI.js');
 RequireScript('AIs/Robert2AI.js');
 RequireScript('AIs/ScottTempleAI.js');
@@ -37,6 +38,26 @@ Game.enemies =
 		immunities: [],
 		munchData: {
 			skill: 'spectralDraw'
+		}
+	},
+	
+	lumisquirrel: {
+		name: "Lumisquirrel",
+		aiType: LumisquirrelAI,
+		baseStats: {
+			vit: 30,
+			str: 20,
+			def: 15,
+			foc: 80,
+			mag: 95,
+			agi: 90
+		},
+		damageModifiers: {
+			bow: Game.bonusMultiplier
+		},
+		immunities: [],
+		munchData: {
+			skill: 'delusion'
 		}
 	},
 	

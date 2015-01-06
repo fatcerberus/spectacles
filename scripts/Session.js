@@ -29,6 +29,7 @@ function Session(difficulty)
 	Link(Game.initialParty).each(function(characterID) {
 		this.party.add(characterID);
 	}.bind(this));
+	this.battlesSeen = [];
 }
 
 // Session.fromFile() constructor

@@ -6,12 +6,17 @@ function SpriteImage(filename)
 	this.elapsedFrames = 0;
 	this.stopped = false;
 	
-	this.direction getter = function()
+	this.__defineGetter__('direction', function()
 	{
 		return this.spriteset.directions[this.directionID].name;
-	};
+	});
+	/*this.direction getter = function()
+	{
+		return this.spriteset.directions[this.directionID].name;
+	};*/
 	
-	this.direction setter = function(value)
+	//this.direction setter = function(value)
+	this.__defineSetter__('direction', function(value)
 	{
 		var index = this.spriteset.directions.length;
 		var wasFound = false;
@@ -26,7 +31,7 @@ function SpriteImage(filename)
 		if (!wasFound) {
 			Abort("SpriteImage(): Direction \"" + value + "\" not found in spriteset!");
 		}
-	};
+	});
 	
 	this.blit = function(x, y, alpha)
 	{

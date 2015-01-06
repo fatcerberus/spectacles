@@ -5,6 +5,21 @@
 
 Game.battles =
 {
+	// Lumisquirrel x3
+	lumisquirrel3: {
+		enemies: [
+			'lumisquirrel',
+			'lumisquirrel',
+			'lumisquirrel'
+		],
+		onFirstStart: function() {
+			new Scenario()
+				.talk("Scott", true, 2.0, Infinity, "Well, these things are more than a little creepy...")
+				.talk("Elysia", true, 2.0, Infinity, "Lumisquirrels. Be careful, or you'll be in for a shock!")
+				.run(true);
+		}
+	},
+	
 	// Headless Horse (Boss Battle)
 	headlessHorse: {
 		title: "Headless Horse",

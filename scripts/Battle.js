@@ -35,6 +35,7 @@ function Battle(session, battleID)
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
+	this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.getLevel();
 	
 	// .itemUsed event
 	// Occurs when an item is used by a battle unit.
@@ -134,6 +135,24 @@ Battle.prototype.alliesOf = function(unit)
 	} else {
 		return this.enemyUnits;
 	}
+};
+
+// .areEnemies() method
+// Determines whether two battle units are of different alignments.
+// Arguments:
+//     unit1: The first battle unit to be compared.
+//     unit2: The second battle unit to be compared.
+// Returns:
+//     true if the unit1 and unit2 are of different alignments; false otherwise.
+Battle.prototype.areEnemies = function(unit1, unit2)
+{
+	var enemyList = this.enemiesOf(unit1);
+	for (var i = 0; i < enemyList.length; ++i) {
+		if (unit2 === enemyList[i]) {
+			return true;
+		}
+	}
+	return false;
 };
 
 // .enemiesOf() method
@@ -242,24 +261,6 @@ Battle.prototype.hasCondition = function(conditionID)
 {
 	return Link(this.conditions).pluck('conditionID').contains(conditionID);
 };
-
-// .areEnemies() method
-// Determines whether two battle units are of different alignments.
-// Arguments:
-//     unit1: The first battle unit to be compared.
-//     unit2: The second battle unit to be compared.
-// Returns:
-//     true if the unit1 and unit2 are of different alignments; false otherwise.
-Battle.prototype.areEnemies = function(unit1, unit2)
-{
-	var enemyList = this.enemiesOf(unit1);
-	for (var i = 0; i < enemyList.length; ++i) {
-		if (unit2 === enemyList[i]) {
-			return true;
-		}
-	}
-	return false;
-}
 
 // .isActive() method
 // Determines whether the battle is still running.
@@ -507,8 +508,15 @@ Battle.prototype.update = function() {
 			});
 			Threads.synchronize(walkInThreads);
 			this.ui.hud.turnPreview.show();
+			if (!Link(this.session.battlesSeen).contains(this.battleID)) {
+				this.session.battlesSeen.push(this.battleID);
+				 if ('onFirstStart' in this.parameters) {
+					Console.writeLine("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					this.parameters.onFirstStart.call(this);
+				 }
+			}
 			if ('onStart' in this.parameters) {
-				Console.writeLine("Calling onStart handler for battleID '" + this.battleID + "'")
+				Console.writeLine("Calling onStart() for battleID '" + this.battleID + "'");
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();

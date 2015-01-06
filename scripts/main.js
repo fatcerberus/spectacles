@@ -17,7 +17,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = true;
+var DBG_LOG_CONSOLE_OUTPUT = false;
 var DBG_SHOW_CONSOLE = false;
 
 RequireScript('Core/Engine.js');
@@ -29,7 +29,9 @@ RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('DayNightFilter.js');
 RequireScript('GameOverScreen.js');
+RequireScript('MapEngine.js');
 RequireScript('MenuStrip.js');
+RequireScript('Scrambler.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
@@ -59,16 +61,16 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
-	var setup = {
-		battleID: 'scottTemple',
+	/*var setup = {
+		battleID: 'lumisquirrel3',
 		party: {
-			//scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-			elysia: { level: 60, weapon: 'powerBow', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			scott: { level: 1, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//elysia: { level: 60, weapon: 'powerBow', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//lauren: { level: 45, weapon: 'risingSun', items: [ 'tonic' ] },
 			//justin: { level: 60, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//maggie: { level: 8, items: [ 'redBull', 'alcohol' ] },
-			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
 		}
 	};
@@ -87,7 +89,8 @@ function game()
 	}
 	new Scenario()
 		.battle(setup.battleID)
-		.run(true);
+		.run(true);*/
+	new MapEngine().run('mainMap');
 	//MapEngine('main.rmp', Engine.frameRate);
 }
 

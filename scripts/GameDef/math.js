@@ -105,7 +105,7 @@ Game.math =
 			} else if (Link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
 				return baseDamage;
 			} else {
-				return baseDamage / 2.0;
+				return baseDamage / 2;
 			}
 		}
 	},
