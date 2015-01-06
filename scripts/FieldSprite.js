@@ -12,6 +12,8 @@
 function FieldSprite(spriteset, x, y)
 {
 	this.sprite = new SpriteImage(spriteset);
+	this.x = x;
+	this.y = y;
 }
 
 FieldSprite.prototype.render = function()

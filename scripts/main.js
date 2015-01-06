@@ -29,7 +29,7 @@ RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('DayNightFilter.js');
 RequireScript('GameOverScreen.js');
-RequireScript('MapEngine.js');
+RequireScript('FieldEngine.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
 RequireScript('Session.js');
@@ -90,7 +90,7 @@ function game()
 	new Scenario()
 		.battle(setup.battleID)
 		.run(true);*/
-	new MapEngine().run('mainMap');
+	new FieldEngine().run('main');
 	//MapEngine('main.rmp', Engine.frameRate);
 }
 

@@ -65,6 +65,10 @@ Game.maps =
 					"The lights are out...",
 					"What's going on?")
 				.run(true);
-		},
+		}
+	},
+	
+	testville: {
+		bgm: 'SpectaclesTheme'
 	}
 };
