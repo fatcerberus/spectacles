@@ -171,20 +171,22 @@ Scenario.defineCommand('talk',
 	update: function(scene) {
 		switch (this.mode) {
 			case "idle":
-				this.timeoutLeft -= 1.0 / Engine.frameRate;
-				if (this.timeoutLeft <= 0.0) {
+				if (this.timeout !== Infinity) {
 					if (this.topLine + 3 >= this.text[this.currentPage].length) {
-						if (this.currentPage < this.text.length - 1) {
-							this.mode = "page";
-						} else {
-							this.mode = "hidetext";
+						this.timeoutLeft -= 1.0 / Engine.frameRate;
+						if (this.timeoutLeft <= 0.0) {
+							if (this.currentPage < this.text.length - 1) {
+								this.mode = "page";
+							} else {
+								this.mode = "hidetext";
+							}
+							this.timeoutLeft = this.timeout;
 						}
 					} else {
 						this.mode = "nextline";
 						this.numLinesToDraw = 0;
 						this.lineVisibility = 0.0;
 					}
-					this.timeoutLeft = this.timeout;
 				}
 				break;
 			case "fadein":

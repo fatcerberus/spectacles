@@ -10,6 +10,7 @@ function MapContext(mapID)
 	}
 	this.mapID = mapID;
 	this.mapDef = Game.maps[this.mapID];
+	this.sprites = [];
 	this.state = {};
 }
 

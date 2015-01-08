@@ -90,7 +90,7 @@ function game()
 	new Scenario()
 		.battle(setup.battleID)
 		.run(true);*/
-	new FieldEngine().run('testville');
+	new FieldEngine().run('main');
 	//MapEngine('main.rmp', Engine.frameRate);
 }
 
