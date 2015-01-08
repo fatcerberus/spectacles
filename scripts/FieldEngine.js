@@ -17,7 +17,10 @@ function FieldEngine(session)
 	this.cameraY = 0;
 	this.cameraSprite = null;
 	this.inputSprite = null;
+	this.mapID = null;
 	this.mapContext = null;
+	this.mapDef = null;
+	this.sprites = [];
 }
 
 // .attachCamera() method
@@ -27,6 +30,7 @@ function FieldEngine(session)
 //     sprite: The FieldSprite the camera is being attached to.
 FieldEngine.prototype.attachCamera = function(sprite)
 {
+	this.cameraSprite = sprite;
 };
 
 // .attachInput() method
@@ -42,34 +46,74 @@ FieldEngine.prototype.attachInput = function(sprite, player)
 	this.inputSprite = sprite;
 };
 
-FieldEngine.prototype.getInput = function()
+FieldEngine.prototype.changeMap = function(mapID)
 {
-	
+	if (mapID !== this.mapID) {
+		if (this.mapContext !== null) {
+			this.mapContext.invoke('onLeave');
+		}
+		this.mapID = mapID;
+		this.mapContext = new MapContext(this.mapID);
+		this.mapDef = this.mapContext.mapDef;
+		BGM.change(this.mapDef.bgm);
+		this.mapContext.invoke('onEnter');
+	}
 };
 
-FieldEngine.prototype.loadMap = function(mapID)
+FieldEngine.prototype.getInput = function()
 {
-	if (this.mapContext !== null) {
-		this.mapContext.invoke('onLeave');
+	var key = AreKeysLeft() ? GetKey() : null;
+	if (this.inputSprite !== null && this.inputSprite.mapID == this.mapID) {
+		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_UP))) {
+			this.inputSprite.walk('north');
+		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN))) {
+			this.inputSprite.walk('south');
+		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT))) {
+			this.inputSprite.walk('west');
+		} else if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT))) {
+			this.inputSprite.walk('east');
+		} else {
+			this.inputSprite.stop();
+		}
 	}
-	this.mapContext = new MapContext(mapID);
-	BGM.change(this.mapContext.mapDef.bgm);
-	this.mapContext.invoke('onEnter');
+};
+
+FieldEngine.prototype.registerSprite = function(sprite)
+{
+	if (!Link(this.sprites).contains(sprite)) {
+		this.sprites.push(sprite);
+	}
 };
 
 FieldEngine.prototype.render = function()
 {
+	var fillColor = 'canvasColor' in this.mapDef ? this.mapDef.canvasColor : CreateColor(0, 0, 0, 255);
+	var offX = Math.min(Math.round(GetScreenWidth() / 2) - this.cameraX, 0);
+	var offY = Math.min(Math.round(GetScreenHeight() / 2) - this.cameraY, 0);
+	Rectangle(offX, offY, 1280, 1280, fillColor);
+	Link(this.sprites).filterBy('mapID', this.mapID).each(function(sprite) {
+		sprite.render(offX, offY);
+	}.bind(this));
 };
 
 FieldEngine.prototype.run = function(mapID)
 {
 	Console.writeLine("Starting field engine");
 	Console.append("mapID: " + mapID);
-	this.loadMap(mapID);
+	this.changeMap(mapID);
+	while (AreKeysLeft()) {
+		GetKey();
+	}
 	Threads.waitFor(Threads.createEntityThread(this));
 };
 
 FieldEngine.prototype.update = function()
 {
+	Link(this.sprites).invoke('update');
+	if (this.cameraSprite !== null) {
+		this.changeMap(this.cameraSprite.mapID);
+		this.cameraX = this.cameraSprite.x;
+		this.cameraY = this.cameraSprite.y;
+	}
 	return true;
 };

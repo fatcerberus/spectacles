@@ -69,8 +69,9 @@ Game.maps =
 	},
 	
 	testville: {
-		bgm: 'SpectaclesTheme',
+		//bgm: 'SpectaclesTheme',
 		encounterRate: 0.01,
+		canvasColor: CreateColor(0, 96, 0, 255),
 		
 		onEnter: function() {
 		}
