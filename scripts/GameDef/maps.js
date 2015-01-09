@@ -69,7 +69,7 @@ Game.maps =
 	},
 	
 	testville: {
-		//bgm: 'SpectaclesTheme',
+		bgm: 'BruceTellsHisStory',
 		encounterRate: 0.01,
 		canvasColor: CreateColor(0, 96, 0, 255),
 		

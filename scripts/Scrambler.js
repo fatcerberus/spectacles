@@ -7,16 +7,20 @@
 // Creates a random battle scrambler, which monitors the movement of an entity
 // to determine when to trigger random battles.
 // Arguments:
-//     personID: The name of the entity, as passed to CreatePerson().
+//     field:  The field engine the scrambler will run under. Needed to disable field
+//             input when a battle starts.
+//     sprite: The FieldSprite to be monitored.
 // Remarks:
 //     The scrambler starts out in a paused state. No battles will be triggered until
 //     the scrambler's .start() method is called. This enables scramblers to be created
 //     prior to starting the map engine without generating runtime errors.
-function Scrambler(personID)
+function Scrambler(field, sprite)
 {
+	this.field = field;
+	this.sprite = sprite;
 	this.encounterRate = 0.01;
-	this.personID = personID;
-	Console.writeLine("Created random battle scrambler for '" + this.personID + "'");
+	this.battleIDs = [];
+	Console.writeLine("Created random battle scrambler for '" + this.sprite.id + "'");
 	Console.append("encRate: ~" + Math.round(this.encounterRate * 100) + "%");
 }
 
@@ -32,30 +36,30 @@ Scrambler.prototype.setEncounterRate = function(newRate)
 
 Scrambler.prototype.start = function()
 {
-	this.lastX = GetPersonX(this.personID);
-	this.lastY = GetPersonY(this.personID);
+	this.lastX = this.sprite.x;
+	this.lastY = this.sprite.y;
 	Threads.createEntityThread(this);
 	Console.writeLine("Started random battle scrambler for '" + this.personID + "'");
 };
 
 Scrambler.prototype.update = function()
 {
-	var x = GetPersonX(this.personID);
-	var y = GetPersonY(this.personID);
-	if ((x != this.lastX || y != this.lastY) && IsCommandQueueEmpty(this.personID)
-	    && RNG.chance(this.encounterRate))
-	{
-		var inputPerson = GetInputPerson();
-		DetachInput(inputPerson);
-		var battleID = RNG.fromArray(this.battleIDs);
-		Console.writeLine("Random battle triggered by '" + this.personID + "'");
-		Console.append("battleID: " + battleID);
-		new Scenario()
-			.battle(battleID)
-			.run(true);
-		AttachInput(inputPerson);
+	if (this.battleIDs.length > 0) {
+		var x = this.sprite.x;
+		var y = this.sprite.y;
+		if ((x != this.lastX || y != this.lastY) && RNG.chance(this.encounterRate)) {
+			var inputSprite = this.field.inputSprite;
+			this.field.detachInput();
+			var battleID = RNG.fromArray(this.battleIDs);
+			Console.writeLine("Random battle triggered by '" + this.sprite.id + "'");
+			Console.append("battleID: " + battleID);
+			new Scenario()
+				.battle(battleID)
+				.run(true);
+			this.field.attachInput(inputSprite);
+		}
+		this.lastX = x;
+		this.lastY = y;
 	}
-	this.lastX = x;
-	this.lastY = y;
 	return true;
 };

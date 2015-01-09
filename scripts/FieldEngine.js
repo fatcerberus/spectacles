@@ -43,6 +43,9 @@ FieldEngine.prototype.attachInput = function(sprite, player)
 {
 	player = player !== void null ? player : PLAYER_1;
 	
+	if (this.inputSprite !== null) {
+		this.inputSprite.stop();
+	}
 	this.inputSprite = sprite;
 };
 
@@ -60,9 +63,22 @@ FieldEngine.prototype.changeMap = function(mapID)
 	}
 };
 
+// .detachInput() method
+// Detaches a player's input from any sprites it may be attached to.
+//     player: Optional. A player constant specifying the player whose input will be detached.
+//             (default: PLAYER_1)
+FieldEngine.prototype.detachInput = function(player)
+{
+	player = player !== void null ? player : PLAYER_1;
+	
+	if (this.inputSprite !== null) {
+		this.inputSprite.stop();
+	}
+	this.inputSprite = null;
+};
+
 FieldEngine.prototype.getInput = function()
 {
-	var key = AreKeysLeft() ? GetKey() : null;
 	if (this.inputSprite !== null && this.inputSprite.mapID == this.mapID) {
 		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_UP))) {
 			this.inputSprite.walk('north');
