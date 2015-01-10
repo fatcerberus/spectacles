@@ -183,7 +183,7 @@ Battle.prototype.findUnit = function(unitID)
 // Gets the enemy battle level for the battle.
 Battle.prototype.getLevel = function()
 {
-	return this.parameters.battleLevel;
+	return this.battleLevel;
 };
 
 // .go() method

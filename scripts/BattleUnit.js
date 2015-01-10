@@ -104,7 +104,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 				this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 			}
 		}
-		this.tier = this.enemyInfo.tier;
+		this.tier = 'tier' in this.enemyInfo ? this.enemyInfo.tier : 1;
 		this.turnRatio = 'turnRatio' in this.enemyInfo ? this.enemyInfo.turnRatio : 1;
 		this.maxHP = Math.round(Math.max(Game.math.hp(this.enemyInfo, battle.getLevel(), this.tier), 1));
 		this.hp = this.maxHP;

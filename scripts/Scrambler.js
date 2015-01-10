@@ -39,7 +39,7 @@ Scrambler.prototype.start = function()
 	this.lastX = this.sprite.x;
 	this.lastY = this.sprite.y;
 	Threads.createEntityThread(this);
-	Console.writeLine("Started random battle scrambler for '" + this.personID + "'");
+	Console.writeLine("Started random battle scrambler for '" + this.sprite.id + "'");
 };
 
 Scrambler.prototype.update = function()

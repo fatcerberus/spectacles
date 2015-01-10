@@ -119,9 +119,9 @@ HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, actingUni
 			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}
 		if (!(actingUnit.id in this.damageTaken)) {
-			this.damageTaken[attacker.id] = 0;
+			this.damageTaken[actingUnit.id] = 0;
 		}
-		this.damageTaken[attacker.id] += amount;
+		this.damageTaken[actingUnit.id] += amount;
 	}
 };
 

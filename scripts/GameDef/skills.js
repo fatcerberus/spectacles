@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2013 Power-Command
+  *           Copyright (c) 2015 Power-Command
 ***/
 
 Game.skillCategories =
@@ -1047,6 +1047,27 @@ Game.skills =
 	},
 	
 	// Enemy techniques
+	bite: {
+		name: "Bite",
+		category: 'attack',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Bite",
+				rank: 2,
+				accuracyType: 'physical',
+				isMelee: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'physical',
+						power: 5
+					}
+				]
+			}
+		]
+	},
 	flameBreath: {
 		name: "Flame Breath",
 		category: 'magic',
