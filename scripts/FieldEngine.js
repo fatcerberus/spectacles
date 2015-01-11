@@ -21,6 +21,7 @@ function FieldEngine(session)
 	this.mapContext = null;
 	this.mapDef = null;
 	this.sprites = [];
+	this.tileset = LoadImage('MapTiles/Grass.png');
 }
 
 // .attachCamera() method
@@ -103,20 +104,48 @@ FieldEngine.prototype.registerSprite = function(sprite)
 
 FieldEngine.prototype.render = function()
 {
-	var fillColor = 'canvasColor' in this.mapDef ? this.mapDef.canvasColor : CreateColor(0, 0, 0, 255);
-	var offX = Math.min(Math.round(GetScreenWidth() / 2) - this.cameraX, 0);
-	var offY = Math.min(Math.round(GetScreenHeight() / 2) - this.cameraY, 0);
-	Rectangle(offX, offY, 1280, 1280, fillColor);
-	Link(this.sprites).filterBy('mapID', this.mapID).each(function(sprite) {
-		sprite.render(offX, offY);
-	}.bind(this));
+	if (this.mapID !== null) {
+		var fillColor = 'canvasColor' in this.mapDef ? this.mapDef.canvasColor : CreateColor(0, 0, 0, 255);
+		var cameraX = Math.max(this.cameraX, Math.round(GetScreenWidth() / 2));
+		var cameraY = Math.max(this.cameraY, Math.round(GetScreenHeight() / 2));
+		var mapX = cameraX - Math.round(GetScreenWidth() / 2);
+		var mapY = cameraY - Math.round(GetScreenHeight() / 2);
+		var tileX = Math.floor(mapX / 32);
+		var tileY = Math.floor(mapY / 32);
+		var offX = -(mapX % 32);
+		var offY = -(mapY % 32);
+		Rectangle(offX, offY, 1280, 1280, fillColor);
+		for (var z = 0; z < 3; ++z) {
+			for (var y = tileY; y < 10 + tileY; ++y) {
+				for (var x = tileX; x < 12 + tileX; ++x) {
+					this.tileset.blit((x - tileX) * 32 + offX, (y - tileY) * 32 + offY);
+				}
+			}
+		}
+		Link(this.sprites).filterBy('mapID', this.mapID).each(function(sprite) {
+			sprite.render(-mapX, -mapY);
+		}.bind(this));
+	}
 };
 
+// .run() method
+// Starts the field engine.
+// Arguments:
+//     mapID: Optional. The ID of the map to load at startup. If not provided or null,
+//            no map will be loaded.
+// Remarks:
+//     If the camera is attached to a sprite when this method is called, the map
+//     occupied by that sprite will be loaded instead of the one specified.
 FieldEngine.prototype.run = function(mapID)
 {
+	mapID = mapID !== void null ? mapID : null;
+	
 	Console.writeLine("Starting field engine");
 	Console.append("mapID: " + mapID);
-	this.changeMap(mapID);
+	
+	if (mapID !== null && this.cameraSprite !== null) {
+		this.changeMap(mapID);
+	}
 	while (AreKeysLeft()) {
 		GetKey();
 	}

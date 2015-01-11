@@ -93,12 +93,12 @@ function game()
 	var fieldEngine = new FieldEngine()
 	var playerSprite = new FieldSprite('scott', 'battlers/Scott.rss', 'testville', 0, 0);
 	var scrambler = new Scrambler(fieldEngine, playerSprite);
-	scrambler.setBattles([ 'lumisquirrel3' ]);
+	scrambler.setBattles([ 'robert2' ]);
 	scrambler.start();
 	fieldEngine.registerSprite(playerSprite);
 	fieldEngine.attachCamera(playerSprite);
 	fieldEngine.attachInput(playerSprite);
-	fieldEngine.run('testville');
+	fieldEngine.run();
 	//MapEngine('main.rmp', Engine.frameRate);
 }
 
