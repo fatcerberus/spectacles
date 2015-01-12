@@ -53,7 +53,9 @@ Game.enemies =
 			agi: 90
 		},
 		damageModifiers: {
-			bow: Game.bonusMultiplier
+			bow: Game.bonusMultiplier,
+			shuriken: Game.bonusMultiplier,
+			lightning: 1 / Game.bonusMultiplier
 		},
 		immunities: [],
 		munchData: {

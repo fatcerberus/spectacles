@@ -13,7 +13,7 @@ Game =
 	partyHPPerBar: 250,
 	
 	bonusMultiplier: 1.5,
-	defaultBattleBGM: 'ManorBoss',
+	defaultBattleBGM: 'CreepFight',
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
 	equipWeaponRank: 2,

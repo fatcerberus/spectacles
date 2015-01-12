@@ -1062,7 +1062,48 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 5
+						power: 30
+					}
+				]
+			}
+		]
+	},
+	deathBite: {
+		name: "Death Bite",
+		category: 'attack',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Death Bite",
+				rank: 1,
+				accuracyType: 'physical',
+				isMelee: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'physical',
+						power: 10,
+						addStatus: 'zombie'
+					}
+				]
+			}
+		]
+	},
+	delusion: {
+		name: "Delusion",
+		category: 'strategy',
+		targetType: 'single',
+		allowAsCounter: false,
+		actions: [
+			{
+				announceAs: "Delusion",
+				rank: 3,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'delusion'
 					}
 				]
 			}

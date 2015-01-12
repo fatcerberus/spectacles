@@ -5,7 +5,9 @@
 
 Game.initialParty =
 [
-	'scott'
+	'scott',
+	'bruce',
+	'maggie'
 ];
 
 Game.characters =
