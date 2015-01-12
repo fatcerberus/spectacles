@@ -24,7 +24,6 @@ function MoveMenu(unit, battle, stance)
 	this.expansion = 0.0;
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
-	this.healthyColor
 	this.isExpanded = false;
 	this.menuStance = stance;
 	this.menuThread = null;

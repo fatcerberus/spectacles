@@ -71,12 +71,20 @@ Game.statuses =
 		}
 	},
 	
+	// Delusion status
+	// ...
+	delusion: {
+		name: "Delusion",
+		tags: [ 'ailment', 'acute' ],
+		//TODO: implement Delusion status
+	},
+	
 	// Disarray status
 	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
 	// Expires after 3 actions.
 	disarray: {
 		name: "Disarray",
-		tags: [ 'acute', 'ailment' ],
+		tags: [ 'ailment', 'acute' ],
 		initialize: function(unit) {
 			this.actionsTaken = 0;
 		},
@@ -145,6 +153,15 @@ Game.statuses =
 				eventData.amount *= Game.bonusMultiplier;
 			}
 		},
+	},
+	
+	// Fear status
+	// Causes the affected unit to automatically Guard or use healing items instead
+	// of attacking.
+	fear: {
+		name: "Fear",
+		tags: [ 'ailment' ],
+		//TODO: implement Fear status
 	},
 	
 	// Final Stand status

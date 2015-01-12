@@ -30,7 +30,7 @@ ScottTempleAI.prototype.dispose = function()
 
 // .strategize() method
 // Determines what Scott Temple will do when his turn arrives.
-ScottTempleAI.prototype.strategize = function(phase)
+ScottTempleAI.prototype.strategize = function(stance, phase)
 {
 	switch (phase) {
 		case 1:

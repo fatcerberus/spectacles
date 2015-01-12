@@ -146,7 +146,7 @@ AIContext.prototype.getNextMove = function()
 			this.targets = null;
 			this.checkPhase();
 			if (this.moveQueue.length == 0) {
-				this.strategy.strategize(this.phase);
+				this.strategy.strategize(this.unit.stance, this.phase);
 			}
 			if (this.moveQueue.length == 0) {
 				Console.writeLine("No moves queued for " + this.unit.name + ", using default");

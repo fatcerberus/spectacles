@@ -1228,6 +1228,26 @@ Game.skills =
 			}
 		]
 	},
+	tackle: {
+		name: "Tackle",
+		category: 'attack',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Tackle",
+				rank: 2,
+				accuracyType: 'physical',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'physical',
+						power: 15
+					}
+				]
+			}
+		]
+	},
 	trample: {
 		name: "Trample",
 		category: 'physical',

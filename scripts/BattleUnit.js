@@ -272,6 +272,7 @@ BattleUnit.prototype.endCycle = function()
 			chosenMove = this.counterMenu.open();
 		} else {
 			chosenMove = this.ai.getNextMove();
+			chosenMove.targets = [ this.unit.counterTarget ];
 		}
 		this.queueMove(chosenMove);
 		this.performAction(this.getNextAction(), chosenMove);

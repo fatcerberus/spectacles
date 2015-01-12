@@ -56,7 +56,7 @@ ScottStarcrossAI.prototype.dispose = function()
 
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
-ScottStarcrossAI.prototype.strategize = function()
+ScottStarcrossAI.prototype.strategize = function(stance, phase)
 {
 	var milestone = Link(this.phasePoints)
 		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))

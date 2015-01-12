@@ -52,8 +52,9 @@ Robert2AI.prototype.dispose = function()
 // .strategize() method
 // Allows Robert to decide what he will do next when his turn arrives.
 // Arguments:
-//     phase: The AI's current attack phase.
-Robert2AI.prototype.strategize = function(phase)
+//     stance: Robert's current battling stance.
+//     phase:  The AI's current attack phase.
+Robert2AI.prototype.strategize = function(stance, phase)
 {				
 	switch (phase) {
 		case 1:
