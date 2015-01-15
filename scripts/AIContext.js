@@ -161,8 +161,8 @@ AIContext.prototype.getNextMove = function()
 		var isMoveUsable;
 		do {
 			candidateMove = this.moveQueue.shift();
-			var isMoveUsable = candidateMove.usable.isUsable(this.unit, this.unit.stance)
-				&& candidateMove.predicate();
+			var isMoveLegal = candidateMove.stance != BattleStance.attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
+			var isMoveUsable = isMoveLegal && candidateMove.predicate();
 			if (!isMoveUsable) {
 				Console.writeLine("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
 			}
@@ -281,6 +281,17 @@ AIContext.prototype.predictSkillTurns = function(skillID)
 	return forecast;
 };
 
+// .queueGuard() method
+// Adds a shift to Guard Stance to the AI move queue.
+AIContext.prototype.queueGuard = function()
+{
+	this.moveQueue.push({
+		usable: null,
+		stance: BattleStance.guard,
+		predicate: function() { return true; }
+	});
+};
+
 // .queueItem() method
 // Adds the use of an item to the AI move queue.
 // Arguments:
@@ -379,17 +390,6 @@ AIContext.prototype.setDefaultSkill = function(skillID)
 {
 	this.defaultSkillID = skillID;
 	Console.writeLine(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
-};
-
-// .setGuard() method
-// Instructs the AI to put the unit into a defensive stance.
-AIContext.prototype.setGuard = function()
-{
-	this.moveQueue.push({
-		usable: null,
-		stance: BattleStance.guard,
-		predicate: function() { return true; }
-	});
 };
 
 // .setTarget() method

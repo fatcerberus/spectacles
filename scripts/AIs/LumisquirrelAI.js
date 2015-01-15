@@ -3,8 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-
-
 // LumisquirrelAI() constructor
 // Creates an AI to control a Lumisquirrel in battle.
 // Arguments:
@@ -68,8 +66,9 @@ LumisquirrelAI.prototype.strategize = function(stance)
 				var skillID;
 				if (!this.delusionUsed) {
 					this.aic.queueSkill('delusion', this.targetID);
+					this.delusionUsed = true;
 				} else {
-					this.aic.setGuard();
+					this.aic.queueGuard();
 				}
 				break;
 		}
