@@ -4,7 +4,6 @@
 ***/
 
 RequireScript('lib/JS.js');
-RequireScript('lib/analogue.js');
 RequireScript('lib/json3.js');
 RequireScript('lib/link.js');
 RequireScript('lib/MultiDelegate.js');
@@ -48,7 +47,6 @@ function game()
 	Threads.doWith(Scenario,
 		function() { return this.updateAll(), true; },
 		function() { this.renderAll(); }, 99);
-	analogue.init();
 	Console.initialize(19);
 	
 	if (DBG_SHOW_CONSOLE) {
@@ -59,12 +57,12 @@ function game()
 		Engine.showLogo('TitleCard', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
-	analogue.world.currentSession = session;
 	DayNightFilter.initialize();
+	
 	/*var setup = {
-		battleID: 'lumisquirrel3',
+		battleID: 'robert2',
 		party: {
-			scott: { level: 1, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//elysia: { level: 60, weapon: 'powerBow', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 			//lauren: { level: 45, weapon: 'risingSun', items: [ 'tonic' ] },
@@ -88,18 +86,14 @@ function game()
 		}
 	}
 	new Scenario()
-		.battle(setup.battleID)
+		.battle(setup.battleID, session)
 		.run(true);*/
-	var fieldEngine = new FieldEngine()
-	var playerSprite = new FieldSprite('scott', 'battlers/Scott.rss', 'testville', 0, 0);
-	var scrambler = new Scrambler(fieldEngine, playerSprite);
-	scrambler.setBattles([ 'lumisquirrel3' ]);
-	scrambler.start();
-	fieldEngine.registerSprite(playerSprite);
+	
+	var fieldEngine = new FieldEngine();
+	var playerSprite = fieldEngine.createSprite('scott', 'battlers/Scott.rss', 'testville', 5 * 32, 4 * 32);
 	fieldEngine.attachCamera(playerSprite);
 	fieldEngine.attachInput(playerSprite);
-	fieldEngine.run();
-	//MapEngine('main.rmp', Engine.frameRate);
+	fieldEngine.run('main');
 }
 
 // PATCH! - Scenario.run() method
@@ -130,7 +124,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	
 	if (arguments.length < 4) {
 		Abort(
-			"DrawTextEx() - error: Wrong numbers of arguments\n" +
+			"DrawTextEx() - error: Wrong number of arguments\n" +
 			"At least 4 arguments were expected; caller only passed " + arguments.length + "."
 		);
 	}

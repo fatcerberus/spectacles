@@ -59,7 +59,7 @@ TitleScreen.prototype.update = function()
 		case 'transitionIn':
 			if (!this.transition.isRunning()) {
 				this.mode = 'idle';
-				this.choice = new MenuStrip("Battle and AI Demo", false, [ "Start Demo" ]).open();
+				this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
 				if (DBG_DISABLE_TRANSITIONS) {
 					this.fadeness = 1.0;
 				}

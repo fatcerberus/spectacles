@@ -13,6 +13,7 @@ function MapContext(mapID)
 	Console.writeLine("Creating map context for map '" + mapID + "'");
 	this.mapID = mapID;
 	this.mapDef = Game.maps[this.mapID];
+	this.sprites = [];
 	this.state = {};
 }
 
@@ -29,7 +30,19 @@ MapContext.prototype.invoke = function(eventID)
 };
 
 // .loadMap() method
-// Loads the map represented by this map context from disk.
-MapContext.prototype.loadMap = function()
+// Loads the map into a specified field engine.
+// Arguments:
+//     engine: The FieldEngine that the map will be loaded into.
+MapContext.prototype.loadMap = function(engine)
 {
+	Console.writeLine("Loading map " + this.mapID + " into field engine");
+	engine.createGrid(10, 8);
+};
+
+// .unloadMap() method
+// Unloads the map from the field engine, cleaning up any associated
+// entities in the process.
+MapContext.prototype.unloadMap = function()
+{
+	
 };

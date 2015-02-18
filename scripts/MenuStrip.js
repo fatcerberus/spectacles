@@ -23,6 +23,7 @@ function MenuStrip(title, isCancelable, items)
 	this.font = GetSystemFont();
 	this.isCancelable = isCancelable;
 	this.menuItems = [];
+	this.menuThread = null;
 	this.selectedItem = 0;
 	this.title = title;
 	if (items != null) {
@@ -89,10 +90,20 @@ MenuStrip.prototype.getInput = function()
 	}
 };
 
+// .isOpen() method
+// Checks whether or not the MenuStrip is currently open.
+// Returns:
+//     true if the MenuStrip is open; false otherwise.
+MenuStrip.prototype.isOpen = function()
+{
+	return this.menuThread !== null;
+};
+
 // .open() method
 // Opens the menu strip to allow the player to choose a menu item.
 // Returns:
-//     The tag associated with the chosen item.
+//     The tag associated with the chosen item, or null if the menu is
+//     canceled.
 MenuStrip.prototype.open = function()
 {
 	this.openness = 0.0;
@@ -114,6 +125,7 @@ MenuStrip.prototype.open = function()
 		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })
 		.run();
 	Threads.waitFor(menuThread);
+	this.menuThread = null;
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 };
 

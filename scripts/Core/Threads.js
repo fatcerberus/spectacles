@@ -16,8 +16,6 @@ Threads = new (function()
 // Initializes the thread manager.
 Threads.initialize = function()
 {
-	SetRenderScript('Threads.renderAll();');
-	SetUpdateScript('Threads.updateAll();');
 	this.threadSorter = function(a, b) {
 		return a.priority != b.priority ?
 			a.priority - b.priority :

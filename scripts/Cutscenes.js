@@ -23,9 +23,9 @@ Scenario.defineCommand('adjustBGM',
 //     battleID: The ID of the battle definition to use to initialize the fight.
 Scenario.defineCommand('battle',
 {
-	start: function(scene, battleID) {
+	start: function(scene, battleID, session) {
 		this.mode = 'battle';
-		this.battle = new Battle(analogue.world.currentSession, battleID);
+		this.battle = new Battle(session, battleID);
 		this.battleThread = this.battle.go();
 	},
 	update: function(scene) {
