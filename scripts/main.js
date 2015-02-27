@@ -59,7 +59,7 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	DayNightFilter.initialize();
 	
-	/*var setup = {
+	var setup = {
 		battleID: 'robert2',
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
@@ -87,13 +87,14 @@ function game()
 	}
 	new Scenario()
 		.battle(setup.battleID, session)
-		.run(true);*/
+		.run(true);
 	
-	var fieldEngine = new FieldEngine();
-	var playerSprite = fieldEngine.createSprite('scott', 'battlers/Scott.rss', 'testville', 5 * 32, 4 * 32);
-	fieldEngine.attachCamera(playerSprite);
-	fieldEngine.attachInput(playerSprite);
-	fieldEngine.run('main');
+	/*CreatePerson('@player', 'battlers/Scott.rss', false);
+	AttachCamera('@player');
+	AttachInput('@player');
+	QueuePersonCommand('@player', COMMAND_FACE_SOUTH, false);
+	for (var i = 0; i < 32; ++i) QueuePersonCommand('@player', COMMAND_MOVE_SOUTH, false);
+	MapEngine('Testville.rmp', 60);*/
 }
 
 // PATCH! - Scenario.run() method

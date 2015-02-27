@@ -1,8 +1,8 @@
 function SpriteImage(filename)
 {
 	this.spriteset = LoadSpriteset(filename);
-	this.xOff = -(this.spriteset.base.x1 + Math.round((this.spriteset.base.x2 + 1 - this.spriteset.base.x1) / 2));
-	this.yOff = -(this.spriteset.base.y2 + 1);
+	this.xOff = 0; //-(this.spriteset.base.x1 + Math.round((this.spriteset.base.x2 + 1 - this.spriteset.base.x1) / 2));
+	this.yOff = 0; //-(this.spriteset.base.y2 + 1);
 	this.directionID = 0;
 	this.frameID = 0;
 	this.elapsedFrames = 0;

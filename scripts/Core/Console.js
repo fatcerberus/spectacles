@@ -29,7 +29,7 @@ Console.initialize = function(numLines)
 	this.numLines = numLines;
 	this.thread = Threads.createEntityThread(this, 101);
 	this.writeLine("Specs Engine v6.0");
-	this.append("(c)2013-2014 Power-Command");
+	this.append("(c)2015 Power-Command");
 	this.writeLine("Sphere API version: " + GetVersion());
 	this.writeLine("Sphere version string: " + GetVersionString());
 	this.writeLine("");

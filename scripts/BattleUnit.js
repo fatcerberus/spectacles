@@ -780,7 +780,7 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	if (this.stance == BattleStance.guard && isMelee) {
+	if (this.stance == BattleStance.guard && isMelee && isGuardBroken) {
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == BattleStance.guard && isGuardBroken) {
