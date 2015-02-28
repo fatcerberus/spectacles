@@ -5,6 +5,7 @@
 
 RequireScript('lib/JS.js');
 RequireScript('lib/json3.js');
+RequireScript('lib/analogue.js');
 RequireScript('lib/link.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
@@ -50,6 +51,7 @@ function game()
 		function() { return this.updateAll(), true; },
 		function() { this.renderAll(); }, 99);
 	Console.initialize(19);
+	//analogue.init();
 	
 	TestHarness.initialize();
 	TestHarness.addBattleTest('S:BS: RSB II', {
@@ -99,13 +101,6 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	DayNightFilter.initialize();
 	
-	Threads.doWith(this,
-		function() {
-			if (AreKeysLeft() && GetKey() == GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU)) {
-				TestHarness.run();
-			}
-			return true;
-		});
 	CreatePerson('@player', 'battlers/Scott.rss', false);
 	AttachCamera('@player');
 	AttachInput('@player');

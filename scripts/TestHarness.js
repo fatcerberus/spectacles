@@ -58,6 +58,13 @@ TestHarness.render = function()
 	this.background.blitMask(0, 0, CreateColor(255, 255, 255, this.fadeness * 255));
 }
 
+TestHarness.getInput = function()
+{
+	if (AreKeysLeft() && GetKey() == GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU)) {
+		this.run();
+	}
+}
+
 TestHarness.run = function()
 {
 	var musicID = Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
@@ -70,7 +77,7 @@ TestHarness.run = function()
 		.end()
 		.tween(this, 1.0, 'linear', { fadeness: 1.0 })
 		.run();
-	var menu = new MenuStrip("Beta Test Harness", true);
+	var menu = new MenuStrip("Beta testers' menu", true);
 	for (var testID in this.tests) {
 		menu.addItem(testID, this.tests[testID]);
 	}
@@ -89,8 +96,9 @@ TestHarness.run = function()
 	} while (test !== null);
 	new Scenario()
 		.fork()
-			.adjustBGM(0.0, 1.0)
+			.adjustBGM(0.0, 0.5)
 			.resetBGM()
+			.adjustBGM(1.0, 0.5)
 		.end()
 		.tween(this, 1.0, 'linear', { fadeness: 0.0 })
 		.run();

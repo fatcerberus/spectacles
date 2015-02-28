@@ -282,7 +282,7 @@ var Link = (function(undefined) {
 	}
 	
 	Where2Point.prototype.run = function(a) {
-		var i = 0, l = a.length, e = this.env;
+		var i = 0, l = a.length, e = this.env,
 			f1 = this.where1, f2 = this.where2, n = this.next;
 		if (e.take)
 			while (i < l && !e.stop) {
