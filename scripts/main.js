@@ -54,6 +54,22 @@ function game()
 	//analogue.init();
 	
 	TestHarness.initialize();
+	TestHarness.addBattleTest('S:BS: Lumisq. x3', {
+		battleID: 'lumisquirrel3',
+		party: {
+			scott: { level: 1, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
+			bruce: { level: 1, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
+			lauren: { level: 1, weapon: 'risingSun', items: [ 'tonic' ] },
+		}
+	});
+	TestHarness.addBattleTest('S:BS: H.Horse', {
+		battleID: 'headlessHorse',
+		party: {
+			scott: { level: 8, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
+			bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
+			maggie: { level: 8, items: [ 'redBull' ] },
+		}
+	});
 	TestHarness.addBattleTest('S:BS: RSB II', {
 		battleID: 'robert2',
 		party: {
@@ -65,14 +81,6 @@ function game()
 			//maggie: { level: 8, items: [ 'redBull', 'alcohol' ] },
 			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
-		}
-	});
-	TestHarness.addBattleTest('S:BS: H.Horse', {
-		battleID: 'headlessHorse',
-		party: {
-			scott: { level: 8, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
-			bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
-			maggie: { level: 8, items: [ 'redBull' ] },
 		}
 	});
 	TestHarness.addBattleTest('S3:tLL: S.Temple', {

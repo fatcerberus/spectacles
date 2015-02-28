@@ -79,7 +79,7 @@ Game.conditions =
 				.toArray();
 			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(vit, [ 'reGen' ]);
+			unit.heal(vit, [ 'cure' ]);
 			--this.cyclesLeft;
 			if (this.cyclesLeft <= 0) {
 				Console.writeLine("Healing Aura has expired");
@@ -159,7 +159,7 @@ Game.conditions =
 			}
 		}
 	},
-
+	
 	// Subzero field condition
 	// Inflicts a small amount of Ice damage on a battler at the end of his turn.
 	// The effect intensifies over time per battler, maxing out at double its original

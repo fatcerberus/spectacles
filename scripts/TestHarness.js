@@ -45,7 +45,7 @@ TestHarness.addBattleTest = function(testID, setupData)
 				.run(true);
 		}
 	};
-	Console.writeLine("Registered battle test '" + testID + "'");
+	Console.writeLine("Added battle test '" + testID + "'");
 };
 
 TestHarness.update = function()
@@ -90,7 +90,7 @@ TestHarness.run = function()
 					.adjustBGM(0.0)
 					.playBGM(musicID)
 					.adjustBGM(1.0, 0.5)
-				.endFork()
+				.end()
 				.run();
 		}
 	} while (test !== null);
