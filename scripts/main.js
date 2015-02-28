@@ -35,7 +35,8 @@ RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
 EvaluateScript('Game.js');
-EvaluateScript('Tests.js');
+
+EvaluateScript('TestHarness.js');
 
 // game() function
 // This is called by Sphere when the game is launched.
@@ -50,7 +51,8 @@ function game()
 		function() { this.renderAll(); }, 99);
 	Console.initialize(19);
 	
-	RunTestBattle(GameDifficulty.standard, {
+	TestHarness.initialize();
+	TestHarness.addBattleTest('S:BS: RSB II', {
 		battleID: 'robert2',
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
@@ -63,6 +65,7 @@ function game()
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
 		}
 	});
+	TestHarness.run();
 	
 	if (DBG_SHOW_CONSOLE) {
 		Console.show();

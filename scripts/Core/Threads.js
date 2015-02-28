@@ -21,6 +21,8 @@ Threads.initialize = function()
 			a.priority - b.priority :
 			a.id - b.id;
 	};
+	SetUpdateScript('Threads.updateAll();');
+	SetRenderScript('Threads.renderAll();');
 }
 
 // .create() method
