@@ -4,7 +4,7 @@
 ***/
 
 // TestHarness object
-// Handles what-if testing, e.g. dry runs of battles.
+// Handles what-if testing, e.g. dry runs of battles, maps.
 TestHarness = new (function()
 {
 	this.tests = null;
@@ -13,6 +13,7 @@ TestHarness = new (function()
 TestHarness.initialize = function()
 {
 	Console.writeLine("Initializing Specs Engine test harness");
+	this.background = LoadImage('TitleScreen.png');
 	this.fadeness = 0.0;
 	this.tests = {};
 	this.thread = Threads.createEntityThread(this);
@@ -54,16 +55,22 @@ TestHarness.update = function()
 
 TestHarness.render = function()
 {
-	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
+	this.background.blitMask(0, 0, CreateColor(255, 255, 255, this.fadeness * 255));
 }
 
 TestHarness.run = function()
 {
-	Console.writeLine("Opening test harness menu");
+	var musicID = Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
+	Console.writeLine("Opening beta test menu");
 	new Scenario()
-		.tween(this, 0.5, 'linear', { fadeness: 1.0 })
+		.fork()
+			.adjustBGM(0.0, 0.5)
+			.playBGM(musicID)
+			.adjustBGM(1.0, 0.5)
+		.end()
+		.tween(this, 1.0, 'linear', { fadeness: 1.0 })
 		.run();
-	var menu = new MenuStrip("Beta Tests", true);
+	var menu = new MenuStrip("Beta Test Harness", true);
 	for (var testID in this.tests) {
 		menu.addItem(testID, this.tests[testID]);
 	}
@@ -71,10 +78,21 @@ TestHarness.run = function()
 		var test = menu.open();
 		if (test !== null) {
 			test.run(test.setup);
+			new Scenario()
+				.fork()
+					.adjustBGM(0.0)
+					.playBGM(musicID)
+					.adjustBGM(1.0, 0.5)
+				.endFork()
+				.run();
 		}
 	} while (test !== null);
 	new Scenario()
-		.tween(this, 0.5, 'linear', { fadeness: 0.0 })
+		.fork()
+			.adjustBGM(0.0, 1.0)
+			.resetBGM()
+		.end()
+		.tween(this, 1.0, 'linear', { fadeness: 0.0 })
 		.run();
 }
 

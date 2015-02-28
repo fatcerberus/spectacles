@@ -65,7 +65,29 @@ function game()
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
 		}
 	});
-	TestHarness.run();
+	TestHarness.addBattleTest('S:BS: H.Horse', {
+		battleID: 'headlessHorse',
+		party: {
+			scott: { level: 8, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
+			bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
+			maggie: { level: 8, items: [ 'redBull' ] },
+		}
+	});
+	TestHarness.addBattleTest('S3:tLL: S.Temple', {
+		battleID: 'scottTemple',
+		party: {
+			elysia: { level: 60, weapon: 'powerBow', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			justin: { level: 60, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+		}
+	});
+	TestHarness.addBattleTest('S3:tLL: #11', {
+		battleID: 'scottStarcross',
+		party: {
+			bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+			robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+			amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
+		}
+	});
 	
 	if (DBG_SHOW_CONSOLE) {
 		Console.show();
@@ -77,6 +99,13 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	DayNightFilter.initialize();
 	
+	Threads.doWith(this,
+		function() {
+			if (AreKeysLeft() && GetKey() == GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU)) {
+				TestHarness.run();
+			}
+			return true;
+		});
 	CreatePerson('@player', 'battlers/Scott.rss', false);
 	AttachCamera('@player');
 	AttachInput('@player');
