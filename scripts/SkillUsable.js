@@ -50,7 +50,9 @@ SkillUsable.prototype.defaultTargets = function(user)
 	switch (this.skillInfo.targetType) {
 		case 'single':
 			var enemies = user.battle.enemiesOf(user);
-			var target = Link(enemies).sample(1)[0];
+			var target = Link(enemies)
+				.where(function(unit) { return unit.isAlive(); })
+				.sample(1)[0];
 			if (this.allowDeadTarget && Link(enemies).some(function(unit) { return !unit.isAlive(); })) {
 				target = Link(enemies)
 					.where(function(unit) { return !unit.isAlive(); })

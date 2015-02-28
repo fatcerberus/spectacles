@@ -57,7 +57,7 @@ function game()
 	TestHarness.addBattleTest('S:BS: Lumisq. x3', {
 		battleID: 'lumisquirrel3',
 		party: {
-			scott: { level: 1, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
+			scott: { level: 1, weapon: 'heirloom', items: [ 'tonic', 'alcohol' ] },
 			bruce: { level: 1, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
 			lauren: { level: 1, weapon: 'risingSun', items: [ 'tonic' ] },
 		}

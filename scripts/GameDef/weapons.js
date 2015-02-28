@@ -19,7 +19,7 @@ Game.weapons =
 	heirloom: {
 		name: "Heirloom",
 		type: 'sword',
-		level: 5,
+		level: 1,
 		techniques: [
 			'swordSlash',
 			'quickstrike'
@@ -50,7 +50,7 @@ Game.weapons =
 	arsenRifle: {
 		name: "Arsen's Rifle",
 		type: 'gun',
-		level: 5,
+		level: 1,
 		techniques: [
 			'potshot',
 			'sharpshooter',
@@ -62,7 +62,7 @@ Game.weapons =
 	fireAndIce: {
 		name: "Fire & Ice",
 		type: 'bow',
-		level: 5,
+		level: 1,
 		techniques: [
 			'archery',
 			'flareShot',
@@ -87,7 +87,7 @@ Game.weapons =
 	risingSun: {
 		name: "Rising Sun",
 		type: 'shuriken',
-		level: 75,
+		level: 1,
 		techniques: [
 			'starToss',
 			'starVolley'
@@ -98,6 +98,6 @@ Game.weapons =
 	luckyStaff: {
 		name: "Lucky Staff",
 		type: 'staff',
-		level: 5
+		level: 1
 	}
 };
