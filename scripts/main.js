@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2013 Power-Command
+  *           Copyright (c) 2015 Power-Command
 ***/
 
 RequireScript('lib/JS.js');
@@ -35,6 +35,7 @@ RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
 EvaluateScript('Game.js');
+EvaluateScript('Tests.js');
 
 // game() function
 // This is called by Sphere when the game is launched.
@@ -49,17 +50,7 @@ function game()
 		function() { this.renderAll(); }, 99);
 	Console.initialize(19);
 	
-	if (DBG_SHOW_CONSOLE) {
-		Console.show();
-	}
-	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.override('SpectaclesTheme');
-		Engine.showLogo('TitleCard', 5.0);
-	}
-	var session = new TitleScreen('SpectaclesTheme').show();
-	DayNightFilter.initialize();
-	
-	var setup = {
+	RunTestBattle(GameDifficulty.standard, {
 		battleID: 'robert2',
 		party: {
 			scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
@@ -71,30 +62,24 @@ function game()
 			//robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 			//amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
 		}
-	};
-	Link(Game.initialParty).each(function(id) {
-		session.party.remove(id);
 	});
-	for (var id in setup.party) {
-		var memberInfo = setup.party[id];
-		session.party.add(id, memberInfo.level);
-		if ('weapon' in memberInfo) {
-			session.party.members[id].setWeapon(memberInfo.weapon);
-		}
-		for (var iItem = 0; iItem < memberInfo.items.length; ++iItem) {
-			session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
-		}
-	}
-	new Scenario()
-		.battle(setup.battleID, session)
-		.run(true);
 	
-	/*CreatePerson('@player', 'battlers/Scott.rss', false);
+	if (DBG_SHOW_CONSOLE) {
+		Console.show();
+	}
+	if (!DBG_DISABLE_TITLE_CARD) {
+		BGM.override('SpectaclesTheme');
+		Engine.showLogo('TitleCard', 5.0);
+	}
+	var session = new TitleScreen('SpectaclesTheme').show();
+	DayNightFilter.initialize();
+	
+	CreatePerson('@player', 'battlers/Scott.rss', false);
 	AttachCamera('@player');
 	AttachInput('@player');
 	QueuePersonCommand('@player', COMMAND_FACE_SOUTH, false);
 	for (var i = 0; i < 32; ++i) QueuePersonCommand('@player', COMMAND_MOVE_SOUTH, false);
-	MapEngine('Testville.rmp', 60);*/
+	MapEngine('Testville.rmp', 60);
 }
 
 // PATCH! - Scenario.run() method

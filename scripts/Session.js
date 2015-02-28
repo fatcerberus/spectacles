@@ -9,10 +9,10 @@ RequireScript('Party.js');
 // Specifies the difficulty level of the game.
 GameDifficulty =
 {
-	beginner: 0,  // Beginner mode (easy)
-	standard: 1,  // Standard mode (normal)
-	proud:    2,  // Proud mode (hard)
-	critical: 3   // Critical mode (unforgiving)
+	beginner: 1,  // Beginner mode (easy)
+	standard: 2,  // Standard mode (normal)
+	proud:    3,  // Proud mode (hard)
+	critical: 4   // Critical mode (unforgiving)
 };
 
 // Session() constructor
@@ -24,6 +24,8 @@ function Session(difficulty)
 {
 	difficulty = difficulty !== void null ? difficulty : GameDifficulty.standard;
 	
+	Console.writeLine("Initializing new game session");
+	Console.append("diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party();
 	Link(Game.initialParty).each(function(characterID) {
