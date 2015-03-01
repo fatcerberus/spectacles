@@ -51,7 +51,7 @@ function game()
 		function() { return this.updateAll(), true; },
 		function() { this.renderAll(); }, 99);
 	Console.initialize(19);
-	//analogue.init();
+	analogue.init();
 	
 	TestHarness.initialize();
 	TestHarness.addBattleTest('S:BS: Lumisq. x3', {
@@ -65,7 +65,7 @@ function game()
 	TestHarness.addBattleTest('S:BS: H.Horse', {
 		battleID: 'headlessHorse',
 		party: {
-			scott: { level: 8, weapon: 'templeSword', items: [ 'tonic', 'alcohol' ] },
+			scott: { level: 8, weapon: 'heirloom', items: [ 'tonic', 'alcohol' ] },
 			bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic', 'holyWater', 'vaccine' ] },
 			maggie: { level: 8, items: [ 'redBull' ] },
 		}
@@ -107,14 +107,16 @@ function game()
 		Engine.showLogo('TitleCard', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
+	analogue.getWorld().session = session;
 	DayNightFilter.initialize();
 	
-	CreatePerson('@player', 'battlers/Scott.rss', false);
-	AttachCamera('@player');
-	AttachInput('@player');
-	QueuePersonCommand('@player', COMMAND_FACE_SOUTH, false);
-	for (var i = 0; i < 32; ++i) QueuePersonCommand('@player', COMMAND_MOVE_SOUTH, false);
-	MapEngine('Testville.rmp', 60);
+	/*CreatePerson('hero', 'battlers/Scott.rss', false);
+	AttachCamera('hero');
+	AttachInput('hero');
+	var scrambler = new Scrambler('hero');
+	scrambler.setBattles([ 'robert2' ]);
+	scrambler.start();*/
+	MapEngine('main.rmp', 60);
 }
 
 // PATCH! - Scenario.run() method

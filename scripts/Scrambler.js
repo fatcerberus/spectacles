@@ -7,20 +7,17 @@
 // Creates a random battle scrambler, which monitors the movement of an entity
 // to determine when to trigger random battles.
 // Arguments:
-//     field:  The field engine the scrambler will run under. Needed to disable field
-//             input when a battle starts.
-//     sprite: The FieldSprite to be monitored.
+//     name: The person entity to be monitored.
 // Remarks:
 //     The scrambler starts out in a paused state. No battles will be triggered until
 //     the scrambler's .start() method is called. This enables scramblers to be created
 //     prior to starting the map engine without generating runtime errors.
-function Scrambler(field, sprite)
+function Scrambler(name)
 {
-	this.field = field;
-	this.sprite = sprite;
+	this.name = name;
 	this.encounterRate = 0.01;
 	this.battleIDs = [];
-	Console.writeLine("Created random battle scrambler for '" + this.sprite.id + "'");
+	Console.writeLine("Created random battle scrambler for person '" + this.name + "'");
 	Console.append("encRate: ~" + Math.round(this.encounterRate * 100) + "%");
 }
 
@@ -36,27 +33,29 @@ Scrambler.prototype.setEncounterRate = function(newRate)
 
 Scrambler.prototype.start = function()
 {
-	this.lastX = this.sprite.x;
-	this.lastY = this.sprite.y;
+	this.lastX = GetPersonX(this.name);
+	this.lastY = GetPersonY(this.name);
 	Threads.createEntityThread(this);
-	Console.writeLine("Started random battle scrambler for '" + this.sprite.id + "'");
+	Console.writeLine("Started random battle scrambler for '" + this.name + "'");
 };
 
 Scrambler.prototype.update = function()
 {
 	if (this.battleIDs.length > 0) {
-		var x = this.sprite.x;
-		var y = this.sprite.y;
+		var x = GetPersonX(this.name);
+		var y = GetPersonY(this.name);
 		if ((x != this.lastX || y != this.lastY) && RNG.chance(this.encounterRate)) {
-			var inputSprite = this.field.inputSprite;
-			this.field.detachInput();
+			var inputPerson = IsInputAttached() ? GetInputPerson() : null;
+			DetachInput();
 			var battleID = RNG.fromArray(this.battleIDs);
-			Console.writeLine("Random battle triggered by '" + this.sprite.id + "'");
+			Console.writeLine("Random battle triggered by person '" + this.name + "'");
 			Console.append("battleID: " + battleID);
 			new Scenario()
-				.battle(battleID)
+				.battle(battleID, analogue.getWorld().session)
 				.run(true);
-			this.field.attachInput(inputSprite);
+			if (inputPerson !== null) {
+				AttachInput(inputPerson);
+			}
 		}
 		this.lastX = x;
 		this.lastY = y;
