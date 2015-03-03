@@ -110,13 +110,10 @@ function game()
 	analogue.getWorld().session = session;
 	DayNightFilter.initialize();
 	
-	/*CreatePerson('hero', 'battlers/Scott.rss', false);
+	CreatePerson('hero', 'battlers/Scott.rss', false);
 	AttachCamera('hero');
 	AttachInput('hero');
-	var scrambler = new Scrambler('hero');
-	scrambler.setBattles([ 'robert2' ]);
-	scrambler.start();*/
-	MapEngine('main.rmp', 60);
+	MapEngine('Testville.rmp', 60);
 }
 
 // PATCH! - Scenario.run() method
