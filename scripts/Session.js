@@ -27,7 +27,7 @@ function Session(difficulty)
 	Console.writeLine("Initializing new game session");
 	Console.append("diff lv: " + difficulty);
 	this.difficulty = difficulty;
-	this.party = new Party();
+	this.party = new Party(50);
 	Link(Game.initialParty).each(function(characterID) {
 		this.party.add(characterID);
 	}.bind(this));

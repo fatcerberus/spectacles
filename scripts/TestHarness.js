@@ -16,7 +16,7 @@ TestHarness.initialize = function()
 	this.background = LoadImage('TitleScreen.png');
 	this.fadeness = 0.0;
 	this.tests = {};
-	this.thread = Threads.createEntityThread(this);
+	this.thread = Threads.createEntityThread(this, 100);
 };
 
 TestHarness.addBattleTest = function(testID, setupData)
@@ -60,7 +60,7 @@ TestHarness.render = function()
 
 TestHarness.getInput = function()
 {
-	if (AreKeysLeft() && GetKey() == GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU)) {
+	if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU))) {
 		this.run();
 	}
 }
@@ -71,36 +71,27 @@ TestHarness.run = function()
 	Console.writeLine("Opening beta test menu");
 	new Scenario()
 		.fork()
-			.adjustBGM(0.0, 0.5)
+			.adjustBGM(0.0, 0.125)
 			.playBGM(musicID)
-			.adjustBGM(1.0, 0.5)
+			.adjustBGM(1.0, 0.125)
 		.end()
-		.tween(this, 1.0, 'linear', { fadeness: 1.0 })
+		.tween(this, 0.25, 'linear', { fadeness: 1.0 })
 		.run();
 	var menu = new MenuStrip("Beta testers' menu", true);
 	for (var testID in this.tests) {
 		menu.addItem(testID, this.tests[testID]);
 	}
-	do {
-		var test = menu.open();
-		if (test !== null) {
-			test.run(test.setup);
-			new Scenario()
-				.fork()
-					.adjustBGM(0.0)
-					.playBGM(musicID)
-					.adjustBGM(1.0, 0.5)
-				.end()
-				.run();
-		}
-	} while (test !== null);
+	var test = menu.open();
 	new Scenario()
-		.fork()
-			.adjustBGM(0.0, 0.5)
-			.resetBGM()
-			.adjustBGM(1.0, 0.5)
-		.end()
-		.tween(this, 1.0, 'linear', { fadeness: 0.0 })
+		.tween(this, 0.25, 'linear', { fadeness: 0.0 })
+		.run();
+	if (test !== null) {
+		test.run(test.setup);
+	}
+	new Scenario()
+		.adjustBGM(0.0)
+		.resetBGM()
+		.adjustBGM(1.0, 0.25)
 		.run();
 }
 
