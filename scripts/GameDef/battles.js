@@ -70,7 +70,10 @@ Game.battles =
 				.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
 				.synchronize()
 				.run(true);
-			this.findUnit('scott').addStatus('specsAura');
+			var scott = this.findUnit('scott');
+			if (scott != null) {
+				scott.addStatus('specsAura');
+			}
 		}
 	},
 	

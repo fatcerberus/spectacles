@@ -176,7 +176,7 @@ Battle.prototype.findUnit = function(unitID)
 	var unit = Link(this.enemyUnits, this.playerUnits).first(function(unit) {
 		return unit.id == unitID;
 	});
-	return unit !== void null ? unit : null;
+	return unit !== undefined ? unit : null;
 };
 
 // .getLevel() method

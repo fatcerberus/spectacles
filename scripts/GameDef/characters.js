@@ -180,7 +180,8 @@ Game.characters =
 		skills: [
 			'munch',
 			'fatseat',
-			'fatSlam'
+			'fatSlam',
+			'flameBreath'
 		]
 	},
 	
