@@ -123,6 +123,7 @@ BattleScreen.prototype.fadeOut = function(duration)
 	new Scenario()
 		.fadeTo(CreateColor(0, 0, 0, 255), duration)
 		.call(this.dispose.bind(this))
+		.call(Threads.enableRenderMap.bind(Threads), true)
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
 		.run(true);
 };
@@ -147,6 +148,7 @@ BattleScreen.prototype.go = function(title)
 			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 		.end()
 		.run(true);
+	Threads.enableRenderMap(false);
 };
 
 // .render() method

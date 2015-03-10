@@ -12,7 +12,7 @@ RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
@@ -50,7 +50,7 @@ function game()
 	Threads.doWith(Scenario,
 		function() { return this.updateAll(), true; },
 		function() { this.renderAll(); }, 99);
-	Console.initialize(19);
+	Console.initialize();
 	analogue.init();
 	
 	TestHarness.initialize();
@@ -111,7 +111,7 @@ function game()
 	DayNightFilter.initialize();
 	
 	BindKey(KEY_TAB,
-		'if (Console.isOpen()) Console.hide(); else Console.show();',
+		'if (!Console.isOpen()) Console.show(); else Console.hide();',
 		null);
 	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
 	CreatePerson('hero', 'battlers/Scott.rss', false);

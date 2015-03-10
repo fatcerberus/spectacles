@@ -10,6 +10,7 @@ Threads = new (function()
 	this.hasUpdated = false;
 	this.nextThreadID = 1;
 	this.threads = [];
+	this.useRenderMap = true;
 })();
 
 // .initialize() method
@@ -78,11 +79,10 @@ Threads.createEntityThread = function(entity, priority)
 // Performs update and render processing for a single frame.
 Threads.doFrame = function()
 {
-	if (IsMapEngineRunning()) {
+	if (this.useRenderMap && IsMapEngineRunning())
 		RenderMap();
-	} else {
+	else
 		this.renderAll();
-	}
 	FlipScreen();
 	if (IsMapEngineRunning()) {
 		this.hasUpdated = false;
@@ -107,6 +107,13 @@ Threads.doFrame = function()
 Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 {
 	return this.create(o, updater, renderer, priority, inputHandler);
+};
+
+// .enableRenderMap() method
+// Enables or disables map rendering while waiting on a thread.
+Threads.enableRenderMap = function(isEnabled)
+{
+	this.useRenderMap = isEnabled;
 };
 
 // .isRunning() method
