@@ -18,13 +18,12 @@ kh2Bar = kh2Bar || {};
 function kh2Bar(capacity, sectorSize, color, maxSectors)
 {
 	if (arguments.length < 1) {
-		Abort("kh2Bar() - error: Wrong number of arguments\n" +
-			"At least 1 argument was expected; caller passed " + arguments.length + ".");
+		Abort("kh2Bar(): 1 or more arguments expected, got " + arguments.length, -1);
 	}
 	
-	sectorSize = sectorSize !== void null ? sectorSize : 100;
-	color = color !== void null ? BlendColors(color, color) : CreateColor(0, 255, 0, 255);
-	maxSectors = maxSectors !== void null ? maxSectors : null;
+	sectorSize = sectorSize !== undefined ? sectorSize : 100;
+	color = color !== undefined ? BlendColors(color, color) : CreateColor(0, 255, 0, 255);
+	maxSectors = maxSectors !== undefined ? maxSectors : null;
 	
 	this.borderColor = CreateColor(0, 0, 0, color.alpha);
 	this.capacity = capacity;
@@ -84,7 +83,7 @@ kh2Bar.prototype.beginCombo = function()
 //               means no easing (immediate). (default: 0.0)
 kh2Bar.prototype.changeColor = function(color, duration)
 {
-	duration = duration !== void null ? duration : 0.0;
+	duration = duration !== undefined ? duration : 0.0;
 	
 	this.oldColor = BlendColors(this.hpColor, this.hpColor);
 	this.newColor = BlendColors(color, color);
@@ -106,8 +105,9 @@ kh2Bar.prototype.changeColor = function(color, duration)
 kh2Bar.prototype.draw = function(x, y, width, height)
 {
 	if (arguments.length < 4) {
-		Abort("kh2Bar.draw() - error: Wrong number of arguments\n" +
-			"4 arguments were expected; caller passed " + arguments.length + ".");
+		Abort("kh2Bar:draw(): Wrong number of arguments\n" +
+			"4 arguments were expected; caller passed " + arguments.length + ".",
+			-1);
 	}
 	
 	if (this.fadeness >= 1.0) {
@@ -184,7 +184,7 @@ kh2Bar.prototype.endCombo = function()
 //     duration: Optional. The duration of the hide animation, in seconds. (default: 0.0)
 kh2Bar.prototype.hide = function(duration)
 {
-	duration = duration !== void null ? duration : 0.0;
+	duration = duration !== undefined ? duration : 0.0;
 	
 	if (duration > 0.0) {
 		this.fadeSpeed = 1.0 / duration * (1.0 - this.fadeness);
@@ -199,8 +199,9 @@ kh2Bar.prototype.hide = function(duration)
 kh2Bar.prototype.set = function(value)
 {
 	if (arguments.length < 1) {
-		Abort("kh2Bar.set() - error: Wrong number of arguments\n" +
-			"1 argument was expected; caller passed " + arguments.length + ".");
+		Abort("kh2Bar:set(): Wrong number of arguments\n" +
+			"1 argument was expected; caller passed " + arguments.length + ".",
+			-1);
 	}
 	
 	value = Math.min(Math.max(Math.round(value), 0), this.capacity);
@@ -223,7 +224,7 @@ kh2Bar.prototype.set = function(value)
 //     duration: Optional. The duration of the show animation, in seconds. (default: 0.0)
 kh2Bar.prototype.show = function(duration)
 {
-	duration = duration !== void null ? duration : 0.0;
+	duration = duration !== undefined ? duration : 0.0;
 	
 	if (duration > 0.0) {
 		this.fadeSpeed = 1.0 / duration * (0.0 - this.fadeness);

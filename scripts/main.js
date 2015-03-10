@@ -110,6 +110,10 @@ function game()
 	analogue.getWorld().session = session;
 	DayNightFilter.initialize();
 	
+	BindKey(KEY_TAB,
+		'if (Console.isOpen()) Console.hide(); else Console.show();',
+		null);
+	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
 	CreatePerson('hero', 'battlers/Scott.rss', false);
 	AttachCamera('hero');
 	AttachInput('hero');
@@ -121,7 +125,6 @@ function game()
 // This patches it so it plays along.
 (function() {
 	var old_Scenario_run = Scenario.prototype.run;
-	
 	Scenario.prototype.run = function(waitUntilDone)
 	{
 		waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
@@ -133,7 +136,7 @@ function game()
 			}));
 		}
 		return value;
-	}
+	};
 })();
 
 function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
@@ -146,7 +149,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 		Abort(
 			"DrawTextEx() - error: Wrong number of arguments\n" +
 			"At least 4 arguments were expected; caller only passed " + arguments.length + "."
-		);
+		, -1);
 	}
 	var alignments = {
 		left: function(font, x, text) { return x; },
@@ -154,7 +157,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 		right: function(font, x, text) { return x - font.getStringWidth(text); }
 	};
 	if (!(alignment in alignments)) {
-		Abort("DrawTextEx() - error: Invalid argument\nThe caller specified an invalid text alignment mode: '" + alignment + "'.");
+		Abort("DrawTextEx() - error: Invalid argument\nThe caller specified an invalid text alignment mode: '" + alignment + "'.", -1);
 	}
 	x = alignments[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();

@@ -36,6 +36,15 @@ Console.initialize = function(numLines)
 	this.writeLine("Initialized console");
 };
 
+// .isOpen() method
+// Determines whether the console is currently displayed or not.
+// Returns:
+//     true if the console is open, false otherwise.
+Console.isOpen = function()
+{
+	return this.fadeness > 0.0;
+}
+
 // .append() method
 // Appends additional output text to the last line in the console.
 // Arguments:
