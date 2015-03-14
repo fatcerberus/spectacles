@@ -35,7 +35,7 @@ Console.initialize = function(numLines, bufferSize)
 	this.commands = [];
 	this.thread = Threads.createEntityThread(this, 101);
 	this.writeLine("Specs Engine v6.0");
-	this.append("(c)2015 Power-Command");
+	this.append("(c)2015 Fat Cerberus");
 	this.writeLine("Sphere API version: " + GetVersion());
 	this.writeLine("Sphere version: " + GetVersionString());
 	this.writeLine("");
@@ -70,10 +70,12 @@ Console.append = function(text)
 // Checks for input and updates the console accordingly.
 Console.getInput = function()
 {
+	var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
+	
 	if (!this.isOpen()) return;
-	if (IsKeyPressed(KEY_PAGEUP)) {
+	if (IsKeyPressed(KEY_PAGEUP) || wheelKey == MOUSE_WHEEL_UP) {
 		this.lineOffset = Math.min(this.lineOffset + 1, this.buffer.length - this.numLines);
-	} else if (IsKeyPressed(KEY_PAGEDOWN)) {
+	} else if (IsKeyPressed(KEY_PAGEDOWN) || wheelKey == MOUSE_WHEEL_DOWN) {
 		this.lineOffset = Math.max(this.lineOffset - 1, 0);
 	}
 };
@@ -84,7 +86,7 @@ Console.hide = function()
 {
 	this.isVisible = false;
 	new Scenario()
-		.tween(this, 1.0, 'easeInBack', { fadeness: 0.0 })
+		.tween(this, 0.5, 'easeInBack', { fadeness: 0.0 })
 		.run(true);
 };
 
@@ -112,9 +114,9 @@ Console.render = function() {
 		if (lineToDraw >= 0) {
 			var lineInBuffer = lineToDraw % this.bufferSize;
 			var y = boxY + 5 + i * this.font.getHeight();
-			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
+			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 128));
 			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 255));
+			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 128));
 			this.font.drawText(5, y, this.buffer[lineInBuffer]);
 		}
 	}
@@ -126,7 +128,7 @@ Console.show = function()
 {
 	this.isVisible = true;
 	new Scenario()
-		.tween(this, 1.0, 'easeOutBack', { fadeness: 1.0 })
+		.tween(this, 0.5, 'easeOutBack', { fadeness: 1.0 })
 		.run();
 	return Threads.doWith(this, function() { return this.isOpen(); }.bind(this));
 }

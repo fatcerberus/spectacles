@@ -6,6 +6,12 @@
 
 var Scenario = Scenario || {};
 
+// IsSkippedFrame() is minisphere-exclusive; this handles the case that
+// it isn't available.
+if (typeof IsSkippedFrame != 'function') {
+	IsSkippedFrame = function() { return false; };
+}
+
 // .defineCommand() function
 // Registers a new Scenario command.
 // Arguments:
@@ -54,11 +60,13 @@ Scenario.initialize = function()
 // Renders all active scenarios.
 Scenario.renderAll = function()
 {
-	if (Scenario.screenMask.alpha > 0) {
-		ApplyColorMask(Scenario.screenMask);
-	}
-	for (var i = 0; i < Scenario.activeScenes.length; ++i) {
-		this.activeScenes[i].render();
+	if (!IsSkippedFrame()) {
+		if (Scenario.screenMask.alpha > 0) {
+			ApplyColorMask(Scenario.screenMask);
+		}
+		for (var i = 0; i < Scenario.activeScenes.length; ++i) {
+			this.activeScenes[i].render();
+		}
 	}
 };
 
