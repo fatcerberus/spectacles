@@ -3,6 +3,10 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+if (typeof IsSkippedFrame == 'undefined') {
+	IsSkippedFrame = function() { return false; }
+}
+
 // Threads object
 // Represents the Specs Engine thread manager.
 Threads = new (function()
@@ -151,6 +155,7 @@ Threads.kill = function(threadID)
 // Renders the current frame by calling all active threads' renderers.
 Threads.renderAll = function()
 {
+	if (IsSkippedFrame()) return;
 	Link(Link(this.threads).sort(this.threadSorter))
 		.where(function(thread) { return thread.renderer !== null })
 		.each(function(thread)
