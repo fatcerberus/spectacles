@@ -3,7 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-if (typeof IsSkippedFrame == 'undefined') {
+if (typeof IsSkippedFrame === 'undefined') {
 	IsSkippedFrame = function() { return false; }
 }
 

@@ -12,7 +12,7 @@ Console = new (function()
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.isVisible = false;
-	this.lineOffset = 0;
+	this.lineOffset = 0.0;
 	this.log = null;
 	this.nextLine = 0;
 	this.numLines = 0;
@@ -23,7 +23,7 @@ Console = new (function()
 // Initializes the console.
 Console.initialize = function(numLines, bufferSize)
 {
-	numLines = numLines !== undefined ? numLines : Math.floor((GetScreenHeight() - 10) / this.font.getHeight());
+	numLines = numLines !== undefined ? numLines : Math.floor((GetScreenHeight() - 10) / 2 / this.font.getHeight());
 	bufferSize = bufferSize !== undefined ? bufferSize : 1000;
 	
 	if (DBG_LOG_CONSOLE_OUTPUT) {
@@ -63,20 +63,20 @@ Console.append = function(text)
 	}
 	var lineInBuffer = (this.nextLine - 1) % this.bufferSize;
 	this.buffer[lineInBuffer] += " >>" + text;
-	this.lineOffset = 0;
+	this.lineOffset = 0.0;
 };
 
 // .checkInput() method
 // Checks for input and updates the console accordingly.
 Console.getInput = function()
 {
-	var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
-	
 	if (!this.isOpen()) return;
+	var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
+	var speed = wheelKey != null ? 2.0 : 0.5;
 	if (IsKeyPressed(KEY_PAGEUP) || wheelKey == MOUSE_WHEEL_UP) {
-		this.lineOffset = Math.min(this.lineOffset + 1, this.buffer.length - this.numLines);
+		this.lineOffset = Math.min(this.lineOffset + speed, this.buffer.length - this.numLines);
 	} else if (IsKeyPressed(KEY_PAGEDOWN) || wheelKey == MOUSE_WHEEL_DOWN) {
-		this.lineOffset = Math.max(this.lineOffset - 1, 0);
+		this.lineOffset = Math.max(this.lineOffset - speed, 0);
 	}
 };
 
@@ -107,19 +107,23 @@ Console.render = function() {
 	if (this.fadeness <= 0.0)
 		return;
 	var boxHeight = this.numLines * this.font.getHeight() + 10;
-	var boxY = -boxHeight * (1.0 - this.fadeness);
+	var boxY = GetScreenHeight() - boxHeight * this.fadeness;
 	Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.fadeness * 128));
-	for (var i = 0; i < this.numLines; ++i) {
-		var lineToDraw = (this.nextLine - this.numLines) + i - this.lineOffset;
-		if (lineToDraw >= 0) {
-			var lineInBuffer = lineToDraw % this.bufferSize;
+	var oldClip = GetClippingRectangle();
+	SetClippingRectangle(5, boxY + 5, GetScreenWidth() - 10, boxHeight - 10);
+	for (var i = -1; i < this.numLines + 1; ++i) {
+		var lineToDraw = (this.nextLine - this.numLines) + i - Math.floor(this.lineOffset);
+		var lineInBuffer = lineToDraw % this.bufferSize;
+		if (lineToDraw >= 0 && this.buffer[lineInBuffer] != null) {
 			var y = boxY + 5 + i * this.font.getHeight();
+			y += (this.lineOffset - Math.floor(this.lineOffset)) * this.font.getHeight();
 			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 128));
 			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
 			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 128));
 			this.font.drawText(5, y, this.buffer[lineInBuffer]);
 		}
 	}
+	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
 };
 
 // .show() method
@@ -136,6 +140,9 @@ Console.show = function()
 // .update() method
 // Updates the console's internal state for the next frame.
 Console.update = function() {
+	if (this.fadeness <= 0.0) {
+		this.lineOffset = 0.0;
+	}
 	return true;
 };
 
@@ -150,5 +157,5 @@ Console.writeLine = function(text)
 	var lineInBuffer = this.nextLine % this.bufferSize;
 	this.buffer[lineInBuffer] = ">" + text;
 	++this.nextLine;
-	this.lineOffset = 0;
+	this.lineOffset = 0.0;
 };
