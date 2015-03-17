@@ -12,13 +12,13 @@ RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
+var DBG_DISABLE_BGM = true;
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_LOG_CONSOLE_OUTPUT = false;
-var DBG_SHOW_CONSOLE = false;
+var DBG_INGAME_CONSOLE = true;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
@@ -99,9 +99,6 @@ function game()
 		}
 	});
 	
-	if (DBG_SHOW_CONSOLE) {
-		Console.show();
-	}
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.override('SpectaclesTheme');
 		Engine.showLogo('TitleCard', 5.0);
@@ -110,9 +107,6 @@ function game()
 	analogue.getWorld().session = session;
 	DayNightFilter.initialize();
 	
-	BindKey(KEY_TAB,
-		'if (!Console.isOpen()) Console.show(); else Console.hide();',
-		null);
 	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
 	CreatePerson('hero', 'battlers/Scott.rss', false);
 	AttachCamera('hero');
