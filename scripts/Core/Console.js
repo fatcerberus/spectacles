@@ -23,10 +23,10 @@ Console = new (function()
 // Initializes the console.
 Console.initialize = function(numLines, bufferSize)
 {
-	numLines = numLines !== undefined ? numLines : Math.floor((GetScreenHeight() - 10) / this.font.getHeight());
+	numLines = numLines !== undefined ? numLines : Math.floor((GetScreenHeight() - 10) * 0.66 / this.font.getHeight());
 	bufferSize = bufferSize !== undefined ? bufferSize : 1000;
 	
-	if (DBG_INGAME_CONSOLE) {
+	if (DBG_IN_GAME_CONSOLE) {
 		BindKey(KEY_TAB, 'if (!Console.isOpen()) Console.show(); else Console.hide();', null);
 	}
 	if (DBG_LOG_CONSOLE_OUTPUT) {
@@ -40,7 +40,6 @@ Console.initialize = function(numLines, bufferSize)
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2015 Fat Cerberus");
 	this.writeLine("Sphere " + GetVersionString());
-	this.writeLine("Sphere API version: " + GetVersion());
 	this.writeLine("");
 	this.writeLine("Initialized console");
 };
@@ -90,7 +89,7 @@ Console.hide = function()
 	this.isVisible = false;
 	new Scenario()
 		.tween(this, 0.5, 'easeInBack', { fadeness: 0.0 })
-		.run(true);
+		.run();
 };
 
 // .registerEntity() method
@@ -110,8 +109,8 @@ Console.render = function() {
 	if (this.fadeness <= 0.0)
 		return;
 	var boxHeight = this.numLines * this.font.getHeight() + 10;
-	var boxY = -boxHeight * (1.0 - this.fadeness);
-	Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.fadeness * 128));
+	var boxY = GetScreenHeight() - boxHeight * this.fadeness //-boxHeight * (1.0 - this.fadeness);
+	Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.fadeness * 192));
 	var oldClip = GetClippingRectangle();
 	SetClippingRectangle(5, boxY + 5, GetScreenWidth() - 10, boxHeight - 10);
 	for (var i = -1; i < this.numLines + 1; ++i) {
@@ -120,9 +119,9 @@ Console.render = function() {
 		if (lineToDraw >= 0 && this.buffer[lineInBuffer] != null) {
 			var y = boxY + 5 + i * this.font.getHeight();
 			y += (this.lineOffset - Math.floor(this.lineOffset)) * this.font.getHeight();
-			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 128));
+			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 192));
 			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 128));
+			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 192));
 			this.font.drawText(5, y, this.buffer[lineInBuffer]);
 		}
 	}
