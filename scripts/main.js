@@ -33,6 +33,8 @@ RequireScript('GameOverScreen.js');
 RequireScript('FieldEngine.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
+RequireScript('SpecsClient.js');
+RequireScript('SpecsServer.js');
 RequireScript('Session.js');
 RequireScript('TitleScreen.js');
 
@@ -55,6 +57,12 @@ function game()
 	analogue.init();
 	
 	TestHarness.initialize();
+	TestHarness.addTest('Control RSB remotely', function() {
+		if (this.client != null) return;
+		this.client = new SpecsClient('127.0.0.1', 'robert');
+		AttachInput('robert');
+		AttachCamera('robert');
+	});
 	TestHarness.addBattleTest('S:BS: Lumisq. x3', {
 		battleID: 'lumisquirrel3',
 		party: {
@@ -107,6 +115,8 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	DayNightFilter.initialize();
+	
+	var server = new SpecsServer();
 	
 	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
 	CreatePerson('hero', 'battlers/Scott.rss', false);
