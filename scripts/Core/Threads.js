@@ -50,6 +50,7 @@ Threads.create = function(o, updater, renderer, priority, inputHandler)
 	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
 	var newThread = {
 		id: this.nextThreadID,
+		isValid: true,
 		inputHandler: inputHandler,
 		isUpdating: false,
 		priority: priority,
@@ -145,6 +146,7 @@ Threads.kill = function(threadID)
 {
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (threadID == this.threads[i].id) {
+			this.threads[i].isValid = false;
 			this.threads.splice(i, 1);
 			--i;
 		}
@@ -157,6 +159,7 @@ Threads.renderAll = function()
 {
 	if (IsSkippedFrame()) return;
 	Link(Link(this.threads).sort(this.threadSorter))
+		.where(function(thread) { return thread.isValid; })
 		.where(function(thread) { return thread.renderer !== null })
 		.each(function(thread)
 	{
@@ -186,6 +189,7 @@ Threads.updateAll = function()
 {
 	var threadsEnding = [];
 	Link(Link(this.threads).sort(this.threadSorter))
+		.where(function(thread) { return thread.isValid; })
 		.each(function(thread)
 	{
 		var stillRunning = true;

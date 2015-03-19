@@ -23,15 +23,15 @@ TestHarness.addBattleTest = function(testID, setupData)
 {
 	this.tests[testID] = {
 		setup: setupData,
-		run: function(setup) {
+		run: function() {
 			Console.writeLine("Preparing test battle");
-			Console.append("battleID: " + setup.battleID);
+			Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
 			Link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
 			});
-			for (var id in setup.party) {
-				var memberInfo = setup.party[id];
+			for (var id in this.setup.party) {
+				var memberInfo = this.setup.party[id];
 				session.party.add(id, memberInfo.level);
 				if ('weapon' in memberInfo) {
 					session.party.members[id].setWeapon(memberInfo.weapon);
@@ -41,11 +41,23 @@ TestHarness.addBattleTest = function(testID, setupData)
 				}
 			}
 			new Scenario()
-				.battle(setup.battleID, session)
+				.battle(this.setup.battleID, session)
 				.run(true);
 		}
 	};
 	Console.writeLine("Added battle test '" + testID + "'");
+};
+
+TestHarness.addTest = function(testID, func)
+{
+	this.tests[testID] = {
+		func: func,
+		context: {},
+		run: function() {
+			this.func.call(this.context);
+		}
+	};
+	Console.writeLine("Added generic test '" + testID + "'");
 };
 
 TestHarness.update = function()
@@ -86,7 +98,7 @@ TestHarness.run = function()
 		.tween(this, 0.25, 'linear', { fadeness: 0.0 })
 		.run();
 	if (test !== null) {
-		test.run(test.setup);
+		test.run.call(test);
 	}
 	new Scenario()
 		.adjustBGM(0.0)
