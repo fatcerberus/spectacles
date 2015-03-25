@@ -1,5 +1,8 @@
 ({
 	enter: function(map, world) {
+		CreatePerson('hero', 'battlers/Scott.rss', false);
+		AttachCamera('hero');
+		AttachInput('hero');
 		BGM.change('TimeToLetGo');
 	},
 	

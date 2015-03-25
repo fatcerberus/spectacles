@@ -17,7 +17,7 @@
 			.pause(1.0)
 			.adjustBGM(0.0, 5.0)
 			.pause(1.0)
-			.changeMap('Testville.rmp')
+			.changeMap('Portentia.rmp')
 			.fork()
 				.playBGM('ThePromise')
 				.adjustBGM(1.0, 2.0)
