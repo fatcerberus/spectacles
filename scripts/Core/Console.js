@@ -74,7 +74,7 @@ Console.getInput = function()
 {
 	if (!this.isOpen()) return;
 	var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
-	var speed = wheelKey != null ? 2.0 : 0.5;
+	var speed = wheelKey != null ? 1.0 : 0.5;
 	if (IsKeyPressed(KEY_PAGEUP) || wheelKey == MOUSE_WHEEL_UP) {
 		this.lineOffset = Math.min(this.lineOffset + speed, this.buffer.length - this.numLines);
 	} else if (IsKeyPressed(KEY_PAGEDOWN) || wheelKey == MOUSE_WHEEL_DOWN) {
