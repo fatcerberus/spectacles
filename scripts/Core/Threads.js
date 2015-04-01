@@ -15,6 +15,7 @@ Threads = new (function()
 	this.nextThreadID = 1;
 	this.threads = [];
 	this.useRenderMap = true;
+	this.useUpdateMap = true;
 })();
 
 // .initialize() method
@@ -91,7 +92,9 @@ Threads.doFrame = function()
 	FlipScreen();
 	if (IsMapEngineRunning()) {
 		this.hasUpdated = false;
-		UpdateMapEngine();
+		if (this.useUpdateMap) {
+			UpdateMapEngine();
+		}
 		if (!this.hasUpdated) {
 			this.updateAll();
 		}
@@ -115,10 +118,17 @@ Threads.doWith = function(o, updater, renderer, priority, inputHandler)
 };
 
 // .enableRenderMap() method
-// Enables or disables map rendering while waiting on a thread.
+// Specifies whether map rendering should be enabled when waiting on a thread.
 Threads.enableRenderMap = function(isEnabled)
 {
 	this.useRenderMap = isEnabled;
+};
+
+// .enableUpdateMap() method
+// Specifies whether map updates should be enabled when waiting on a thread.
+Threads.enableUpdateMap = function(isEnabled)
+{
+	this.useUpdateMap = isEnabled;
 };
 
 // .isRunning() method

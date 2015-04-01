@@ -18,7 +18,10 @@ DayNightFilter = new (function()
 		Console.writeLine("Initializing time-of-day manager");
 		Threads.createEntityThread(this, 1);
 		var time = this.timeInLucida();
-		Console.writeLine("Time in Lucida is " + time.hours + "h:" + time.minutes + "m:" + time.seconds + "s");
+		Console.writeLine("Time in Lucida is "
+			+ ("0" + time.hours).slice(-2) + ":"
+			+ ("0" + time.minutes).slice(-2) + ":"
+			+ ("0" + time.seconds).slice(-2));
 	}
 	
 	// .render() method
