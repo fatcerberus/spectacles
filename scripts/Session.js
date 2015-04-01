@@ -3,6 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+RequireScript('FieldMenu.js');
 RequireScript('Party.js');
 
 // GameDifficulty enumeration
@@ -32,6 +33,7 @@ function Session(difficulty)
 		this.party.add(characterID);
 	}.bind(this));
 	this.battlesSeen = [];
+	this.fieldMenu = new FieldMenu(this);
 }
 
 // Session.fromFile() constructor
