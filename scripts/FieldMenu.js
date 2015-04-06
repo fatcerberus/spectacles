@@ -62,13 +62,16 @@ FieldMenu.prototype.getInput = function()
 
 FieldMenu.prototype.render = function()
 {
+	var time = LucidaClock.getTime();
+	
 	// draw game progress log
 	var y = -(1.0 - this.fadeness) * 208;
 	Rectangle(0, y, 320, 224, CreateColor(0, 0, 0, 192));
 	OutlinedRectangle(0, y, 320, 224, CreateColor(0, 0, 0, 64));
-	y = 240 - this.fadeness * 16;
+	DrawTextEx(this.font, 160, y + 16, time.toString(), CreateColor(0, 64, 255, 255), 1, 'center');
 	
 	// draw main menu items
+	y = 240 - this.fadeness * 16;
 	Rectangle(0, y, 320, 16, CreateColor(0, 0, 0, 192));
 	var itemWidth = Math.floor(320 / this.items.length);
 	var firstItemWidth = itemWidth + 320 % this.items.length;
