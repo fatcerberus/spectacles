@@ -34,6 +34,7 @@ RequireScript('LucidaClock.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
 RequireScript('Session.js');
+RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
 
 EvaluateScript('Game.js');
@@ -51,6 +52,9 @@ function game()
 		function() { this.renderAll(); }, 99);
 	Console.initialize();
 	analogue.init();
+	
+	TestHarness.initialize();
+	EvaluateScript('DebugHelp/BattleTests.js');
 	
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.override('SpectaclesTheme');

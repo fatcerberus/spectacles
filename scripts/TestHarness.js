@@ -72,7 +72,7 @@ TestHarness.render = function()
 
 TestHarness.getInput = function()
 {
-	if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_MENU))) {
+	if (IsKeyPressed(KEY_B) && IsKeyPressed(KEY_CTRL)) {
 		this.run();
 	}
 }

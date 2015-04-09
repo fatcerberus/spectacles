@@ -3,8 +3,6 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-RequireScript('DebugHelp/TestHarness.js');
-
 TestHarness.addBattleTest('S:BS: Lumisq. x3',
 {
 	battleID: 'lumisquirrel3',
