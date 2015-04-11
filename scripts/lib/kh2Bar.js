@@ -1,5 +1,5 @@
 /**
- * kh2Bar 2.0.1 for Sphere - (c) 2013 Bruce Pascoe
+ * kh2Bar 2.0.1 for Sphere - (c) 2013-2015 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 

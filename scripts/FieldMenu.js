@@ -16,7 +16,7 @@ function FieldMenu(session)
 	];
 	for (var i = 0; i < this.items.length; ++i) {
 		this.items[i].highlight = CreateColor(0, 0, 0, 0);
-		this.items[i].textColor = this.itemTextColor.clone();
+		this.items[i].textColor = BlendColors(this.itemTextColor, this.itemTextColor);
 	}
 	this.font = GetSystemFont();
 	this.isOpen = false;
