@@ -6,28 +6,26 @@
 		CreatePerson('katelyn', 'battlers/Katelyn.rss', false);
 		CreatePerson('scott-t', 'battlers/Scott T.rss', false);
 		CreatePerson('amanda', 'battlers/Amanda.rss', false);
-		var distance = 0;
-		FollowPerson('bruce', 'hero', distance += 32);
-		FollowPerson('lauren', 'hero', distance += 32);
-		FollowPerson('katelyn', 'hero', distance += 32);
-		FollowPerson('scott-t', 'hero', distance += 32);
-		FollowPerson('amanda', 'hero', distance += 32);
+		FollowPerson('bruce', 'hero', 32);
+		FollowPerson('lauren', 'bruce', 32);
+		FollowPerson('katelyn', 'lauren', 32);
+		FollowPerson('scott-t', 'katelyn', 32);
+		FollowPerson('amanda', 'scott-t', 32);
 		AttachCamera('hero');
 		AttachInput('hero');
 		BGM.change('TimeToLetGo');
-		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, "\
-			food = GetCurrentPerson();\
-			if (GetInputPerson() == 'maggie' && food != 'robert') {\
-				new Scenario()\
-					.playSound('Munch.wav')\
-					.run();\
-				DestroyPerson(food);\
-			}"
-		);
+		analogue.world.munchSound = LoadSound('Munch.wav', false);
+		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
+			food = GetCurrentPerson();
+			if (IsInputAttached() && GetInputPerson() == 'maggie' && food != 'robert') {
+				analogue.world.munchSound.play(false);
+				DestroyPerson(food);
+			}
+		});
 	},
 	
 	robert: {
-		create: function() { SetPersonDirection('robert', 'south'); },
+		create: function(self, world) { SetPersonDirection('robert', 'south'); },
 		talk: function() {
 			var inputPerson = GetInputPerson();
 			DetachInput();
@@ -81,9 +79,7 @@
 				if (person.isBlocked) return;
 				var food = GetObstructingPerson('maggie', x, y);
 				if (food != 'hero') {
-					new Scenario()
-						.playSound('Munch.wav')
-						.run();
+					analogue.world.munchSound.play(false);
 					DestroyPerson(food);
 					++person.peopleEaten;
 				} else {

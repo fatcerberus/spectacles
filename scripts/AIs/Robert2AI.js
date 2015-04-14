@@ -308,6 +308,9 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.playBGM("BasicInstinct")
 			.adjustBGM(1.0)
 			.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
+			.doIf(function() { return 'maggie' in this.aic.enemies; }.bind(this))
+				.talk("maggie", true, 1.0, 2.0, "...", "The talking is coming from INSIDE the hunger-pig!")
+			.end()
 			.run(true);
 		this.isAlcoholUsed = true;
 	} else if (userID == 'scott' && Link(targetIDs).contains('robert2')) {
@@ -359,7 +362,7 @@ Robert2AI.prototype.onPhaseChanged = function(aiContext, newPhase, lastPhase)
 		case 1:
 			if ('maggie' in this.aic.enemies) {
 				new Scenario()
-					.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name is SHE doing here?")
+					.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name are YOU doing here?")
 					.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
 					.call(function() { this.aic.unit.takeDamage(this.aic.unit.hp - 1); }.bind(this))
 					.playSound('Munch.wav')

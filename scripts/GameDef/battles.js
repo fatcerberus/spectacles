@@ -58,21 +58,23 @@ Game.battles =
 			'robert2'
 		],
 		onStart: function() {
-			new Scenario()
-				.talk("Robert", true, 2.0, Infinity,
-					"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
-					+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
-					+ "brazen as to face me alone?")
-				.talk("Scott", true, 2.0, Infinity,
-					"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
-					+ "Not now. Not when I know just what my world would become if I did!")
-				.pause(2.0)
-				.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
-				.synchronize()
-				.run(true);
 			var scott = this.findUnit('scott');
 			if (scott != null) {
-				scott.addStatus('specsAura');
+				new Scenario()
+					.talk("Robert", true, 2.0, Infinity,
+						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
+						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
+						+ "brazen as to face me alone?")
+					.talk("Scott", true, 2.0, Infinity,
+						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
+						+ "Not now. Not when I know just what my world would become if I did!")
+					.pause(2.0)
+					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
+					.synchronize()
+					.run(true);
+				if (scott != null) {
+					scott.addStatus('specsAura');
+				}
 			}
 		}
 	},
