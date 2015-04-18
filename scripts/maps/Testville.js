@@ -1,20 +1,12 @@
 ({
 	enter: function(map, world) {
+		analogue.world.munchSound = LoadSound('Munch.wav', false);
+		
 		CreatePerson('hero', 'battlers/Scott.rss', false);
-		CreatePerson('bruce', 'battlers/Bruce.rss', false);
-		CreatePerson('lauren', 'battlers/Lauren.rss', false);
-		CreatePerson('katelyn', 'battlers/Katelyn.rss', false);
-		CreatePerson('scott-t', 'battlers/Scott T.rss', false);
-		CreatePerson('amanda', 'battlers/Amanda.rss', false);
-		FollowPerson('bruce', 'hero', 32);
-		FollowPerson('lauren', 'bruce', 32);
-		FollowPerson('katelyn', 'lauren', 32);
-		FollowPerson('scott-t', 'katelyn', 32);
-		FollowPerson('amanda', 'scott-t', 32);
 		AttachCamera('hero');
 		AttachInput('hero');
 		BGM.change('TimeToLetGo');
-		analogue.world.munchSound = LoadSound('Munch.wav', false);
+		
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
 			food = GetCurrentPerson();
 			if (IsInputAttached() && GetInputPerson() == 'maggie' && food != 'robert') {
@@ -22,6 +14,32 @@
 				DestroyPerson(food);
 			}
 		});
+		
+		CreatePerson('Bruce', 'battlers/Bruce.rss', false);
+		CreatePerson('Lauren', 'battlers/Lauren.rss', false);
+		CreatePerson('Katelyn', 'battlers/Katelyn.rss', false);
+		CreatePerson('Scott T', 'battlers/Scott T.rss', false);
+		CreatePerson('Amanda', 'battlers/Amanda.rss', false);
+		var foodTalking = function() {
+			name = GetCurrentPerson();
+			Alert(name);
+			new Scenario()
+				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
+				.talk("maggie", true, 2.0, Infinity, "Too late!")
+				.killPerson(name)
+				.playSound('Munch.wav')
+				.run(true)
+		}
+		SetPersonScript('Scott T', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
+		SetPersonScript('Bruce', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
+		SetPersonScript('Lauren', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
+		SetPersonScript('Katelyn', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
+		SetPersonScript('Amanda', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
+		FollowPerson('Bruce', 'hero', 32);
+		FollowPerson('Lauren', 'Bruce', 32);
+		FollowPerson('Katelyn', 'Lauren', 32);
+		FollowPerson('Scott T', 'Katelyn', 32);
+		FollowPerson('Amanda', 'Scott T', 32);
 	},
 	
 	robert: {
