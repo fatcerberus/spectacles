@@ -43,6 +43,18 @@ EvaluateScript('Game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
+	// check for required Sphere engine functionality
+	var extensions = typeof GetExtensions !== 'undefined' ? GetExtensions() : [ 'sphere-legacy-api' ];
+	var query = Link(extensions);
+	var isSupportedEngine = GetVersion() >= 1.5
+		&& query.contains('sphere-legacy-api')
+		&& query.contains('frameskip-api')
+		&& query.contains('set-script-function');
+	if (!isSupportedEngine) {
+		Abort("This engine is not supported.\n");
+	}
+	
+	// initialize Specs Engine components
 	Engine.initialize(60);
 	Threads.initialize();
 	BGM.initialize();
@@ -53,14 +65,16 @@ function game()
 	Console.initialize();
 	analogue.init();
 	
+	// set up the beta test harness
 	TestHarness.initialize();
 	EvaluateScript('DebugHelp/BattleTests.js');
 	
+	// show the title screen and start the game!
 	if (!DBG_DISABLE_TITLE_CARD) {
 		BGM.override('SpectaclesTheme');
 		Engine.showLogo('TitleCard', 5.0);
 	}
-	var session = (new TitleScreen('SpectaclesTheme')).show();
+	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
 	
