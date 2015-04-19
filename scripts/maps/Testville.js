@@ -7,6 +7,13 @@
 		AttachInput('hero');
 		BGM.change('TimeToLetGo');
 		
+		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
+			var person = GetCurrentPerson();
+			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
+			Link(GetPersonFollowers(person)).each(function(name) {
+				FollowPerson(name, GetPersonLeader(person), distance);
+			});
+		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
 			food = GetCurrentPerson();
 			if (IsInputAttached() && GetInputPerson() == 'maggie' && food != 'robert') {
@@ -22,7 +29,6 @@
 		CreatePerson('Amanda', 'battlers/Amanda.rss', false);
 		var foodTalking = function() {
 			name = GetCurrentPerson();
-			Alert(name);
 			new Scenario()
 				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
 				.talk("maggie", true, 2.0, Infinity, "Too late!")
