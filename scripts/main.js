@@ -43,13 +43,13 @@ EvaluateScript('Game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	// check for required Sphere engine functionality
+	// check for required Sphere functionality
 	var extensions = typeof GetExtensions !== 'undefined' ? GetExtensions() : [ 'sphere-legacy-api' ];
-	var query = Link(extensions);
+	var q = Link(extensions);
 	var isSupportedEngine = GetVersion() >= 1.5
-		&& query.contains('sphere-legacy-api')
-		&& query.contains('frameskip-api')
-		&& query.contains('set-script-function');
+		&& q.contains('sphere-legacy-api')
+		&& q.contains('frameskip-api')
+		&& q.contains('set-script-function');
 	if (!isSupportedEngine) {
 		Abort("This engine is not supported.\n");
 	}

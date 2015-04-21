@@ -1,18 +1,22 @@
 ({
 	enter: function(map, world) {
 		analogue.world.munchSound = LoadSound('Munch.wav', false);
-		
-		CreatePerson('hero', 'battlers/Scott.rss', false);
-		AttachCamera('hero');
-		AttachInput('hero');
-		BGM.change('TimeToLetGo');
-		
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
 			Link(GetPersonFollowers(person)).each(function(name) {
 				FollowPerson(name, GetPersonLeader(person), distance);
 			});
+		});
+		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, function() {
+			name = GetCurrentPerson();
+			if (name == 'maggie' || name == 'robert') return;
+			new Scenario()
+				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
+				.talk("maggie", true, 2.0, Infinity, "Too late!")
+				.killPerson(name)
+				.playSound('Munch.wav')
+				.run(true)
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
 			food = GetCurrentPerson();
@@ -22,30 +26,22 @@
 			}
 		});
 		
+		CreatePerson('hero', 'battlers/Scott.rss', false);
+		AttachCamera('hero');
+		AttachInput('hero');
+		
 		CreatePerson('Bruce', 'battlers/Bruce.rss', false);
 		CreatePerson('Lauren', 'battlers/Lauren.rss', false);
 		CreatePerson('Katelyn', 'battlers/Katelyn.rss', false);
 		CreatePerson('Scott T', 'battlers/Scott T.rss', false);
 		CreatePerson('Amanda', 'battlers/Amanda.rss', false);
-		var foodTalking = function() {
-			name = GetCurrentPerson();
-			new Scenario()
-				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
-				.talk("maggie", true, 2.0, Infinity, "Too late!")
-				.killPerson(name)
-				.playSound('Munch.wav')
-				.run(true)
-		}
-		SetPersonScript('Scott T', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
-		SetPersonScript('Bruce', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
-		SetPersonScript('Lauren', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
-		SetPersonScript('Katelyn', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
-		SetPersonScript('Amanda', SCRIPT_ON_ACTIVATE_TALK, foodTalking);
 		FollowPerson('Bruce', 'hero', 32);
 		FollowPerson('Lauren', 'Bruce', 32);
 		FollowPerson('Katelyn', 'Lauren', 32);
 		FollowPerson('Scott T', 'Katelyn', 32);
 		FollowPerson('Amanda', 'Scott T', 32);
+		
+		BGM.change('TimeToLetGo');
 	},
 	
 	robert: {
