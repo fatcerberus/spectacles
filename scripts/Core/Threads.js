@@ -3,6 +3,11 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
+// IsSkippedFrame() is minisphere-exclusive
+if (typeof IsSkippedFrame === 'undefined') {
+	IsSkippedFrame = function() { return false; };
+}
+
 // Threads object
 // Represents the Specs Engine thread manager.
 Threads = new (function()

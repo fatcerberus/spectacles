@@ -46,10 +46,14 @@ function game()
 	// check for required Sphere functionality
 	var extensions = typeof GetExtensions !== 'undefined' ? GetExtensions() : [ 'sphere-legacy-api' ];
 	var q = Link(extensions);
-	var isSupportedEngine = GetVersion() >= 1.5
+	var isSupportedEngine = GetVersion() >= 2.0
 		&& q.contains('sphere-legacy-api')
-		&& q.contains('frameskip-api')
-		&& q.contains('set-script-function');
+		&& q.contains('sphere-obj-constructors')
+		&& q.contains('sphere-obj-props')
+		&& q.contains('sphere-galileo')
+		&& q.contains('sphere-new-sockets')
+		&& q.contains('set-script-function')
+		;
 	if (!isSupportedEngine) {
 		Abort("This engine is not supported.\n");
 	}
