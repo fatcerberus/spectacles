@@ -228,7 +228,7 @@ BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
 		Console.writeLine("Activating in-battle HUD");
-		this.thread = Threads.createEntityThread(this, 20);
+		this.thread = Threads.create(this, 20);
 	}
 	new Scenario()
 		.tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 })

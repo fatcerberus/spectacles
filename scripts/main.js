@@ -8,6 +8,7 @@ RequireScript('lib/json3.js');
 
 RequireScript('lib/analogue.js');
 RequireScript('lib/link.js');
+RequireScript('lib/minithreads.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
@@ -25,7 +26,6 @@ RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
 RequireScript('Core/Console.js');
 RequireScript('Core/RNG.js');
-RequireScript('Core/Threads.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('FieldMenu.js');
@@ -50,9 +50,9 @@ function game()
 	var q = Link(extensions);
 	var isSupportedEngine = GetVersion() >= 1.5
 		&& q.contains('sphere-legacy-api')
-		&& q.contains('sphere-map-engine')
 		&& q.contains('sphere-obj-constructors')
 		&& q.contains('sphere-obj-props')
+		&& q.contains('sphere-map-engine')
 		&& q.contains('sphere-galileo')
 		&& q.contains('minisphere-new-sockets')
 		&& q.contains('set-script-function');

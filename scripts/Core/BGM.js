@@ -3,8 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript('Core/Threads.js');
-
 // BGM object
 // Represents the background music manager.
 BGM = new (function()

@@ -243,7 +243,7 @@ Battle.prototype.go = function()
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
-	var battleThread = Threads.createEntityThread(this);
+	var battleThread = Threads.create(this);
 	return battleThread;
 };
 

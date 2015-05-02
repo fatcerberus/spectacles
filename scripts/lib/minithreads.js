@@ -1,7 +1,8 @@
-/***
- * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
-***/
+/**
+ * minithreads 1.1b2 - (c) 2015 Bruce Pascoe
+ * A cooperative threader with a similar API to pthreads, which replaces
+ * Sphere's update and render scripts with a much more robust solution.
+**/
 
 RequireSystemScript('link.js');
 
@@ -13,14 +14,13 @@ Threads = new (function()
 	this.hasUpdated = false;
 	this.nextThreadID = 1;
 	this.threads = [];
-	this.useRenderMap = true;
-	this.useUpdateMap = true;
 })();
 
 // .initialize() method
 // Initializes the thread manager.
 Threads.initialize = function()
 {
+	if (this.isInitialized) return;
 	this.threadSorter = function(a, b) {
 		return a.priority != b.priority ?
 			a.priority - b.priority :
@@ -42,6 +42,9 @@ Threads.initialize = function()
 //               later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
 Threads.create = function(entity, priority)
 {
+	if (!this.isInitialized)
+		Abort("Threads.create(): Must call Threads.initialize() first", -1);
+	
 	priority = priority !== undefined ? priority : 0;
 	
 	var updater = entity.update;
@@ -74,6 +77,8 @@ Threads.create = function(entity, priority)
 //     Threads.create() instead.
 Threads.createEx = function(o, threadDesc)
 {
+	if (!this.isInitialized)
+		Abort("Threads.createEx(): Must call Threads.initialize() first", -1);
 	updater = threadDesc.update.bind(o);
 	renderer = 'render' in threadDesc ? threadDesc.render.bind(o) : null;
 	inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(o) : null;
@@ -85,7 +90,8 @@ Threads.createEx = function(o, threadDesc)
 		isUpdating: false,
 		priority: priority,
 		renderer: renderer,
-		updater: updater
+		updater: updater,
+		isPaused: false,
 	};
 	this.threads.push(newThread);
 	++this.nextThreadID;
@@ -98,6 +104,8 @@ Threads.createEx = function(o, threadDesc)
 //     threadID: The ID of the thread to check.
 Threads.isRunning = function(threadID)
 {
+	if (!this.isInitialized)
+		Abort("Threads.isRunning(): Must call Threads.initialize() first", -1);
 	if (threadID == 0) return false;
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (this.threads[i].id == threadID) {
@@ -107,26 +115,43 @@ Threads.isRunning = function(threadID)
 	return false;
 };
 
-// .enableMapRender() method
-// Sets whether the map should be rendered when blocking.
-Threads.enableMapRender = function(isEnabled)
+// .doFrame() method
+// Performs update and render processing for a single frame.
+// Remarks:
+//     This method is meant for internal use by the threader. Calling it from
+//     user code is not recommended.
+Threads.doFrame = function()
 {
-	this.useRenderMap = isEnabled;
-};
-
-// .enableMapUpdate() method
-// Specifies whether map engine updates will happen when blocking.
-Threads.enableMapUpdate = function(isEnabled)
-{
-	this.useUpdateMap = isEnabled;
+	if (!this.isInitialized)
+		Abort("Threads.doFrame(): Must call Threads.initialize() first", -1);
+	if (IsMapEngineRunning()) RenderMap();
+		else this.renderAll();
+	FlipScreen();
+	if (IsMapEngineRunning()) {
+		this.hasUpdated = false;
+		UpdateMapEngine();
+		if (!this.hasUpdated) {
+			this.updateAll();
+		}
+	} else {
+		this.updateAll();
+	}
 };
 
 // .join() method
 // Blocks until one or more threads have terminated.
 // Arguments:
 //     threadID: Either a single thread ID or an array of them.
+// Remarks:
+//     If .join() is called during an update of another thread, the blocking
+//     thread will not be updated until .join() returns. However, any other threads
+//     will continue to update as normal. This enables easy threading without
+//     having to worry about the intricacies of cooperative threading--minithreads
+//     handles it for you.
 Threads.join = function(threadIDs)
 {
+	if (!this.isInitialized)
+		Abort("Threads.join(): Must call Threads.initialize() first", -1);
 	threadIDs = threadIDs instanceof Array ? threadIDs : [ threadIDs ];
 	var isFinished = false;
 	while (!isFinished) {
@@ -144,6 +169,8 @@ Threads.join = function(threadIDs)
 //     threadID: The ID of the thread to terminate.
 Threads.kill = function(threadID)
 {
+	if (!this.isInitialized)
+		Abort("Threads.kill(): Must call Threads.initialize() first", -1);
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (threadID == this.threads[i].id) {
 			this.threads[i].isValid = false;
@@ -153,10 +180,41 @@ Threads.kill = function(threadID)
 	}
 };
 
+// .pause() method
+// Pauses execution of a thread.
+// Arguments:
+//    threadID: The ID of the thread to pause.
+// Remarks:
+//     While a thread is paused, its updater and input handler aren't called;
+//     however, it will continue to participate in rendering.
+Threads.pause = function(threadID)
+{
+	Link(this.threads).filterBy('id', threadID)
+		.each(function(thread)
+	{
+		thread.isPaused = true;
+	});
+}
+
+// .resume() method
+// Resumes execution of a paused thread. No effect on active threads.
+// Arguments:
+//    threadID: The ID of the thread to resume.
+Threads.resume = function(threadID)
+{
+	Link(this.threads).filterBy('id', threadID)
+		.each(function(thread)
+	{
+		thread.isPaused = false;
+	});
+}
+
 // .renderAll() method
 // Renders the current frame by calling all active threads' renderers.
 Threads.renderAll = function()
 {
+	if (!this.isInitialized)
+		Abort("Threads.renderAll(): Must call Threads.initialize() first", -1);
 	if (IsSkippedFrame()) return;
 	var sortedThreads = [];
 	for (var i = 0; i < this.threads.length; ++i) {
@@ -175,20 +233,21 @@ Threads.renderAll = function()
 // Updates all active threads for the next frame.
 Threads.updateAll = function()
 {
+	if (!this.isInitialized)
+		Abort("Threads.updateAll(): Must call Threads.initialize() first", -1);
 	var threadsEnding = [];
-	Link(Link(this.threads).sort(this.threadSorter))
+	Link(this.threads)
 		.where(function(thread) { return thread.isValid })
+		.where(function(thread) { return !thread.isUpdating })
+		.where(function(thread) { return !thread.isPaused })
 		.each(function(thread)
 	{
-		var stillRunning = true;
-		if (!thread.isUpdating) {
-			thread.isUpdating = true;
-			stillRunning = thread.updater();
-			if (thread.inputHandler !== null && stillRunning) {
-				thread.inputHandler();
-			}
-			thread.isUpdating = false;
+		thread.isUpdating = true;
+		var stillRunning = thread.updater();
+		if (thread.inputHandler !== null && stillRunning) {
+			thread.inputHandler();
 		}
+		thread.isUpdating = false;
 		if (!stillRunning) {
 			threadsEnding.push(thread.id);
 		}
@@ -197,26 +256,4 @@ Threads.updateAll = function()
 		this.kill(threadsEnding[i]);
 	}
 	this.hasUpdated = true;
-};
-
-// .doFrame() method
-// Performs update and render processing for a single frame.
-Threads.doFrame = function()
-{
-	if (this.useRenderMap && IsMapEngineRunning())
-		RenderMap();
-	else
-		this.renderAll();
-	FlipScreen();
-	if (IsMapEngineRunning()) {
-		this.hasUpdated = false;
-		if (this.useUpdateMap) {
-			UpdateMapEngine();
-		}
-		if (!this.hasUpdated) {
-			this.updateAll();
-		}
-	} else {
-		this.updateAll();
-	}
 };

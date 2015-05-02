@@ -3,8 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript("Core/Threads.js");
-
 // Console object
 // Represents the Specs Engine text console.
 Console = new (function()

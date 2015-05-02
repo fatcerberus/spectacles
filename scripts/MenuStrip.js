@@ -120,7 +120,7 @@ MenuStrip.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	var menuThread = Threads.createEntityThread(this, 100);
+	var menuThread = Threads.create(this, 100);
 	this.animation = new Scenario()
 		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })
 		.run();
