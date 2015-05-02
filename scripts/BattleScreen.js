@@ -73,7 +73,7 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			return true;
 		}
 	};
-	var thread = Threads.createEntityThread(announcement, 10);
+	var thread = Threads.create(announcement, 10);
 	new Scenario()
 		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 0.0 })
 		.pause(0.75)

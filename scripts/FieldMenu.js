@@ -92,7 +92,7 @@ FieldMenu.prototype.open = function()
 	Threads.enableUpdateMap(false);
 	this.isOpen = true;
 	this.fadeness = 0.0;
-	var thread = Threads.createEntityThread(this, 100);
+	var thread = Threads.create(this, 100);
 	this.selectItem(this.selection);
 	new Scenario()
 		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })

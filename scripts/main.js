@@ -8,6 +8,7 @@ RequireScript('lib/json3.js');
 
 RequireScript('lib/analogue.js');
 RequireScript('lib/link.js');
+RequireScript('lib/miniRNG.js');
 RequireScript('lib/minithreads.js');
 RequireScript('lib/MultiDelegate.js');
 RequireScript('lib/Scenario.js');
@@ -19,13 +20,12 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = false;
+var DBG_LOG_CONSOLE_OUTPUT = true;
 var DBG_IN_GAME_CONSOLE = true;
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
 RequireScript('Core/Console.js');
-RequireScript('Core/RNG.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('FieldMenu.js');
@@ -55,6 +55,7 @@ function game()
 		&& q.contains('sphere-map-engine')
 		&& q.contains('sphere-galileo')
 		&& q.contains('minisphere-new-sockets')
+		&& q.contains('minisphere-rng-object')
 		&& q.contains('set-script-function');
 	if (!isSupportedEngine) {
 		Abort("This engine is not supported.\n");
