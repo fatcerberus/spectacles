@@ -16,7 +16,7 @@ TestHarness.initialize = function()
 	this.background = LoadImage('TitleScreen.png');
 	this.fadeness = 0.0;
 	this.tests = {};
-	this.thread = Threads.createEntityThread(this, 100);
+	this.thread = Threads.create(this, 100);
 };
 
 TestHarness.addBattleTest = function(testID, setupData)

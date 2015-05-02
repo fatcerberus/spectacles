@@ -194,7 +194,7 @@ TargetMenu.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	Threads.waitFor(Threads.createEntityThread(this, 10));
+	Threads.join(Threads.create(this, 10));
 	return this.targets;
 };
 

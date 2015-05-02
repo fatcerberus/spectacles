@@ -19,7 +19,7 @@ LucidaClock = new (function()
 	this.initialize = function()
 	{
 		Console.writeLine("Initializing time-of-day manager");
-		Threads.createEntityThread(this, 1);
+		Threads.create(this, 1);
 		var time = this.getTime();
 		Console.writeLine("Time in Lucida is " + time.toString());
 	}

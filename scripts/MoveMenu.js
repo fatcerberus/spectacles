@@ -281,8 +281,8 @@ MoveMenu.prototype.open = function()
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
 		this.updateTurnPreview();
-		this.menuThread = Threads.createEntityThread(this, 10);
-		Threads.waitFor(this.menuThread);
+		this.menuThread = Threads.create(this, 10);
+		Threads.join(this.menuThread);
 		switch (this.stance) {
 			case BattleStance.attack:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();

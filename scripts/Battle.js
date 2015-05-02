@@ -500,7 +500,7 @@ Battle.prototype.update = function() {
 				var thread = unit.actor.enter();
 				walkInThreads.push(thread);
 			});
-			Threads.synchronize(walkInThreads);
+			Threads.join(walkInThreads);
 			this.ui.hud.turnPreview.show();
 			if (!Link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);

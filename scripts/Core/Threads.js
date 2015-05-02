@@ -3,15 +3,13 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-// IsSkippedFrame() is minisphere-exclusive
-if (typeof IsSkippedFrame === 'undefined') {
-	IsSkippedFrame = function() { return false; };
-}
+RequireSystemScript('link.js');
 
 // Threads object
-// Represents the Specs Engine thread manager.
+// Represents the thread manager.
 Threads = new (function()
 {
+	this.isInitialized = false;
 	this.hasUpdated = false;
 	this.nextThreadID = 1;
 	this.threads = [];
@@ -30,26 +28,56 @@ Threads.initialize = function()
 	};
 	SetUpdateScript('Threads.updateAll();');
 	SetRenderScript('Threads.renderAll();');
+	this.isInitialized = true;
 }
 
 // .create() method
+// Creates an entity thread. This is the recommended method for
+// creating persistent threads.
+// Arguments:
+//     entity:   The object for which to create the thread. This object's .update() method
+//               will be called once per frame, along with .render() and .getInput() if they
+//               exist, until .update() returns false.
+//     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
+//               later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
+Threads.create = function(entity, priority)
+{
+	priority = priority !== undefined ? priority : 0;
+	
+	var updater = entity.update;
+	var renderer = (typeof entity.render === 'function') ? entity.render : null;
+	var inputHandler = (typeof entity.getInput === 'function') ? entity.getInput : null;
+	var threadDesc = {
+		priority: priority,
+		update: entity.update
+	};
+	if (typeof entity.render === 'function')
+		threadDesc.render = entity.render;
+	if (typeof entity.getInput === 'function')
+		threadDesc.getInput = entity.getInput;
+	return this.createEx(entity, threadDesc);
+};
+
+// .createEx() method
 // Creates a thread and begins running it.
 // Arguments:
-//     o:            The object to pass as 'this' to the updater/renderer/input handler. May be null.
-//     updater:      The update function for the new thread.
-//     renderer:     Optional. The render function for the new thread.
-//     priority:     Optional. The render priority for the new thread. Higher-priority threads are rendered
-//                   later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
-//     inputHandler: Optional. The input handler for the new thread.
-Threads.create = function(o, updater, renderer, priority, inputHandler)
+//     o:          The object to pass as 'this' to the updater/renderer/input handler. May be null.
+//     threadDesc: An object describing the thread. This should contain the following members:
+//                     update:   The update function for the new thread.
+//                     render:   Optional. The render function for the new thread.
+//                     getInput: Optional. The input handler for the new thread.
+//                     priority: Optional. The render priority for the new thread. Higher-priority threads
+//                               are rendered later in a frame than lower-priority ones. Ignored if no
+//                               renderer is provided. (default: 0)
+// Remarks:
+//     This is for advanced thread creation. For typical use, it is recommended to use
+//     Threads.create() instead.
+Threads.createEx = function(o, threadDesc)
 {
-	renderer = renderer !== void null ? renderer : null;
-	inputHandler = inputHandler !== void null ? inputHandler : null;
-	priority = priority !== void null ? priority : 0;
-	
-	updater = updater.bind(o);
-	renderer = renderer !== null ? renderer.bind(o) : null;
-	inputHandler = inputHandler !== null ? inputHandler.bind(o) : null;
+	updater = threadDesc.update.bind(o);
+	renderer = 'render' in threadDesc ? threadDesc.render.bind(o) : null;
+	inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(o) : null;
+	priority = 'priority' in threadDesc ? threadDesc.priority : 0;
 	var newThread = {
 		id: this.nextThreadID,
 		isValid: true,
@@ -64,89 +92,50 @@ Threads.create = function(o, updater, renderer, priority, inputHandler)
 	return newThread.id;
 };
 
-// .createEntityThread() method
-// Creates a thread for a specified entity.
-// Arguments:
-//     entity:   The entity for which to create the thread. This should be an object having .update() and
-//               optionally, .render() and .getInput() methods. Each of these will be called once
-//               per frame until the thread either finishes (entity.update() returns false) or is terminated.
-//     priority: Optional. The render priority for the new thread. Higher-priority threads are rendered
-//               later in a frame than lower-priority ones. Ignored if no renderer is provided. (default: 0)
-Threads.createEntityThread = function(entity, priority)
-{
-	priority = priority !== void null ? priority : 0;
-	
-	var updater = entity.update;
-	var renderer = (typeof entity.render === 'function') ? entity.render : null;
-	var inputHandler = (typeof entity.getInput === 'function') ? entity.getInput : null;
-	return this.create(entity, updater, renderer, priority, inputHandler);
-};
-
-// .doFrame() method
-// Performs update and render processing for a single frame.
-Threads.doFrame = function()
-{
-	if (this.useRenderMap && IsMapEngineRunning())
-		RenderMap();
-	else
-		this.renderAll();
-	FlipScreen();
-	if (IsMapEngineRunning()) {
-		this.hasUpdated = false;
-		if (this.useUpdateMap) {
-			UpdateMapEngine();
-		}
-		if (!this.hasUpdated) {
-			this.updateAll();
-		}
-	} else {
-		this.updateAll();
-	}
-};
-
-// .doWith() method
-// Creates an improvised thread running in the context of a specified object.
-// Arguments:
-//     o:            The object to pass as 'this' to the updater/renderer.
-//     updater:      The update function for the new thread.
-//     renderer:     Optional. The render function for the new thread.
-//     priority:     Optional. The render priority for the new thread. Higher-priority threads are rendered
-//                   later in a frame (closer to the player) than lower-priority ones. (default: 0)
-//     inputHandler: Optional. The input handler for the new thread.
-Threads.doWith = function(o, updater, renderer, priority, inputHandler)
-{
-	return this.create(o, updater, renderer, priority, inputHandler);
-};
-
-// .enableRenderMap() method
-// Specifies whether map rendering should be enabled when waiting on a thread.
-Threads.enableRenderMap = function(isEnabled)
-{
-	this.useRenderMap = isEnabled;
-};
-
-// .enableUpdateMap() method
-// Specifies whether map updates should be enabled when waiting on a thread.
-Threads.enableUpdateMap = function(isEnabled)
-{
-	this.useUpdateMap = isEnabled;
-};
-
 // .isRunning() method
 // Determines whether a thread is still running.
 // Arguments:
 //     threadID: The ID of the thread to check.
 Threads.isRunning = function(threadID)
 {
-	if (threadID === 0) {
-		return false;
-	}
+	if (threadID == 0) return false;
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (this.threads[i].id == threadID) {
 			return true;
 		}
 	}
 	return false;
+};
+
+// .enableMapRender() method
+// Sets whether the map should be rendered when blocking.
+Threads.enableMapRender = function(isEnabled)
+{
+	this.useRenderMap = isEnabled;
+};
+
+// .enableMapUpdate() method
+// Specifies whether map engine updates will happen when blocking.
+Threads.enableMapUpdate = function(isEnabled)
+{
+	this.useUpdateMap = isEnabled;
+};
+
+// .join() method
+// Blocks until one or more threads have terminated.
+// Arguments:
+//     threadID: Either a single thread ID or an array of them.
+Threads.join = function(threadIDs)
+{
+	threadIDs = threadIDs instanceof Array ? threadIDs : [ threadIDs ];
+	var isFinished = false;
+	while (!isFinished) {
+		this.doFrame();
+		isFinished = true;
+		for (var i = 0; i < threadIDs.length; ++i) {
+			isFinished = isFinished && !this.isRunning(threadIDs[i]);
+		}
+	}
 };
 
 // .kill() method
@@ -169,29 +158,17 @@ Threads.kill = function(threadID)
 Threads.renderAll = function()
 {
 	if (IsSkippedFrame()) return;
-	Link(Link(this.threads).sort(this.threadSorter))
-		.where(function(thread) { return thread.isValid; })
-		.where(function(thread) { return thread.renderer !== null })
-		.each(function(thread)
-	{
+	var sortedThreads = [];
+	for (var i = 0; i < this.threads.length; ++i) {
+		sortedThreads.push(this.threads[i]);
+	}
+	sortedThreads.sort(this.threadSorter);
+	for (var i = 0; i < sortedThreads.length; ++i) {
+		var thread = sortedThreads[i];
+		if (!thread.isValid || thread.renderer === null)
+			continue;
 		thread.renderer();
-	});
-};
-
-// .synchronize() method
-// Waits for multiple threads to finish.
-// Arguments:
-//     threadIDs: An array of thread IDs specifying the threads to wait for.
-Threads.synchronize = function(threadIDs)
-{
-	var isFinished;
-	do {
-		this.doFrame();
-		isFinished = true;
-		for (var i = 0; i < threadIDs.length; ++i) {
-			isFinished = isFinished && !this.isRunning(threadIDs[i]);
-		}
-	} while (!isFinished);
+	}
 };
 
 // .updateAll() method
@@ -200,7 +177,7 @@ Threads.updateAll = function()
 {
 	var threadsEnding = [];
 	Link(Link(this.threads).sort(this.threadSorter))
-		.where(function(thread) { return thread.isValid; })
+		.where(function(thread) { return thread.isValid })
 		.each(function(thread)
 	{
 		var stillRunning = true;
@@ -222,14 +199,24 @@ Threads.updateAll = function()
 	this.hasUpdated = true;
 };
 
-// .waitFor() method
-// Waits for a thread to terminate.
-// Arguments:
-//     threadID: The ID of the thread to wait for.
-Threads.waitFor = function(threadID)
+// .doFrame() method
+// Performs update and render processing for a single frame.
+Threads.doFrame = function()
 {
-	var i = 0;
-	while (this.isRunning(threadID)) {
-		this.doFrame();
+	if (this.useRenderMap && IsMapEngineRunning())
+		RenderMap();
+	else
+		this.renderAll();
+	FlipScreen();
+	if (IsMapEngineRunning()) {
+		this.hasUpdated = false;
+		if (this.useUpdateMap) {
+			UpdateMapEngine();
+		}
+		if (!this.hasUpdated) {
+			this.updateAll();
+		}
+	} else {
+		this.updateAll();
 	}
 };

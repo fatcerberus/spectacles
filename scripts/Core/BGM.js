@@ -21,7 +21,7 @@ BGM = new (function()
 	// Starts up the BGM manager.
 	this.initialize = function()
 	{
-		Threads.createEntityThread(this);
+		Threads.create(this);
 	};
 	
 	// .adjustVolume() method

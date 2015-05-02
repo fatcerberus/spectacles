@@ -97,7 +97,7 @@ FieldMenu.prototype.open = function()
 	new Scenario()
 		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })
 		.run(true);
-	Threads.waitFor(thread);
+	Threads.join(thread);
 	Threads.enableUpdateMap(true);
 };
 

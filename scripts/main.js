@@ -65,9 +65,11 @@ function game()
 	Threads.initialize();
 	BGM.initialize();
 	Scenario.initialize();
-	Threads.doWith(Scenario,
-		function() { return this.updateAll(), true; },
-		function() { this.renderAll(); }, 99);
+	Threads.createEx(Scenario, {
+		priority: 99,
+		update: function() { return this.updateAll(), true; },
+		render: function() { this.renderAll(); }
+	});
 	Console.initialize();
 	analogue.init();
 	
@@ -95,15 +97,15 @@ function game()
 // This causes a deadlock because Scenario is waiting for its own operation to finish, but
 // because the threader is blocked and thus unable to update Scenario, well...
 (function() {
-	var old_Scenario_run = Scenario.prototype.run;
+	var Scenario_run = Scenario.prototype.run;
 	Scenario.prototype.run = function(waitUntilDone)
 	{
 		waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
 		
-		value = old_Scenario_run.call(this, false);
+		value = Scenario_run.call(this, false);
 		if (waitUntilDone) {
-			Threads.waitFor(Threads.doWith(this, function() {
-				return this.isRunning();
+			Threads.join(Threads.createEx(this, {
+				update: function() { return this.isRunning(); }
 			}));
 		}
 		return value;

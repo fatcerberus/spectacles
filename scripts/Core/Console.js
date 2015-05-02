@@ -36,7 +36,7 @@ Console.initialize = function(numLines, bufferSize)
 	this.buffer = [];
 	this.bufferSize = bufferSize;
 	this.commands = [];
-	this.thread = Threads.createEntityThread(this, 101);
+	this.thread = Threads.create(this, 101);
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2015 Fat Cerberus");
 	this.writeLine("Sphere " + GetVersionString());
@@ -136,7 +136,6 @@ Console.show = function()
 	new Scenario()
 		.tween(this, 0.5, 'easeOutBack', { fadeness: 1.0 })
 		.run();
-	return Threads.doWith(this, function() { return this.isOpen(); }.bind(this));
 }
 
 // .update() method

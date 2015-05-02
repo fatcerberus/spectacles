@@ -124,7 +124,7 @@ MenuStrip.prototype.open = function()
 	this.animation = new Scenario()
 		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })
 		.run();
-	Threads.waitFor(menuThread);
+	Threads.join(menuThread);
 	this.menuThread = null;
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 };
