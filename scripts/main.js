@@ -3,14 +3,12 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-RequireScript('lib/JS.js');
-RequireScript('lib/json3.js');
+RequireSystemScript('mini/delegate.js');
+RequireSystemScript('mini/RNG.js');
+RequireSystemScript('mini/threads.js');
 
 RequireScript('lib/analogue.js');
-RequireScript('lib/link.js');
-RequireScript('lib/miniRNG.js');
-RequireScript('lib/minithreads.js');
-RequireScript('lib/MultiDelegate.js');
+RequireScript('lib/Link.js');
 RequireScript('lib/Scenario.js');
 RequireScript('lib/SpriteImage.js');
 

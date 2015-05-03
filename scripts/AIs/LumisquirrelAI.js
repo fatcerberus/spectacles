@@ -12,7 +12,7 @@ function LumisquirrelAI(aiContext)
 	this.aic = aiContext;
 	
 	// AI state variables
-	this.strategy = RNG.fromArray([ 'zombify', 'delude' ]);
+	this.strategy = RNG.sample([ 'zombify', 'delude' ]);
 	this.targetID = null;
 	
 	// Prepare the AI for use

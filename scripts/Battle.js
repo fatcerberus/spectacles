@@ -210,10 +210,10 @@ Battle.prototype.go = function()
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
-	partyMPPool.gainedMP.addHook(this, function(mpPool, availableMP) {
+	partyMPPool.gainedMP.add(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
-	partyMPPool.lostMP.addHook(this, function(mpPool, availableMP) {
+	partyMPPool.lostMP.add(this, function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
 	});
 	this.ui = new BattleScreen(partyMaxMP);
@@ -403,7 +403,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
 		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
-		if (odds > Math.random()) {
+		if (RNG.chance(odds)) {
 			Console.append("hit");
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);

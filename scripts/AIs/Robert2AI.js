@@ -10,11 +10,11 @@
 function Robert2AI(aiContext)
 {
 	this.aic = aiContext;
-	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
-	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.aic.battle.stanceChanged.addHook(this, this.onStanceChanged);
-	this.aic.battle.unitReady.addHook(this, this.onUnitReady);
-	this.aic.phaseChanged.addHook(this, this.onPhaseChanged);
+	this.aic.battle.itemUsed.add(this, this.onItemUsed);
+	this.aic.battle.skillUsed.add(this, this.onSkillUsed);
+	this.aic.battle.stanceChanged.add(this, this.onStanceChanged);
+	this.aic.battle.unitReady.add(this, this.onUnitReady);
+	this.aic.phaseChanged.add(this, this.onPhaseChanged);
 	
 	// AI state variables
 	this.hasZombieHealedSelf = false;
@@ -42,11 +42,11 @@ function Robert2AI(aiContext)
 // Relinquishes resources and shuts down the AI.
 Robert2AI.prototype.dispose = function()
 {
-	this.aic.battle.itemUsed.removeHook(this, this.onItemUsed);
-	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
-	this.aic.battle.stanceChanged.removeHook(this, this.onStanceChanged);
-	this.aic.battle.unitReady.removeHook(this, this.onUnitReady);
-	this.aic.phaseChanged.removeHook(this, this.onPhaseChanged);
+	this.aic.battle.itemUsed.remove(this, this.onItemUsed);
+	this.aic.battle.skillUsed.remove(this, this.onSkillUsed);
+	this.aic.battle.stanceChanged.remove(this, this.onStanceChanged);
+	this.aic.battle.unitReady.remove(this, this.onUnitReady);
+	this.aic.phaseChanged.remove(this, this.onPhaseChanged);
 };
 
 // .strategize() method

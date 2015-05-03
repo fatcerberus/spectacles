@@ -102,7 +102,7 @@ AIContext.prototype.definePhases = function(thresholds, sigma)
 	
 	Console.writeLine("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
 	this.phasePoints = Link(thresholds)
-		.map(function(value) { return Math.round(RNG.fromNormal(value, sigma)); })
+		.map(function(value) { return Math.round(RNG.normal(value, sigma)); })
 		.toArray();
 	var phaseIndex = 1;
 	Link(this.phasePoints).each(function(milestone) {

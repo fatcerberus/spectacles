@@ -3,8 +3,6 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript('lib/MultiDelegate.js');
-
 // MPPool() constructor
 // Creates an object representing an MP pool.
 // Arguments:
