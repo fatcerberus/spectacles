@@ -13,7 +13,7 @@ Game.battles =
 			'lumisquirrel'
 		],
 		onFirstStart: function() {
-			new Scenario()
+			new mini.Scene()
 				.talk("Scott", true, 2.0, Infinity, "Well, these things are more than a little creepy...")
 				.talk("Elysia", true, 2.0, Infinity, "Lumisquirrels. Be careful, or you'll be in for a shock!")
 				.run(true);
@@ -29,7 +29,7 @@ Game.battles =
 			'headlessHorse'
 		],
 		onStart: function() {
-			new Scenario()
+			new mini.Scene()
 				.talk("maggie", true, 2.0, Infinity,
 					"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. "
 					+ "It won't hesitate to roast you--and then I'd have to eat you!")
@@ -60,7 +60,7 @@ Game.battles =
 		onStart: function() {
 			var scott = this.findUnit('scott');
 			if (scott != null) {
-				new Scenario()
+				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity,
 						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
@@ -105,7 +105,7 @@ Game.battles =
 		onStart: function() {
 			var xemnasUnit = this.findUnit('xemnas');
 			var maggieUnit = this.findUnit('maggie');
-			new Scenario()
+			new mini.Scene()
 				.talk("Xemnas", true, 0.5, Infinity, "Nothingness... is... eternal...!")
 				.talk("maggie", true, 2.0, Infinity, "Where the hell did this guy come from? Screw this, I'ma eat him!")
 				.fork()

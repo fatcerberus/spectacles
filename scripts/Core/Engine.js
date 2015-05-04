@@ -25,21 +25,17 @@ Engine = new (function()
 	this.showLogo = function(imageName, duration)
 	{
 		var image = LoadImage("Logos/" + imageName + ".png");
-		var scene = new Scenario()
+		var scene = new mini.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 			.pause(duration)
 			.fadeTo(CreateColor(0, 0, 0, 255), 1.0)
 			.run();
-		Threads.waitFor(Threads.doWith(scene,
-			function() {
-				return this.isRunning();
-			},
-			function() {
-				image.blit(0, 0);
-			}
-		));
-		new Scenario()
+		mini.Threads.join(Threads.createEx(scene, {
+			update: function() { return this.isRunning(); },
+			render: function() { image.blit(0, 0); }
+		}));
+		new mini.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 0), 0.0)
 			.run(true);
 	};

@@ -43,10 +43,10 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 				} else if (this.aic.battle.hasCondition('subzero')) {
 					this.aic.queueSkill('windchill');
 				} else {
-					this.aic.queueSkill(RNG.fromArray([ 'inferno', 'subzero' ]));
+					this.aic.queueSkill(RNG.sample([ 'inferno', 'subzero' ]));
 				}
 			} else {
-				this.aic.queueSkill(RNG.fromArray([ 'flare', 'chill', 'lightning', 'quake', 'heal' ]));
+				this.aic.queueSkill(RNG.sample([ 'flare', 'chill', 'lightning', 'quake', 'heal' ]));
 			}
 			break;
 		case 2:
@@ -55,7 +55,7 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 				if (qsTurns[0].unit === this.aic.unit) {
 					this.aic.queueSkill('quickstrike');
 				} else {
-					var skillToUse = RNG.fromArray([ 'flare', 'chill', 'lightning', 'quake' ])
+					var skillToUse = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ])
 					this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
 				}
 			} else if (this.movesTillReGen <= 0 && this.aic.isSkillUsable('rejuvenate')) {
@@ -65,8 +65,8 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 			} else {
 				--this.movesTillReGen;
 				var skillToUse = this.aic.unit.hasStatus('reGen')
-					? RNG.fromArray([ 'hellfire', 'windchill', 'upheaval', 'quickstrike' ])
-					: RNG.fromArray([ 'hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal' ]);
+					? RNG.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike' ])
+					: RNG.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal' ]);
 				skillToUse = this.aic.isSkillUsable(skillToUse) ? skillToUse : 'quickstrike';
 				if (skillToUse != 'quickstrike') {
 					this.aic.queueSkill(skillToUse);
@@ -88,11 +88,11 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 			} else if (!this.aic.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
 				this.aic.queueSkill('tenPointFive');
 			} else {
-				var skillToUse = RNG.fromArray([ 'quickstrike',
+				var skillToUse = RNG.sample([ 'quickstrike',
 					'hellfire', 'windchill', 'electrocute', 'upheaval',
 					'flare', 'chill', 'lightning', 'quake', 'heal' ]);
 				this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse
-					: RNG.fromArray([ 'swordSlash', 'quickstrike', 'chargeSlash' ]));
+					: RNG.sample([ 'swordSlash', 'quickstrike', 'chargeSlash' ]));
 				if (this.aic.isSkillQueued('quickstrike')) {
 					var qsTurns = this.aic.predictSkillTurns('quickstrike');
 					this.isQSComboStarted = qsTurns[0].unit === this.aic.unit;
@@ -109,7 +109,7 @@ ScottTempleAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	if (this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
-	if (Link([ 'tonic', 'powerTonic' ]).contains(itemID) && !Link(targetIDs).contains('scottTemple')
+	if (mini.Link([ 'tonic', 'powerTonic' ]).contains(itemID) && !mini.Link(targetIDs).contains('scottTemple')
 		&& 0.5 > Math.random())
 	{
 		this.aic.queueSkill('electrocute', targetIDs[0]);
@@ -121,7 +121,7 @@ ScottTempleAI.prototype.onPhaseChanged = function(aiContext, newPhase, lastPhase
 	switch (newPhase) {
 		case 1:
 			this.aic.queueSkill('omni', 'elysia');
-			var spellID = RNG.fromArray([ 'inferno', 'subzero' ]);
+			var spellID = RNG.sample([ 'inferno', 'subzero' ]);
 			this.phase2Opener = spellID != 'inferno' ? 'inferno' : 'subzero';
 			this.aic.queueSkill(spellID);
 			break;
@@ -146,13 +146,13 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	if (this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
-	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !Link(targetIDs).contains('scottTemple')) {
+	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !mini.Link(targetIDs).contains('scottTemple')) {
 		if (this.aic.phase <= 1 && !this.aic.isSkillQueued('chargeSlash')) {
 			this.aic.queueSkill('chargeSlash', targetIDs[0]);
 		} else if (this.aic.phase >= 2 && 0.25 > Math.random) {
 			this.aic.queueSkill('necromancy', targetIDs[0]);
 		}
-	} else if (skillID == 'dispel' && Link(targetIDs).contains('scottTemple')
+	} else if (skillID == 'dispel' && mini.Link(targetIDs).contains('scottTemple')
 		&& this.aic.unit.hasStatus('reGen'))
 	{
 		this.aic.queueSkill('electrocute', userID);

@@ -2,7 +2,7 @@
 	showOpening: function()
 	{
 		DetachInput();
-		new Scenario()
+		new mini.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.playBGM('BruceTellsHisStory')
 			.pause(1.0)
@@ -71,6 +71,5 @@
 		world.scrambler.setBattles([ 'headlessHorse' ]);
 		world.scrambler.start();
 		SetDelayScript(0, 'analogue.map().showOpening();');
-		//SetDelayScript(0, 'new Scenario().changeMap(\'Portentia.rmp\').run(true); AttachInput(\'hero\');');
 	}
 })

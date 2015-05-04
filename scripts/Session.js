@@ -29,7 +29,9 @@ function Session(difficulty)
 	Console.append("diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party(50);
-	Link(Game.initialParty).each(function(characterID) {
+	mini.Link(Game.initialParty)
+		.each(function(characterID)
+	{
 		this.party.add(characterID);
 	}.bind(this));
 	this.battlesSeen = [];

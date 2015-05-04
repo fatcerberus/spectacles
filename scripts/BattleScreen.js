@@ -27,7 +27,7 @@ function BattleScreen(partyMaxMP)
 	this.startRunning = function()
 	{
 		Console.writeLine("Activating battle screen");
-		this.thread = Threads.create(this);
+		this.thread = mini.Threads.create(this);
 		this.hud.show();
 	};
 }
@@ -37,7 +37,7 @@ function BattleScreen(partyMaxMP)
 BattleScreen.prototype.dispose = function()
 {
 	this.hud.dispose();
-	Threads.kill(this.thread);
+	mini.Threads.kill(this.thread);
 };
 
 // .announceAction() method
@@ -73,13 +73,13 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			return true;
 		}
 	};
-	var thread = Threads.create(announcement, 10);
-	new Scenario()
+	var thread = mini.Threads.create(announcement, 10);
+	new mini.Scene()
 		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 0.0 })
 		.pause(0.75)
 		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 1.0 })
 		.run(true);
-	Threads.kill(thread);
+	mini.Threads.kill(thread);
 };
 
 // .createActor() method
@@ -120,7 +120,7 @@ BattleScreen.prototype.fadeOut = function(duration)
 		this.dispose();
 		return;
 	}
-	new Scenario()
+	new mini.Scene()
 		.fadeTo(CreateColor(0, 0, 0, 255), duration)
 		.call(this.dispose.bind(this))
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
@@ -136,7 +136,7 @@ BattleScreen.prototype.go = function(title)
 	title = title !== void null ? title : null;
 	
 	this.title = title;
-	new Scenario()
+	new mini.Scene()
 		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
 			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
 			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
@@ -171,7 +171,7 @@ BattleScreen.prototype.showTitle = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		return;
 	}
-	new Scenario()
+	new mini.Scene()
 		.marquee(this.title, CreateColor(0, 0, 0, 128))
 		.run(true);
 };

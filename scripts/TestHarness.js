@@ -16,7 +16,7 @@ TestHarness.initialize = function()
 	this.background = LoadImage('TitleScreen.png');
 	this.fadeness = 0.0;
 	this.tests = {};
-	this.thread = Threads.create(this, 100);
+	this.thread = mini.Threads.create(this, 100);
 };
 
 TestHarness.addBattleTest = function(testID, setupData)
@@ -27,7 +27,7 @@ TestHarness.addBattleTest = function(testID, setupData)
 			Console.writeLine("Preparing test battle");
 			Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
-			Link(Game.initialParty).each(function(id) {
+			mini.Link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
 			});
 			for (var id in this.setup.party) {
@@ -40,7 +40,7 @@ TestHarness.addBattleTest = function(testID, setupData)
 					session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
 				}
 			}
-			new Scenario()
+			new mini.Scene()
 				.battle(this.setup.battleID, session)
 				.run(true);
 		}
@@ -79,9 +79,9 @@ TestHarness.getInput = function()
 
 TestHarness.run = function()
 {
-	var musicID = Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
+	var musicID = mini.Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
 	Console.writeLine("Opening beta test menu");
-	new Scenario()
+	new mini.Scene()
 		.fork()
 			.adjustBGM(0.0, 0.125)
 			.playBGM(musicID)
@@ -94,13 +94,13 @@ TestHarness.run = function()
 		menu.addItem(testID, this.tests[testID]);
 	}
 	var test = menu.open();
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.25, 'linear', { fadeness: 0.0 })
 		.run();
 	if (test !== null) {
 		test.run.call(test);
 	}
-	new Scenario()
+	new mini.Scene()
 		.adjustBGM(0.0)
 		.resetBGM()
 		.adjustBGM(1.0, 0.25)

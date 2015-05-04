@@ -63,7 +63,7 @@ MPGauge.prototype.set = function(value)
 		if (this.animation != null) {
 			this.animation.stop();
 		}
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.fork()
 				.tween(this, 0.25, 'easeInOutSine', { usage: this.reading - value })
 			.end()

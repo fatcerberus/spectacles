@@ -1,40 +1,47 @@
 /**
- * Scenario 3.8.2 for Sphere - (c) 2008-2015 Bruce Pascoe
- * An advanced scene manager that allows you to coordinate complex sequences using multiple
- * timelines and cooperative threading.
+ * minisphere Runtime 1.1b3 - (c) 2015 Fat Cerberus
+ * A set of system scripts providing advanced, high-level functionality not
+ * available in the engine itself.
+ *
+ * [mini/scenes.js]
+ * An advanced scene manager that allows you to coordinate complex sequences
+ * using multiple timelines and cooperative threading. Based on Scenario.
 **/
 
-var Scenario = Scenario || {};
+RequireSystemScript('mini/Core.js');
+RequireSystemScript('mini/Threads.js');
 
-// IsSkippedFrame() is minisphere-exclusive; this handles the case that
-// it isn't available.
+mini.Scenes = mini.Scenes || {};
+
+// IsSkippedFrame() is a minisphere feature and may not be available.
 if (typeof IsSkippedFrame === 'undefined') {
 	IsSkippedFrame = function() { return false; };
 }
 
-// .defineCommand() function
-// Registers a new Scenario command.
+// mini.Scenelet()
+// Registers a new miniscenes scenelet.
 // Arguments:
 //     name: The name of the command. This should be a valid JavaScript identifier (alphanumeric, no spaces).
 //     code: An object defining the command's callback functions:
 //           .start(scene, ...): Called when the command begins executing to initialize the state, or for
 //                               instantaneous commands, perform the necessary action.
 //           .update(scene):     Optional. A function to be called once per frame to update state data. If not
-//                               provided, Scenario immediately moves on to the next command after calling start().
+//                               provided, Scenes immediately moves on to the next command after calling start().
 //                               This function should return true to keep the operation running, or false to
 //                               terminate it.
 //           .getInput(scene):   Optional. A function to be called once per frame while the command has the input
 //                               focus to check for player input and update state data accordingly.
 //           .render(scene):     Optional. A function to be called once per frame to perform any rendering
 //                               related to the command (e.g. text boxes).
-//           .finish(scene):     Optional. Called after command execution ends, just before Scenario executes
+//           .finish(scene):     Optional. Called after command execution ends, just before Scenes executes
 //                               the next instruction in the queue.
-Scenario.defineCommand = function(name, code)
+// Remarks:
+//    It is safe to call this prior to runtime initialization.
+mini.Scenelet = function(name, code)
 {
-	if (Scenario.prototype[name] != null) {
-		Abort("Scenario.defineCommand(): The instruction name '" + name + "' is already in use!");
-	}
-	Scenario.prototype[name] = function() {
+	if (mini.Scene.prototype[name] != null)
+		Abort("mini.Scenelet(): Scenelet identifier '" + name + "' is already in use", -1);
+	mini.Scene.prototype[name] = function() {
 		this.enqueue({
 			arguments: arguments,
 			start: code.start,
@@ -47,32 +54,36 @@ Scenario.defineCommand = function(name, code)
 	};
 };
 
-// .initialize() function
-// Initializes the Scenario cutscene engine.
-Scenario.initialize = function()
+// initializer registration
+// Initializes Scenes when the user calls mini.initialize().
+mini.startup.add(mini.Scenes, function(params)
 {
+	Print("mini: Initializing mini.Scenes");
+	
 	this.activeScenes = [];
-	this.hasUpdated = false;
-	this.screenMask = CreateColor(0, 0, 0, 0);
-};
+	this.screenMask = new Color(0, 0, 0, 0);
+	var priority = 'scenePriority' in params
+		? params.scenePriority : 0;
+	mini.Threads.create(this, priority);
+});
 
-// .renderAll() function
-// Renders all active scenarios.
-Scenario.renderAll = function()
+// mini.Scenes.render()
+// Renders running Scenes.
+mini.Scenes.render = function()
 {
-	if (!IsSkippedFrame()) {
-		if (Scenario.screenMask.alpha > 0) {
-			ApplyColorMask(Scenario.screenMask);
-		}
-		for (var i = 0; i < Scenario.activeScenes.length; ++i) {
-			this.activeScenes[i].render();
-		}
+	if (IsSkippedFrame())
+		return;
+	if (this.screenMask.alpha > 0) {
+		ApplyColorMask(this.screenMask);
+	}
+	for (var i = 0; i < this.activeScenes.length; ++i) {
+		this.activeScenes[i].render();
 	}
 };
 
-// .updateAll() function
-// Updates all active scenarios for the next frame.
-Scenario.updateAll = function()
+// mini.Scenes.update()
+// Updates running Scenes for the next frame.
+mini.Scenes.update = function()
 {
 	for (var i = 0; i < this.activeScenes.length; ++i) {
 		var scene = this.activeScenes[i];
@@ -85,16 +96,18 @@ Scenario.updateAll = function()
 			--i;
 		}
 	}
-	Scenario.hasUpdated = true;
+	mini.Scenes.hasUpdated = true;
+	return true;
 };
 
-// Scenario() constructor
-// Creates an object representing a scenario (scene definition)
+// mini.Scene()
+// Constructs a scene definition.
 // Arguments:
-//     isLooping: If true, the scenario loops endlessly until .stop() is called. (default: false)
-function Scenario(isLooping)
+//     isLooping: If true, the Scene loops endlessly until .stop() is called.
+//                (default: false)
+mini.Scene = function(isLooping)
 {
-	isLooping = isLooping !== void null ? isLooping : false;
+	isLooping = isLooping !== undefined ? isLooping : false;
 	
 	this.activeThread = null;
 	this.focusThreadStack = [];
@@ -110,8 +123,8 @@ function Scenario(isLooping)
 	
 	this.createThread = function(context, updater, renderer, inputHandler)
 	{
-		renderer = renderer !== void null ? renderer : null;
-		inputHandler = inputHandler !== void null ? inputHandler : null;
+		renderer = renderer !== undefined ? renderer : null;
+		inputHandler = inputHandler !== undefined ? inputHandler : null;
 		
 		var threadObject = {
 			id: this.nextThreadID,
@@ -244,13 +257,13 @@ function Scenario(isLooping)
 	};
 }
 
-// .doIf() method
+// mini.Scene:doIf()
 // During scene execution, executes a block of commands only if a specified condition is met.
 // Arguments:
 //     conditional: A function to be called during scene execution to determine whether to run the following
 //                  block. The function should return true to execute the block, or false to skip it. It
 //                  will be called with 'this' set to the invoking scene.
-Scenario.prototype.doIf = function(conditional)
+mini.Scene.prototype.doIf = function(conditional)
 {
 	var jump = { ifFalse: null };
 	this.jumpsToFix.push(jump);
@@ -267,13 +280,13 @@ Scenario.prototype.doIf = function(conditional)
 	return this;
 };
 
-// .doWhile() method
+// mini.Scene:doWhile()
 // During scene execution, repeats a block of commands for as long as a specified condition is met.
 // Arguments:
 //     conditional: A function to be called at each iteration to determine whether to continue the
 //                  loop. The function should return true to continue the loop, or false to
-//                  stop it. It will be called with 'this' set to the invoking Scenario object.
-Scenario.prototype.doWhile = function(conditional)
+//                  stop it. It will be called with 'this' set to the invoking Scene object.
+mini.Scene.prototype.doWhile = function(conditional)
 {
 	var jump = { loopStart: this.queueToFill.length, ifDone: null };
 	this.jumpsToFix.push(jump);
@@ -290,12 +303,12 @@ Scenario.prototype.doWhile = function(conditional)
 	return this;
 };
 
-// .end() method
+// mini.Scene:end()
 // Marks the end of a block of commands.
-Scenario.prototype.end = function()
+mini.Scene.prototype.end = function()
 {
 	if (this.openBlockTypes.length == 0) {
-		this.throwError("Scenario.end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
+		this.throwError("Scene:end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
 	}
 	var blockType = this.openBlockTypes.pop();
 	switch (blockType) {
@@ -332,16 +345,16 @@ Scenario.prototype.end = function()
 			jump.ifDone = this.queueToFill.length;
 			break;
 		default:
-			this.throwError("Scenario.end()", "Internal error", "The type of the open block is unknown.");
+			this.throwError("Scene:end()", "Internal error", "The type of the open block is unknown.");
 			break;
 	}
 	return this;
 };
 
-// .fork() method
+// mini.Scene:fork()
 // During scene execution, forks the timeline, allowing a block to run simultaneously with
 // the instructions after the block.
-Scenario.prototype.fork = function()
+mini.Scene.prototype.fork = function()
 {
 	this.forkedQueues.push(this.queueToFill);
 	this.queueToFill = [];
@@ -349,34 +362,29 @@ Scenario.prototype.fork = function()
 	return this;
 };
 
-// .isRunning() method
+// mini.Scene:isRunning()
 // Determines whether a scenario is still running.
 // Returns:
 //     true if the scenario is still executing commands; false otherwise.
-Scenario.prototype.isRunning = function()
+mini.Scene.prototype.isRunning = function()
 {
 	return this.isThreadRunning(this.mainThread);
 };
 
-// .run() method
-// Runs the scenario.
+// mini.Scene:run()
+// Runs the scene.
 // Arguments:
 //     waitUntilDone: Optional. If true, prevents .run() from returning until the scenario has finished executing.
 //                    Otherwise, .run() returns immediately. (default: false)
-// Remarks:
-//     waitUntilDone should be used with care. If .run() is called during a map engine update with waitUntilDone set to true,
-//     your game's update script will be blocked from running until the scene is finished. While Scenario itself won't deadlock,
-//     anything else called by your update script won't run until the scenario has finished. For this reason, it is strongly
-//     recommended to implement your own wait logic.
-Scenario.prototype.run = function(waitUntilDone)
+mini.Scene.prototype.run = function(waitUntilDone)
 {
-	waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
+	waitUntilDone = waitUntilDone !== undefined ? waitUntilDone : false;
 	
 	if (this.openBlockTypes.length > 0) {
-		this.throwError("Scenario.run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
+		this.throwError("Scene:run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
 	}
 	if (this.isLooping && waitUntilDone) {
-		this.throwError("Scenario.run()", "Invalid argument", "Caller attempted to wait on a looping scene. This would have created an infinite loop and has been prevented.");
+		this.throwError("Scene:run()", "Invalid argument", "Caller attempted to wait on a looping scene. This would have created an infinite loop and has been prevented.");
 	}
 	
 	if (this.isRunning()) {
@@ -390,45 +398,33 @@ Scenario.prototype.run = function(waitUntilDone)
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
 	this.mainThread = this.createThread(mainForkContext, this.forkUpdater);
-	Scenario.activeScenes.push(this);
+	mini.Scenes.activeScenes.push(this);
 	if (waitUntilDone) {
 		var currentFPS = GetFrameRate();
 		if (IsMapEngineRunning()) {
 			SetFrameRate(GetMapEngineFrameRate());
 		}
-		while (this.isRunning()) {
-			if (IsMapEngineRunning()) {
-				RenderMap();
-				FlipScreen();
-				Scenario.hasUpdated = false;
-				UpdateMapEngine();
-				if (!Scenario.hasUpdated) {
-					Scenario.updateAll();
-				}
-			} else {
-				Scenario.renderAll();
-				FlipScreen();
-				Scenario.updateAll();
-			}
-		}
+		mini.Threads.join(mini.Threads.createEx(this, {
+			update: this.isThreadRunning.bind(this, this.mainThread)
+		}));
 		SetFrameRate(currentFPS);
 	}
 	return this;
 };
 
-// .stop() method
+// mini.Scene:stop()
 // Immediately halts execution of the scene. Has no effect if the scene isn't running.
 // Remarks:
 //     After calling this method, calling run() afterwards will start the scene over from the
 //     beginning.
-Scenario.prototype.stop = function()
+mini.Scene.prototype.stop = function()
 {
 	this.killThread(this.mainThread);
 };
 
-// .synchronize() method
+// .synchronize() scenelet
 // During a scene, suspends the current timeline until all its forks have finished executing.
-Scenario.prototype.synchronize = function()
+mini.Scene.prototype.synchronize = function()
 {
 	var command = {};
 	command.arguments = [];
@@ -449,7 +445,7 @@ Scenario.prototype.synchronize = function()
 // Remarks:
 //     Any additional arguments provided beyond the 'method' argument will be passed
 //     to the specified function when it is called.
-Scenario.defineCommand('call',
+mini.Scenelet('call',
 {
 	start: function(scene, method /*...*/) {
 		method.apply(null, [].slice.call(arguments, 2));
@@ -461,7 +457,7 @@ Scenario.defineCommand('call',
 // Arguments:
 //     person:    The name of the entity whose direction to change.
 //     direction: The name of the new direction.
-Scenario.defineCommand('facePerson',
+mini.Scenelet('facePerson',
 {
 	start: function(scene, person, direction) {
 		var faceCommand;
@@ -502,13 +498,13 @@ Scenario.defineCommand('facePerson',
 // Arguments:
 //     color:    The new screen mask color.
 //     duration: The length of the fading operation, in seconds.
-Scenario.defineCommand('fadeTo',
+mini.Scenelet('fadeTo',
 {
 	start: function(scene, color, duration) {
-		duration = duration !== void null ? duration : 0.25;
+		duration = duration !== undefined ? duration : 0.25;
 		
-		this.fader = new Scenario()
-			.tween(Scenario.screenMask, duration, 'linear', color)
+		this.fader = new mini.Scene()
+			.tween(mini.Scenes.screenMask, duration, 'linear', color)
 			.run();
 	},
 	update: function(scene) {
@@ -522,12 +518,12 @@ Scenario.defineCommand('fadeTo',
 //     person:   The name of the entity to focus on.
 //     duration: Optional. The length of the panning operation, in seconds.
 //               (default: 0.25)
-Scenario.defineCommand('focusOnPerson',
+mini.Scenelet('focusOnPerson',
 {
 	start: function(scene, person, duration) {
-		duration = duration !== void null ? duration : 0.25;
+		duration = duration !== undefined ? duration : 0.25;
 		
-		this.pan = new Scenario()
+		this.pan = new mini.Scene()
 			.panTo(GetPersonX(person), GetPersonY(person), duration)
 			.run();
 	},
@@ -540,11 +536,11 @@ Scenario.defineCommand('focusOnPerson',
 // Pans to and attaches the camera to a specified map entity.
 // Arguments:
 //     person: The name of the entity to follow.
-Scenario.defineCommand('followPerson',
+mini.Scenelet('followPerson',
 {
 	start: function(scene, person) {
 		this.person = person;
-		this.pan = new Scenario()
+		this.pan = new mini.Scene()
 			.focusOnPerson(person)
 			.run();
 	},
@@ -560,7 +556,7 @@ Scenario.defineCommand('followPerson',
 // Hides a map entity and prevents it from obstructing other entities.
 // Arguments:
 //     person: The name of the entity to hide.
-Scenario.defineCommand('hidePerson',
+mini.Scenelet('hidePerson',
 {
 	start: function(scene, person) {
 		SetPersonVisible(person, false);
@@ -572,7 +568,7 @@ Scenario.defineCommand('hidePerson',
 // Destroys a map entity.
 // Arguments:
 //     person: The name of the entity to destroy.
-Scenario.defineCommand('killPerson',
+mini.Scenelet('killPerson',
 {
 	start: function(scene, person) {
 		DestroyPerson(person);
@@ -585,11 +581,11 @@ Scenario.defineCommand('killPerson',
 //     text:            The text to display.
 //     backgroundColor: The background color of the marquee.
 //     color:           The text color.
-Scenario.defineCommand('marquee',
+mini.Scenelet('marquee',
 {
 	start: function(scene, text, backgroundColor, color) {
-		if (backgroundColor === void null) { backgroundColor = CreateColor(0, 0, 0, 255); }
-		if (color === void null) { color = CreateColor(255, 255, 255, 255); }
+		if (backgroundColor === undefined) { backgroundColor = new Color(0, 0, 0, 255); }
+		if (color === undefined) { color = new Color(255, 255, 255, 255); }
 		
 		this.text = text;
 		this.color = color;
@@ -600,7 +596,7 @@ Scenario.defineCommand('marquee',
 		this.textHeight = this.font.getHeight();
 		this.fadeness = 0.0;
 		this.scroll = 0.0;
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.tween(this, 0.25, 'linear', { fadeness: 1.0 })
 			.tween(this, 1.0, 'easeOutExpo', { scroll: 0.5 })
 			.tween(this, 1.0, 'easeInExpo', { scroll: 1.0 })
@@ -613,7 +609,7 @@ Scenario.defineCommand('marquee',
 		var textX = GetScreenWidth() - this.scroll * this.windowSize;
 		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
 		Rectangle(0, boxY, GetScreenWidth(), boxHeight, this.background);
-		this.font.setColorMask(CreateColor(0, 0, 0, this.color.alpha));
+		this.font.setColorMask(new Color(0, 0, 0, this.color.alpha));
 		this.font.drawText(textX + 1, textY + 1, this.text);
 		this.font.setColorMask(this.color);
 		this.font.drawText(textX, textY, this.text);
@@ -632,10 +628,10 @@ Scenario.defineCommand('marquee',
 //     speed:     The number of pixels per frame the entity should move.
 //     faceFirst: Optional. If this is false, the entity will move without changing its facing
 //                direction. (default: true)
-Scenario.defineCommand('movePerson',
+mini.Scenelet('movePerson',
 {
 	start: function(scene, person, direction, distance, speed, faceFirst) {
-		faceFirst = faceFirst !== void null ? faceFirst : true;
+		faceFirst = faceFirst !== undefined ? faceFirst : true;
 		
 		if (!isNaN(speed)) {
 			speedVector = [ speed, speed ];
@@ -708,10 +704,10 @@ Scenario.defineCommand('movePerson',
 //     x:        The X coordinate of the location to pan to.
 //     y:        The Y coordinate of the location to pan to.
 //     duration: Optional. The length of the panning operation, in seconds. (default: 0.25)
-Scenario.defineCommand('panTo',
+mini.Scenelet('panTo',
 {
 	start: function(scene, x, y, duration) {
-		duration = duration !== void null ? duration : 0.25;
+		duration = duration !== undefined ? duration : 0.25;
 		
 		DetachCamera();
 		var targetXY = {
@@ -720,7 +716,7 @@ Scenario.defineCommand('panTo',
 		};
 		this.cameraX = GetCameraX();
 		this.cameraY = GetCameraY();
-		this.pan = new Scenario()
+		this.pan = new mini.Scene()
 			.tween(this, duration, 'easeOutQuad', targetXY)
 			.run();
 	},
@@ -735,7 +731,7 @@ Scenario.defineCommand('panTo',
 // Delays execution of the current timeline for a specified amount of time.
 // Arguments:
 //     duration: The length of the delay, in seconds.
-Scenario.defineCommand('pause',
+mini.Scenelet('pause',
 {
 	start: function(scene, duration) {
 		this.duration = duration;
@@ -750,10 +746,10 @@ Scenario.defineCommand('pause',
 // .playSound() scenelet
 // Plays a sound from a file.
 //     fileName: The name of the file to play.
-Scenario.defineCommand('playSound',
+mini.Scenelet('playSound',
 {
 	start: function(scene, fileName) {
-		this.sound = LoadSound(fileName);
+		this.sound = new Sound(fileName);
 		this.sound.play(false);
 		return true;
 	},
@@ -766,7 +762,7 @@ Scenario.defineCommand('playSound',
 // Makes a map entity visible and enables obstruction.
 // Arguments:
 //     person: The name of the entity to show.
-Scenario.defineCommand('showPerson',
+mini.Scenelet('showPerson',
 {
 	start: function(scene, person) {
 		SetPersonVisible(person, true);
@@ -781,7 +777,7 @@ Scenario.defineCommand('showPerson',
 //    duration:   The length of the tweening operation, in seconds.
 //    easingType: The name of the easing function to use, e.g. 'linear' or 'easeOutQuad'.
 //    endValues:  An object specifying the properties to tween and their final values.
-Scenario.defineCommand('tween',
+mini.Scenelet('tween',
 {
 	start: function(scene, object, duration, easingType, endValues) {
 		this.easers = {

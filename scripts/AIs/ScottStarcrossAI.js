@@ -15,7 +15,7 @@ function ScottStarcrossAI(aiContext)
 	
 	// HP thresholds for phase transitions
 	this.phasePoints = Link([ 4500, 2500, 1000 ])
-		.map(function(value) { return Math.round(RNG.fromNormal(value, 50)); })
+		.map(function(value) { return Math.round(RNG.normal(value, 50)); })
 		.toArray();
 	
 	// Scott's move combos
@@ -85,7 +85,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 			.toArray();
 		var tactic;
 		do {
-			tactic = RNG.fromArray(this.tactics);
+			tactic = RNG.sample(this.tactics);
 		} while (tactic === this.tactics[0] && tactic.moveIndex == tactic.moves.length - 1
 			&& this.tactics.length > 1);
 		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unit.id);

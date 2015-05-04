@@ -44,7 +44,7 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the item used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the item was used on, or
 	//                 null in the case of a non-targeted item.
-	this.itemUsed = new MultiDelegate();
+	this.itemUsed = new mini.Delegate();
 	
 	// .skillUsed event
 	// Occurs when a skill is used by a battle unit.
@@ -53,14 +53,14 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the skill used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
 	//                 null in the case of a non-targeted skill.
-	this.skillUsed = new MultiDelegate();
+	this.skillUsed = new mini.Delegate();
 	
 	// .stanceChanged event
 	// Occurs when a unit changes stance.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit changing stance.
 	//     stance: The unit's new stance.
-	this.stanceChanged = new MultiDelegate();
+	this.stanceChanged = new mini.Delegate();
 	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
@@ -69,26 +69,26 @@ function Battle(session, battleID)
 	//     amount:     The amount of damage taken.
 	//     actingUnit: The unit responsible for inflicting the damage. In the case of residual
 	//                 (e.g. status-induced) damage, this will be null.
-	this.unitDamaged = new MultiDelegate();
+	this.unitDamaged = new mini.Delegate();
 	
 	// .unitHealed event
 	// Occurs when a unit in the battle recovers HP.
 	// Arguments (for event handler):
 	//     unit:     The unit recovering HP.
 	//     amount:   The number of hit points recovered.
-	this.unitHealed = new MultiDelegate();
+	this.unitHealed = new mini.Delegate();
 	
 	// .unitKilled event
 	// Occurs when a unit falls in battle.
 	// Arguments (for event handler):
 	//     unitID: The ID of the downed unit.
-	this.unitKilled = new MultiDelegate();
+	this.unitKilled = new mini.Delegate();
 	
 	// .unitReady event
 	// Occurs when a unit is about to take its turn.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit whose turn is up.
-	this.unitReady = new MultiDelegate();
+	this.unitReady = new mini.Delegate();
 	
 	// .unitTargeted event
 	// Occurs when a unit in the battle is successfully targeted by an action.
@@ -99,7 +99,7 @@ function Battle(session, battleID)
 	// Remarks:
 	//     If, after accuracy is taken into account, the action would result in
 	//     a miss, this event will not be raised.
-	this.unitTargeted = new MultiDelegate();
+	this.unitTargeted = new mini.Delegate();
 }
 
 // .addCondition() method
@@ -146,7 +146,7 @@ Battle.prototype.alliesOf = function(unit)
 //     true if the unit1 and unit2 are of different alignments; false otherwise.
 Battle.prototype.areEnemies = function(unit1, unit2)
 {
-	return Link(this.enemiesOf(unit1)).contains(unit2);
+	return mini.Link(this.enemiesOf(unit1)).contains(unit2);
 };
 
 // .enemiesOf() method
@@ -173,7 +173,7 @@ Battle.prototype.enemiesOf = function(unit)
 //     exists.
 Battle.prototype.findUnit = function(unitID)
 {
-	var unit = Link(this.enemyUnits, this.playerUnits).first(function(unit) {
+	var unit = mini.Link(this.enemyUnits, this.playerUnits).first(function(unit) {
 		return unit.id == unitID;
 	});
 	return unit !== undefined ? unit : null;
@@ -243,7 +243,7 @@ Battle.prototype.go = function()
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
-	var battleThread = Threads.create(this);
+	var battleThread = mini.Threads.create(this);
 	return battleThread;
 };
 
@@ -253,7 +253,7 @@ Battle.prototype.go = function()
 //     conditionID: The ID of the field condition to test for, as defined in the gamedef.
 Battle.prototype.hasCondition = function(conditionID)
 {
-	return Link(this.conditions).pluck('conditionID').contains(conditionID);
+	return mini.Link(this.conditions).pluck('conditionID').contains(conditionID);
 };
 
 // .isActive() method
@@ -302,7 +302,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	var forecast = [];
 	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
 		var bias = 0;
-		Link(this.enemyUnits, this.playerUnits)
+		mini.Link(this.enemyUnits, this.playerUnits)
 			.reject(function(unit) { return unit === actingUnit && turnIndex == 0; })
 			.each(function(unit)
 		{
@@ -340,7 +340,7 @@ Battle.prototype.raiseEvent = function(eventID, data)
 	data = data !== void null ? data : null;
 	
 	var conditions = this.conditions.slice();
-	Link(conditions).invoke('invoke', eventID, data);
+	mini.Link(conditions).invoke('invoke', eventID, data);
 };
 
 // .resume() method
@@ -374,7 +374,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if ('announceAs' in action && action.announceAs != null) {
 		actingUnit.announce(action.announceAs);
 	}
-	Link(action.effects)
+	mini.Link(action.effects)
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
@@ -383,7 +383,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.append("retarg: " + effect.targetHint);
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
-	Link(targetUnits).invoke('takeHit', actingUnit, action);
+	mini.Link(targetUnits).invoke('takeHit', actingUnit, action);
 	if (action.effects === null) {
 		return [];
 	}
@@ -415,8 +415,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
-	Link(targetsHit).invoke('beginTargeting', actingUnit);
-	Link(action.effects)
+	mini.Link(targetsHit).invoke('beginTargeting', actingUnit);
+	mini.Link(action.effects)
 		.filterBy('targetHint', 'selected')
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)
@@ -425,7 +425,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		Console.append("retarg: " + effect.targetHint);
 		Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
 	});
-	Link(targetsHit).invoke('endTargeting');
+	mini.Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
 };
 
@@ -460,22 +460,22 @@ Battle.prototype.tick = function()
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	Link(unitLists).unroll().invoke('beginCycle');
-	Link(this.conditions).invoke('beginCycle');
+	mini.Link(unitLists).unroll().invoke('beginCycle');
+	mini.Link(this.conditions).invoke('beginCycle');
 	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
-		Link(unitLists).unroll().each(function(unit) {
+		mini.Link(unitLists).unroll().each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
-		if (Link(this.playerUnits).none(isUnitAlive)) {
+		if (mini.Link(this.playerUnits).none(isUnitAlive)) {
 			BGM.adjustVolume(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
 			Console.writeLine("All active party members have been killed");
 			return;
 		}
-		if (Link(this.enemyUnits).none(isUnitAlive)) {
+		if (mini.Link(this.enemyUnits).none(isUnitAlive)) {
 			BGM.adjustVolume(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
@@ -483,7 +483,7 @@ Battle.prototype.tick = function()
 			return;
 		}
 	}
-	Link(unitLists).unroll().invoke('endCycle');
+	mini.Link(unitLists).unroll().invoke('endCycle');
 };
 
 // .update() method
@@ -494,15 +494,15 @@ Battle.prototype.update = function() {
 			var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle) ? "Final Battle: " : "Boss Battle: ";
 			this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
 			var walkInThreads = [];
-			Link(this.enemyUnits, this.playerUnits)
+			mini.Link(this.enemyUnits, this.playerUnits)
 				.each(function(unit)
 			{
 				var thread = unit.actor.enter();
 				walkInThreads.push(thread);
 			});
-			Threads.join(walkInThreads);
+			mini.Threads.join(walkInThreads);
 			this.ui.hud.turnPreview.show();
-			if (!Link(this.session.battlesSeen).contains(this.battleID)) {
+			if (!mini.Link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
 					Console.writeLine("Calling onFirstStart() for battleID '" + this.battleID + "'");
@@ -522,7 +522,7 @@ Battle.prototype.update = function() {
 	}
 	if (this.result !== null) {
 		Console.writeLine("Battle engine shutting down");
-		Link(this.battleUnits).invoke('dispose');
+		mini.Link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
 		BGM.reset();
 		BGM.adjustVolume(1.0, 0.0);

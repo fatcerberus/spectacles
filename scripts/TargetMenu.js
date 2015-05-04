@@ -21,7 +21,7 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
-	this.isTargetScanOn = Link(battle.alliesOf(unit))
+	this.isTargetScanOn = mini.Link(battle.alliesOf(unit))
 		.where(function(unit) { return unit.isAlive(); })
 		.pluck('allowTargetScan').some(true);
 	this.isTargetLocked = false;
@@ -88,7 +88,7 @@ function TargetMenu(unit, battle, usable, moveName)
 		if (this.doChangeInfo != null) {
 			this.doChangeInfo.stop();
 		}
-		this.doChangeInfo = new Scenario()
+		this.doChangeInfo = new mini.Scene()
 			.fork()
 				.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 			.end()
@@ -117,7 +117,7 @@ TargetMenu.prototype.getInput = function()
 {
 	switch (AreKeysLeft() ? GetKey() : null) {
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
-			new Scenario()
+			new mini.Scene()
 				.fork()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
@@ -128,7 +128,7 @@ TargetMenu.prototype.getInput = function()
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
 			this.targets = null;
-			new Scenario()
+			new mini.Scene()
 				.fork()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
@@ -194,7 +194,7 @@ TargetMenu.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	Threads.join(Threads.create(this, 10));
+	mini.Threads.join(mini.Threads.create(this, 10));
 	return this.targets;
 };
 

@@ -3,9 +3,10 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
+RequireSystemScript('kh2Bar.js');
+
 RequireScript('MPGauge.js');
 RequireScript('TurnPreview.js');
-RequireScript('lib/kh2Bar.js');
 
 // BattleHUD() constructor
 // Creates an object representing the in-battle heads-up display (HUD).
@@ -91,7 +92,7 @@ function BattleHUD(partyMaxMP)
 BattleHUD.prototype.dispose = function()
 {
 	this.turnPreview.dispose();
-	Threads.kill(this.thread);
+	mini.Threadskill(this.thread);
 };
 
 // .createEnemyHPGauge() method
@@ -111,7 +112,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
 // Hides the HUD.
 BattleHUD.prototype.hide = function()
 {
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.5, 'easeInExpo', { fadeness: 0.0 })
 		.run();
 };
@@ -124,12 +125,12 @@ BattleHUD.prototype.highlight = function(name)
 {
 	if (name !== null) {
 		this.highlightedName = name;
-		new Scenario()
+		new mini.Scene()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
-		new Scenario()
+		new mini.Scene()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 0, 0, 0))
 			.run();
 	}
@@ -182,7 +183,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 				: CreateColor(0, 255, 0, 255);
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
-			new Scenario()
+			new mini.Scene()
 				.fork()
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColor)
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', CreateColor(0, 0, 0, 0))
@@ -228,9 +229,9 @@ BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
 		Console.writeLine("Activating in-battle HUD");
-		this.thread = Threads.create(this, 20);
+		this.thread = mini.Threads.create(this, 20);
 	}
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 })
 		.run();
 };

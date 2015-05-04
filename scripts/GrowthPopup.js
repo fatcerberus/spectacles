@@ -3,8 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript('lib/Scenario.js');
-
 // GrowthPopup() constructor
 // Creates an object representing a character growth popup.
 // Arguments:

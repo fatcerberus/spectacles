@@ -41,12 +41,12 @@ GameOverScreen.prototype.show = function()
 		this.fadeness = 0.0;
 	}
 	BGM.change(null);
-	this.transition = new Scenario()
+	this.transition = new mini.Scene()
 		.playBGM("GameOver")
 		.adjustBGM(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
 		.run();
-	return Threads.createEntityThread(this);
+	return mini.Threads.create(this);
 };
 
 // .update() method
@@ -66,7 +66,7 @@ GameOverScreen.prototype.update = function()
 				if (DBG_DISABLE_TRANSITIONS) {
 					this.fadeness = 1.0;
 				}
-				this.transition = new Scenario()
+				this.transition = new mini.Scene()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()

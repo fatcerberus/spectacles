@@ -11,7 +11,7 @@
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, function() {
 			name = GetCurrentPerson();
 			if (name == 'maggie' || name == 'robert') return;
-			new Scenario()
+			new mini.Scene()
 				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
 				.talk("maggie", true, 2.0, Infinity, "Too late!")
 				.killPerson(name)
@@ -50,12 +50,12 @@
 			var inputPerson = GetInputPerson();
 			DetachInput();
 			if (inputPerson === 'hero') {
-				new Scenario()
+				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Scott, you suck. Fight me to decide who gets to kill my sister!")
 					.battle('robert2', analogue.getWorld().session)
 					.run(true);
 			} else {
-				new Scenario()
+				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Hey maggie, where did Scott go?  Please tell me you didn't do... what I think you did... I hope?")
 					.talk("maggie", true, 2.0, Infinity, "Guess what?  You're next!")
 					.battle('robert2', analogue.getWorld().session)
@@ -79,7 +79,7 @@
 			DetachInput();
 			person.isActive = false;
 			var number = person.peopleEaten != 1 ? person.peopleEaten.toString() : "one";
-			new Scenario()
+			new mini.Scene()
 				.doIf(function() { return person.peopleEaten > 0; })
 					.talk("Scott", true, 2.0, Infinity,
 						"Thanks maggie, you just devoured " + number + " of my friends!",
@@ -106,14 +106,14 @@
 					DetachInput('hero');
 					person.isActive = false;
 					if (++person.timesStopped <= 1) {
-						new Scenario()
+						new mini.Scene()
 							.talk("maggie", true, 2.0, Infinity, "Hey, watch where you're going Scott!  Do it again and you'll get eaten!")
 							.run(true);
 						person.isActive = true;
 						AttachInput('hero');
 					} else {
 						DetachCamera();
-						new Scenario()
+						new mini.Scene()
 							.talk("maggie", true, 2.0, Infinity, "That's it, you blocked my path for the last time! Prepare to be devoured!")
 							.fork()
 								.focusOnPerson('maggie', 2.0)

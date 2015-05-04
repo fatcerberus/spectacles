@@ -21,7 +21,7 @@ function FieldMenu(session)
 	this.font = GetSystemFont();
 	this.isOpen = false;
 	this.itemFader = null;
-	this.selection = Link(this.items).pluck('id').toArray().indexOf('party');
+	this.selection = mini.Link(this.items).pluck('id').toArray().indexOf('party');
 }
 
 FieldMenu.prototype.update = function()
@@ -89,22 +89,22 @@ FieldMenu.prototype.render = function()
 
 FieldMenu.prototype.open = function()
 {
-	Threads.enableUpdateMap(false);
+	mini.Threads.enableUpdateMap(false);
 	this.isOpen = true;
 	this.fadeness = 0.0;
-	var thread = Threads.create(this, 100);
+	var thread = mini.Threads.create(this, 100);
 	this.selectItem(this.selection);
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })
 		.run(true);
-	Threads.join(thread);
-	Threads.enableUpdateMap(true);
+	mini.Threads.join(thread);
+	mini.Threads.enableUpdateMap(true);
 };
 
 FieldMenu.prototype.close = function()
 {
 	this.isOpen = false;
-	new Scenario()
+	new mini.Scene()
 		.fork().tween(this.items[this.selection].highlight, 0.5, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.5, 'easeInSine', this.itemTextColor).end()
 		.tween(this, 0.5, 'easeInQuint', { fadeness: 0.0 })
@@ -116,7 +116,7 @@ FieldMenu.prototype.selectItem = function(itemID)
 	if (this.itemFader != null) {
 		this.itemFader.stop();
 	}
-	this.itemFader = new Scenario()
+	this.itemFader = new mini.Scene()
 		.fork().tween(this.items[this.selection].highlight, 0.25, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.25, 'easeInSine', this.itemTextColor).end()
 		.fork().tween(this.items[itemID].highlight, 0.25, 'easeOutSine', this.highlightColor).end()

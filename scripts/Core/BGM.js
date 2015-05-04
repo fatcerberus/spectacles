@@ -19,7 +19,7 @@ BGM = new (function()
 	// Starts up the BGM manager.
 	this.initialize = function()
 	{
-		Threads.create(this);
+		mini.Threads.create(this);
 	};
 	
 	// .adjustVolume() method
@@ -38,7 +38,7 @@ BGM = new (function()
 			this.adjuster.stop();
 		}
 		if (duration > 0.0) {
-			this.adjuster = new Scenario()
+			this.adjuster = new mini.Scene()
 				.tween(this, duration, 'linear', { volume: newVolume })
 				.run();
 		} else {

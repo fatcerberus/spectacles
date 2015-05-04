@@ -35,7 +35,7 @@ Scrambler.prototype.start = function()
 {
 	this.lastX = GetPersonX(this.name);
 	this.lastY = GetPersonY(this.name);
-	Threads.createEntityThread(this);
+	mini.Threads.create(this);
 	Console.writeLine("Started random battle scrambler for '" + this.name + "'");
 };
 
@@ -47,10 +47,10 @@ Scrambler.prototype.update = function()
 		if ((x != this.lastX || y != this.lastY) && RNG.chance(this.encounterRate)) {
 			var inputPerson = IsInputAttached() ? GetInputPerson() : null;
 			DetachInput();
-			var battleID = RNG.fromArray(this.battleIDs);
+			var battleID = RNG.sample(this.battleIDs);
 			Console.writeLine("Random battle triggered by person '" + this.name + "'");
 			Console.append("battleID: " + battleID);
-			new Scenario()
+			new mini.Scene()
 				.battle(battleID, analogue.getWorld().session)
 				.run(true);
 			if (inputPerson !== null) {

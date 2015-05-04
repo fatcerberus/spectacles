@@ -1,13 +1,18 @@
 /**
-* Script: Link.js
-* Written by: Andrew Helenius
-* Updated: Feb/17/2015
-* Version: 0.3.0
-* Desc: Link.js is a very fast general-purpose functional programming library.
-		Still somewhat experimental, and still under construction.
+ * minisphere Runtime 1.1b3 - (c) 2015 Fat Cerberus
+ * A set of system scripts providing advanced, high-level functionality not
+ * available in the engine itself.
+ *
+ * [mini/link.js]
+ * A powerful functional programming library which is used like .NET LINQ to
+ * perform complex queries on JS arrays. Originally based on Link 0.3.0 by
+ * Andrew Helenius.
 **/
 
-var Link = (function(undefined) {
+RequireSystemScript('mini/Core.js');
+
+mini.Link = (function(undefined)
+{
 	"use strict";
 	
 	var _slice = [].slice;

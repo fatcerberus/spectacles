@@ -3,15 +3,6 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-RequireSystemScript('mini/delegate.js');
-RequireSystemScript('mini/RNG.js');
-RequireSystemScript('mini/threads.js');
-
-RequireScript('lib/analogue.js');
-RequireScript('lib/Link.js');
-RequireScript('lib/Scenario.js');
-RequireScript('lib/SpriteImage.js');
-
 var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = false;
@@ -20,6 +11,14 @@ var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 var DBG_LOG_CONSOLE_OUTPUT = true;
 var DBG_IN_GAME_CONSOLE = true;
+
+RequireSystemScript('mini/Core.js');
+RequireSystemScript('mini/Link.js');
+RequireSystemScript('mini/RNG.js');
+RequireSystemScript('mini/Scenes.js');
+RequireSystemScript('mini/Threads.js');
+RequireSystemScript('analogue.js');
+RequireSystemScript('SpriteImage.js');
 
 RequireScript('Core/Engine.js');
 RequireScript('Core/BGM.js');
@@ -45,7 +44,7 @@ function game()
 	var extensions = typeof GetExtensions === 'undefined'
 		? [ 'sphere-legacy-api', 'sphere-map-engine' ]
 		: GetExtensions();
-	var q = Link(extensions);
+	var q = mini.Link(extensions);
 	var isSupportedEngine = GetVersion() >= 1.5
 		&& q.contains('sphere-legacy-api')
 		&& q.contains('sphere-obj-constructors')
@@ -59,16 +58,14 @@ function game()
 		Abort("This engine is not supported.\n");
 	}
 	
+	// initialize the minisphere runtime
+	mini.initialize({
+		scenePriority: 99
+	});
+	
 	// initialize Specs Engine components
 	Engine.initialize(60);
-	Threads.initialize();
 	BGM.initialize();
-	Scenario.initialize();
-	Threads.createEx(Scenario, {
-		priority: 99,
-		update: function() { return this.updateAll(), true; },
-		render: function() { this.renderAll(); }
-	});
 	Console.initialize();
 	analogue.init();
 	
@@ -90,26 +87,6 @@ function game()
 	BindKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_X), 'analogue.getWorld().session.fieldMenu.open();', null);
 	MapEngine('Testville.rmp', 60);
 }
-
-// PATCH! - Scenario.run() method
-// Scenario's built-in wait loop locks out the Specs threader under most circumstances.
-// This causes a deadlock because Scenario is waiting for its own operation to finish, but
-// because the threader is blocked and thus unable to update Scenario, well...
-(function() {
-	var Scenario_run = Scenario.prototype.run;
-	Scenario.prototype.run = function(waitUntilDone)
-	{
-		waitUntilDone = waitUntilDone !== void null ? waitUntilDone : false;
-		
-		value = Scenario_run.call(this, false);
-		if (waitUntilDone) {
-			Threads.join(Threads.createEx(this, {
-				update: function() { return this.isRunning(); }
-			}));
-		}
-		return value;
-	};
-})();
 
 function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 {

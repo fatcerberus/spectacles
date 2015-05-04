@@ -61,7 +61,7 @@ MenuStrip.prototype.getInput = function()
 	var key = AreKeysLeft() ? GetKey() : null;
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 		this.chosenItem = this.selectedItem;
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.fork()
 				.tween(this, 0.125, 'easeInOutSine', { brightness: 1.0 })
 				.tween(this, 0.125, 'easeInOutSine', { brightness: 0.0 })
@@ -71,19 +71,19 @@ MenuStrip.prototype.getInput = function()
 		this.mode = 'close';
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
 		this.chosenItem = null;
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.tween(this, 0.25, 'easeInQuad', { openness: 0.0 })
 			.run();
 		this.mode = 'close';
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		this.scrollDirection = -1;
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
 			.run();
 		this.mode = 'changeItem';
 	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 		this.scrollDirection = 1;
-		this.animation = new Scenario()
+		this.animation = new mini.Scene()
 			.tween(this, 0.25, 'linear', { scrollProgress: 1.0 })
 			.run();
 		this.mode = 'changeItem';
@@ -120,11 +120,11 @@ MenuStrip.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	var menuThread = Threads.create(this, 100);
-	this.animation = new Scenario()
+	var menuThread = mini.Threads.create(this, 100);
+	this.animation = new mini.Scene()
 		.tween(this, 0.25, 'easeOutQuad', { openness: 1.0 })
 		.run();
-	Threads.join(menuThread);
+	mini.Threads.join(menuThread);
 	this.menuThread = null;
 	return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 };

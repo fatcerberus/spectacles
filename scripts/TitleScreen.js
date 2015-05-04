@@ -38,12 +38,12 @@ TitleScreen.prototype.show = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		this.fadeness = 0.0;
 	}
-	this.transition = new Scenario()
+	this.transition = new mini.Scene()
 		.adjustBGM(1.0)
 		.playBGM(this.themeTrack)
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();
-	Threads.waitFor(Threads.createEntityThread(this));
+	mini.Threads.join(mini.Threads.create(this));
 	BGM.reset();
 	BGM.adjustVolume(1.0);
 	return new Session();
@@ -63,7 +63,7 @@ TitleScreen.prototype.update = function()
 				if (DBG_DISABLE_TRANSITIONS) {
 					this.fadeness = 1.0;
 				}
-				this.transition = new Scenario()
+				this.transition = new mini.Scene()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()

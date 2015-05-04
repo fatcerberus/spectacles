@@ -34,7 +34,7 @@ Console.initialize = function(numLines, bufferSize)
 	this.buffer = [];
 	this.bufferSize = bufferSize;
 	this.commands = [];
-	this.thread = Threads.create(this, 101);
+	this.thread = mini.Threads.create(this, 101);
 	this.writeLine("Specs Engine v6.0");
 	this.append("(c)2015 Fat Cerberus");
 	this.writeLine("Sphere " + GetVersionString());
@@ -85,7 +85,7 @@ Console.getInput = function()
 Console.hide = function()
 {
 	this.isVisible = false;
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.5, 'easeInBack', { fadeness: 0.0 })
 		.run();
 };
@@ -131,7 +131,7 @@ Console.render = function() {
 Console.show = function()
 {
 	this.isVisible = true;
-	new Scenario()
+	new mini.Scene()
 		.tween(this, 0.5, 'easeOutBack', { fadeness: 1.0 })
 		.run();
 }

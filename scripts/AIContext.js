@@ -29,7 +29,7 @@ function AIContext(unit, battle, aiType)
 	//     aiContext: The AIContext that triggered the phase change.
 	//     newPhase:  The phase the AI context is switching to.
 	//     lastPhase: The phase being exited.
-	this.phaseChanged = new MultiDelegate();
+	this.phaseChanged = new mini.Delegate();
 	
 	Console.writeLine("Initializing AI context for " + unit.fullName);
 	this.battle = battle;
@@ -69,10 +69,10 @@ AIContext.prototype.checkPhase = function(allowEvents)
 	
 	var phaseToEnter;
 	if (this.phasePoints !== null) {
-		var milestone = Link(this.phasePoints)
+		var milestone = mini.Link(this.phasePoints)
 			.where(function(value) { return value >= this.unit.hp; }.bind(this))
 			.last()[0];
-		phaseToEnter = 2 + Link(this.phasePoints).indexOf(milestone);
+		phaseToEnter = 2 + mini.Link(this.phasePoints).indexOf(milestone);
 	} else {
 		phaseToEnter = 1;
 	}
@@ -101,11 +101,11 @@ AIContext.prototype.definePhases = function(thresholds, sigma)
 	sigma = sigma !== void null ? sigma : 0;
 	
 	Console.writeLine("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
-	this.phasePoints = Link(thresholds)
+	this.phasePoints = mini.Link(thresholds)
 		.map(function(value) { return Math.round(RNG.normal(value, sigma)); })
 		.toArray();
 	var phaseIndex = 1;
-	Link(this.phasePoints).each(function(milestone) {
+	mini.Link(this.phasePoints).each(function(milestone) {
 		++phaseIndex;
 		Console.writeLine("Phase " + phaseIndex + " will start at <= " + milestone + " HP");
 	});
@@ -199,7 +199,7 @@ AIContext.prototype.hasStatus = function(statusID)
 //     itemID: The item ID of the item to check for.
 AIContext.prototype.isItemQueued = function(itemID)
 {
-	return Link(this.moveQueue)
+	return mini.Link(this.moveQueue)
 		.pluck('usable')
 		.some(function(usable) { return usable instanceof ItemUsable && usable.itemID == itemID; });
 };
@@ -210,7 +210,7 @@ AIContext.prototype.isItemQueued = function(itemID)
 //     itemID: The ID of the item to be tested for usability.
 AIContext.prototype.isItemUsable = function(itemID)
 {
-	return Link(this.unit.items)
+	return mini.Link(this.unit.items)
 		.filterBy('itemID', itemID)
 		.some(function(item) { return item.isUsable(this, this.unit.stance) }.bind(this));
 };
@@ -221,7 +221,7 @@ AIContext.prototype.isItemUsable = function(itemID)
 //     skillID: The skill ID of the skill to check for.
 AIContext.prototype.isSkillQueued = function(skillID)
 {
-	return Link(this.moveQueue)
+	return mini.Link(this.moveQueue)
 		.pluck('usable')
 		.some(function(usable) { return usable instanceof SkillUsable && usable.skillID == skillID; });
 };
@@ -242,7 +242,7 @@ AIContext.prototype.isSkillUsable = function(skillID)
 //     itemID: The ID of the item to check.
 AIContext.prototype.itemsLeft = function(itemID)
 {
-	var itemUsable = Link(this.unit.items).filterBy('itemID', itemID).first();
+	var itemUsable = mini.Link(this.unit.items).filterBy('itemID', itemID).first();
 	Console.writeLine(this.unit.name + " requested item count for " + itemUsable.name);
 	Console.append("left: " + itemUsable.usesLeft);
 	return itemUsable.usesLeft;

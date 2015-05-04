@@ -5,7 +5,7 @@
 
 RequireScript('Battle.js');
 
-Scenario.defineCommand('adjustBGM',
+mini.Scenelet('adjustBGM',
 {
 	start: function(scene, volume, duration) {
 		duration = duration !== void null ? duration : 0.0;
@@ -21,7 +21,7 @@ Scenario.defineCommand('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-Scenario.defineCommand('battle',
+mini.Scenelet('battle',
 {
 	start: function(scene, battleID, session) {
 		this.mode = 'battle';
@@ -31,7 +31,7 @@ Scenario.defineCommand('battle',
 	update: function(scene) {
 		switch (this.mode) {
 			case 'battle':
-				if (!Threads.isRunning(this.battleThread)) {
+				if (!mini.Threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.enemyWon) {
 						Console.writeLine("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
@@ -43,7 +43,7 @@ Scenario.defineCommand('battle',
 				}
 				break;
 			case 'gameOver':
-				if (!Threads.isRunning(this.gameOverThread)) {
+				if (!mini.Threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
 						Console.writeLine("Player asked to retry last battle");
 						this.mode = 'battle';
@@ -58,28 +58,28 @@ Scenario.defineCommand('battle',
 	}
 });
 
-Scenario.defineCommand('changeMap',
+mini.Scenelet('changeMap',
 {
 	start: function(scene, map) {
 		ChangeMap(map);
 	}
 });
 
-Scenario.defineCommand('playBGM',
+mini.Scenelet('playBGM',
 {
 	start: function(scene, trackName) {
 		BGM.override(trackName);
 	}
 });
 
-Scenario.defineCommand('resetBGM',
+mini.Scenelet('resetBGM',
 {
 	start: function(scene) {
 		BGM.reset();
 	}
 });
 
-Scenario.defineCommand('talk',
+mini.Scenelet('talk',
 {
 	start: function(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
@@ -110,7 +110,7 @@ Scenario.defineCommand('talk',
 		this.topLine = 0;
 		this.lineToReveal = 0;
 		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
-		this.transition = new Scenario()
+		this.transition = new mini.Scene()
 			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
@@ -249,7 +249,7 @@ Scenario.defineCommand('talk',
 			case "hidetext":
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Engine.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
-					this.transition = new Scenario()
+					this.transition = new mini.Scene()
 						.tween(this, 0.375, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					this.mode = "fadeout";

@@ -25,7 +25,7 @@ function SkillUsable(skillID, level)
 	this.skillInfo = Game.skills[skillID];
 	this.experience = this.levelUpTable[level];
 	this.givesExperience = true;
-	this.isGroupCast = Link([ 'allEnemies', 'allAllies' ])
+	this.isGroupCast = mini.Link([ 'allEnemies', 'allAllies' ])
 		.contains(this.skillInfo.targetType);
 	this.name = this.skillInfo.name;
 	this.skillID = skillID;
@@ -50,11 +50,11 @@ SkillUsable.prototype.defaultTargets = function(user)
 	switch (this.skillInfo.targetType) {
 		case 'single':
 			var enemies = user.battle.enemiesOf(user);
-			var target = Link(enemies)
+			var target = mini.Link(enemies)
 				.where(function(unit) { return unit.isAlive(); })
 				.sample(1)[0];
-			if (this.allowDeadTarget && Link(enemies).some(function(unit) { return !unit.isAlive(); })) {
-				target = Link(enemies)
+			if (this.allowDeadTarget && mini.Link(enemies).some(function(unit) { return !unit.isAlive(); })) {
+				target = mini.Link(enemies)
 					.where(function(unit) { return !unit.isAlive(); })
 					.sample(1)[0];
 			}
@@ -62,18 +62,18 @@ SkillUsable.prototype.defaultTargets = function(user)
 		case 'ally':
 			var allies = user.battle.alliesOf(user);
 			var target = user;
-			if (this.allowDeadTarget && Link(allies).some(function(unit) { return !unit.isAlive(); })) {
-				target = Link(allies)
+			if (this.allowDeadTarget && mini.Link(allies).some(function(unit) { return !unit.isAlive(); })) {
+				target = mini.Link(allies)
 					.where(function(unit) { return !unit.isAlive(); })
 					.sample(1)[0];
 			}
 			return [ target ];
 		case 'allEnemies':
-			return Link(user.battle.enemiesOf(user))
+			return mini.Link(user.battle.enemiesOf(user))
 				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
 				.toArray();
 		case 'allAllies':
-			return Link(user.battle.alliesOf(user))
+			return mini.Link(user.battle.alliesOf(user))
 				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
 				.toArray();
 		default:
@@ -182,6 +182,6 @@ SkillUsable.prototype.use = function(unit, targets)
 	this.grow(experience);
 	var eventData = { skill: clone(this.skillInfo) };
 	unit.raiseEvent('useSkill', eventData);
-	unit.battle.skillUsed.invoke(unit.id, this.skillID, Link(targets).pluck('id').toArray());
+	unit.battle.skillUsed.invoke(unit.id, this.skillID, mini.Link(targets).pluck('id').toArray());
 	return eventData.skill.actions;
 };
