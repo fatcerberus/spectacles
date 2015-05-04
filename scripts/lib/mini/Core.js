@@ -3,7 +3,7 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/core.js]
+ * [mini/Core.js]
  * Provides basic functionality used throughout the runtime.
 **/
 
@@ -13,8 +13,6 @@ mini = typeof mini !== 'undefined' ? mini :
 new (function() {
 	this.initializers = [];
 })();
-
-RequireSystemScript('mini/Delegate.js');
 
 // mini.Delegate()
 // Constructs a multicast delegate.
@@ -65,7 +63,7 @@ mini.Delegate.prototype.invoke = function()
 };
 
 // mini.initialize()
-// Initializes minisphere Runtime and all registered components.
+// Initializes the minisphere Runtime and all registered components.
 // Arguments:
 //     params: An object specifying initialization parameters. This object will
 //             be passed to each registered initializer.
@@ -77,6 +75,6 @@ mini.initialize = function(params)
 }
 
 // mini.startup
-// Invoked when the minisphere Runtime is initialized. This is used by runtime
-// scripts to provide encapsulation.
+// Invoked when the runtime is initialized. This is used by runtime
+// component scripts to provide encapsulation.
 mini.startup = new mini.Delegate();

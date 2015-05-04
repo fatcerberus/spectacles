@@ -3,7 +3,7 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/threads.js]
+ * [mini/Threads.js]
  * A cooperative threader with a similar API to pthreads, which replaces
  * Sphere's update and render scripts with a much more robust solution.
 **/
@@ -16,6 +16,7 @@ RequireSystemScript('mini/Link.js');
 mini.Threads = new (function()
 {
 	this.isInitialized = false;
+	this.currentSelf = 0;
 	this.hasUpdated = false;
 	this.nextThreadID = 1;
 	this.threads = [];
@@ -90,7 +91,7 @@ mini.Threads.createEx = function(o, threadDesc)
 	inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(o) : null;
 	priority = 'priority' in threadDesc ? threadDesc.priority : 0;
 	var newThread = {
-		id: this.nextThreadID,
+		id: this.nextThreadID++,
 		isValid: true,
 		inputHandler: inputHandler,
 		isUpdating: false,
@@ -100,7 +101,6 @@ mini.Threads.createEx = function(o, threadDesc)
 		isPaused: false,
 	};
 	this.threads.push(newThread);
-	++this.nextThreadID;
 	return newThread.id;
 };
 
@@ -180,8 +180,7 @@ mini.Threads.kill = function(threadID)
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (threadID == this.threads[i].id) {
 			this.threads[i].isValid = false;
-			this.threads.splice(i, 1);
-			--i;
+			this.threads.splice(i--, 1);
 		}
 	}
 };
@@ -219,6 +218,16 @@ mini.Threads.resume = function(threadID)
 	});
 }
 
+// mini.Threads.self()
+// Returns the currently executing thread's thread ID.
+// Remarks:
+//     If this function is used outside of a thread update, render or input handling
+//     call, it will return 0. Zero is never a valid thread ID.
+mini.Threads.self = function()
+{
+	return this.currentSelf;
+};
+
 // mini.Threads.renderAll()
 // Renders the current frame by calling all active threads' renderers.
 mini.Threads.renderAll = function()
@@ -231,8 +240,10 @@ mini.Threads.renderAll = function()
 		.where(function(thread) { return thread.renderer !== null })
 		.each(function(thread)
 	{
+		this.currentSelf = thread.id;
 		thread.renderer();
-	});
+		this.currentSelf = 0;
+	}.bind(this));
 };
 
 // mini.Threads.updateAll()
@@ -248,16 +259,18 @@ mini.Threads.updateAll = function()
 		.where(function(thread) { return !thread.isPaused })
 		.each(function(thread)
 	{
+		this.currentSelf = thread.id;
 		thread.isUpdating = true;
 		var stillRunning = thread.updater();
 		if (thread.inputHandler !== null && stillRunning) {
 			thread.inputHandler();
 		}
 		thread.isUpdating = false;
+		this.currentSelf = 0;
 		if (!stillRunning) {
 			threadsEnding.push(thread.id);
 		}
-	});
+	}.bind(this));
 	for (var i = 0; i < threadsEnding.length; ++i) {
 		this.kill(threadsEnding[i]);
 	}

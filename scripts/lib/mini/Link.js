@@ -3,7 +3,7 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/link.js]
+ * [mini/Link.js]
  * A powerful functional programming library which is used like .NET LINQ to
  * perform complex queries on JS arrays. Originally based on Link 0.3.0 by
  * Andrew Helenius.

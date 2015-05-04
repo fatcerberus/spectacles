@@ -3,7 +3,7 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/scenes.js]
+ * [mini/Scenes.js]
  * An advanced scene manager that allows you to coordinate complex sequences
  * using multiple timelines and cooperative threading. Based on Scenario.
 **/
