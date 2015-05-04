@@ -14,7 +14,7 @@ function ScottStarcrossAI(aiContext)
 	this.aic = aiContext;
 	
 	// HP thresholds for phase transitions
-	this.phasePoints = Link([ 4500, 2500, 1000 ])
+	this.phasePoints = mini.Link([ 4500, 2500, 1000 ])
 		.map(function(value) { return Math.round(RNG.normal(value, 50)); })
 		.toArray();
 	
@@ -58,10 +58,10 @@ ScottStarcrossAI.prototype.dispose = function()
 // Allows Scott to decide what he will do next when his turn arrives.
 ScottStarcrossAI.prototype.strategize = function(stance, phase)
 {
-	var milestone = Link(this.phasePoints)
+	var milestone = mini.Link(this.phasePoints)
 		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))
 		.last()[0];
-	var phaseToEnter = 2 + Link(this.phasePoints).indexOf(milestone);
+	var phaseToEnter = 2 + mini.Link(this.phasePoints).indexOf(milestone);
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	if (this.isOpenerPending) {
@@ -69,8 +69,8 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 		this.isOpenerPending = false;
 	} else {
 		if (this.tactics === null) {
-			var targets = Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
-			var combos = Link(Link(this.combos)
+			var targets = mini.Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
+			var combos = mini.Link(mini.Link(this.combos)
 				.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
 				.random(targets.length))
 				.sort(function(a, b) { return b.rating - a.rating; });
@@ -79,7 +79,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: targets[i] });
 			}
 		}
-		this.tactics = Link(this.tactics)
+		this.tactics = mini.Link(this.tactics)
 			.where(function(tactic) { return tactic.unit.isAlive(); })
 			.where(function(tactic) { return tactic.moveIndex < tactic.moves.length; })
 			.toArray();

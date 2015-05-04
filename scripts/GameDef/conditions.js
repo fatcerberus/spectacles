@@ -74,7 +74,7 @@ Game.conditions =
 		},
 		
 		beginCycle: function(battle, eventData) {
-			var units = Link(battle.battleUnits)
+			var units = mini.Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
 			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
@@ -99,7 +99,7 @@ Game.conditions =
 		name: "Inferno",
 		
 		initialize: function(battle) {
-			Link(battle.battleUnits)
+			mini.Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
 			{
@@ -111,7 +111,7 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.each(function(effect)
 			{
@@ -130,7 +130,7 @@ Game.conditions =
 		},
 		
 		beginCycle: function(battle, eventData) {
-			var units = Link(battle.battleUnits)
+			var units = mini.Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
 			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
@@ -143,7 +143,7 @@ Game.conditions =
 				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
-				Link(battle.battleUnits)
+				mini.Link(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
@@ -171,7 +171,7 @@ Game.conditions =
 		initialize: function(battle) {
 			this.multiplier = 1.0;
 			this.rank = 0;
-			Link(battle.battleUnits)
+			mini.Link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
 			{
@@ -188,7 +188,7 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			this.rank = eventData.action.rank;
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.filterBy('element', 'ice')
 				.each(function(effect)
@@ -212,7 +212,7 @@ Game.conditions =
 				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
-				Link(battle.battleUnits)
+				mini.Link(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{

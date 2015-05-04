@@ -81,6 +81,6 @@ WeaponUsable.prototype.use = function(unit, targets)
 	}
 	Console.writeLine(unit.name + " is equipping " + this.name);
 	Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
-	Link(targets).invoke('setWeapon', this.weaponID);
+	mini.Link(targets).invoke('setWeapon', this.weaponID);
 	return null;
 }

@@ -15,7 +15,7 @@ Game.statuses =
 			this.multiplier = 1.0;
 		},
 		acting: function(unit, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.each(function(effect)
 			{
@@ -55,7 +55,7 @@ Game.statuses =
 		},
 		afflicted: function(unit, eventData) {
 			var statusDef = Game.statuses[eventData.statusID];
-			if (Link(statusDef.tags).contains('buff')) {
+			if (mini.Link(statusDef.tags).contains('buff')) {
 				Console.writeLine("Status " + statusDef.name + " was blocked by Curse");
 				eventData.cancel = true;
 			}
@@ -126,7 +126,7 @@ Game.statuses =
 			this.turnsLeft = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100) + 1;
 		},
 		acting: function(unit, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('targetHint', 'selected')
 				.filterBy('type', 'damage')
 				.each(function(effect)
@@ -149,7 +149,7 @@ Game.statuses =
 			}
 		},
 		damaged: function(unit, eventData) {
-			if (Link(eventData.tags).contains('earth')) {
+			if (mini.Link(eventData.tags).contains('earth')) {
 				eventData.amount *= Math.pow(Game.bonusMultiplier, 2);
 			}
 		},
@@ -176,7 +176,7 @@ Game.statuses =
 			this.knockback = 5;
 		},
 		acting: function(unit, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('targetHint', 'selected')
 				.filterBy('type', 'damage')
 				.each(function(effect)
@@ -197,7 +197,7 @@ Game.statuses =
 			}
 		},
 		damaged: function(unit, eventData) {
-			if (!Link(eventData.tags).contains('zombie')) {
+			if (!mini.Link(eventData.tags).contains('zombie')) {
 				eventData.amount *= this.fatigue;
 			}
 		}
@@ -214,7 +214,7 @@ Game.statuses =
 			this.multiplier = 1.0;
 		},
 		attacked: function(unit, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.each(function(effect)
 			{
@@ -222,7 +222,7 @@ Game.statuses =
 					delete effect.addStatus;
 				}
 			});
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
 				.each(function(effect)
 			{
@@ -230,7 +230,7 @@ Game.statuses =
 			});
 		},
 		damaged: function(unit, eventData) {
-			if (Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
+			if (mini.Link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				Console.writeLine("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
@@ -256,7 +256,7 @@ Game.statuses =
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
 				}
-				if (!Link(eventData.targetInfo.statuses).contains('ghost')) {
+				if (!mini.Link(eventData.targetInfo.statuses).contains('ghost')) {
 					eventData.aimRate = 0.0;
 				}
 			}
@@ -267,7 +267,7 @@ Game.statuses =
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
 				}
-				if (!Link(eventData.actingUnitInfo.statuses).contains('ghost')) {
+				if (!mini.Link(eventData.actingUnitInfo.statuses).contains('ghost')) {
 					eventData.action.accuracyRate = 0.0;
 				}
 			}
@@ -290,7 +290,7 @@ Game.statuses =
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
 		attacked: function(unit, eventData) {
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.filterBy('type', 'damage')
 				.each(function(effect)
 			{
@@ -298,7 +298,7 @@ Game.statuses =
 					delete effect.addStatus;
 				}
 			});
-			Link(eventData.action.effects)
+			mini.Link(eventData.action.effects)
 				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
 				.each(function(effect)
 			{
@@ -306,7 +306,7 @@ Game.statuses =
 			});
 		},
 		damaged: function(unit, eventData) {
-			if (Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
+			if (mini.Link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				Console.writeLine("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
@@ -325,7 +325,7 @@ Game.statuses =
 		},
 		afflicted: function(unit, eventData) {
 			var statusDef = Game.statuses[eventData.statusID];
-			if (Link(statusDef.tags).contains('ailment')) {
+			if (mini.Link(statusDef.tags).contains('ailment')) {
 				Console.writeLine("Status " + statusDef.name + " was blocked by Immune");
 				eventData.cancel = true;
 			}
@@ -368,7 +368,7 @@ Game.statuses =
 			this.lossPerHit = (1.0 - this.multiplier) / 10;
 		},
 		damaged: function(unit, eventData) {
-			var isProtected = !Link(eventData.tags).some([ 'special', 'zombie' ]);
+			var isProtected = !mini.Link(eventData.tags).some([ 'special', 'zombie' ]);
 			if (isProtected) {
 				eventData.amount *= this.multiplier;
 				this.multiplier += this.lossPerHit;
@@ -408,12 +408,12 @@ Game.statuses =
 			unit.liftStatus('rearing');
 		},
 		damaged: function(unit, eventData) {
-			if (Link(eventData.tags).some([ 'physical', 'earth' ])) {
+			if (mini.Link(eventData.tags).some([ 'physical', 'earth' ])) {
 				unit.clearQueue();
 				unit.liftStatus('rearing');
 				unit.resetCounter(5);
 			}
-			if (!Link(eventData.tags).some([ 'special', 'magic' ])) {
+			if (!mini.Link(eventData.tags).some([ 'special', 'magic' ])) {
 				eventData.damage *= 2;
 			}
 		}
@@ -440,7 +440,7 @@ Game.statuses =
 			}
 		},
 		damaged: function(unit, eventData) {
-			this.allowDeath = Link(eventData.tags)
+			this.allowDeath = mini.Link(eventData.tags)
 				.some([ 'zombie', 'physical', 'sword', 'earth', 'omni' ]);
 			if (!this.allowDeath) {
 				eventData.cancel = true;
@@ -450,7 +450,7 @@ Game.statuses =
 			eventData.cancel = !this.allowDeath;
 		},
 		healed: function(unit, eventData) {
-			if (Link(eventData.tags).contains('cure')) {
+			if (mini.Link(eventData.tags).contains('cure')) {
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
 			}
 			eventData.cancel = true;
@@ -464,7 +464,7 @@ Game.statuses =
 			unit.liftStatus('sniper');
 		},
 		damaged: function(unit, eventData) {
-			if (!Link(eventData.tags).some([ 'special', 'zombie' ])) {
+			if (!mini.Link(eventData.tags).some([ 'special', 'zombie' ])) {
 				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
 				unit.clearQueue();
 				unit.liftStatus('sniper');
@@ -527,8 +527,8 @@ Game.statuses =
 			this.allowDeath = false;
 		},
 		damaged: function(unit, eventData) {
-			this.allowDeath = Link(eventData.tags).contains('zombie')
-				&& !Link(eventData.tags).contains('specs');
+			this.allowDeath = mini.Link(eventData.tags).contains('zombie')
+				&& !mini.Link(eventData.tags).contains('specs');
 		},
 		dying: function(unit, eventData) {
 			if (!this.allowDeath) {
@@ -537,8 +537,8 @@ Game.statuses =
 			}
 		},
 		healed: function(unit, eventData) {
-			if (Link(eventData.tags).some([ 'cure', 'specs' ])) {
-				var damageTags = Link(eventData.tags).contains('specs')
+			if (mini.Link(eventData.tags).some([ 'cure', 'specs' ])) {
+				var damageTags = mini.Link(eventData.tags).contains('specs')
 					? [ 'zombie', 'specs' ] : [ 'zombie' ];
 				unit.takeDamage(eventData.amount, damageTags);
 				eventData.cancel = true;
