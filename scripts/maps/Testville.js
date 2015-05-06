@@ -4,7 +4,7 @@
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
-			Link(GetPersonFollowers(person)).each(function(name) {
+			mini.Link(GetPersonFollowers(person)).each(function(name) {
 				FollowPerson(name, GetPersonLeader(person), distance);
 			});
 		});

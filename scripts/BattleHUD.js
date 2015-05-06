@@ -92,7 +92,7 @@ function BattleHUD(partyMaxMP)
 BattleHUD.prototype.dispose = function()
 {
 	this.turnPreview.dispose();
-	mini.Threadskill(this.thread);
+	mini.Threads.kill(this.thread);
 };
 
 // .createEnemyHPGauge() method

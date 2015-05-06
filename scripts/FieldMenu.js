@@ -89,7 +89,6 @@ FieldMenu.prototype.render = function()
 
 FieldMenu.prototype.open = function()
 {
-	mini.Threads.enableUpdateMap(false);
 	this.isOpen = true;
 	this.fadeness = 0.0;
 	var thread = mini.Threads.create(this, 100);
@@ -98,7 +97,6 @@ FieldMenu.prototype.open = function()
 		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })
 		.run(true);
 	mini.Threads.join(thread);
-	mini.Threads.enableUpdateMap(true);
 };
 
 FieldMenu.prototype.close = function()
