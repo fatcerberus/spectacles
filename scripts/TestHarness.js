@@ -45,6 +45,11 @@ TestHarness.addBattleTest = function(testID, setupData)
 				.run(true);
 		}
 	};
+	if ('consoleID' in setupData) {
+		mini.Console.register(setupData.consoleID, this.tests[testID], {
+			battle: this.tests[testID].run
+		});
+	}
 	mini.Console.writeLine("Added battle test '" + testID + "'");
 };
 

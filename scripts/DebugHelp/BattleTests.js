@@ -25,6 +25,7 @@ TestHarness.addBattleTest('S:BS: H.Horse',
 
 TestHarness.addBattleTest('S:BS: RSB II',
 {
+	consoleID: 'rsb2',
 	battleID: 'robert2',
 	party: {
 		scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
