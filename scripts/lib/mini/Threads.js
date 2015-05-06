@@ -253,7 +253,7 @@ mini.Threads.updateAll = function()
 	if (!this.isInitialized)
 		Abort("mini.Threads.updateAll(): must call mini.initialize() first", -1);
 	var threadsEnding = [];
-	mini.Link(this.threads)
+	mini.Link(mini.Link(this.threads).toArray())
 		.where(function(thread) { return thread.isValid })
 		.where(function(thread) { return !thread.isUpdating })
 		.where(function(thread) { return !thread.isPaused })
