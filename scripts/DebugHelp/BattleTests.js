@@ -56,3 +56,13 @@ TestHarness.addBattleTest('S3:tLL: #11',
 		amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
 	}
 });
+
+TestHarness.addBattleTest('S3:tLL: #11 (bonus)',
+{
+	battleID: 'scottStarcross2',
+	party: {
+		bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+		robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+		maggie: { level: 60, items: [ 'alcohol' ] },
+	}
+});

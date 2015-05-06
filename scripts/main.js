@@ -34,7 +34,7 @@ RequireScript('Session.js');
 RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
 
-EvaluateScript('Game.js');
+EvaluateScript('gamedef/game.js');
 
 // game() function
 // This is called by Sphere when the game is launched.

@@ -84,7 +84,7 @@ Game.battles =
 	scottTemple: {
 		title: "First Lucidan Scott Temple",
 		isFinalBattle: false,
-		bgm: 'TheQuantumEnigma',
+		bgm: 'HymnOfLiberty',
 		battleLevel: 60,
 		enemies: [
 			'scottTemple'
@@ -96,11 +96,28 @@ Game.battles =
 	scottStarcross: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'HymnOfLiberty',
+		bgm: 'EndOfInnocence',
+		battleLevel: 60,
+		enemies: [
+			'scottStarcross'
+		],
+		onStart: function() {
+			var scottUnit = this.findUnit('scottStarcross');
+			scottUnit.addStatus('specsAura');
+		}
+	},
+	
+	// Scott Starcross (Final Battle)
+	// Final Boss of Spectacles III: The Last Lucidan
+	// ...with some other weird guy in it. He totally gets eaten though
+	scottStarcross2: {
+		title: "Scott Starcross",
+		isFinalBattle: true,
+		bgm: 'EndOfInnocence',
 		battleLevel: 60,
 		enemies: [
 			'scottStarcross',
-			//'xemnas'
+			'xemnas'
 		],
 		onStart: function() {
 			var xemnasUnit = this.findUnit('xemnas');
@@ -121,7 +138,7 @@ Game.battles =
 				.playSound("Munch.wav")
 				.talk("Scott", true, 0.5, Infinity, "...")
 				.talk("Scott", true, 2.0, Infinity, "No comment.")
-				//.run(true);
+				.run(true);
 			var scottUnit = this.findUnit('scottStarcross');
 			scottUnit.addStatus('specsAura');
 		}
