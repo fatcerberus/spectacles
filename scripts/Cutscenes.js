@@ -10,10 +10,10 @@ mini.Scenelet('adjustBGM',
 	start: function(scene, volume, duration) {
 		duration = duration !== void null ? duration : 0.0;
 		
-		BGM.adjustVolume(volume, duration);
+		mini.BGM.adjust(volume, duration);
 	},
 	update: function(scene) {
-		return BGM.isAdjusting();
+		return mini.BGM.isAdjusting();
 	}
 });
 
@@ -33,7 +33,7 @@ mini.Scenelet('battle',
 			case 'battle':
 				if (!mini.Threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.enemyWon) {
-						Console.writeLine("Player lost battle, showing Game Over screen");
+						mini.Console.writeLine("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -45,7 +45,7 @@ mini.Scenelet('battle',
 			case 'gameOver':
 				if (!mini.Threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
-						Console.writeLine("Player asked to retry last battle");
+						mini.Console.writeLine("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
@@ -68,14 +68,14 @@ mini.Scenelet('changeMap',
 mini.Scenelet('playBGM',
 {
 	start: function(scene, trackName) {
-		BGM.override(trackName);
+		mini.BGM.override(trackName);
 	}
 });
 
 mini.Scenelet('resetBGM',
 {
 	start: function(scene) {
-		BGM.reset();
+		mini.BGM.reset();
 	}
 });
 

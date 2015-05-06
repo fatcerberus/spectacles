@@ -112,10 +112,10 @@ ItemUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit, unit.stance)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
-	Console.writeLine(unit.name + " is using " + this.name);
-	Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
+	mini.Console.writeLine(unit.name + " is using " + this.name);
+	mini.Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	--this.usesLeft;
-	Console.append("left: " + this.usesLeft);
+	mini.Console.append("left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };
 	unit.raiseEvent('useItem', eventData);
 	unit.battle.itemUsed.invoke(unit.id, this.itemID, mini.Link(targets).pluck('id').toArray());

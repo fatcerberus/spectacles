@@ -12,7 +12,7 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	Console.writeLine("Initializing Specs Engine test harness");
+	mini.Console.writeLine("Initializing Specs Engine test harness");
 	this.background = LoadImage('TitleScreen.png');
 	this.fadeness = 0.0;
 	this.tests = {};
@@ -24,8 +24,8 @@ TestHarness.addBattleTest = function(testID, setupData)
 	this.tests[testID] = {
 		setup: setupData,
 		run: function() {
-			Console.writeLine("Preparing test battle");
-			Console.append("battleID: " + this.setup.battleID);
+			mini.Console.writeLine("Preparing test battle");
+			mini.Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
 			mini.Link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -45,7 +45,7 @@ TestHarness.addBattleTest = function(testID, setupData)
 				.run(true);
 		}
 	};
-	Console.writeLine("Added battle test '" + testID + "'");
+	mini.Console.writeLine("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -57,7 +57,7 @@ TestHarness.addTest = function(testID, func)
 			this.func.call(this.context);
 		}
 	};
-	Console.writeLine("Added generic test '" + testID + "'");
+	mini.Console.writeLine("Added generic test '" + testID + "'");
 };
 
 TestHarness.update = function()
@@ -80,7 +80,7 @@ TestHarness.getInput = function()
 TestHarness.run = function()
 {
 	var musicID = mini.Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
-	Console.writeLine("Opening beta test menu");
+	mini.Console.writeLine("Opening beta test menu");
 	new mini.Scene()
 		.fork()
 			.adjustBGM(0.0, 0.125)
@@ -109,7 +109,7 @@ TestHarness.run = function()
 
 TestHarness.runTest = function(testID)
 {
-	Console.writeLine("Test harness invoked directly");
-	Console.append("testID: " + testID);
+	mini.Console.writeLine("Test harness invoked directly");
+	mini.Console.append("testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

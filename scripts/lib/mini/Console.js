@@ -1,11 +1,18 @@
-/***
- * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
-***/
+/**
+ * minisphere Runtime 1.1b4 - (c) 2015 Fat Cerberus
+ * A set of system scripts providing advanced, high-level functionality not
+ * available in the engine itself.
+ *
+ * [mini/Console.js]
+ * An easy-to-use output console which optionally logs output to disk.
+**/
 
-// Console object
-// Represents the Specs Engine text console.
-Console = new (function()
+RequireSystemScript('mini/Core.js');
+RequireSystemScript('mini/Threads.js');
+
+// mini.Console
+// Encapsulates the console.
+mini.Console = new (function()
 {
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
@@ -15,38 +22,46 @@ Console = new (function()
 	this.nextLine = 0;
 	this.numLines = 0;
 	this.thread = null;
+	this.wasKeyDown = false;
 })();
 
-// .initialize() method
+// mini.Console.initialize() method
 // Initializes the console.
-Console.initialize = function(numLines, bufferSize)
+// Parameters:
+//     consoleLines:  The number of lines to display at a time. If not provided, the line count
+//                    will be determined dynamically based on the game resolution.
+//     consoleBuffer: The maximum number of lines kept in the line buffer. (default: 1000)
+//     logFile:       Path, relative to <game_dir>/logs, of the file to write console output
+//                    to. Can be null, in which case no log file is created. (default: null)
+mini.onStartUp.add(mini.Console, function(params)
 {
-	numLines = numLines !== undefined ? numLines : Math.floor((GetScreenHeight() - 10) * 0.66 / this.font.getHeight());
-	bufferSize = bufferSize !== undefined ? bufferSize : 1000;
+	Print("mini: Initializing miniconsole");
 	
-	if (DBG_IN_GAME_CONSOLE) {
-		BindKey(KEY_TAB, 'if (!Console.isOpen()) Console.show(); else Console.hide();', null);
-	}
-	if (DBG_LOG_CONSOLE_OUTPUT) {
-		this.log = OpenLog('consoleLog.txt');
-	}
+	var numLines = 'consoleLines' in params ? params.consoleLines
+		: Math.floor((GetScreenHeight() - 10) * 0.66 / this.font.getHeight());
+	var bufferSize = 'consoleBuffer' in params ? params.consoleBuffer : 1000;
+	var filename = 'logFile' in params ? params.logFile : null;
+	
+	if (typeof filename === 'string')
+		this.log = OpenLog(params.logFile);
+	else
+		this.log = null;
 	this.numLines = numLines;
 	this.buffer = [];
 	this.bufferSize = bufferSize;
 	this.commands = [];
 	this.thread = mini.Threads.create(this, 101);
-	this.writeLine("Specs Engine v6.0");
-	this.append("(c)2015 Fat Cerberus");
+	this.writeLine("minisphere Runtime 1.1b4 (miniconsole)");
 	this.writeLine("Sphere " + GetVersionString());
 	this.writeLine("");
-	this.writeLine("Initialized console");
-};
+	this.writeLine("Initialized miniconsole");
+});
 
 // .isOpen() method
 // Determines whether the console is currently displayed or not.
 // Returns:
 //     true if the console is open, false otherwise.
-Console.isOpen = function()
+mini.Console.isOpen = function()
 {
 	return this.isVisible;
 }
@@ -55,10 +70,10 @@ Console.isOpen = function()
 // Appends additional output text to the last line in the console.
 // Arguments:
 //     text: The text to append.
-Console.append = function(text)
+mini.Console.append = function(text)
 {
 	if (this.nextLine == 0) {
-		Console.writeLine(text);
+		mini.Console.writeLine(text);
 		return;
 	}
 	var lineInBuffer = (this.nextLine - 1) % this.bufferSize;
@@ -66,27 +81,36 @@ Console.append = function(text)
 	this.lineOffset = 0.0;
 };
 
-// .checkInput() method
+// .getInput() method
 // Checks for input and updates the console accordingly.
-Console.getInput = function()
+mini.Console.getInput = function()
 {
-	if (!this.isOpen()) return;
-	var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
-	var speed = wheelKey != null ? 1.0 : 0.5;
-	if (IsKeyPressed(KEY_PAGEUP) || wheelKey == MOUSE_WHEEL_UP) {
-		this.lineOffset = Math.min(this.lineOffset + speed, this.buffer.length - this.numLines);
-	} else if (IsKeyPressed(KEY_PAGEDOWN) || wheelKey == MOUSE_WHEEL_DOWN) {
-		this.lineOffset = Math.max(this.lineOffset - speed, 0);
+	if (!IsKeyPressed(KEY_TAB)) this.wasKeyDown = false;
+	if (!this.wasKeyDown && IsKeyPressed(KEY_TAB)) {
+		if (!this.isOpen())
+			this.show();
+		else
+			this.hide();
+		this.wasKeyDown = true;
+	}
+	if (this.isOpen()) {
+		var wheelKey = GetNumMouseWheelEvents() > 0 ? GetMouseWheelEvent() : null;
+		var speed = wheelKey != null ? 1.0 : 0.5;
+		if (IsKeyPressed(KEY_PAGEUP) || wheelKey == MOUSE_WHEEL_UP) {
+			this.lineOffset = Math.min(this.lineOffset + speed, this.buffer.length - this.numLines);
+		} else if (IsKeyPressed(KEY_PAGEDOWN) || wheelKey == MOUSE_WHEEL_DOWN) {
+			this.lineOffset = Math.max(this.lineOffset - speed, 0);
+		}
 	}
 };
 
 // .hide() method
-// Hides the console window.
-Console.hide = function()
+// Hides the console.
+mini.Console.hide = function()
 {
-	this.isVisible = false;
 	new mini.Scene()
 		.tween(this, 0.5, 'easeInBack', { fadeness: 0.0 })
+		.call(function() { this.isVisible = false; }.bind(this))
 		.run();
 };
 
@@ -96,14 +120,14 @@ Console.hide = function()
 //     handle:  The name of the entity. Ideally, this should not contain spaces.
 //     methods: An associative array of functions, keyed by name, defining the valid operations
 //              for this entity.
-Console.registerEntity = function(handle, methods)
+mini.Console.registerEntity = function(handle, methods)
 {
 	this.commands[handle] = clone(methods);
 };
 
 // .render() method
 // Renders the console in its current state.
-Console.render = function() {
+mini.Console.render = function() {
 	if (this.fadeness <= 0.0)
 		return;
 	var boxHeight = this.numLines * this.font.getHeight() + 10;
@@ -128,17 +152,17 @@ Console.render = function() {
 
 // .show() method
 // Shows the console window.
-Console.show = function()
+mini.Console.show = function()
 {
-	this.isVisible = true;
 	new mini.Scene()
 		.tween(this, 0.5, 'easeOutBack', { fadeness: 1.0 })
+		.call(function() { this.isVisible = true; }.bind(this))
 		.run();
 }
 
 // .update() method
 // Updates the console's internal state for the next frame.
-Console.update = function() {
+mini.Console.update = function() {
 	if (this.fadeness <= 0.0) {
 		this.lineOffset = 0.0;
 	}
@@ -147,9 +171,9 @@ Console.update = function() {
 
 // .writeLine() method
 // Writes a line of text to the console.
-Console.writeLine = function(text)
+mini.Console.writeLine = function(text)
 {
-	if (DBG_LOG_CONSOLE_OUTPUT && this.nextLine > 0) {
+	if (this.log !== null && this.nextLine > 0) {
 		var lineInBuffer = (this.nextLine - 1) % this.bufferSize;
 		this.log.write(this.buffer[lineInBuffer]);
 	}

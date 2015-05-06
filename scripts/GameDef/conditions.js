@@ -26,10 +26,10 @@ Game.conditions =
 			}
 			--this.actionsLeft;
 			if (this.actionsLeft <= 0) {
-				Console.writeLine("Blackout has expired");
+				mini.Console.writeLine("Blackout has expired");
 				battle.liftCondition('blackout');
 			} else {
-				Console.writeLine("Blackout will expire in " + this.actionsLeft + " more action(s)");
+				mini.Console.writeLine("Blackout will expire in " + this.actionsLeft + " more action(s)");
 			}
 		}
 	},
@@ -49,14 +49,14 @@ Game.conditions =
 			var oldRank = eventData.action.rank
 			eventData.action.rank = Math.min(Math.floor(Math.random() * 5 + 1), 5);
 			if (eventData.action.rank != oldRank) {
-				Console.writeLine("Rank of action changed by G. Disarray to " + eventData.action.rank);
-				Console.append("was: " + oldRank);
+				mini.Console.writeLine("Rank of action changed by G. Disarray to " + eventData.action.rank);
+				mini.Console.append("was: " + oldRank);
 			}
 			--this.actionsLeft;
 			if (this.actionsLeft > 0) {
-				Console.writeLine("G. Disarray will expire in " + this.actionsLeft + " more action(s)");
+				mini.Console.writeLine("G. Disarray will expire in " + this.actionsLeft + " more action(s)");
 			} else {
-				Console.writeLine("G. Disarray has expired");
+				mini.Console.writeLine("G. Disarray has expired");
 				battle.liftCondition('generalDisarray');
 			}
 		}
@@ -82,10 +82,10 @@ Game.conditions =
 			unit.heal(vit, [ 'cure' ]);
 			--this.cyclesLeft;
 			if (this.cyclesLeft <= 0) {
-				Console.writeLine("Healing Aura has expired");
+				mini.Console.writeLine("Healing Aura has expired");
 				battle.liftCondition('healingAura');
 			} else {
-				Console.writeLine("Healing Aura will expire in " + this.cyclesLeft + " more cycle(s)");
+				mini.Console.writeLine("Healing Aura will expire in " + this.cyclesLeft + " more cycle(s)");
 			}
 		}
 	},
@@ -104,7 +104,7 @@ Game.conditions =
 				.each(function(unit)
 			{
 				if (unit.hasStatus('frostbite')) {
-					Console.writeLine(unit.name + "'s Frostbite nullified by Inferno installation");
+					mini.Console.writeLine(unit.name + "'s Frostbite nullified by Inferno installation");
 					unit.liftStatus('frostbite');
 				}
 			});
@@ -118,13 +118,13 @@ Game.conditions =
 				if (effect.element == 'fire') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
-					Console.writeLine("Fire attack strengthened by Inferno to " + effect.power + " POW");
-					Console.append("was: " + oldPower);
+					mini.Console.writeLine("Fire attack strengthened by Inferno to " + effect.power + " POW");
+					mini.Console.append("was: " + oldPower);
 				} else if (effect.element == 'ice') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
-					Console.writeLine("Ice attack weakened by Inferno to " + effect.power + " POW");
-					Console.append("was: " + oldPower);
+					mini.Console.writeLine("Ice attack weakened by Inferno to " + effect.power + " POW");
+					mini.Console.append("was: " + oldPower);
 				}
 			});
 		},
@@ -140,7 +140,7 @@ Game.conditions =
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'subzero') {
-				Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
+				mini.Console.writeLine("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
 				mini.Link(battle.battleUnits)
@@ -155,7 +155,7 @@ Game.conditions =
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
-				Console.writeLine("Frostbite is incompatible with Inferno");
+				mini.Console.writeLine("Frostbite is incompatible with Inferno");
 			}
 		}
 	},
@@ -176,11 +176,11 @@ Game.conditions =
 				.each(function(unit)
 			{
 				if (unit.hasStatus('frostbite')) {
-					Console.writeLine(unit.name + "'s Frostbite overruled by Subzero installation");
+					mini.Console.writeLine(unit.name + "'s Frostbite overruled by Subzero installation");
 					unit.liftStatus('frostbite');
 				}
 				if (unit.hasStatus('ignite')) {
-					Console.writeLine(unit.name + "'s Ignite nullified by Subzero installation");
+					mini.Console.writeLine(unit.name + "'s Ignite nullified by Subzero installation");
 					unit.liftStatus('ignite');
 				}
 			});
@@ -196,20 +196,20 @@ Game.conditions =
 				if (effect.element == 'ice') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
-					Console.writeLine("Ice attack strengthened by Subzero to " + effect.power + " POW");
-					Console.append("was: " + oldPower);
+					mini.Console.writeLine("Ice attack strengthened by Subzero to " + effect.power + " POW");
+					mini.Console.append("was: " + oldPower);
 				} else if (effect.element == 'fire') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
-					Console.writeLine("Fire attack weakened by Subzero to " + effect.power + " POW");
-					Console.append("was: " + oldPower);
+					mini.Console.writeLine("Fire attack weakened by Subzero to " + effect.power + " POW");
+					mini.Console.append("was: " + oldPower);
 				}
 			});
 		},
 		
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'inferno') {
-				Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
+				mini.Console.writeLine("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
 				mini.Link(battle.battleUnits)
@@ -235,10 +235,10 @@ Game.conditions =
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
-				Console.writeLine("Frostbite infliction overruled by Subzero");
+				mini.Console.writeLine("Frostbite infliction overruled by Subzero");
 			} else if (eventData.statusID == 'ignite') {
 				eventData.cancel = true;
-				Console.writeLine("Ignite is incompatible with Subzero");
+				mini.Console.writeLine("Ignite is incompatible with Subzero");
 			}
 		}
 	},
@@ -257,7 +257,7 @@ Game.conditions =
 		endTurn: function(battle, eventData) {
 			if (0.5 > Math.random()) {
 				var unit = eventData.actingUnit;
-				Console.writeLine(unit.name + " struck by lightning from Thunderstorm");
+				mini.Console.writeLine(unit.name + " struck by lightning from Thunderstorm");
 				var level = battle.getLevel();
 				var attack = Game.math.statValue(100, level);
 				var defense = Game.math.statValue(0, level);
@@ -266,10 +266,10 @@ Game.conditions =
 				unit.liftStatusTags('buff');
 				--this.strikesLeft;
 				if (this.strikesLeft <= 0) {
-					Console.writeLine("Thunderstorm has expired");
+					mini.Console.writeLine("Thunderstorm has expired");
 					battle.liftCondition('thunderstorm');
 				} else {
-					Console.writeLine("Thunderstorm will expire in " + this.strikesLeft + " more strike(s)");
+					mini.Console.writeLine("Thunderstorm will expire in " + this.strikesLeft + " more strike(s)");
 				}
 			}
 		}

@@ -13,6 +13,8 @@ var DBG_LOG_CONSOLE_OUTPUT = true;
 var DBG_IN_GAME_CONSOLE = true;
 
 RequireSystemScript('mini/Core.js');
+RequireSystemScript('mini/BGM.js');
+RequireSystemScript('mini/Console.js');
 RequireSystemScript('mini/Link.js');
 RequireSystemScript('mini/RNG.js');
 RequireSystemScript('mini/Scenes.js');
@@ -21,8 +23,6 @@ RequireSystemScript('analogue.js');
 RequireSystemScript('SpriteImage.js');
 
 RequireScript('Core/Engine.js');
-RequireScript('Core/BGM.js');
-RequireScript('Core/Console.js');
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('FieldMenu.js');
@@ -60,13 +60,12 @@ function game()
 	
 	// initialize the minisphere runtime
 	mini.initialize({
-		scenePriority: 99
+		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
+		scenePriority: 99,
 	});
 	
 	// initialize Specs Engine components
 	Engine.initialize(60);
-	BGM.initialize();
-	Console.initialize();
 	analogue.init();
 	
 	// set up the beta test harness

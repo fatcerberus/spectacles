@@ -18,10 +18,10 @@ LucidaClock = new (function()
 	// Initializes and activates the time-of-day manager.
 	this.initialize = function()
 	{
-		Console.writeLine("Initializing time-of-day manager");
+		mini.Console.writeLine("Initializing time-of-day manager");
 		mini.Threads.create(this, 1);
 		var time = this.getTime();
-		Console.writeLine("Time in Lucida is " + time.toString());
+		mini.Console.writeLine("Time in Lucida is " + time.toString());
 	}
 	
 	// .update() method

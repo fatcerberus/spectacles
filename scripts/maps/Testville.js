@@ -41,7 +41,7 @@
 		FollowPerson('Scott T', 'Katelyn', 32);
 		FollowPerson('Amanda', 'Scott T', 32);
 		
-		BGM.change('TimeToLetGo');
+		mini.BGM.change('TimeToLetGo');
 	},
 	
 	robert: {

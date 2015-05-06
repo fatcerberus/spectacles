@@ -27,7 +27,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	Console.writeLine("Initializing battle context for '" + battleID + "'");
+	mini.Console.writeLine("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
@@ -116,9 +116,9 @@ Battle.prototype.addCondition = function(conditionID)
 	if (!eventData.cancel) {
 		var effect = new ConditionContext(eventData.conditionID, this);
 		this.conditions.push(effect);
-		Console.writeLine("Installed field condition " + effect.name);
+		mini.Console.writeLine("Installed field condition " + effect.name);
 	} else {
-		Console.writeLine("FC installation (ID: " + conditionID + ") canceled by existing FC");
+		mini.Console.writeLine("FC installation (ID: " + conditionID + ") canceled by existing FC");
 	}
 };
 
@@ -193,20 +193,20 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (DBG_DISABLE_BATTLES) {
-		Console.writeLine("Battles disabled, automatic win");
-		Console.append("battleID: " + this.battleID);
+		mini.Console.writeLine("Battles disabled, automatic win");
+		mini.Console.append("battleID: " + this.battleID);
 		this.result = BattleResult.playerWon;
 		return null;
 	}
-	Console.writeLine("");
-	Console.writeLine("Starting battle engine");
-	Console.append("battleID: " + this.battleID);
+	mini.Console.writeLine("");
+	mini.Console.writeLine("Starting battle engine");
+	mini.Console.append("battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
 		var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 		partyMaxMP += mpDonated;
-		Console.writeLine(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+		mini.Console.writeLine(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -239,7 +239,7 @@ Battle.prototype.go = function()
 		battleBGMTrack = this.parameters.bgm;
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
-	BGM.override(battleBGMTrack);
+	mini.BGM.override(battleBGMTrack);
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
@@ -273,7 +273,7 @@ Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			Console.writeLine("Battle condition " + this.conditions[i].name + " lifted");
+			mini.Console.writeLine("Battle condition " + this.conditions[i].name + " lifted");
 			this.conditions.splice(i, 1);
 			--i; continue;
 		}
@@ -379,8 +379,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.each(function(effect)
 	{
 		var effectHandler = Game.moveEffects[effect.type];
-		Console.writeLine("Applying effect '" + effect.type + "'");
-		Console.append("retarg: " + effect.targetHint);
+		mini.Console.writeLine("Applying effect '" + effect.type + "'");
+		mini.Console.append("retarg: " + effect.targetHint);
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
 	mini.Link(targetUnits).invoke('takeHit', actingUnit, action);
@@ -402,13 +402,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			aimRate = eventData.aimRate;
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-		Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
+		mini.Console.writeLine("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
 		if (RNG.chance(odds)) {
-			Console.append("hit");
+			mini.Console.append("hit");
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
-			Console.append("miss");
+			mini.Console.append("miss");
 			targetUnits[i].evade(actingUnit, action);
 		}
 	}
@@ -421,8 +421,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.where(function(effect) { return effect.type != null; })
 		.each(function(effect)
 	{
-		Console.writeLine("Applying effect '" + effect.type + "'");
-		Console.append("retarg: " + effect.targetHint);
+		mini.Console.writeLine("Applying effect '" + effect.type + "'");
+		mini.Console.append("retarg: " + effect.targetHint);
 		Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
 	});
 	mini.Link(targetsHit).invoke('endTargeting');
@@ -435,7 +435,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
-	Console.writeLine("Spawning new enemy '" + enemyClass + "'");
+	mini.Console.writeLine("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
@@ -455,8 +455,8 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
-	Console.writeLine("");
-	Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
+	mini.Console.writeLine("");
+	mini.Console.writeLine("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -469,17 +469,17 @@ Battle.prototype.tick = function()
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (mini.Link(this.playerUnits).none(isUnitAlive)) {
-			BGM.adjustVolume(0.0, 2.0);
+			mini.BGM.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
-			Console.writeLine("All active party members have been killed");
+			mini.Console.writeLine("All active party members have been killed");
 			return;
 		}
 		if (mini.Link(this.enemyUnits).none(isUnitAlive)) {
-			BGM.adjustVolume(0.0, 1.0);
+			mini.BGM.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
-			Console.writeLine("All enemies have been killed");
+			mini.Console.writeLine("All enemies have been killed");
 			return;
 		}
 	}
@@ -505,12 +505,12 @@ Battle.prototype.update = function() {
 			if (!mini.Link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
-					Console.writeLine("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					mini.Console.writeLine("Calling onFirstStart() for battleID '" + this.battleID + "'");
 					this.parameters.onFirstStart.call(this);
 				 }
 			}
 			if ('onStart' in this.parameters) {
-				Console.writeLine("Calling onStart() for battleID '" + this.battleID + "'");
+				mini.Console.writeLine("Calling onStart() for battleID '" + this.battleID + "'");
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
@@ -521,11 +521,11 @@ Battle.prototype.update = function() {
 			break;
 	}
 	if (this.result !== null) {
-		Console.writeLine("Battle engine shutting down");
+		mini.Console.writeLine("Battle engine shutting down");
 		mini.Link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
-		BGM.reset();
-		BGM.adjustVolume(1.0, 0.0);
+		mini.BGM.reset();
+		mini.BGM.adjust(1.0, 0.0);
 		return false;
 	} else {
 		return true;

@@ -25,8 +25,8 @@ function Session(difficulty)
 {
 	difficulty = difficulty !== void null ? difficulty : GameDifficulty.standard;
 	
-	Console.writeLine("Initializing new game session");
-	Console.append("diff lv: " + difficulty);
+	mini.Console.writeLine("Initializing new game session");
+	mini.Console.append("diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party(50);
 	mini.Link(Game.initialParty)

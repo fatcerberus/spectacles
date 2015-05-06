@@ -79,8 +79,8 @@ WeaponUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit, unit.stance)) {
 		Abort("WeaponUsable.use(): " + unit.name + " tried to change weapons, which is not currently possible.");
 	}
-	Console.writeLine(unit.name + " is equipping " + this.name);
-	Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
+	mini.Console.writeLine(unit.name + " is equipping " + this.name);
+	mini.Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	mini.Link(targets).invoke('setWeapon', this.weaponID);
 	return null;
 }
