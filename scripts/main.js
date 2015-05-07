@@ -60,15 +60,29 @@ function game()
 	
 	// initialize the minisphere runtime
 	mini.initialize({
+		consoleLines: 10,
 		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
-		consoleLines: 5,
 		scenePriority: 99,
 	});
 	
+	mini.Console.register('hunger-pig', null, {
+		'eat': function(name) {
+			DestroyPerson(name);
+			new mini.Scene()
+				.playSound('Munch.wav')
+				.run();
+		}
+	});
+	mini.Console.register('map', null, {
+		'cam': function(name) { AttachCamera(name); },
+		'input': function(name) { AttachInput(name); },
+	});
 	mini.Console.register('bgm', mini.BGM, {
-		'play': function(trackName) { this.override(trackName); },
-		'stop': function(trackName) { this.stop(); },
-		'reset': function() { this.reset(); },
+		'play': function(trackName) { this.play("BGM/" + trackName + ".ogg"); },
+		'stop': function() { this.play(null); },
+		'push': function(trackName) { this.push("BGM/" + trackName + ".ogg"); },
+		'pop': function() { this.pop(); },
+		'vol': function(volume) { this.adjust(parseFloat(volume), 0.5); },
 	});
 	
 	// initialize Specs Engine components
@@ -90,7 +104,6 @@ function game()
 	
 	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
 	SetTalkActivationButton(0);
-	BindKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_X), 'analogue.getWorld().session.fieldMenu.open();', null);
 	MapEngine('Testville.rmp', 60);
 }
 

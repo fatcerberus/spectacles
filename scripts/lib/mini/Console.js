@@ -14,20 +14,10 @@ RequireSystemScript('mini/Threads.js');
 
 // mini.Console
 // Encapsulates the console.
-mini.Console = new (function()
-{
-	this.fadeness = 0.0;
-	this.font = GetSystemFont();
-	this.isVisible = false;
-	this.lineOffset = 0.0;
-	this.log = null;
-	this.nextLine = 0;
-	this.numLines = 0;
-	this.wasKeyDown = false;
-})();
+mini.Console = {};
 
-// mini.Console.initialize()
-// Initializes the console.
+// miniconsole initializer
+// Initializes miniconsole when the user calls mini.initialize().
 // Parameters:
 //     consoleLines:  The number of lines to display at a time. If not provided, the line count
 //                    will be determined dynamically based on the game resolution.
@@ -38,8 +28,17 @@ mini.onStartUp.add(mini.Console, function(params)
 {
 	Print("mini: Initializing miniconsole");
 	
+	this.fadeness = 0.0;
+	this.font = GetSystemFont();
+	this.isVisible = false;
+	this.lineOffset = 0.0;
+	this.log = null;
+	this.nextLine = 0;
+	this.numLines = 0;
+	this.wasKeyDown = false;
+	
 	var numLines = 'consoleLines' in params ? params.consoleLines
-		: Math.floor((GetScreenHeight() - 10) / this.font.getHeight()) - 3;
+		: Math.floor((GetScreenHeight() - 10) / this.font.getHeight()) - 2;
 	var bufferSize = 'consoleBuffer' in params ? params.consoleBuffer : 1000;
 	var filename = 'logFile' in params ? params.logFile : null;
 	
@@ -51,8 +50,8 @@ mini.onStartUp.add(mini.Console, function(params)
 	this.buffer = [];
 	this.bufferSize = bufferSize;
 	this.commands = [];
-	this.cursorColor = new Color(255, 255, 255, 255);
 	this.entry = "";
+	this.cursorColor = new Color(255, 255, 128, 255);
 	new mini.Scene(true)
 		.tween(this.cursorColor, 0.25, 'easeInSine', { alpha: 255 })
 		.tween(this.cursorColor, 0.25, 'easeOutSine', { alpha: 0 })
@@ -63,6 +62,48 @@ mini.onStartUp.add(mini.Console, function(params)
 	this.write("");
 	this.write("Initialized miniconsole");
 });
+
+// mini.Console.update()
+// Updates the console thread per frame.
+mini.Console.update = function() {
+	if (this.fadeness <= 0.0) {
+		this.lineOffset = 0.0;
+	}
+	return true;
+};
+
+// mini.Console.render()
+// Performs rendering on the console thread per frame.
+mini.Console.render = function() {
+	if (this.fadeness <= 0.0)
+		return;
+	var boxY = -16 * (1.0 - this.fadeness);
+	Rectangle(0, boxY, GetScreenWidth(), 16, new Color(0, 0, 0, this.fadeness * 224));
+	this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 255));
+	this.font.drawText(6, 3 + boxY, this.entry);
+	this.font.setColorMask(new Color(255, 255, 128, this.fadeness * 255));
+	this.font.drawText(5, 2 + boxY, this.entry);
+	this.font.setColorMask(this.cursorColor);
+	this.font.drawText(5 + this.font.getStringWidth(this.entry), 2 + boxY, "_");
+	var boxHeight = this.numLines * this.font.getHeight() + 10;
+	var boxY = GetScreenHeight() - boxHeight * this.fadeness;
+	Rectangle(0, boxY, GetScreenWidth(), boxHeight, new Color(0, 0, 0, this.fadeness * 192));
+	var oldClip = GetClippingRectangle();
+	SetClippingRectangle(5, boxY + 5, GetScreenWidth() - 10, boxHeight - 10);
+	for (var i = -1; i < this.numLines + 1; ++i) {
+		var lineToDraw = (this.nextLine - this.numLines) + i - Math.floor(this.lineOffset);
+		var lineInBuffer = lineToDraw % this.bufferSize;
+		if (lineToDraw >= 0 && this.buffer[lineInBuffer] != null) {
+			var y = boxY + 5 + i * this.font.getHeight();
+			y += (this.lineOffset - Math.floor(this.lineOffset)) * this.font.getHeight();
+			this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 192));
+			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
+			this.font.setColorMask(new Color(255, 255, 255, this.fadeness * 192));
+			this.font.drawText(5, y, this.buffer[lineInBuffer]);
+		}
+	}
+	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
+};
 
 // mini.Console.isOpen()
 // Determines whether the console is currently displayed or not.
@@ -96,11 +137,15 @@ mini.Console.execute = function(command)
 	var object = tokens[0];
 	var method = tokens[1];
 	if (!mini.Link(this.commands).pluck('entityName').contains(object)) {
-		this.write("miniconsole: No such entity '" + object + "'");
+		this.write("Entity name '" + object + "' not recognized");
 		return;
 	}
-	if (!mini.Link(this.commands).pluck('command').contains(method)) {
-		this.write("miniconsole: '" + command + "' not valid for '" + object + "'");
+	if (!mini.Link(this.commands)
+		.filterBy('entityName', object)
+		.pluck('command')
+		.contains(method))
+	{
+		this.write("Instruction '" + method + "' not valid for '" + object + "'");
 		return;
 	}
 	mini.Link(this.commands)
@@ -108,10 +153,16 @@ mini.Console.execute = function(command)
 		.filterBy('entityName', object)
 		.each(function(desc)
 	{
+		mini.Console.write("Executing '" + command + "'");
 		mini.Threads.createEx(desc, {
 			update: function() {
-				try { this.method.apply(this.that, tokens.slice(2)); }
-				catch(e) { mini.Console.write("miniconsole: '" + desc.entityName + " " + desc.command + "' failed (JS error)"); }
+				try {
+					this.method.apply(this.that, tokens.slice(2));
+				}
+				catch(e) {
+					mini.Console.write("JS: " + e.message);
+					mini.Console.write("Error executing '" + desc.entityName + " " + desc.command + "'");
+				}
 			}
 		});
 	});
@@ -194,39 +245,6 @@ mini.Console.unregister = function(name)
 		.toArray();
 };
 
-// mini.Console.render()
-// Renders the console in its current state.
-mini.Console.render = function() {
-	if (this.fadeness <= 0.0)
-		return;
-	var boxY = -16 * (1.0 - this.fadeness);
-	Rectangle(0, boxY, GetScreenWidth(), 16, new Color(0, 0, 0, this.fadeness * 192));
-	this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 192));
-	this.font.drawText(6, 3 + boxY, this.entry);
-	this.font.setColorMask(new Color(255, 255, 255, this.fadeness * 192));
-	this.font.drawText(5, 2 + boxY, this.entry);
-	this.font.setColorMask(this.cursorColor);
-	this.font.drawText(5 + this.font.getStringWidth(this.entry), 2 + boxY, "_");
-	var boxHeight = this.numLines * this.font.getHeight() + 10;
-	var boxY = GetScreenHeight() - boxHeight * this.fadeness //-boxHeight * (1.0 - this.fadeness);
-	Rectangle(0, boxY, GetScreenWidth(), boxHeight, new Color(0, 0, 0, this.fadeness * 192));
-	var oldClip = GetClippingRectangle();
-	SetClippingRectangle(5, boxY + 5, GetScreenWidth() - 10, boxHeight - 10);
-	for (var i = -1; i < this.numLines + 1; ++i) {
-		var lineToDraw = (this.nextLine - this.numLines) + i - Math.floor(this.lineOffset);
-		var lineInBuffer = lineToDraw % this.bufferSize;
-		if (lineToDraw >= 0 && this.buffer[lineInBuffer] != null) {
-			var y = boxY + 5 + i * this.font.getHeight();
-			y += (this.lineOffset - Math.floor(this.lineOffset)) * this.font.getHeight();
-			this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 192));
-			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-			this.font.setColorMask(new Color(255, 255, 255, this.fadeness * 192));
-			this.font.drawText(5, y, this.buffer[lineInBuffer]);
-		}
-	}
-	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
-};
-
 // mini.Console.show()
 // Shows the console window.
 mini.Console.show = function()
@@ -236,15 +254,6 @@ mini.Console.show = function()
 		.call(function() { this.isVisible = true; }.bind(this))
 		.run();
 }
-
-// mini.Console.update()
-// Updates the console's internal state for the next frame.
-mini.Console.update = function() {
-	if (this.fadeness <= 0.0) {
-		this.lineOffset = 0.0;
-	}
-	return true;
-};
 
 // mini.Console.write()
 // Writes a line of text to the console.

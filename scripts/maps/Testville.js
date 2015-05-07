@@ -26,22 +26,22 @@
 			}
 		});
 		
-		CreatePerson('hero', 'battlers/Scott.rss', false);
-		AttachCamera('hero');
-		AttachInput('hero');
+		CreatePerson('scott', 'battlers/Scott.rss', false);
+		AttachCamera('scott');
+		AttachInput('scott');
 		
 		CreatePerson('Bruce', 'battlers/Bruce.rss', false);
 		CreatePerson('Lauren', 'battlers/Lauren.rss', false);
 		CreatePerson('Katelyn', 'battlers/Katelyn.rss', false);
 		CreatePerson('Scott T', 'battlers/Scott T.rss', false);
 		CreatePerson('Amanda', 'battlers/Amanda.rss', false);
-		FollowPerson('Bruce', 'hero', 32);
+		FollowPerson('Bruce', 'scott', 32);
 		FollowPerson('Lauren', 'Bruce', 32);
 		FollowPerson('Katelyn', 'Lauren', 32);
 		FollowPerson('Scott T', 'Katelyn', 32);
 		FollowPerson('Amanda', 'Scott T', 32);
 		
-		mini.BGM.change('TimeToLetGo');
+		mini.BGM.play('BGM/Portentia.ogg');
 	},
 	
 	robert: {
@@ -49,7 +49,7 @@
 		talk: function() {
 			var inputPerson = GetInputPerson();
 			DetachInput();
-			if (inputPerson === 'hero') {
+			if (inputPerson === 'scott') {
 				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Scott, you suck. Fight me to decide who gets to kill my sister!")
 					.battle('robert2', analogue.getWorld().session)
@@ -98,19 +98,19 @@
 			if (IsPersonObstructed('maggie', x, y)) {
 				if (person.isBlocked) return;
 				var food = GetObstructingPerson('maggie', x, y);
-				if (food != 'hero') {
+				if (food != 'scott') {
 					analogue.world.munchSound.play(false);
 					DestroyPerson(food);
 					++person.peopleEaten;
 				} else {
-					DetachInput('hero');
+					DetachInput('scott');
 					person.isActive = false;
 					if (++person.timesStopped <= 1) {
 						new mini.Scene()
 							.talk("maggie", true, 2.0, Infinity, "Hey, watch where you're going Scott!  Do it again and you'll get eaten!")
 							.run(true);
 						person.isActive = true;
-						AttachInput('hero');
+						AttachInput('scott');
 					} else {
 						DetachCamera();
 						new mini.Scene()
@@ -119,7 +119,7 @@
 								.focusOnPerson('maggie', 2.0)
 							.end()
 							.talk("Scott", true, 4.0, 0.0, "No maggie, please don't eaAHHHHHHHHHHHHHHHHH--")
-							.killPerson('hero')
+							.killPerson('scott')
 							.playSound('Munch.wav')
 							.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
 							.run(true);

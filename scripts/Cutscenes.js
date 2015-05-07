@@ -267,8 +267,7 @@ mini.Scenelet('talk',
 	},
 	getInput: function(scene) {
 		if (this.mode != "idle") return;
-		var key = AreKeysLeft() ? GetKey() : null;
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A) && this.timeout == Infinity) {
+		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) && this.timeout == Infinity) {
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
 				if (this.currentPage < this.text.length - 1) {
 					this.mode = "page";

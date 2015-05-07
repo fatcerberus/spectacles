@@ -239,7 +239,7 @@ Battle.prototype.go = function()
 		battleBGMTrack = this.parameters.bgm;
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
-	mini.BGM.override(battleBGMTrack);
+	mini.BGM.push("BGM/" + battleBGMTrack + ".ogg");
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
@@ -524,7 +524,7 @@ Battle.prototype.update = function() {
 		mini.Console.write("Battle engine shutting down");
 		mini.Link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
-		mini.BGM.reset();
+		mini.BGM.pop();
 		mini.BGM.adjust(1.0, 0.0);
 		return false;
 	} else {
