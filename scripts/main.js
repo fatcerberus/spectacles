@@ -4,7 +4,6 @@
 ***/
 
 var DBG_DISABLE_BATTLES = false;
-var DBG_DISABLE_BGM = false;
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
@@ -65,23 +64,16 @@ function game()
 		scenePriority: 99,
 	});
 	
-	mini.Console.register('hunger-pig', null, {
-		'eat': function(name) {
-			DestroyPerson(name);
-			new mini.Scene()
-				.playSound('Munch.wav')
-				.run();
-		}
-	});
-	mini.Console.register('map', null, {
-		'cam': function(name) { AttachCamera(name); },
-		'input': function(name) { AttachInput(name); },
+	mini.Console.register('yap', null, {
+		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are currently ON"); }, 
+		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are currently OFF"); }, 
 	});
 	mini.Console.register('bgm', mini.BGM, {
+		'kill': function() { this.play(null); this.play = this.push = this.pop = function() {} },
 		'play': function(trackName) { this.play("BGM/" + trackName + ".ogg"); },
-		'stop': function() { this.play(null); },
-		'push': function(trackName) { this.push("BGM/" + trackName + ".ogg"); },
 		'pop': function() { this.pop(); },
+		'push': function(trackName) { this.push("BGM/" + trackName + ".ogg"); },
+		'stop': function() { this.play(null); },
 		'vol': function(volume) { this.adjust(parseFloat(volume), 0.5); },
 	});
 	

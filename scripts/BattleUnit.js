@@ -145,13 +145,14 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		'damage': function(amount) {
 			tags = [].slice.call(arguments, 1);
 			amount = Math.max(parseInt(amount), 0);
-			this.takeDamage(parseInt(amount), tags);
+			this.takeDamage(amount, tags);
 		},
 		'heal': function(amount) {
 			tags = [].slice.call(arguments, 1);
 			amount = Math.max(parseInt(amount), 0);
 			this.heal(amount, tags);
 		},
+		'revive': function() { this.resurrect(); }
 	});
 	var unitType = this.ai === null ? "player" : "AI";
 	mini.Console.write("Created " + unitType + " unit '" + this.name + "'");

@@ -57,6 +57,7 @@ mini.onStartUp.add(mini.Console, function(params)
 		.tween(this.cursorColor, 0.25, 'easeOutSine', { alpha: 0 })
 		.run();
 	mini.Threads.create(this, 101);
+	
 	this.write("minisphere Runtime 1.1b4 (miniconsole)");
 	this.write("Sphere " + GetVersionString());
 	this.write("");
@@ -130,27 +131,52 @@ mini.Console.append = function(text)
 };
 
 // mini.Console.execute()
-// Executes a given command string. Format: <method> <object name>
+// Executes a given command string.
+// Remarks:
+//     * Command format is <entity_name> <instruction> <arg_1> ... <arg_n>
+//       e.g.: cow eat kitties 100
+//     * Quoted text (single or double quotes) is treated as a single token.
+//     * Numeric arguments are converted to actual JS numbers before being passed to an
+//       instruction method.
 mini.Console.execute = function(command)
 {
-	var tokens = command.split(" ");
-	var object = tokens[0];
-	var method = tokens[1];
-	if (!mini.Link(this.commands).pluck('entityName').contains(object)) {
-		this.write("Entity name '" + object + "' not recognized");
+	// tokenize the command string
+	var tokens = command.match(/'.*?'|".*?"|\S+/g);
+	for (var i = 0; i < tokens.length; ++i) {
+		tokens[i] = tokens[i].replace(/'(.*)'/, "$1");
+		tokens[i] = tokens[i].replace(/"(.*)"/, "$1");
+	}
+	var entity = tokens[0];
+	var instruction = tokens[1];
+	
+	// check that the instruction is valid
+	if (!mini.Link(this.commands).pluck('entity').contains(entity)) {
+		this.write("Entity name '" + entity + "' not recognized");
+		return;
+	}
+	if (tokens.length < 2) {
+		this.write("No instruction provided for '" + entity + "'");
 		return;
 	}
 	if (!mini.Link(this.commands)
-		.filterBy('entityName', object)
-		.pluck('command')
-		.contains(method))
+		.filterBy('entity', entity)
+		.pluck('instruction')
+		.contains(instruction))
 	{
-		this.write("Instruction '" + method + "' not valid for '" + object + "'");
+		this.write("Instruction '" + instruction + "' not valid for '" + entity + "'");
 		return;
 	}
+	
+	// parse arguments
+	for (var i = 2; i < tokens.length; ++i) {
+		var maybeNumber = parseFloat(tokens[i]);
+		tokens[i] = isNaN(maybeNumber) ? tokens[i] : maybeNumber;
+	}
+	
+	// execute the command
 	mini.Link(this.commands)
-		.filterBy('command', method)
-		.filterBy('entityName', object)
+		.filterBy('instruction', instruction)
+		.filterBy('entity', entity)
 		.each(function(desc)
 	{
 		mini.Console.write("Executing '" + command + "'");
@@ -161,7 +187,7 @@ mini.Console.execute = function(command)
 				}
 				catch(e) {
 					mini.Console.write("JS: " + e.message);
-					mini.Console.write("Error executing '" + desc.entityName + " " + desc.command + "'");
+					mini.Console.write("Error executing '" + desc.entity + " " + desc.instruction + "'");
 				}
 			}
 		});
@@ -224,12 +250,12 @@ mini.Console.hide = function()
 //              should not contain spaces.
 mini.Console.register = function(name, that, methods)
 {
-	for (var prop in methods) {
+	for (var instruction in methods) {
 		this.commands.push({
-			entityName: name,
+			entity: name,
+			instruction: instruction,
 			that: that,
-			command: prop,
-			method: methods[prop]
+			method: methods[instruction]
 		});
 	}
 };
@@ -241,7 +267,7 @@ mini.Console.register = function(name, that, methods)
 mini.Console.unregister = function(name)
 {
 	this.commands = mini.Link(this.commands)
-		.where(function(command) { return command.entityName != name; })
+		.where(function(command) { return command.entity != name; })
 		.toArray();
 };
 
