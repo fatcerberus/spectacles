@@ -9,6 +9,7 @@
 
 RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/Link.js');
+RequireSystemScript('mini/Scenes.js');
 RequireSystemScript('mini/Threads.js');
 
 // mini.Console
@@ -22,7 +23,6 @@ mini.Console = new (function()
 	this.log = null;
 	this.nextLine = 0;
 	this.numLines = 0;
-	this.thread = null;
 	this.wasKeyDown = false;
 })();
 
@@ -51,12 +51,17 @@ mini.onStartUp.add(mini.Console, function(params)
 	this.buffer = [];
 	this.bufferSize = bufferSize;
 	this.commands = [];
+	this.cursorColor = new Color(255, 255, 255, 255);
 	this.entry = "";
-	this.thread = mini.Threads.create(this, 101);
-	this.writeLine("minisphere Runtime 1.1b4 (miniconsole)");
-	this.writeLine("Sphere " + GetVersionString());
-	this.writeLine("");
-	this.writeLine("Initialized miniconsole");
+	new mini.Scene(true)
+		.tween(this.cursorColor, 0.25, 'easeInSine', { alpha: 255 })
+		.tween(this.cursorColor, 0.25, 'easeOutSine', { alpha: 0 })
+		.run();
+	mini.Threads.create(this, 101);
+	this.write("minisphere Runtime 1.1b4 (miniconsole)");
+	this.write("Sphere " + GetVersionString());
+	this.write("");
+	this.write("Initialized miniconsole");
 });
 
 // mini.Console.isOpen()
@@ -75,7 +80,7 @@ mini.Console.isOpen = function()
 mini.Console.append = function(text)
 {
 	if (this.nextLine == 0) {
-		mini.Console.writeLine(text);
+		mini.Console.write(text);
 		return;
 	}
 	var lineInBuffer = (this.nextLine - 1) % this.bufferSize;
@@ -88,13 +93,26 @@ mini.Console.append = function(text)
 mini.Console.execute = function(command)
 {
 	var tokens = command.split(" ");
+	var object = tokens[0];
+	var method = tokens[1];
+	if (!mini.Link(this.commands).pluck('entityName').contains(object)) {
+		this.write("miniconsole: No such entity '" + object + "'");
+		return;
+	}
+	if (!mini.Link(this.commands).pluck('command').contains(method)) {
+		this.write("miniconsole: '" + command + "' not valid for '" + object + "'");
+		return;
+	}
 	mini.Link(this.commands)
-		.filterBy('command', tokens[0])
-		.filterBy('entityName', tokens[1])
-		.each(function(command)
+		.filterBy('command', method)
+		.filterBy('entityName', object)
+		.each(function(desc)
 	{
-		mini.Threads.createEx(command, {
-			update: function() { this.method.apply(this.that, tokens.slice(2)); }
+		mini.Threads.createEx(desc, {
+			update: function() {
+				try { this.method.apply(this.that, tokens.slice(2)); }
+				catch(e) { mini.Console.write("miniconsole: '" + desc.entityName + " " + desc.command + "' failed (JS error)"); }
+			}
 		});
 	});
 };
@@ -166,7 +184,7 @@ mini.Console.register = function(name, that, methods)
 };
 
 // mini.Console.unregister()
-// Deregisters a previously-registered entity.
+// Unregisters a previously-registered entity.
 // Arguments:
 //     name: The name of the entity as passed to mini.Console.register().
 mini.Console.unregister = function(name)
@@ -182,14 +200,16 @@ mini.Console.render = function() {
 	if (this.fadeness <= 0.0)
 		return;
 	var boxY = -16 * (1.0 - this.fadeness);
-	Rectangle(0, boxY, GetScreenWidth(), 16, CreateColor(0, 0, 0, this.fadeness * 192));
-	this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 192));
-	this.font.drawText(6, 3 + boxY, this.entry + "_");
-	this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 192));
-	this.font.drawText(5, 2 + boxY, this.entry + "_");
+	Rectangle(0, boxY, GetScreenWidth(), 16, new Color(0, 0, 0, this.fadeness * 192));
+	this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 192));
+	this.font.drawText(6, 3 + boxY, this.entry);
+	this.font.setColorMask(new Color(255, 255, 255, this.fadeness * 192));
+	this.font.drawText(5, 2 + boxY, this.entry);
+	this.font.setColorMask(this.cursorColor);
+	this.font.drawText(5 + this.font.getStringWidth(this.entry), 2 + boxY, "_");
 	var boxHeight = this.numLines * this.font.getHeight() + 10;
 	var boxY = GetScreenHeight() - boxHeight * this.fadeness //-boxHeight * (1.0 - this.fadeness);
-	Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, this.fadeness * 192));
+	Rectangle(0, boxY, GetScreenWidth(), boxHeight, new Color(0, 0, 0, this.fadeness * 192));
 	var oldClip = GetClippingRectangle();
 	SetClippingRectangle(5, boxY + 5, GetScreenWidth() - 10, boxHeight - 10);
 	for (var i = -1; i < this.numLines + 1; ++i) {
@@ -198,9 +218,9 @@ mini.Console.render = function() {
 		if (lineToDraw >= 0 && this.buffer[lineInBuffer] != null) {
 			var y = boxY + 5 + i * this.font.getHeight();
 			y += (this.lineOffset - Math.floor(this.lineOffset)) * this.font.getHeight();
-			this.font.setColorMask(CreateColor(0, 0, 0, this.fadeness * 192));
+			this.font.setColorMask(new Color(0, 0, 0, this.fadeness * 192));
 			this.font.drawText(6, y + 1, this.buffer[lineInBuffer]);
-			this.font.setColorMask(CreateColor(255, 255, 255, this.fadeness * 192));
+			this.font.setColorMask(new Color(255, 255, 255, this.fadeness * 192));
 			this.font.drawText(5, y, this.buffer[lineInBuffer]);
 		}
 	}
@@ -226,9 +246,9 @@ mini.Console.update = function() {
 	return true;
 };
 
-// mini.Console.writeLine()
+// mini.Console.write()
 // Writes a line of text to the console.
-mini.Console.writeLine = function(text)
+mini.Console.write = function(text)
 {
 	if (this.log !== null && this.nextLine > 0) {
 		var lineInBuffer = (this.nextLine - 1) % this.bufferSize;

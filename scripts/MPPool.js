@@ -17,7 +17,7 @@ function MPPool(id, capacity, availableMP)
 	this.id = id;
 	this.availableMP = Math.min(availableMP, capacity);
 	this.capacity = capacity;
-	mini.Console.writeLine("Created MP pool '" + this.id + "'");
+	mini.Console.write("Created MP pool '" + this.id + "'");
 	mini.Console.append("cap: " + this.capacity);
 	mini.Console.append("avail: " + this.availableMP);
 	
@@ -46,7 +46,7 @@ MPPool.prototype.restore = function(amount)
 	this.availableMP = Math.min(this.availableMP + amount, this.capacity);
 	this.gainedMP.invoke(this, this.availableMP);
 	if (amount != 0) {
-		mini.Console.writeLine(amount + " MP restored to pool '" + this.id + "'");
+		mini.Console.write(amount + " MP restored to pool '" + this.id + "'");
 		mini.Console.append("avail: " + this.availableMP);
 	}
 };
@@ -64,7 +64,7 @@ MPPool.prototype.use = function(amount)
 	this.availableMP -= amount;
 	this.lostMP.invoke(this, this.availableMP);
 	if (amount != 0) {
-		mini.Console.writeLine(Math.round(amount) + " MP used from pool '" + this.id + "'");
+		mini.Console.write(Math.round(amount) + " MP used from pool '" + this.id + "'");
 		mini.Console.append("left: " + this.availableMP);
 	}
 };

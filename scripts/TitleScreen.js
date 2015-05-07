@@ -44,8 +44,8 @@ TitleScreen.prototype.show = function()
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();
 	mini.Threads.join(mini.Threads.create(this));
-	BGM.reset();
-	BGM.adjustVolume(1.0);
+	mini.BGM.reset();
+	mini.BGM.adjust(1.0);
 	return new Session();
 };
 

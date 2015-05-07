@@ -112,7 +112,7 @@ ItemUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit, unit.stance)) {
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
-	mini.Console.writeLine(unit.name + " is using " + this.name);
+	mini.Console.write(unit.name + " is using " + this.name);
 	mini.Console.append("targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	--this.usesLeft;
 	mini.Console.append("left: " + this.usesLeft);

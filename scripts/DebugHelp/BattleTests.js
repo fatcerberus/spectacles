@@ -3,7 +3,7 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-TestHarness.addBattleTest('S:BS: Lumisq. x3',
+TestHarness.addBattle('lumi3x',
 {
 	battleID: 'lumisquirrel3',
 	party: {
@@ -13,7 +13,7 @@ TestHarness.addBattleTest('S:BS: Lumisq. x3',
 	}
 });
 
-TestHarness.addBattleTest('S:BS: H.Horse',
+TestHarness.addBattle('horse',
 {
 	battleID: 'headlessHorse',
 	party: {
@@ -23,7 +23,7 @@ TestHarness.addBattleTest('S:BS: H.Horse',
 	}
 });
 
-TestHarness.addBattleTest('S:BS: RSB II',
+TestHarness.addBattle('rsb',
 {
 	consoleID: 'rsb2',
 	battleID: 'robert2',
@@ -39,7 +39,7 @@ TestHarness.addBattleTest('S:BS: RSB II',
 	}
 });
 
-TestHarness.addBattleTest('S3:tLL: S.Temple',
+TestHarness.addBattle('temple',
 {
 	battleID: 'scottTemple',
 	party: {
@@ -48,7 +48,7 @@ TestHarness.addBattleTest('S3:tLL: S.Temple',
 	}
 });
 
-TestHarness.addBattleTest('S3:tLL: #11',
+TestHarness.addBattle('eleven',
 {
 	battleID: 'scottStarcross',
 	party: {
@@ -58,7 +58,7 @@ TestHarness.addBattleTest('S3:tLL: #11',
 	}
 });
 
-TestHarness.addBattleTest('S3:tLL: #11 (bonus)',
+TestHarness.addBattle('xemnas',
 {
 	battleID: 'scottStarcross2',
 	party: {

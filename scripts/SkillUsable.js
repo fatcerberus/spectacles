@@ -108,7 +108,7 @@ SkillUsable.prototype.grow = function(amount)
 {
 	amount = Math.max(Math.round(amount), 0);
 	this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
-	mini.Console.writeLine("Skill " + this.name + " gained " + amount + " EXP");
+	mini.Console.write("Skill " + this.name + " gained " + amount + " EXP");
 	mini.Console.append("lv: " + this.getLevel());
 };
 
@@ -167,7 +167,7 @@ SkillUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit, unit.stance)) {
 		Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (this is usually due to insufficient MP).");
 	}
-	mini.Console.writeLine(unit.name + " is using " + this.name);
+	mini.Console.write(unit.name + " is using " + this.name);
 	if (unit.weapon != null && this.skillInfo.weaponType != null) {
 		mini.Console.append("wLv: " + unit.weapon.level);
 	}

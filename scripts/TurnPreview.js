@@ -107,7 +107,7 @@ TurnPreview.prototype.set = function(prediction)
 TurnPreview.prototype.show = function()
 {
 	if (this.thread === null) {
-		mini.Console.writeLine("Activating in-battle turn preview");
+		mini.Console.write("Activating in-battle turn preview");
 		this.thread = mini.Threads.create(this, 20);
 	}
 	new mini.Scene()

@@ -26,7 +26,7 @@ function BattleScreen(partyMaxMP)
 	
 	this.startRunning = function()
 	{
-		mini.Console.writeLine("Activating battle screen");
+		mini.Console.write("Activating battle screen");
 		this.thread = mini.Threads.create(this);
 		this.hud.show();
 	};

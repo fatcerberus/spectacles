@@ -12,19 +12,19 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	mini.Console.writeLine("Initializing Specs Engine test harness");
-	this.background = LoadImage('TitleScreen.png');
-	this.fadeness = 0.0;
+	mini.Console.write("Initializing Specs Engine test harness");
+	mini.Console.register('harness', TestHarness, {
+		'run': this.runTest
+	});
 	this.tests = {};
-	this.thread = mini.Threads.create(this, 100);
 };
 
-TestHarness.addBattleTest = function(testID, setupData)
+TestHarness.addBattle = function(testID, setupData)
 {
 	this.tests[testID] = {
 		setup: setupData,
 		run: function() {
-			mini.Console.writeLine("Preparing test battle");
+			mini.Console.write("Preparing test battle");
 			mini.Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
 			mini.Link(Game.initialParty).each(function(id) {
@@ -45,12 +45,7 @@ TestHarness.addBattleTest = function(testID, setupData)
 				.run(true);
 		}
 	};
-	if ('consoleID' in setupData) {
-		mini.Console.register(setupData.consoleID, this.tests[testID], {
-			battle: this.tests[testID].run
-		});
-	}
-	mini.Console.writeLine("Added battle test '" + testID + "'");
+	mini.Console.write("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -62,59 +57,15 @@ TestHarness.addTest = function(testID, func)
 			this.func.call(this.context);
 		}
 	};
-	mini.Console.writeLine("Added generic test '" + testID + "'");
+	mini.Console.register(testID, this.tests[testID], {
+		'test': TestHarness.runTest.bind(TestHarness, testID)
+	});
+	mini.Console.write("Added generic test '" + testID + "'");
 };
-
-TestHarness.update = function()
-{
-	return true;
-};
-
-TestHarness.render = function()
-{
-	this.background.blitMask(0, 0, CreateColor(255, 255, 255, this.fadeness * 255));
-}
-
-TestHarness.getInput = function()
-{
-	if (IsKeyPressed(KEY_B) && IsKeyPressed(KEY_CTRL)) {
-		this.run();
-	}
-}
-
-TestHarness.run = function()
-{
-	var musicID = mini.Link(GetFileList("~/sounds/BGM")).random()[0].slice(0, -4);
-	mini.Console.writeLine("Opening beta test menu");
-	new mini.Scene()
-		.fork()
-			.adjustBGM(0.0, 0.125)
-			.playBGM(musicID)
-			.adjustBGM(1.0, 0.125)
-		.end()
-		.tween(this, 0.25, 'linear', { fadeness: 1.0 })
-		.run();
-	var menu = new MenuStrip("Beta testers' menu", true);
-	for (var testID in this.tests) {
-		menu.addItem(testID, this.tests[testID]);
-	}
-	var test = menu.open();
-	new mini.Scene()
-		.tween(this, 0.25, 'linear', { fadeness: 0.0 })
-		.run();
-	if (test !== null) {
-		test.run.call(test);
-	}
-	new mini.Scene()
-		.adjustBGM(0.0)
-		.resetBGM()
-		.adjustBGM(1.0, 0.25)
-		.run();
-}
 
 TestHarness.runTest = function(testID)
 {
-	mini.Console.writeLine("Test harness invoked directly");
+	mini.Console.write("Test harness invoked");
 	mini.Console.append("testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

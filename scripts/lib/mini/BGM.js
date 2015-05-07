@@ -27,6 +27,7 @@ mini.BGM = new (function()
 // Start up the BGM manager when the user calls mini.initialize()
 mini.onStartUp.add(mini.BGM, function()
 {
+	Print("mini: Initializing miniBGM");
 	mini.Threads.create(this);
 });
 	
@@ -125,13 +126,13 @@ mini.BGM.playTrack = function(trackName)
 		this.stream.stop();
 	}
 	if (trackName !== null) {
-		mini.Console.writeLine("Playing BGM " + trackName);
+		mini.Console.write("Playing BGM " + trackName);
 		mini.Console.append("vol: ~" + Math.floor(this.volume * 100) + "%");
 		this.stream = LoadSound("BGM/" + trackName + ".ogg", true);
 		this.stream.setVolume(this.volume * 255);
 		this.stream.play(true);
 	} else {
-		mini.Console.writeLine("BGM has been stopped");
+		mini.Console.write("BGM has been stopped");
 		this.stream = null;
 	}
 };

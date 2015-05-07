@@ -61,7 +61,14 @@ function game()
 	// initialize the minisphere runtime
 	mini.initialize({
 		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
+		consoleLines: 5,
 		scenePriority: 99,
+	});
+	
+	mini.Console.register('bgm', mini.BGM, {
+		'play': function(trackName) { this.override(trackName); },
+		'stop': function(trackName) { this.stop(); },
+		'reset': function() { this.reset(); },
 	});
 	
 	// initialize Specs Engine components

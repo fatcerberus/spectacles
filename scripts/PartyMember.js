@@ -32,7 +32,7 @@ function PartyMember(characterID, level)
 	for (var statID in character.baseStats) {
 		this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
 	}
-	mini.Console.writeLine("Created new PC " + this.name);
+	mini.Console.write("Created new PC " + this.name);
 	mini.Console.append("lvl: " + this.getLevel());
 	for (var i = 0; i < character.skills.length; ++i) {
 		this.learnSkill(character.skills[i]);
@@ -90,7 +90,7 @@ PartyMember.prototype.learnSkill = function(skillID)
 	var skill = new SkillUsable(skillID, 100);
 	this.skillList.push(skill);
 	this.refreshSkills();
-	mini.Console.writeLine("PC " + this.name + " learned skill " + skill.name);
+	mini.Console.write("PC " + this.name + " learned skill " + skill.name);
 	return skill;
 };
 

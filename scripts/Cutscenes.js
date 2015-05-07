@@ -33,7 +33,7 @@ mini.Scenelet('battle',
 			case 'battle':
 				if (!mini.Threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.enemyWon) {
-						mini.Console.writeLine("Player lost battle, showing Game Over screen");
+						mini.Console.write("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -45,7 +45,7 @@ mini.Scenelet('battle',
 			case 'gameOver':
 				if (!mini.Threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
-						mini.Console.writeLine("Player asked to retry last battle");
+						mini.Console.write("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
