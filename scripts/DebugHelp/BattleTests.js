@@ -3,7 +3,7 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-TestHarness.addBattle('lumi3x',
+TestHarness.addBattle('lumi',
 {
 	battleID: 'lumisquirrel3',
 	party: {
@@ -25,7 +25,6 @@ TestHarness.addBattle('horse',
 
 TestHarness.addBattle('rsb',
 {
-	consoleID: 'rsb2',
 	battleID: 'robert2',
 	party: {
 		scott: { level: 50, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
@@ -39,6 +38,14 @@ TestHarness.addBattle('rsb',
 	}
 });
 
+TestHarness.addBattle('rsb-v-maggie',
+{
+	battleID: 'robert2',
+	party: {
+		maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
+	}
+});
+
 TestHarness.addBattle('temple',
 {
 	battleID: 'scottTemple',
@@ -48,7 +55,7 @@ TestHarness.addBattle('temple',
 	}
 });
 
-TestHarness.addBattle('eleven',
+TestHarness.addBattle('runaway-train',
 {
 	battleID: 'scottStarcross',
 	party: {

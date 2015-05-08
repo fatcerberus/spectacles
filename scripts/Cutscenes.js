@@ -8,7 +8,7 @@ RequireScript('Battle.js');
 mini.Scenelet('adjustBGM',
 {
 	start: function(scene, volume, duration) {
-		duration = duration !== void null ? duration : 0.0;
+		duration = duration !== undefined ? duration : 0.0;
 		
 		mini.BGM.adjust(volume, duration);
 	},

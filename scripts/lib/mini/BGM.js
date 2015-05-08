@@ -32,11 +32,8 @@ mini.onStartUp.add(mini.BGM, function()
 // Updates the BGM thread per frame.
 mini.BGM.update = function()
 {
-	if (this.stream != null) {
+	if (this.stream !== null) {
 		this.stream.setVolume(this.volume * 255);
-	}
-	if (this.oldStream != null) {
-		this.oldStream.setVolume(this.volume * 255);
 	}
 	return true;
 };

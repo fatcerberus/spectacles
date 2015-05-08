@@ -358,20 +358,22 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 // Prepares Robert for a new attack phase.
 Robert2AI.prototype.onPhaseChanged = function(aiContext, newPhase, lastPhase)
 {
+	if ('maggie' in this.aic.enemies && lastPhase == 0) {
+		new mini.Scene()
+			.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name are YOU doing here?")
+			.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
+			.call(function() { this.aic.unit.takeDamage(this.aic.unit.hp - 1); }.bind(this))
+			.playSound('Munch.wav')
+			.talk("Robert", true, 2.0, Infinity, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
+			.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
+			.talk("Robert", true, 2.0, Infinity, "...")
+			.run(true);
+		this.aic.queueItem('alcohol');
+		return;
+	}
+	
 	switch (newPhase) {
 		case 1:
-			if ('maggie' in this.aic.enemies) {
-				new mini.Scene()
-					.talk("Robert", true, 2.0, Infinity, "Wait, hold on... what in Hades' name are YOU doing here?")
-					.talk("maggie", true, 2.0, Infinity, "The same thing I'm always doing, having stuff for dinner. Like you!")
-					.call(function() { this.aic.unit.takeDamage(this.aic.unit.hp - 1); }.bind(this))
-					.playSound('Munch.wav')
-					.talk("Robert", true, 2.0, Infinity, "HA! You missed! ...hold on, where'd my leg go? ...and my arm, and my other leg...")
-					.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
-					.talk("Robert", true, 2.0, Infinity, "...")
-					.run(true);
-				this.aic.queueItem('alcohol');
-			}
 			this.aic.queueSkill('omni');
 			this.doChargeSlashNext = true;
 			this.isComboStarted = false;

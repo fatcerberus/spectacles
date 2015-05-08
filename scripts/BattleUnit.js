@@ -152,7 +152,14 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 			amount = Math.max(parseInt(amount), 0);
 			this.heal(amount, tags);
 		},
-		'revive': function() { this.resurrect(); }
+		'revive': function() { this.resurrect(); },
+		'scan': function(flag) {
+			flag = flag.toLowerCase();
+			if (flag == 'on') this.allowTargetScan = true;
+			if (flag == 'off') this.allowTargetScan = false;
+			mini.Console.write("Target Scan for " + this.name + " is " +
+				(this.allowTargetScan ? "ON" : "OFF"));
+		},
 	});
 	var unitType = this.ai === null ? "player" : "AI";
 	mini.Console.write("Created " + unitType + " unit '" + this.name + "'");

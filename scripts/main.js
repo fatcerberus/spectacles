@@ -74,7 +74,7 @@ function game()
 		'pop': function() { this.pop(); },
 		'push': function(trackName) { this.push("BGM/" + trackName + ".ogg"); },
 		'stop': function() { this.play(null); },
-		'vol': function(volume) { this.adjust(parseFloat(volume), 0.5); },
+		'vol': function(volume) { this.adjust(volume, 0.5); },
 	});
 	
 	// initialize Specs Engine components
