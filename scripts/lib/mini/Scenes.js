@@ -13,11 +13,6 @@ RequireSystemScript('mini/Threads.js');
 
 mini.Scenes = mini.Scenes || {};
 
-// IsSkippedFrame() is a minisphere feature and may not be available.
-if (typeof IsSkippedFrame === 'undefined') {
-	IsSkippedFrame = function() { return false; };
-}
-
 // mini.Scenelet()
 // Registers a new scenelet.
 // Arguments:
@@ -29,8 +24,8 @@ if (typeof IsSkippedFrame === 'undefined') {
 //                               provided, Scenes immediately moves on to the next command after calling start().
 //                               This function should return true to keep the operation running, or false to
 //                               terminate it.
-//           .getInput(scene):   Optional. A function to be called once per frame while the command has the input
-//                               focus to check for player input and update state data accordingly.
+//           .getInput(scene):   Optional. A function to be called once per frame to check for player input and
+//                               update state data accordingly.
 //           .render(scene):     Optional. A function to be called once per frame to perform any rendering
 //                               related to the command (e.g. text boxes).
 //           .finish(scene):     Optional. Called after command execution ends, just before Scenes executes
@@ -43,6 +38,7 @@ mini.Scenelet = function(name, code)
 		Abort("mini.Scenelet(): Scenelet identifier '" + name + "' is already in use", -1);
 	mini.Scene.prototype[name] = function() {
 		this.enqueue({
+			name: name,
 			arguments: arguments,
 			start: code.start,
 			getInput: code.getInput,
@@ -60,85 +56,69 @@ mini.onStartUp.add(mini.Scenes, function(params)
 {
 	Print("mini: Initializing miniscenes");
 	
-	this.activeScenes = [];
 	this.screenMask = new Color(0, 0, 0, 0);
-	var priority = 'scenePriority' in params
-		? params.scenePriority : 0;
-	mini.Threads.create(this, priority);
+	var priority = 'scenePriority' in params ? params.scenePriority : 0;
+	this.threadID = mini.Threads.create(this, priority);
 });
 
 // mini.Scenes.render()
-// Renders running Scenes.
+// Performs rendering for miniscenes per frame.
 mini.Scenes.render = function()
 {
-	if (IsSkippedFrame())
-		return;
 	if (this.screenMask.alpha > 0) {
 		ApplyColorMask(this.screenMask);
-	}
-	for (var i = 0; i < this.activeScenes.length; ++i) {
-		this.activeScenes[i].render();
 	}
 };
 
 // mini.Scenes.update()
-// Updates running Scenes for the next frame.
+// Updates miniscenes per frame.
 mini.Scenes.update = function()
 {
-	for (var i = 0; i < this.activeScenes.length; ++i) {
-		var scene = this.activeScenes[i];
-		scene.update();
-		if (!scene.isRunning()) {
-			if (scene.isLooping) {
-				scene.run(false);
-			}
-			this.activeScenes.splice(i, 1);
-			--i;
-		}
-	}
-	mini.Scenes.hasUpdated = true;
 	return true;
 };
 
 // mini.Scene()
 // Constructs a scene definition.
-// Arguments:
-//     isLooping: If true, the scene will loop endlessly until .stop() is called.
-//                (default: false)
-mini.Scene = function(isLooping)
+mini.Scene = function()
 {
-	isLooping = isLooping !== undefined ? isLooping : false;
-	
-	this.activeThread = null;
-	this.focusThreadStack = [];
-	this.focusThread = null;
+	this.activation = null;
 	this.forkedQueues = [];
-	this.isLooping = isLooping;
 	this.jumpsToFix = [];
-	this.nextThreadID = 1;
 	this.openBlockTypes = [];
 	this.queueToFill = [];
-	this.threads = [];
 	
-	this.createThread = function(context, updater, renderer, inputHandler)
+	this.updateFork = function(scene)
 	{
-		renderer = renderer !== undefined ? renderer : null;
-		inputHandler = inputHandler !== undefined ? inputHandler : null;
-		
-		var threadObject = {
-			id: this.nextThreadID,
-			context: context,
-			inputHandler: inputHandler,
-			renderer: renderer,
-			updater: updater
-		};
-		this.threads.push(threadObject);
-		if (inputHandler != null) {
-			this.focusThreadStack.push(this.focusThread);
-			this.focusThread = threadObject.id;
+		scene.activation = this;
+		if (this.pc < this.instructions.length) {
+			var command = this.instructions[this.pc++];
+			var ctx = {};
+			if (command.start != null) {
+				var parameters = [];
+				parameters.push(scene);
+				for (i = 0; i < command.arguments.length; ++i) {
+					parameters.push(command.arguments[i]);
+				}
+				command.start.apply(ctx, parameters);
+			}
+			if (command.update != null) {
+				var threadDesc = {};
+				threadDesc.update = command.update.bind(ctx, scene);
+				if (command.render != null)
+					threadDesc.render = command.render.bind(ctx, scene);
+				if (command.getInput != null)
+					threadDesc.getInput = command.getInput.bind(ctx, scene);
+				mini.Threads.join(mini.Threads.doWith(ctx, threadDesc));
+			}
+			if (command.finish != null) {
+				command.finish.call(command.context, scene);
+			}
+			return true;
+		} else {
+			mini.Threads.join(this.forkThreads);
+			return false;
 		}
-		++this.nextThreadID;
-		return threadObject.id;
+		scene.activation = null;
 	};
 	
 	this.enqueue = function(command)
@@ -146,113 +126,9 @@ mini.Scene = function(isLooping)
 		this.queueToFill.push(command);
 	};
 	
-	this.forkUpdater = function(scene)
+	this.goTo = function(address)
 	{
-		for (var i = 0; i < this.forkThreads.length; ++i) {
-			if (!scene.isThreadRunning(this.forkThreads[i])) {
-				this.forkThreads.splice(i, 1);
-				--i;
-			}
-		}
-		if (scene.isThreadRunning(this.currentCommandThread)) {
-			return true;
-		}
-		if (this.counter >= this.instructions.length && this.forkThreads.length === 0) {
-			return false;
-		}
-		if (this.counter < this.instructions.length) {
-			var command = this.instructions[this.counter];
-			++this.counter;
-			var commandContext = {};
-			if (command.start != null) {
-				var parameters = [];
-				parameters.push(scene);
-				for (i = 0; i < command.arguments.length; ++i) {
-					parameters.push(command.arguments[i]);
-				}
-				command.start.apply(commandContext, parameters);
-			}
-			if (command.update != null) {
-				var updateShim = function(scene) {
-					var isActive = command.update.call(this, scene);
-					if (!isActive && command.finish != null) {
-						command.finish.call(this, scene);
-					}
-					return isActive;
-				};
-				this.currentCommandThread = scene.createThread(commandContext, updateShim, command.render, command.getInput);
-			} else if (command.finish != null) {
-				command.finish.call(command.context, scene);
-			}
-		}
-		return true;
-	};
-	
-	this.goTo = function(commandID)
-	{
-		this.activeThread.context.counter = commandID;
-	};
-	
-	this.isThreadRunning = function(id)
-	{
-		if (id == 0) {
-			return false;
-		}
-		for (var i = 0; i < this.threads.length; ++i) {
-			if (id == this.threads[i].id) {
-				return true;
-			}
-		}
-		return false;
-	};
-	
-	this.killThread = function(id)
-	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			if (id == this.threads[i].id) {
-				this.threads.splice(i, 1);
-				--i;
-			}
-		}
-	};
-	
-	this.render = function()
-	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			var renderer = this.threads[i].renderer;
-			var context = this.threads[i].context;
-			if (renderer != null) {
-				renderer.call(context, this);
-			}
-		}
-	};
-	
-	this.throwError = function(component, name, message)
-	{
-		Abort(component + " - error: " + name + "\n" + message, -1);
-	};
-	
-	this.update = function()
-	{
-		for (var i = 0; i < this.threads.length; ++i) {
-			this.activeThread = this.threads[i];
-			var id = this.threads[i].id;
-			var updater = this.threads[i].updater;
-			var inputHandler = this.threads[i].inputHandler;
-			var context = this.threads[i].context;
-			if (updater == null) continue;
-			if (this.focusThread == id) {
-				inputHandler.call(context, this);
-			}
-			if (!updater.call(context, this)) {
-				if (this.focusThread == id) {
-					this.focusThread = this.focusThreadStack.pop();
-				}
-				this.threads.splice(i, 1);
-				--i;
-			}
-		}
-		this.activeThread = null;
+		this.activation.pc = address;
 	};
 }
 
@@ -306,23 +182,23 @@ mini.Scene.prototype.doWhile = function(conditional)
 // Marks the end of a block of commands.
 mini.Scene.prototype.end = function()
 {
-	if (this.openBlockTypes.length == 0) {
-		this.throwError("Scene:end()", "Malformed scene", "Mismatched end() - there are no blocks currently open.");
-	}
+	if (this.openBlockTypes.length == 0)
+		Abort("miniscenes: malformed scene (mismatched .end)", -1);
 	var blockType = this.openBlockTypes.pop();
 	switch (blockType) {
 		case 'fork':
 			var command = {
 				arguments: [ this.queueToFill ],
 				start: function(scene, instructions) {
-					var forkContext = {
-						counter: 0,
-						currentCommandThread: null,
+					var ctx = {
 						forkThreads: [],
-						instructions: instructions
+						instructions: instructions,
+						pc: 0,
 					};
-					var thread = scene.createThread(forkContext, scene.forkUpdater);
-					scene.activeThread.context.forkThreads.push(thread);
+					var threadID = mini.Threads.doWith(ctx, {
+						update: scene.updateFork.bind(forkContext, this)
+					});
+					scene.activation.forkThreads.push(threadID);
 				}
 			};
 			this.queueToFill = this.forkedQueues.pop();
@@ -344,7 +220,7 @@ mini.Scene.prototype.end = function()
 			jump.ifDone = this.queueToFill.length;
 			break;
 		default:
-			this.throwError("Scene:end()", "Internal error", "The type of the open block is unknown.");
+			Abort("miniscenes: internal error (unknown block type)", -1);
 			break;
 	}
 	return this;
@@ -367,7 +243,7 @@ mini.Scene.prototype.fork = function()
 //     true if the scenario is still executing commands; false otherwise.
 mini.Scene.prototype.isRunning = function()
 {
-	return this.isThreadRunning(this.mainThread);
+	return mini.Threads.isRunning(this.mainThread);
 };
 
 // mini.Scene:restart()
@@ -389,34 +265,23 @@ mini.Scene.prototype.run = function(waitUntilDone)
 	waitUntilDone = waitUntilDone !== undefined ? waitUntilDone : false;
 	
 	if (this.openBlockTypes.length > 0) {
-		this.throwError("Scene:run()", "Malformed scene", "Caller attempted to run a scene with unclosed blocks.");
-	}
-	if (this.isLooping && waitUntilDone) {
-		this.throwError("Scene:run()", "Invalid argument", "Caller attempted to wait on a looping scene. This would have created an infinite loop and has been prevented.");
+		Abort("miniscenes: malformed scene (scene has unclosed blocks)", -1);
 	}
 	
 	if (this.isRunning()) {
 		return;
 	}
-	var mainForkContext = {
-		counter: 0,
-		currentCommandThread: null,
+	var ctx = {
 		forkThreads: [],
-		instructions: this.queueToFill
+		instructions: this.queueToFill,
+		pc: 0,
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.mainThread = this.createThread(mainForkContext, this.forkUpdater);
-	mini.Scenes.activeScenes.push(this);
-	if (waitUntilDone) {
-		var currentFPS = GetFrameRate();
-		if (IsMapEngineRunning()) {
-			SetFrameRate(GetMapEngineFrameRate());
-		}
-		mini.Threads.join(mini.Threads.doWith(this, {
-			update: this.isThreadRunning.bind(this, this.mainThread)
-		}));
-		SetFrameRate(currentFPS);
-	}
+	this.mainThreadID = mini.Threads.createEx(ctx, mini.Scenes.threadID, {
+		update: this.updateFork.bind(ctx, this)
+	});
+	Print("NEW scene (" + ctx.instructions[0].name + "... +" + (ctx.instructions.length - 1) + ") started on {tid " + mini.Threads.self() + "}");
+	if (waitUntilDone) mini.Threads.join(this.mainThreadID);
 	return this;
 };
 
@@ -427,7 +292,7 @@ mini.Scene.prototype.run = function(waitUntilDone)
 //     beginning.
 mini.Scene.prototype.stop = function()
 {
-	this.killThread(this.mainThread);
+	mini.Threads.kill(this.mainThread);
 };
 
 // .synchronize() scenelet
@@ -437,10 +302,7 @@ mini.Scene.prototype.synchronize = function()
 	var command = {};
 	command.arguments = [];
 	command.start = function(scene) {
-		this.forkThreads = scene.activeThread.context.forkThreads;
-	};
-	command.update = function(scene) {
-		return this.forkThreads.length != 0;
+		mini.Threads.join(mini.Threads.self());
 	};
 	this.enqueue(command);
 	return this;
