@@ -33,14 +33,13 @@ mini.onStartUp.add(mini.Threads, function(params)
 			a.priority - b.priority :
 			a.id - b.id;
 	};
-	SetUpdateScript('mini.Threads.updateAll();');
-	SetRenderScript('mini.Threads.renderAll();');
+	SetUpdateScript(mini.Threads.updateAll.bind(mini.Threads));
+	SetRenderScript(mini.Threads.renderAll.bind(mini.Threads));
 	this.isInitialized = true;
 });
 
 // mini.Threads.create()
-// Creates an entity thread. This is the recommended method for
-// creating persistent threads.
+// Creates a mainline thread. This is the recommended thread creation method.
 // Arguments:
 //     entity:   The object for which to create the thread. This object's .update() method
 //               will be called once per frame, along with .render() and .getInput() if they
@@ -50,7 +49,7 @@ mini.onStartUp.add(mini.Threads, function(params)
 mini.Threads.create = function(entity, priority)
 {
 	if (!this.isInitialized)
-		Abort("mini.Threads.create(): must call mini.initialize() first", -1);
+		Abort("must call mini.initialize() first", -1);
 	
 	priority = priority !== undefined ? priority : 0;
 	
@@ -65,13 +64,15 @@ mini.Threads.create = function(entity, priority)
 		threadDesc.render = entity.render;
 	if (typeof entity.getInput === 'function')
 		threadDesc.getInput = entity.getInput;
-	return this.createEx(entity, threadDesc);
+	return this.createEx(entity, 0, threadDesc);
 };
 
 // mini.Threads.createEx()
 // Creates a thread and begins running it.
 // Arguments:
-//     o:          The object to pass as 'this' to the updater/renderer/input handler. May be null.
+//     that:       The object to pass as 'this' to thread callbacks. May be null.
+//     parentID:   The parent thread ID. If this is 0 (the main thread), a mainline thread is created.
+//                 Otherwise, a worker is created for the specified thread.
 //     threadDesc: An object describing the thread. This should contain the following members:
 //                     update:   The update function for the new thread.
 //                     render:   Optional. The render function for the new thread.
@@ -81,28 +82,58 @@ mini.Threads.create = function(entity, priority)
 //                               renderer is provided. (default: 0)
 // Remarks:
 //     This is for advanced thread creation. For typical use, it is recommended to use
-//     Threads.create() instead.
-mini.Threads.createEx = function(o, threadDesc)
+//     Threads.create() or Threads.doWith() instead.
+mini.Threads.createEx = function(that, parentID, threadDesc)
 {
+	if (arguments.length < 3)
+		Abort("mini.Threads.createEx() expects 3 arguments", -1);
 	if (!this.isInitialized)
-		Abort("mini.Threads.createEx(): must call mini.initialize() first", -1);
-	updater = threadDesc.update.bind(o);
-	renderer = 'render' in threadDesc ? threadDesc.render.bind(o) : null;
-	inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(o) : null;
-	priority = 'priority' in threadDesc ? threadDesc.priority : 0;
+		Abort("must call mini.initialize() first", -1);
+	var updater = threadDesc.update.bind(that);
+	var renderer = 'render' in threadDesc ? threadDesc.render.bind(that) : null;
+	var inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(that) : null;
+	var priority = 'priority' in threadDesc ? threadDesc.priority : 0;
 	var newThread = {
 		id: this.nextThreadID++,
+		parentID: parentID,
 		isValid: true,
 		inputHandler: inputHandler,
 		isUpdating: false,
 		priority: priority,
 		renderer: renderer,
 		updater: updater,
-		isPaused: false,
+		isPaused: false
 	};
 	this.threads.push(newThread);
 	return newThread.id;
 };
+
+// mini.Threads.doWith()
+// Creates a worker for the active thread. Workers don't accept input and their lifetimes
+// are bound to the creating thread.
+// Arguments:
+//     that:       The object to pass as 'this' to thread callbacks. May be null.
+//     threadDesc: An object describing the thread. This should contain the following members:
+//                     update:   The update function for the new thread.
+//                     render:   Optional. The render function for the new thread.
+//                     priority: Optional. The render priority for the new thread. Higher-priority threads
+//                               are rendered later in a frame than lower-priority ones. Ignored if no
+//                               renderer is provided. (default: 0)
+// Remarks:
+//     Workers are useful when performing operations that may block (as by calling mini.Threads.join())
+//     to avoid blocking the calling thread. miniconsole, for example, uses worker threads to execute
+//     commands. A few things to keep in mind:
+//         * Workers are bound to the lifetime of the creating thread. If a thread terminates, its
+//           workers go with it.
+//         * Render priority for workers is relative to the creating thread.
+mini.Threads.doWith = function(that, threadDesc)
+{
+	if (!this.isInitialized)
+		Abort("must call mini.initialize() first", -1);
+	if ('getInput' in threadDesc)
+		Abort("worker thread cannot have a `getInput` method", -1);
+	return this.createEx(that, mini.Threads.self(), threadDesc);
+}
 
 // .isRunning() method
 // Determines whether a thread is still running.
@@ -111,7 +142,7 @@ mini.Threads.createEx = function(o, threadDesc)
 mini.Threads.isRunning = function(threadID)
 {
 	if (!this.isInitialized)
-		Abort("mini.Threads.isRunning(): must call mini.initialize() first", -1);
+		Abort("must call mini.initialize() first", -1);
 	if (threadID == 0) return false;
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (this.threads[i].id == threadID) {
@@ -129,7 +160,7 @@ mini.Threads.isRunning = function(threadID)
 mini.Threads.doFrame = function()
 {
 	if (!this.isInitialized)
-		Abort("mini.Threads.doFrame(): must call mini.initialize() first", -1);
+		Abort("must call mini.initialize() first", -1);
 	if (IsMapEngineRunning()) RenderMap();
 		else this.renderAll();
 	FlipScreen();
@@ -177,6 +208,13 @@ mini.Threads.kill = function(threadID)
 {
 	if (!this.isInitialized)
 		Abort("mini.Threads.kill(): must call mini.initialize() first", -1);
+	mini.Link(mini.Link(this.threads).toArray())
+		.where(function(thread) { return thread.isValid })
+		.where(function(thread) { return thread.parentID == threadID })
+		.each(function(thread)
+	{
+		mini.Threads.kill(thread.id);
+	});
 	for (var i = 0; i < this.threads.length; ++i) {
 		if (threadID == this.threads[i].id) {
 			this.threads[i].isValid = false;
@@ -222,7 +260,7 @@ mini.Threads.resume = function(threadID)
 // Returns the currently executing thread's thread ID.
 // Remarks:
 //     If this function is used outside of a thread update, render or input handling
-//     call, it will return 0. Zero is never a valid thread ID.
+//     call, it will return 0 (the ID of the main thread).
 mini.Threads.self = function()
 {
 	return this.currentSelf;
@@ -232,47 +270,58 @@ mini.Threads.self = function()
 // Renders the current frame by calling all active threads' renderers.
 mini.Threads.renderAll = function()
 {
+	function renderWorkers(threadID) {
+		mini.Link(mini.Link(this.threads).sort(this.threadSorter))
+			.where(function(thread) { return thread.isValid })
+			.where(function(thread) { return thread.parentID == threadID; })
+			.where(function(thread) { return thread.renderer !== null })
+			.each(function(thread)
+		{
+			thread.renderer();
+			renderWorkers.call(this, thread.id);
+		}.bind(this));
+	}
+	
 	if (!this.isInitialized)
 		Abort("mini.Threads.renderAll(): must call mini.initialize() first", -1);
 	if (IsSkippedFrame()) return;
-	mini.Link(mini.Link(this.threads).sort(this.threadSorter))
-		.where(function(thread) { return thread.isValid })
-		.where(function(thread) { return thread.renderer !== null })
-		.each(function(thread)
-	{
-		this.currentSelf = thread.id;
-		thread.renderer();
-		this.currentSelf = 0;
-	}.bind(this));
+	renderWorkers.call(this, 0);
 };
 
 // mini.Threads.updateAll()
 // Updates all active threads for the next frame.
 mini.Threads.updateAll = function()
 {
+	function updateWorkers(threadID) {
+		var threadsEnding = [];
+		mini.Link(mini.Link(this.threads).toArray())
+			.where(function(thread) { return thread.isValid })
+			.where(function(thread) { return thread.parentID == threadID; })
+			.where(function(thread) { return !thread.isPaused })
+			.each(function(thread)
+		{
+			if (!thread.isUpdating) {
+				this.currentSelf = thread.id;
+				thread.isUpdating = true;
+				var stillRunning = thread.updater();
+				if (thread.inputHandler !== null && stillRunning) {
+					thread.inputHandler();
+				}
+				thread.isUpdating = false;
+				this.currentSelf = 0;
+				if (!stillRunning) {
+					threadsEnding.push(thread.id);
+				}
+			}
+			updateWorkers.call(this, thread.id);
+		}.bind(this));
+		for (var i = 0; i < threadsEnding.length; ++i) {
+			this.kill(threadsEnding[i]);
+		}
+	}
+	
 	if (!this.isInitialized)
 		Abort("mini.Threads.updateAll(): must call mini.initialize() first", -1);
-	var threadsEnding = [];
-	mini.Link(mini.Link(this.threads).toArray())
-		.where(function(thread) { return thread.isValid })
-		.where(function(thread) { return !thread.isUpdating })
-		.where(function(thread) { return !thread.isPaused })
-		.each(function(thread)
-	{
-		this.currentSelf = thread.id;
-		thread.isUpdating = true;
-		var stillRunning = thread.updater();
-		if (thread.inputHandler !== null && stillRunning) {
-			thread.inputHandler();
-		}
-		thread.isUpdating = false;
-		this.currentSelf = 0;
-		if (!stillRunning) {
-			threadsEnding.push(thread.id);
-		}
-	}.bind(this));
-	for (var i = 0; i < threadsEnding.length; ++i) {
-		this.kill(threadsEnding[i]);
-	}
+	updateWorkers.call(this, 0);
 	this.hasUpdated = true;
 };

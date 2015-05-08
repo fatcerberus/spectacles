@@ -189,7 +189,7 @@ Battle.prototype.getLevel = function()
 // .go() method
 // Starts the battle.
 // Returns:
-//     The thread handle of the thread managing the battle.
+//     The ID of the thread managing the battle.
 Battle.prototype.go = function()
 {
 	if (DBG_DISABLE_BATTLES) {
@@ -243,6 +243,9 @@ Battle.prototype.go = function()
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
+	mini.Console.register('battle', this, {
+		'spawn': this.spawnEnemy
+	});
 	var battleThread = mini.Threads.create(this);
 	return battleThread;
 };
@@ -526,6 +529,7 @@ Battle.prototype.update = function() {
 		this.ui.dispose();
 		mini.BGM.pop();
 		mini.BGM.adjust(1.0, 0.0);
+		mini.Console.unregister('battle');
 		return false;
 	} else {
 		return true;

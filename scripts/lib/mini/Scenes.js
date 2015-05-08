@@ -412,7 +412,7 @@ mini.Scene.prototype.run = function(waitUntilDone)
 		if (IsMapEngineRunning()) {
 			SetFrameRate(GetMapEngineFrameRate());
 		}
-		mini.Threads.join(mini.Threads.createEx(this, {
+		mini.Threads.join(mini.Threads.doWith(this, {
 			update: this.isThreadRunning.bind(this, this.mainThread)
 		}));
 		SetFrameRate(currentFPS);

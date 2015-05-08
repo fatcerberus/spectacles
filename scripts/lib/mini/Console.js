@@ -180,7 +180,7 @@ mini.Console.execute = function(command)
 		.each(function(desc)
 	{
 		mini.Console.write("Executing '" + command + "'");
-		mini.Threads.createEx(desc, {
+		mini.Threads.doWith(desc, {
 			update: function() {
 				try {
 					this.method.apply(this.that, tokens.slice(2));

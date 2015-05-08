@@ -31,7 +31,7 @@ Engine = new (function()
 			.pause(duration)
 			.fadeTo(CreateColor(0, 0, 0, 255), 1.0)
 			.run();
-		mini.Threads.join(Threads.createEx(scene, {
+		mini.Threads.join(mini.Threads.doWith(scene, {
 			update: function() { return this.isRunning(); },
 			render: function() { image.blit(0, 0); }
 		}));
