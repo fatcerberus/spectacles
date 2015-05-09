@@ -182,13 +182,7 @@ mini.Console.execute = function(command)
 		mini.Console.write("Executing '" + command + "'");
 		mini.Threads.doWith(desc, {
 			update: function() {
-				try {
-					this.method.apply(this.that, tokens.slice(2));
-				}
-				catch(e) {
-					mini.Console.write("JS: " + e.message);
-					mini.Console.write("Error executing '" + desc.entity + " " + desc.instruction + "'");
-				}
+				this.method.apply(this.that, tokens.slice(2));
 			}
 		});
 	});

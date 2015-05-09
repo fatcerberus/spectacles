@@ -128,7 +128,7 @@
 						var session = analogue.getWorld().session;
 						session.party.remove('scott');
 						session.party.add('maggie', 100);
-						BGM.change('RiseOfThePrimus');
+						mini.BGM.change('RiseOfThePrimus');
 					}
 					person.isBlocked = true;
 					return;

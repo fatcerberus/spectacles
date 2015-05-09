@@ -57,9 +57,16 @@ mini.onStartUp.add(mini.Scenes, function(params)
 	Print("mini: Initializing miniscenes");
 	
 	this.screenMask = new Color(0, 0, 0, 0);
-	var priority = 'scenePriority' in params ? params.scenePriority : 0;
-	this.threadID = mini.Threads.create(this, priority);
+	this.priority = 'scenePriority' in params ? params.scenePriority : 0;
+	this.threadID = mini.Threads.create(this, this.priority);
 });
+
+// mini.Scenes.update()
+// Updates miniscenes per frame.
+mini.Scenes.update = function()
+{
+	return true;
+};
 
 // mini.Scenes.render()
 // Performs rendering for miniscenes per frame.
@@ -68,13 +75,6 @@ mini.Scenes.render = function()
 	if (this.screenMask.alpha > 0) {
 		ApplyColorMask(this.screenMask);
 	}
-};
-
-// mini.Scenes.update()
-// Updates miniscenes per frame.
-mini.Scenes.update = function()
-{
-	return true;
 };
 
 // mini.Scene()
@@ -108,10 +108,11 @@ mini.Scene = function()
 					threadDesc.render = command.render.bind(ctx, scene);
 				if (command.getInput != null)
 					threadDesc.getInput = command.getInput.bind(ctx, scene);
+				threadDesc.priority = mini.Scenes.priority;
 				mini.Threads.join(mini.Threads.doWith(ctx, threadDesc));
 			}
 			if (command.finish != null) {
-				command.finish.call(command.context, scene);
+				command.finish.call(ctx, scene);
 			}
 			return true;
 		} else {
@@ -196,7 +197,7 @@ mini.Scene.prototype.end = function()
 						pc: 0,
 					};
 					var threadID = mini.Threads.doWith(ctx, {
-						update: scene.updateFork.bind(forkContext, this)
+						update: scene.updateFork.bind(ctx, this)
 					});
 					scene.activation.forkThreads.push(threadID);
 				}
@@ -243,7 +244,7 @@ mini.Scene.prototype.fork = function()
 //     true if the scenario is still executing commands; false otherwise.
 mini.Scene.prototype.isRunning = function()
 {
-	return mini.Threads.isRunning(this.mainThread);
+	return mini.Threads.isRunning(this.mainThreadID);
 };
 
 // mini.Scene:restart()
@@ -277,10 +278,10 @@ mini.Scene.prototype.run = function(waitUntilDone)
 		pc: 0,
 	};
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.mainThreadID = mini.Threads.createEx(ctx, mini.Scenes.threadID, {
+	this.mainThreadID = mini.Threads.createEx(ctx, {
+		priority: mini.Scenes.priority,
 		update: this.updateFork.bind(ctx, this)
 	});
-	Print("NEW scene (" + ctx.instructions[0].name + "... +" + (ctx.instructions.length - 1) + ") started on {tid " + mini.Threads.self() + "}");
 	if (waitUntilDone) mini.Threads.join(this.mainThreadID);
 	return this;
 };
@@ -292,7 +293,7 @@ mini.Scene.prototype.run = function(waitUntilDone)
 //     beginning.
 mini.Scene.prototype.stop = function()
 {
-	mini.Threads.kill(this.mainThread);
+	mini.Threads.kill(this.mainThreadID);
 };
 
 // .synchronize() scenelet
@@ -302,7 +303,7 @@ mini.Scene.prototype.synchronize = function()
 	var command = {};
 	command.arguments = [];
 	command.start = function(scene) {
-		mini.Threads.join(mini.Threads.self());
+		mini.Threads.join(scene.activation.forkThreads);
 	};
 	this.enqueue(command);
 	return this;
