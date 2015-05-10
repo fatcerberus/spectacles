@@ -97,10 +97,11 @@ mini.Threads.createEx = function(that, threadDesc)
 		that: that,
 		isValid: true,
 		inputHandler: inputHandler,
-		isUpdating: false,
+		isBusy: false,
 		priority: priority,
 		renderer: renderer,
 		updater: updater,
+		joinList: [],
 	};
 	this.threads.push(newThread);
 	return newThread.id;
@@ -251,18 +252,18 @@ mini.Threads.updateAll = function(threadID)
 	var threadsEnding = [];
 	mini.Link(mini.Link(this.threads).toArray())
 		.where(function(thread) { return thread.isValid; })
-		.where(function(thread) { return !thread.isUpdating; })
+		.where(function(thread) { return !thread.isBusy; })
 		.each(function(thread)
 	{
 		var lastSelf = this.currentSelf;
 		this.currentSelf = thread.id;
-		thread.isUpdating = true;
-		var stillRunning = thread.updater();
-		if (thread.inputHandler !== null && stillRunning)
+		thread.isBusy = true;
+		var isRunning = thread.updater(thread.id);
+		if (thread.inputHandler !== null && isRunning)
 			thread.inputHandler();
-		thread.isUpdating = false;
+		thread.isBusy = false;
 		this.currentSelf = lastSelf;
-		if (!stillRunning) threadsEnding.push(thread.id);
+		if (!isRunning) threadsEnding.push(thread.id);
 	}.bind(this));
 	mini.Link(threadsEnding).each(function(threadID) { mini.Threads.kill(threadID) });
 	this.hasUpdated = true;
