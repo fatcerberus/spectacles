@@ -10,6 +10,7 @@
 
 RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/Link.js');
+RequireSystemScript('mini/Promise.js');
 
 // Threads object
 // Encapsulates the thread manager.
@@ -35,7 +36,6 @@ mini.onStartUp.add(mini.Threads, function(params)
 	};
 	SetUpdateScript(mini.Threads.updateAll.bind(mini.Threads));
 	SetRenderScript(mini.Threads.renderAll.bind(mini.Threads));
-	this.joinCount = 0;
 	this.isInitialized = true;
 });
 
@@ -101,8 +101,11 @@ mini.Threads.createEx = function(that, threadDesc)
 		priority: priority,
 		renderer: renderer,
 		updater: updater,
-		joinList: [],
+		onTerminate: new mini.Delegate()
 	};
+	newThread.promise = new Promise(function(resolve) {
+		newThread.onTerminate.add(null, function(retval) { resolve(retval); });
+	});
 	this.threads.push(newThread);
 	return newThread.id;
 };
@@ -173,29 +176,23 @@ mini.Threads.doFrame = function()
 };
 
 // mini.Threads.join()
-// Blocks until one or more threads have terminated.
+// Waits until one or more threads have terminated. Unlike Pthreads,
+// this is non-blocking.
 // Arguments:
 //     threadID: Either a single thread ID or an array of them.
-// Remarks:
-//     If .join() is called during an update of another thread, the blocking
-//     thread will not be updated until .join() returns. However, any other threads
-//     will continue to update as normal. This enables easy thread coordination without
-//     having to worry about the intricacies of cooperative threading--minithreads
-//     handles it for you.
+// Returns:
+//     A promise which will be fulfilled when all of the specified threads
+//     have terminated.
 mini.Threads.join = function(threadIDs)
 {
 	threadIDs = threadIDs instanceof Array ? threadIDs : [ threadIDs ];
 	
 	if (!this.isInitialized)
 		Abort("mini.Threads.join(): must call mini.initialize() first", -1);
-	var isFinished = false;
-	while (!isFinished) {
-		this.doFrame();
-		isFinished = true;
-		for (var i = 0; i < threadIDs.length; ++i) {
-			isFinished = isFinished && !this.isRunning(threadIDs[i]);
-		}
-	}
+	var promises = [];
+	for (var i = 0; i < threadIDs.length; ++i)
+		promises.push(mini.Threads.whenDone(threadIDs[i]));
+	return Promise.all(promises);
 };
 
 // mini.Threads.kill()
@@ -211,6 +208,7 @@ mini.Threads.kill = function(threadID)
 		.each(function(thread)
 	{
 		thread.isValid = false;
+		thread.onTerminate.invoke(0);
 	});
 	this.threads = mini.Link(this.threads)
 		.where(function(thread) { return thread.id != threadID })
@@ -267,4 +265,18 @@ mini.Threads.updateAll = function(threadID)
 	}.bind(this));
 	mini.Link(threadsEnding).each(function(threadID) { mini.Threads.kill(threadID) });
 	this.hasUpdated = true;
+}
+
+// mini.Threads.whenDone()
+// Returns a promise which is fulfilled when a thread ends.
+// Arguments:
+//     threadID: The thread making the promise.
+mini.Threads.whenDone = function(threadID)
+{
+	var maybePromise = mini.Link(this.threads)
+		.filterBy('id', threadID)
+		.first(1)
+		.pluck('promise')
+		.toArray()[0];
+	return Promise.resolve(maybePromise);
 }

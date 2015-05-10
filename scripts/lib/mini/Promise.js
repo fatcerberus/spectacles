@@ -29,10 +29,10 @@ Promise = (function(undefined)
 					if (state == 'resolved') handler.resolve(result);
 					if (state == 'rejected') handler.reject(result);
 				} else if (state == 'rejected') {
-					handler.reject(callback(result));
+					handler.reject(callback.call(handler.promise, result));
 				} else {
 					try {
-						handler.resolve(callback(result));
+						handler.resolve(callback.call(handler.promise, result));
 					} catch(e) {
 						handler.reject(e);
 					}
@@ -68,6 +68,13 @@ Promise = (function(undefined)
 			deferred = [];
 		}
 		
+		this.toString = function()
+		{
+			return state != 'pending'
+				? "[" + state + " promise (" + result + ")]"
+				: "[pending promise]";
+		}
+		
 		this.catch = function(errback)
 		{
 			return this.then(undefined, errback);
@@ -75,8 +82,10 @@ Promise = (function(undefined)
 		
 		this.then = function(callback, errback)
 		{
+			var promise = this;
 			return new Promise(function(resolve, reject) {
 				handle({
+					promise: promise,
 					resolve: resolve, reject: reject,
 					fulfiller: callback,
 					rejector: errback
@@ -91,7 +100,7 @@ Promise = (function(undefined)
 				self.catch(function(reason) { throw reason; });
 		};
 		
-		fn(resolve, reject);
+		fn.call(this, resolve, reject);
 	};
 	
 	Promise.all = function(iterable)
@@ -139,6 +148,7 @@ Promise = (function(undefined)
 	
 	Promise.resolve = function(value)
 	{
+		if (value instanceof Promise) return value;
 		return new Promise(function(resolve, reject) {
 			resolve(value);
 		});
@@ -146,3 +156,10 @@ Promise = (function(undefined)
 	
 	return Promise;
 })();
+
+// EmptyPromise constructor
+// An EmptyPromise will never be fulfilled or rejected; it will remain
+// pending forever. Kind of depressing symbolism, huh? :o)
+function EmptyPromise() {}
+EmptyPromise.prototype = new Promise(function() {});
+EmptyPromise.prototype.toString = function() { return "[empty promise]"; };
