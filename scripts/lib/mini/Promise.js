@@ -42,6 +42,7 @@ Promise = (function(undefined)
 		
 		function resolve(value)
 		{
+			if (state != 'pending') return;
 			try {
 				if (value && typeof value.then === 'function') {
 					value.then(resolve, reject);
@@ -59,6 +60,7 @@ Promise = (function(undefined)
 		
 		function reject(reason)
 		{
+			if (state != 'pending') return;
 			state = 'rejected'
 			result = reason;
 			for (var i = 0; i < deferred.length; ++i)
@@ -90,6 +92,42 @@ Promise = (function(undefined)
 		};
 		
 		fn(resolve, reject);
+	};
+	
+	Promise.all = function(iterable)
+	{
+		return new Promise(function(resolve, reject) {
+			var promises = [];
+			var values = [];
+			var numPromises = iterable.length;
+			for (var i = 0; i < numPromises; ++i) {
+				var v = iterable[i];
+				if (!v || typeof v.then !== 'function')
+					v = Promise.resolve(v);
+				promises.push(v);
+				v.then(function(value) {
+					values.push(value);
+					if (values.length == numPromises)
+						resolve(values);
+				}, function(reason) {
+					reject(reason);
+				});
+			}
+		});
+	};
+	
+	Promise.race = function(iterable)
+	{
+		return new Promise(function(resolve, reject) {
+			var numPromises = iterable.length;
+			for (var i = 0; i < numPromises; ++i) {
+				var v = iterable[i];
+				if (!v || typeof v.then !== 'function')
+					v = Promise.resolve(v);
+				v.then(function(value) { resolve(value); },
+					function(reason) { reject(reason); });
+			}
+		});
 	};
 	
 	Promise.reject = function(reason)
