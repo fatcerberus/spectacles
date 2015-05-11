@@ -52,9 +52,11 @@ mini.onStartUp.add(mini.Console, function(params)
 	this.commands = [];
 	this.entry = "";
 	this.cursorColor = new Color(255, 255, 128, 255);
-	new mini.Scene(true)
-		.tween(this.cursorColor, 0.25, 'easeInSine', { alpha: 255 })
-		.tween(this.cursorColor, 0.25, 'easeOutSine', { alpha: 0 })
+	new mini.Scene()
+		.doWhile(function() { return true; })
+			.tween(this.cursorColor, 0.25, 'easeInSine', { alpha: 255 })
+			.tween(this.cursorColor, 0.25, 'easeOutSine', { alpha: 0 })
+		.end()
 		.run();
 	mini.Threads.create(this, 101);
 	

@@ -90,6 +90,7 @@ mini.Scene = function()
 	this.pact = new mini.Pact();
 	this.promise = null;
 	this.queueToFill = [];
+	this.threads = [];
 	
 	this.runCommands = function(timeline)
 	{
@@ -102,7 +103,9 @@ mini.Scene = function()
 				var parameters = [ this ];
 				for (i = 0; i < command.arguments.length; ++i)
 					parameters.push(command.arguments[i]);
+				this.activation = timeline;
 				command.start.apply(ctx, parameters);
+				this.activation = null;
 			}
 			if (command.update != null) {
 				var threadDesc = {};
@@ -113,16 +116,26 @@ mini.Scene = function()
 					threadDesc.getInput = command.getInput.bind(ctx, this);
 				threadDesc.priority = mini.Scenes.priority;
 				var scene = this;
-				mini.Threads.join(mini.Threads.doWith(ctx, threadDesc))
+				var threadID = mini.Threads.doWith(ctx, threadDesc);
+				this.threads.push(threadID);
+				var seconds = GetSeconds();
+				mini.Threads.join(threadID)
 					.then(function() {
+						scene.threads = mini.Link(scene.threads)
+							.where(function(id) { return id != threadID; })
+							.toArray();
+						this.activation = timeline;
 						if (command.finish != null)
 							command.finish.call(ctx, scene);
+						this.activation = null;
 						scene.runCommands(timeline);
 					})
-					.done();
+					.catch(Print)
 			} else {
+				this.activation = timeline;
 				if (command.finish != null)
 					command.finish.call(ctx, this);
+				this.activation = null;
 				this.runCommands(timeline);
 			}
 		} else {
@@ -131,7 +144,6 @@ mini.Scene = function()
 				.then(function() { scene.pact.resolve(timeline.promise); })
 				.done()
 		}
-		this.activation = null;
 		return timeline.promise;
 	};
 	
@@ -284,7 +296,7 @@ mini.Scene.prototype.run = function()
 	this.promise = this.runCommands(timeline);
 	this.promise
 		.then(function() { this.isActive = false; }.bind(this))
-		.done();
+		.catch(Print);
 	return this;
 };
 
@@ -295,7 +307,8 @@ mini.Scene.prototype.run = function()
 //     beginning.
 mini.Scene.prototype.stop = function()
 {
-	mini.Threads.kill(this.mainThreadID);
+	this.pact.backOut();
+	Link(this.threads).each(function(id) { mini.Threads.kill(id); });
 };
 
 // .synchronize() scenelet
@@ -307,7 +320,12 @@ mini.Scene.prototype.synchronize = function()
 	var command = {};
 	command.arguments = [];
 	command.start = function(scene) {
-		mini.Threads.join(scene.activation.forks);
+		this.isWaiting = true;
+		mini.Promise.all(scene.activation.forks)
+			.then(function() { this.isWaiting = false; }.bind(this));
+	};
+	command.update = function(scene) {
+		return this.isWaiting;
 	};
 	this.enqueue(command);
 	return this;

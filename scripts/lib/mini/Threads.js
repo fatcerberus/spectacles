@@ -94,7 +94,6 @@ mini.Threads.createEx = function(that, threadDesc)
 	var renderer = 'render' in threadDesc ? threadDesc.render.bind(that) : null;
 	var inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(that) : null;
 	var priority = 'priority' in threadDesc ? threadDesc.priority : 0;
-	var startTime = GetSeconds();
 	var newThread = {
 		id: this.nextThreadID++,
 		that: that,
@@ -106,9 +105,7 @@ mini.Threads.createEx = function(that, threadDesc)
 		updater: updater,
 		promise: this.pact.makePromise(),
 	};
-	newThread.promise
-		.then(function() { return GetSeconds() - startTime; })
-		.done();
+	var startTime = GetSeconds();
 	this.threads.push(newThread);
 	return newThread.id;
 };
@@ -271,7 +268,11 @@ mini.Threads.updateAll = function(threadID)
 		this.currentSelf = lastSelf;
 		if (!isRunning) threadsEnding.push(thread.id);
 	}.bind(this));
-	mini.Link(threadsEnding).each(function(threadID) { mini.Threads.kill(threadID) });
+	mini.Link(threadsEnding)
+		.each(function(threadID)
+	{
+		mini.Threads.kill(threadID);
+	});
 	this.hasUpdated = true;
 }
 

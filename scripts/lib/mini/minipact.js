@@ -4,7 +4,7 @@
  * available in the engine itself.
  *
  * [mini/minipact.js]
- * A promise implementation in pure JavaScript, based on the Promises/A+
+ * A promise implementation for minisphere, based on the Promises/A+
  * specification. The implementation is mostly compliant, but there may
  * be some inconsistencies; particularly, promise resolution is not
  * asynchronous.
@@ -32,11 +32,7 @@ mini.Promise = (function(undefined)
 					if (state == 'fulfilled') handler.resolve(result);
 					if (state == 'rejected') handler.reject(result);
 				} else {
-					try {
-						handler.resolve(callback.call(handler.promise, result));
-					} catch(e) {
-						handler.reject(e);
-					}
+					handler.resolve(callback.call(handler.promise, result));
 				}
 			}
 		}
@@ -44,9 +40,9 @@ mini.Promise = (function(undefined)
 		function resolve(value)
 		{
 			if (state != 'pending') return;
-			try {
+			//try {
 				if (value && typeof value.then === 'function') {
-					value.then.call(value, resolve, reject);
+					value.then(resolve, reject);
 					return;
 				}
 				state = 'fulfilled';
@@ -54,9 +50,9 @@ mini.Promise = (function(undefined)
 				for (var i = 0; i < deferred.length; ++i)
 					handle(deferred[i]);
 				deferred = [];
-			} catch(e) {
+			/*} catch(e) {
 				reject(e);
-			}
+			}*/
 		}
 		
 		function reject(reason)
@@ -72,7 +68,7 @@ mini.Promise = (function(undefined)
 		this.toString = function()
 		{
 			return state != 'pending'
-				? "[promise: " + state + " `" + result.toString() + "`]"
+				? "[promise: " + state + " `" + result + "`]"
 				: "[promise: pending]";
 		}
 		
@@ -101,12 +97,11 @@ mini.Promise = (function(undefined)
 				self.catch(function(reason) { throw reason; });
 		};
 		
-		try {
+		//try {
 			fn.call(this, resolve, reject);
-		}
-		catch(e) {
+		/*} catch(e) {
 			reject(e);
-		}
+		}*/
 	};
 	
 	Promise.all = function(iterable)
@@ -178,16 +173,18 @@ mini.Pact = (function(undefined)
 		
 		// checkPromise() [internal]
 		// Checks if the specified promise object came from this pact. If not,
-		// throws a TypeError.
+		// aborts with an error.
 		// Arguments:
 		//     promise: The promise to check.
 		// Returns:
-		//     The promise handler, unless an error is thrown.
+		//     The promise handler.
 		function checkPromise(promise)
 		{
+			if (!(promise instanceof mini.Promise))
+				Abort("argument is not a promise", -2);
 			for (var i = handlers.length - 1; i >= 0; --i)
 				if (handlers[i].that == promise) return handlers[i];
-			throw new TypeError("Promise was not made from this pact");
+			Abort("promise was not made from this pact", -2);
 		};
 		
 		// mini.Pact:makePromise()
@@ -224,10 +221,20 @@ mini.Pact = (function(undefined)
 		// Arguments:
 		//     promise: The promise to reject. If the promise wasn't made from this pact,
 		//              a TypeError will be thrown.
-		//     reason:  The reason (usually an Error object) with which to reject the promise.
+		//     reason:  The value to reject with (usually an Error object).
 		this.reject = function(promise, reason)
 		{
 			checkPromise(promise).reject(reason);
+		};
+		
+		// mini.Pact:backOut()
+		// Rejects all outstanding promises from this pact.
+		// Arguments:
+		//     reason: The value to reject with (usually an Error object).
+		this.backOut = function(reason)
+		{
+			for (var i = handlers.length - 1; i >= 0; --i)
+				handlers[i].reject(reason);
 		};
 		
 		this.toString = function()

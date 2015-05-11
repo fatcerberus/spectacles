@@ -40,7 +40,6 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	// check for required Sphere functionality
 	var extensions = typeof GetExtensions === 'undefined'
 		? [ 'sphere-legacy-api', 'sphere-map-engine' ]
 		: GetExtensions();
@@ -57,6 +56,10 @@ function game()
 	if (!isSupportedEngine) {
 		Abort("This engine is not supported.\n");
 	}
+	
+	// initialize Specs Engine components
+	Engine.initialize(60);
+	analogue.init();
 	
 	// initialize the minisphere runtime
 	mini.initialize({
@@ -77,10 +80,6 @@ function game()
 		'stop': function() { this.play(null); },
 		'vol': function(volume) { this.adjust(volume, 0.5); },
 	});
-	
-	// initialize Specs Engine components
-	Engine.initialize(60);
-	analogue.init();
 	
 	// set up the beta test harness
 	TestHarness.initialize();
