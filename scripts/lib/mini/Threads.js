@@ -10,7 +10,7 @@
 
 RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/Promise.js');
+RequireSystemScript('mini/Promises.js');
 
 // Threads object
 // Encapsulates the thread manager.
@@ -34,6 +34,8 @@ mini.onStartUp.add(mini.Threads, function(params)
 			a.priority - b.priority :
 			a.id - b.id;
 	};
+	
+	this.pact = new mini.Pact();
 	SetUpdateScript(mini.Threads.updateAll.bind(mini.Threads));
 	SetRenderScript(mini.Threads.renderAll.bind(mini.Threads));
 	this.isInitialized = true;
@@ -101,11 +103,8 @@ mini.Threads.createEx = function(that, threadDesc)
 		priority: priority,
 		renderer: renderer,
 		updater: updater,
-		onTerminate: new mini.Delegate()
+		promise: this.pact.makePromise(),
 	};
-	newThread.promise = new Promise(function(resolve) {
-		newThread.onTerminate.add(null, function(retval) { resolve(retval); });
-	});
 	this.threads.push(newThread);
 	return newThread.id;
 };
@@ -192,7 +191,7 @@ mini.Threads.join = function(threadIDs)
 	var promises = [];
 	for (var i = 0; i < threadIDs.length; ++i)
 		promises.push(mini.Threads.whenDone(threadIDs[i]));
-	return Promise.all(promises);
+	return mini.Promise.all(promises);
 };
 
 // mini.Threads.kill()
@@ -208,8 +207,8 @@ mini.Threads.kill = function(threadID)
 		.each(function(thread)
 	{
 		thread.isValid = false;
-		thread.onTerminate.invoke(0);
-	});
+		this.pact.resolve(thread.promise);
+	}.bind(this));
 	this.threads = mini.Link(this.threads)
 		.where(function(thread) { return thread.id != threadID })
 		.toArray();
@@ -278,5 +277,5 @@ mini.Threads.whenDone = function(threadID)
 		.first(1)
 		.pluck('promise')
 		.toArray()[0];
-	return Promise.resolve(maybePromise);
+	return mini.Promise.resolve(maybePromise);
 }

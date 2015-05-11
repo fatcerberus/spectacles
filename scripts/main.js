@@ -15,7 +15,7 @@ RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/BGM.js');
 RequireSystemScript('mini/Console.js');
 RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/Promise.js');
+RequireSystemScript('mini/Promises.js');
 RequireSystemScript('mini/RNG.js');
 RequireSystemScript('mini/Scenes.js');
 RequireSystemScript('mini/Threads.js');
@@ -40,22 +40,6 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	new Promise(function(resolve, reject) {
-		resolve("the pig ate everything at 8:12");
-	}).then(function(value) {
-		Print(value);
-		return new Promise(function(resolve, reject) {
-			resolve("the cow ate the pig");
-		});
-	}).then(function(value) {
-		Print(value);
-		throw new Error("the ape ate the cow");
-	}).done(function(value) {
-		Print(value);
-	}, function(reason) {
-		Print(reason);
-	});
-	
 	// check for required Sphere functionality
 	var extensions = typeof GetExtensions === 'undefined'
 		? [ 'sphere-legacy-api', 'sphere-map-engine' ]
