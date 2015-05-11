@@ -6,8 +6,7 @@
  * [mini/minipact.js]
  * A promise implementation for minisphere, based on the Promises/A+
  * specification. The implementation is mostly compliant, but there may
- * be some inconsistencies; particularly, promise resolution is not
- * asynchronous.
+ * be some inconsistencies.
 **/
 
 mini.Promise = (function(undefined)
@@ -24,7 +23,7 @@ mini.Promise = (function(undefined)
 		{
 			if (state == 'pending')
 				deferred.push(handler);
-			else {
+			else DoAsync(function() {
 				var callback = state == 'fulfilled' ? handler.fulfiller
 					: state == 'rejected' ? handler.rejector
 					: undefined;
@@ -34,7 +33,7 @@ mini.Promise = (function(undefined)
 				} else {
 					handler.resolve(callback.call(handler.promise, result));
 				}
-			}
+			});
 		}
 		
 		function resolve(value)
