@@ -15,7 +15,7 @@ RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/BGM.js');
 RequireSystemScript('mini/Console.js');
 RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/Promises.js');
+RequireSystemScript('mini/minipact.js');
 RequireSystemScript('mini/RNG.js');
 RequireSystemScript('mini/Scenes.js');
 RequireSystemScript('mini/Threads.js');

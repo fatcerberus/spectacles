@@ -10,7 +10,7 @@
 
 RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/Promises.js');
+RequireSystemScript('mini/minipact.js');
 
 // Threads object
 // Encapsulates the thread manager.
@@ -94,6 +94,7 @@ mini.Threads.createEx = function(that, threadDesc)
 	var renderer = 'render' in threadDesc ? threadDesc.render.bind(that) : null;
 	var inputHandler = 'getInput' in threadDesc ? threadDesc.getInput.bind(that) : null;
 	var priority = 'priority' in threadDesc ? threadDesc.priority : 0;
+	var startTime = GetSeconds();
 	var newThread = {
 		id: this.nextThreadID++,
 		that: that,
@@ -105,6 +106,9 @@ mini.Threads.createEx = function(that, threadDesc)
 		updater: updater,
 		promise: this.pact.makePromise(),
 	};
+	newThread.promise
+		.then(function() { return GetSeconds() - startTime; })
+		.done();
 	this.threads.push(newThread);
 	return newThread.id;
 };
@@ -175,23 +179,28 @@ mini.Threads.doFrame = function()
 };
 
 // mini.Threads.join()
-// Waits until one or more threads have terminated. Unlike Pthreads,
-// this is non-blocking.
+// Waits until one or more threads have terminated. Unlike Pthreads, this is
+// non-blocking.
 // Arguments:
 //     threadID: Either a single thread ID or an array of them.
 // Returns:
-//     A promise which will be fulfilled when all of the specified threads
-//     have terminated.
+//     A promise which will be fulfilled when all of the specified threads have
+//     terminated. Any invalid thread IDs passed in will cause a ReferenceError
+//     to be thrown.
+// Remarks:
+//     If only a single thread ID is supplied, join() is identical to whenDone().
 mini.Threads.join = function(threadIDs)
 {
-	threadIDs = threadIDs instanceof Array ? threadIDs : [ threadIDs ];
-	
 	if (!this.isInitialized)
 		Abort("mini.Threads.join(): must call mini.initialize() first", -1);
-	var promises = [];
-	for (var i = 0; i < threadIDs.length; ++i)
-		promises.push(mini.Threads.whenDone(threadIDs[i]));
-	return mini.Promise.all(promises);
+	if (threadIDs instanceof Array) {
+		var promises = [];
+		for (var i = 0; i < threadIDs.length; ++i)
+			promises.push(this.whenDone(threadIDs[i]));
+		return mini.Promise.all(promises);
+	} else {
+		return this.whenDone(threadIDs);
+	}
 };
 
 // mini.Threads.kill()
@@ -267,9 +276,15 @@ mini.Threads.updateAll = function(threadID)
 }
 
 // mini.Threads.whenDone()
-// Returns a promise which is fulfilled when a thread ends.
+// Returns a promise which is fulfilled when a thread ends. If the
+// thread has already terminated, the promise is fulfilled immediately.
 // Arguments:
-//     threadID: The thread making the promise.
+//     threadID: ID of the thread making the promise.
+// Remarks:
+//     If the given threadID references a thread which has already terminated,
+//     a promise will still be returned, and will be fulfilled immediately.
+//     On the other hand, if the given threadID has never been assigned to a
+//     thread, whenDone() will throw a ReferenceError.
 mini.Threads.whenDone = function(threadID)
 {
 	var maybePromise = mini.Link(this.threads)
@@ -277,5 +292,7 @@ mini.Threads.whenDone = function(threadID)
 		.first(1)
 		.pluck('promise')
 		.toArray()[0];
+	if (threadID >= this.nextThreadID)
+		throw new ReferenceError("Invalid thread ID for whenDone()");
 	return mini.Promise.resolve(maybePromise);
 }

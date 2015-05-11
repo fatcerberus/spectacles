@@ -9,6 +9,7 @@
 **/
 
 RequireSystemScript('mini/Core.js');
+RequireSystemScript('mini/minipact.js');
 RequireSystemScript('mini/Threads.js');
 
 mini.Scenes = mini.Scenes || {};
@@ -83,43 +84,55 @@ mini.Scene = function()
 {
 	this.activation = null;
 	this.forkedQueues = [];
+	this.isActive = false;
 	this.jumpsToFix = [];
 	this.openBlockTypes = [];
+	this.pact = new mini.Pact();
+	this.promise = null;
 	this.queueToFill = [];
 	
-	this.updateFork = function(scene)
+	this.runCommands = function(timeline)
 	{
-		scene.activation = this;
-		if (this.pc < this.instructions.length) {
-			var command = this.instructions[this.pc++];
+		if (!('promise' in timeline))
+			timeline.promise = this.pact.makePromise();
+		if (timeline.pc < timeline.program.length) {
+			var command = timeline.program[timeline.pc++];
 			var ctx = {};
 			if (command.start != null) {
-				var parameters = [];
-				parameters.push(scene);
-				for (i = 0; i < command.arguments.length; ++i) {
+				var parameters = [ this ];
+				for (i = 0; i < command.arguments.length; ++i)
 					parameters.push(command.arguments[i]);
-				}
 				command.start.apply(ctx, parameters);
 			}
 			if (command.update != null) {
 				var threadDesc = {};
-				threadDesc.update = command.update.bind(ctx, scene);
+				threadDesc.update = command.update.bind(ctx, this);
 				if (command.render != null)
-					threadDesc.render = command.render.bind(ctx, scene);
+					threadDesc.render = command.render.bind(ctx, this);
 				if (command.getInput != null)
-					threadDesc.getInput = command.getInput.bind(ctx, scene);
+					threadDesc.getInput = command.getInput.bind(ctx, this);
 				threadDesc.priority = mini.Scenes.priority;
-				mini.Threads.join(mini.Threads.doWith(ctx, threadDesc));
+				var scene = this;
+				mini.Threads.join(mini.Threads.doWith(ctx, threadDesc))
+					.then(function() {
+						if (command.finish != null)
+							command.finish.call(ctx, scene);
+						scene.runCommands(timeline);
+					})
+					.done();
+			} else {
+				if (command.finish != null)
+					command.finish.call(ctx, this);
+				this.runCommands(timeline);
 			}
-			if (command.finish != null) {
-				command.finish.call(ctx, scene);
-			}
-			return true;
 		} else {
-			mini.Threads.join(this.forkThreads);
-			return false;
+			var scene = this;
+			mini.Promise.all(timeline.forks)
+				.then(function() { scene.pact.resolve(timeline.promise); })
+				.done()
 		}
-		scene.activation = null;
+		this.activation = null;
+		return timeline.promise;
 	};
 	
 	this.enqueue = function(command)
@@ -191,15 +204,13 @@ mini.Scene.prototype.end = function()
 			var command = {
 				arguments: [ this.queueToFill ],
 				start: function(scene, instructions) {
-					var ctx = {
-						forkThreads: [],
-						instructions: instructions,
+					var timeline = {
+						program: instructions,
 						pc: 0,
+						forks: [],
 					};
-					var threadID = mini.Threads.doWith(ctx, {
-						update: scene.updateFork.bind(ctx, this)
-					});
-					scene.activation.forkThreads.push(threadID);
+					var promise = scene.runCommands(timeline);
+					timeline.forks.push(promise);
 				}
 			};
 			this.queueToFill = this.forkedQueues.pop();
@@ -244,7 +255,7 @@ mini.Scene.prototype.fork = function()
 //     true if the scenario is still executing commands; false otherwise.
 mini.Scene.prototype.isRunning = function()
 {
-	return mini.Threads.isRunning(this.mainThreadID);
+	return this.isActive;
 };
 
 // mini.Scene:restart()
@@ -258,31 +269,22 @@ mini.Scene.prototype.restart = function()
 
 // mini.Scene:run()
 // Runs the scene.
-// Arguments:
-//     waitUntilDone: Optional. If true, prevents .run() from returning until the scenario has finished executing.
-//                    Otherwise, .run() returns immediately. (default: false)
-mini.Scene.prototype.run = function(waitUntilDone)
+mini.Scene.prototype.run = function()
 {
-	waitUntilDone = waitUntilDone !== undefined ? waitUntilDone : false;
-	
-	if (this.openBlockTypes.length > 0) {
-		Abort("miniscenes: malformed scene (scene has unclosed blocks)", -1);
-	}
-	
-	if (this.isRunning()) {
-		return;
-	}
-	var ctx = {
-		forkThreads: [],
-		instructions: this.queueToFill,
-		pc: 0,
-	};
+	if (this.openBlockTypes.length > 0)
+		Abort("Malformed scene (definition has unclosed blocks)", -1);
+	if (this.isRunning()) return;
 	this.frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
-	this.mainThreadID = mini.Threads.createEx(ctx, {
-		priority: mini.Scenes.priority,
-		update: this.updateFork.bind(ctx, this)
-	});
-	if (waitUntilDone) mini.Threads.join(this.mainThreadID);
+	var timeline = {
+		program: this.queueToFill,
+		pc: 0,
+		forks: [],
+	};
+	this.isActive = true;
+	this.promise = this.runCommands(timeline);
+	this.promise
+		.then(function() { this.isActive = false; }.bind(this))
+		.done();
 	return this;
 };
 
@@ -298,16 +300,28 @@ mini.Scene.prototype.stop = function()
 
 // .synchronize() scenelet
 // During a scene, suspends the current timeline until all its forks have finished executing.
+// Remarks:
+//     There is an implicit synch point at the end of a timeline.
 mini.Scene.prototype.synchronize = function()
 {
 	var command = {};
 	command.arguments = [];
 	command.start = function(scene) {
-		mini.Threads.join(scene.activation.forkThreads);
+		mini.Threads.join(scene.activation.forks);
 	};
 	this.enqueue(command);
 	return this;
 };
+
+// mini.Scene:whenFinished()
+// Makes a promise to be fulfilled when the scene has finished executing.
+// run() must have been called at least once.
+mini.Scene.prototype.whenDone = function()
+{
+	if (this.promise == null)
+		Abort("miniscenes: Scene has never been run", -1);
+	return this.promise;
+}
 
 // .call() scenelet
 // Calls a function during scene execution.

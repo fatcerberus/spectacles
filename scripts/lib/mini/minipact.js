@@ -3,9 +3,11 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/Promises.js]
+ * [mini/minipact.js]
  * A promise implementation in pure JavaScript, based on the Promises/A+
- * specification. Mostly compliant, but there may be some inconsistencies.
+ * specification. The implementation is mostly compliant, but there may
+ * be some inconsistencies; particularly, promise resolution is not
+ * asynchronous.
 **/
 
 mini.Promise = (function(undefined)
@@ -113,18 +115,22 @@ mini.Promise = (function(undefined)
 			var promises = [];
 			var values = [];
 			var numPromises = iterable.length;
-			for (var i = 0; i < numPromises; ++i) {
-				var v = iterable[i];
-				if (!v || typeof v.then !== 'function')
-					v = Promise.resolve(v);
-				promises.push(v);
-				v.then(function(value) {
-					values.push(value);
-					if (values.length == numPromises)
-						resolve(values);
-				}, function(reason) {
-					reject(reason);
-				});
+			if (numPromises == 0)
+				resolve([]);
+			else {
+				for (var i = 0; i < numPromises; ++i) {
+					var v = iterable[i];
+					if (!v || typeof v.then !== 'function')
+						v = Promise.resolve(v);
+					promises.push(v);
+					v.then(function(value) {
+						values.push(value);
+						if (values.length == numPromises)
+							resolve(values);
+					}, function(reason) {
+						reject(reason);
+					});
+				}
 			}
 		});
 	};
