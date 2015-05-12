@@ -40,11 +40,6 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	var pact = new mini.Pact();
-	var promise = pact.makePromise();
-	promise.then(Print).done();
-	pact.resolve(promise, promise);
-	
 	var extensions = typeof GetExtensions === 'undefined'
 		? [ 'sphere-legacy-api', 'sphere-map-engine' ]
 		: GetExtensions();

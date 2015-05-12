@@ -124,10 +124,10 @@ mini.Scene = function()
 						scene.threads = mini.Link(scene.threads)
 							.where(function(id) { return id != threadID; })
 							.toArray();
-						this.activation = timeline;
+						scene.activation = timeline;
 						if (command.finish != null)
 							command.finish.call(ctx, scene);
-						this.activation = null;
+						scene.activation = null;
 						scene.runCommands(timeline);
 					})
 					.catch(Print)
