@@ -3,10 +3,9 @@
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
- * [mini/minipact.js]
+ * [mini/Promises.js]
  * A promise implementation for minisphere, based on the Promises/A+
- * specification. The implementation is mostly compliant, but there may
- * be some inconsistencies.
+ * specification. The implementation is fully compliant.
 **/
 
 mini.Promise = (function(undefined)
@@ -18,12 +17,13 @@ mini.Promise = (function(undefined)
 		var deferred = [];
 		var state = 'pending';
 		var result = undefined;
+		var self = this;
 		
 		function handle(handler)
 		{
 			if (state == 'pending')
 				deferred.push(handler);
-			else DoAsync(function() {
+			else Async(function() {
 				var callback = state == 'fulfilled' ? handler.fulfiller
 					: state == 'rejected' ? handler.rejector
 					: undefined;
@@ -31,27 +31,36 @@ mini.Promise = (function(undefined)
 					if (state == 'fulfilled') handler.resolve(result);
 					if (state == 'rejected') handler.reject(result);
 				} else {
-					handler.resolve(callback.call(handler.promise, result));
+					handler.resolve(callback(result));
 				}
 			});
 		}
 		
 		function resolve(value)
 		{
-			if (state != 'pending') return;
-			//try {
-				if (value && typeof value.then === 'function') {
-					value.then(resolve, reject);
-					return;
+			if (value === self) {
+				reject(new TypeError("Attempted to resolve promise with itself."));
+				return;
+			} else if (state != 'pending')
+				return;
+			try {
+				if ((typeof value === 'function' || typeof value === 'object')
+					&& value !== null)
+				{
+					var then = value.then;
+					if (typeof then === 'function') {
+						then.call(value, resolve, reject);
+						return;
+					}
 				}
 				state = 'fulfilled';
 				result = value;
 				for (var i = 0; i < deferred.length; ++i)
 					handle(deferred[i]);
 				deferred = [];
-			/*} catch(e) {
+			} catch(e) {
 				reject(e);
-			}*/
+			}
 		}
 		
 		function reject(reason)
@@ -96,11 +105,11 @@ mini.Promise = (function(undefined)
 				self.catch(function(reason) { throw reason; });
 		};
 		
-		//try {
+		try {
 			fn.call(this, resolve, reject);
-		/*} catch(e) {
+		} catch(e) {
 			reject(e);
-		}*/
+		}
 	};
 	
 	Promise.all = function(iterable)
@@ -195,9 +204,10 @@ mini.Pact = (function(undefined)
 			var handler;
 			var promise = new mini.Promise(function(resolve, reject) {
 				handler = { resolve: resolve, reject: reject };
-			}).then(
-				function(value) { --numPending; return value; },
-				function(reason) { --numPending; throw reason; }
+			})
+			promise.then(
+				function(value) { --numPending; },
+				function(reason) { --numPending; }
 			);
 			handler.that = promise;
 			handlers.push(handler);
@@ -226,11 +236,11 @@ mini.Pact = (function(undefined)
 			checkPromise(promise).reject(reason);
 		};
 		
-		// mini.Pact:backOut()
+		// mini.Pact:welch()
 		// Rejects all outstanding promises from this pact.
 		// Arguments:
 		//     reason: The value to reject with (usually an Error object).
-		this.backOut = function(reason)
+		this.welch = function(reason)
 		{
 			for (var i = handlers.length - 1; i >= 0; --i)
 				handlers[i].reject(reason);
