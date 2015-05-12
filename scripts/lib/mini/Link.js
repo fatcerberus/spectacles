@@ -11,8 +11,7 @@
 
 RequireSystemScript('mini/Core.js');
 
-mini.Link = (function(undefined)
-{
+mini.Link = (function(undefined) {
 	"use strict";
 	
 	var _slice = [].slice;
@@ -312,17 +311,29 @@ mini.Link = (function(undefined)
 	
 	ZipPoint.prototype.reset = function() { this.i = 0; }
 	
-	function GroupByPoint(groupFn) { // end point
+	function GroupByPoint(groupFn, container) { // end point
 		this.next  = null;
 		this.env   = null;
 		this.func  = groupFn;
-		this.group = {};
+		this.group = container;
+		this.isObj = !_IsArray(container);
+		this.indices = [];
 	}
 	
 	GroupByPoint.prototype.exec = function(item, i) {
-		var index = this.func(item, i);
-		if (!this.group[index]) this.group[index] = [item];
-		else this.group[index].push(item);
+		var value = this.func(item, i);
+		if (this.isObj) {
+			if (!this.group[value]) this.group[value] = [item];
+			else this.group[value].push(item);
+		}
+		else {
+			var index = _IndexOf(this.indices, value);
+			if (index < 0) {
+				this.indices.push(value);
+				this.group.push([item]);
+			}
+			else this.group[index].push(item);
+		}
 	}
 
 	function SlicePoint(a, b) {
@@ -529,6 +540,24 @@ mini.Link = (function(undefined)
 		var i = 0, l = a.length, v = this.value, n = this.next;
 		while (i < l) { if (a[i] == v) { this.index = i; this.found = true; break; } else i++; }
 	}
+	
+	function IndexOfFuncPoint(fn) {
+		this.next  = null;
+		this.env   = null;
+		this.func  = fn;
+		this.index = 0;
+		this.found = false;
+	}
+	
+	IndexOfFuncPoint.prototype.exec = function(item, i) {
+		if (this.func(item, i)) this.env.stop = this.found = true;
+		else this.index++;
+	}
+
+	IndexOfFuncPoint.prototype.run = function(a) {
+		var i = 0, l = a.length, fn = this.func, n = this.next;
+		while (i < l) { if (fn(a[i], i)) { this.index = i; this.found = true; break; } else i++; }
+	}
 
 	function IndexOfPropPoint(p, v) { // end point
 		this.next  = null;
@@ -612,7 +641,7 @@ mini.Link = (function(undefined)
 	function SumFuncPoint(func) { // end point
 		this.env   = null;
 		this.next  = null;
-		this.prop  = func;
+		this.func  = func;
 		this.total = 0;
 	}
 
@@ -755,6 +784,19 @@ mini.Link = (function(undefined)
 	}
 	
 	LengthPoint.prototype.exec = function(item, i) { this.num++; }
+	
+	function RecursePoint(prop) {
+		this.next = null;
+		this.env  = null;
+		this.prop = prop;
+	}
+	
+	RecursePoint.prototype.exec = function(item) {
+		if (item && this.prop in item) {
+			var a = item[this.prop], l = a.length;
+			for (var i = 0; i < l; ++i) { this.next.exec(a[i]); this.exec(a[i]); }
+		}
+	}
 
 	function ReducePoint(fn, m) { // end point
 		this.next = null;
@@ -918,7 +960,10 @@ mini.Link = (function(undefined)
 	function IndexOf(p, v) {
 		this.env.take = true;
 		var point;
-		if (v !== undefined)
+		if (typeof p == 'function') {
+			point = new IndexOfFuncPoint(p);
+		}
+		else if (v !== undefined)
 			point = new IndexOfPropPoint(p, v);
 		else
 			point = new IndexOfPoint(p);
@@ -936,8 +981,8 @@ mini.Link = (function(undefined)
 		return this;
 	}
 	
-	function GroupBy(fn) {
-		var point = new GroupByPoint(fn);
+	function GroupBy(fn, asArray) {
+		var point = new GroupByPoint(fn, asArray ? [] : {});
 		this.run(point);
 		return point.group;
 	}
@@ -1198,6 +1243,11 @@ mini.Link = (function(undefined)
 		return v;
 	}
 	
+	function Recurse(prop) {
+		this.pushPoint(new RecursePoint(prop));
+		return this;
+	}
+	
 	function Swap(a, b) {
 		var c = this.target[b];
 		this.target[b] = this.target[a];
@@ -1256,6 +1306,7 @@ mini.Link = (function(undefined)
 		none      : None,
 		pluck     : Pluck,
 		random    : Random,
+		recurse   : Recurse,
 		reduce    : Reduce,
 		reject    : Reject,
 		sample    : Sample,

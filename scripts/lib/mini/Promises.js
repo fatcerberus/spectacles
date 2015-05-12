@@ -39,7 +39,7 @@ mini.Promise = (function(undefined)
 		function resolve(value)
 		{
 			if (value === self) {
-				reject(new TypeError("Attempted to resolve promise with itself."));
+				reject(new TypeError("Attempt to fulfill a promise with itself"));
 				return;
 			} else if (state != 'pending')
 				return;

@@ -10,7 +10,7 @@
 
 RequireSystemScript('mini/Core.js');
 RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/minipact.js');
+RequireSystemScript('mini/Promises.js');
 
 // Threads object
 // Encapsulates the thread manager.
@@ -103,6 +103,7 @@ mini.Threads.createEx = function(that, threadDesc)
 		priority: priority,
 		renderer: renderer,
 		updater: updater,
+		startTime: GetSeconds(),
 		promise: this.pact.makePromise(),
 	};
 	var startTime = GetSeconds();
@@ -111,8 +112,7 @@ mini.Threads.createEx = function(that, threadDesc)
 };
 
 // mini.Threads.doWith()
-// Creates a worker for the active thread. Workers don't accept input and their lifetimes
-// are bound to the creating thread.
+// Creates a worker thread.
 // Arguments:
 //     that:       The object to pass as 'this' to thread callbacks. May be null.
 //     threadDesc: An object describing the thread. This should contain the following members:
@@ -121,18 +121,18 @@ mini.Threads.createEx = function(that, threadDesc)
 //                     priority: Optional. The render priority for the new thread. Higher-priority threads
 //                               are rendered later in a frame than lower-priority ones. Ignored if no
 //                               renderer is provided. (default: 0)
+// Returns:
+//     A promise which will be fulfilled when the thread terminates.
 // Remarks:
-//     Workers are useful when performing operations that may block (as by calling mini.Threads.join())
-//     to avoid blocking the calling thread. miniconsole, for example, uses worker threads to execute
-//     commands. A few things to keep in mind:
-//         * Workers are bound to the lifetime of the creating thread. If a thread terminates, its
-//           workers go with it.
-//         * Render priority for workers is relative to the creating thread.
+//     This is essentially the same function as createEx(), but returns a promise instead of
+//     a thread ID. As worker threads tend to be one-and-done affairs, the thread promise is
+//     generally more useful than the thread ID in this case.
 mini.Threads.doWith = function(that, threadDesc)
 {
 	if (!this.isInitialized)
 		Abort("must call mini.initialize() first", -1);
-	return this.createEx(that, threadDesc);
+	var threadID = this.createEx(that, threadDesc);
+	return this.join(threadID);
 }
 
 // .isRunning() method
@@ -182,22 +182,27 @@ mini.Threads.doFrame = function()
 //     threadID: Either a single thread ID or an array of them.
 // Returns:
 //     A promise which will be fulfilled when all of the specified threads have
-//     terminated. Any invalid thread IDs passed in will cause a ReferenceError
-//     to be thrown.
-// Remarks:
-//     If only a single thread ID is supplied, join() is identical to whenDone().
+//     terminated. Any invalid thread IDs passed in will throw an error. If all
+//     of the threads have terminated by the time this is called, or an empty
+//     array is passed in, the promise will be fulfilled immediately.
 mini.Threads.join = function(threadIDs)
 {
 	if (!this.isInitialized)
-		Abort("mini.Threads.join(): must call mini.initialize() first", -1);
-	if (threadIDs instanceof Array) {
-		var promises = [];
-		for (var i = 0; i < threadIDs.length; ++i)
-			promises.push(this.whenDone(threadIDs[i]));
-		return mini.Promise.all(promises);
-	} else {
-		return this.whenDone(threadIDs);
+		Abort("mini.initialize() must be called first!", -1);
+	threadIDs = threadIDs instanceof Array ? threadIDs : [ threadIDs ];
+	var promises = [];
+	for (var i = 0; i < threadIDs.length; ++i) {
+		if (threadIDs[i] >= this.nextThreadID)
+			Abort("minithreads: Invalid thread ID for join()", -1);
+		var maybePromise = mini.Link(this.threads)
+			.filterBy('id', threadIDs[i])
+			.first(1)
+			.pluck('promise')
+			.toArray()[0];
+		var threadPromise = mini.Promise.resolve(maybePromise);
+		promises.push(threadPromise);
 	}
+	return mini.Promise.all(promises);
 };
 
 // mini.Threads.kill()
@@ -213,7 +218,7 @@ mini.Threads.kill = function(threadID)
 		.each(function(thread)
 	{
 		thread.isValid = false;
-		this.pact.resolve(thread.promise);
+		this.pact.resolve(thread.promise, GetSeconds() - thread.startTime);
 	}.bind(this));
 	this.threads = mini.Link(this.threads)
 		.where(function(thread) { return thread.id != threadID })
@@ -274,26 +279,4 @@ mini.Threads.updateAll = function(threadID)
 		mini.Threads.kill(threadID);
 	});
 	this.hasUpdated = true;
-}
-
-// mini.Threads.whenDone()
-// Returns a promise which is fulfilled when a thread ends. If the
-// thread has already terminated, the promise is fulfilled immediately.
-// Arguments:
-//     threadID: ID of the thread making the promise.
-// Remarks:
-//     If the given threadID references a thread which has already terminated,
-//     a promise will still be returned, and will be fulfilled immediately.
-//     On the other hand, if the given threadID has never been assigned to a
-//     thread, whenDone() will throw a ReferenceError.
-mini.Threads.whenDone = function(threadID)
-{
-	var maybePromise = mini.Link(this.threads)
-		.filterBy('id', threadID)
-		.first(1)
-		.pluck('promise')
-		.toArray()[0];
-	if (threadID >= this.nextThreadID)
-		throw new ReferenceError("Invalid thread ID for whenDone()");
-	return mini.Promise.resolve(maybePromise);
 }

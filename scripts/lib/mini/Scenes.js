@@ -9,7 +9,7 @@
 **/
 
 RequireSystemScript('mini/Core.js');
-RequireSystemScript('mini/minipact.js');
+RequireSystemScript('mini/Promises.js');
 RequireSystemScript('mini/Threads.js');
 
 mini.Scenes = mini.Scenes || {};
@@ -116,7 +116,7 @@ mini.Scene = function()
 					threadDesc.getInput = command.getInput.bind(ctx, this);
 				threadDesc.priority = mini.Scenes.priority;
 				var scene = this;
-				var threadID = mini.Threads.doWith(ctx, threadDesc);
+				var threadID = mini.Threads.createEx(ctx, threadDesc);
 				this.threads.push(threadID);
 				var seconds = GetSeconds();
 				mini.Threads.join(threadID)
@@ -270,6 +270,16 @@ mini.Scene.prototype.isRunning = function()
 	return this.isActive;
 };
 
+// mini.Scene:join()
+// Returns the scene promise, which will be fulfilled when the scene has finished
+// executing. run() must have been called at least once.
+mini.Scene.prototype.join = function()
+{
+	if (this.promise == null)
+		Abort("miniscenes: Scene has never been run", -1);
+	return this.promise;
+}
+
 // mini.Scene:restart()
 // Restarts the scene from the beginning. This has the same effect as calling
 // .stop() and .run() back to back.
@@ -307,14 +317,19 @@ mini.Scene.prototype.run = function()
 //     beginning.
 mini.Scene.prototype.stop = function()
 {
-	this.pact.backOut();
-	Link(this.threads).each(function(id) { mini.Threads.kill(id); });
+	this.pact.welch();
+	mini.Link(this.threads)
+		.each(function(id)
+	{
+		mini.Threads.kill(id);
+	});
 };
 
 // .synchronize() scenelet
-// During a scene, suspends the current timeline until all its forks have finished executing.
+// During a scene, suspends the current timeline until all of its forks have run to
+// completion.
 // Remarks:
-//     There is an implicit synch point at the end of a timeline.
+//     There is an implicit sync point at the end of a timeline.
 mini.Scene.prototype.synchronize = function()
 {
 	var command = {};
@@ -330,16 +345,6 @@ mini.Scene.prototype.synchronize = function()
 	this.enqueue(command);
 	return this;
 };
-
-// mini.Scene:whenFinished()
-// Makes a promise to be fulfilled when the scene has finished executing.
-// run() must have been called at least once.
-mini.Scene.prototype.whenDone = function()
-{
-	if (this.promise == null)
-		Abort("miniscenes: Scene has never been run", -1);
-	return this.promise;
-}
 
 // .call() scenelet
 // Calls a function during scene execution.

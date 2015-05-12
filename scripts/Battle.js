@@ -503,7 +503,6 @@ Battle.prototype.update = function() {
 				var thread = unit.actor.enter();
 				walkInThreads.push(thread);
 			});
-			//mini.Threads.join(walkInThreads);
 			this.ui.hud.turnPreview.show();
 			if (!mini.Link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
