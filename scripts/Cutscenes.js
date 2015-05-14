@@ -65,17 +65,24 @@ mini.Scenelet('changeMap',
 	}
 });
 
-mini.Scenelet('playBGM',
+mini.Scenelet('changeBGM',
 {
 	start: function(scene, trackName) {
-		mini.BGM.override(trackName);
+		mini.BGM.play("BGM/" + trackName + ".ogg");
 	}
 });
 
-mini.Scenelet('resetBGM',
+mini.Scenelet('pushBGM',
+{
+	start: function(scene, trackName) {
+		mini.BGM.push("BGM/" + trackName + ".ogg");
+	}
+});
+
+mini.Scenelet('popBGM',
 {
 	start: function(scene) {
-		mini.BGM.reset();
+		mini.BGM.pop();
 	}
 });
 
