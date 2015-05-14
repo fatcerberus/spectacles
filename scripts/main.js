@@ -63,10 +63,11 @@ function game()
 	
 	// initialize the minisphere runtime
 	mini.initialize({
-		consolePrompt: "specs:",
+		frameRate: 60,
+		scenePriority: 99,
+		consolePrompt: "Specs Engine:",
 		consoleLines: 10,
 		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
-		scenePriority: 99,
 	});
 	
 	mini.Console.register('yap', null, {

@@ -1,5 +1,5 @@
 /**
- * minisphere Runtime 1.1b4 - (c) 2015 Fat Cerberus
+ * minisphere Runtime 1.1 - (c) 2015 Fat Cerberus
  * A set of system scripts providing advanced, high-level functionality not
  * available in the engine itself.
  *
@@ -161,7 +161,10 @@ mini.Console.execute = function(command)
 	var instruction = tokens[1];
 	
 	// check that the instruction is valid
-	if (!mini.Link(this.commands).pluck('entity').contains(entity)) {
+	if (!mini.Link(this.commands)
+		.pluck('entity')
+		.contains(entity))
+	{
 		this.write("Entity name '" + entity + "' not recognized");
 		return;
 	}
@@ -220,6 +223,7 @@ mini.Console.getInput = function()
 		var keycode = AreKeysLeft() ? GetKey() : null;
 		switch (keycode) {
 			case KEY_ENTER:
+				this.write("Command entered was '" + this.entry + "'");
 				this.execute(this.entry);
 				this.entry = "";
 				break;
@@ -239,7 +243,7 @@ mini.Console.getInput = function()
 mini.Console.hide = function()
 {
 	new mini.Scene()
-		.tween(this, 0.125, 'easeInQuad', { fadeness: 0.0 })
+		.tween(this, 0.25, 'easeInQuad', { fadeness: 0.0 })
 		.call(function() { this.isVisible = false; this.entry = ""; }.bind(this))
 		.run();
 };
@@ -280,7 +284,7 @@ mini.Console.unregister = function(name)
 mini.Console.show = function()
 {
 	new mini.Scene()
-		.tween(this, 0.125, 'easeOutQuad', { fadeness: 1.0 })
+		.tween(this, 0.25, 'easeOutQuad', { fadeness: 1.0 })
 		.call(function() { this.isVisible = true; }.bind(this))
 		.run();
 }
