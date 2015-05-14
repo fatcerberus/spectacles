@@ -119,7 +119,7 @@ FieldMenu.prototype.selectItem = function(itemID)
 		.fork().tween(this.items[this.selection].textColor, 0.25, 'easeInSine', this.itemTextColor).end()
 		.fork().tween(this.items[itemID].highlight, 0.25, 'easeOutSine', this.highlightColor).end()
 		.fork().tween(this.items[itemID].textColor, 0.25, 'easeOutSine', this.litItemTextColor).end()
-		.synchronize()
+		.resync()
 		.run();
 	this.selection = itemID;
 };

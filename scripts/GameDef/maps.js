@@ -28,7 +28,7 @@ Game.maps =
 					.adjustBGM(1.0, 2.0)
 				.end()
 				.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
-				.synchronize()
+				.resync()
 				.talk("Robert", true, 2.0, Infinity, "There must be some other way, Amanda...")
 				.pause(2.0)  // TODO: Amanda looks into the distance
 				.talk("Amanda", true, 2.0, Infinity, "Circumstances beyond my control long ago forced my hand. Frankly, I don't see that I have any other choice. At times I wonder if I ever did...")

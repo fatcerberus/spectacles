@@ -8,7 +8,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = true;
+var DBG_LOG_CONSOLE_OUTPUT = false;
 var DBG_IN_GAME_CONSOLE = true;
 
 RequireSystemScript('mini/Core.js');
@@ -63,6 +63,7 @@ function game()
 	
 	// initialize the minisphere runtime
 	mini.initialize({
+		consolePrompt: "specs:",
 		consoleLines: 10,
 		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
 		scenePriority: 99,

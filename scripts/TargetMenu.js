@@ -93,7 +93,7 @@ function TargetMenu(unit, battle, usable, moveName)
 				.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 			.end()
 			.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
-			.synchronize()
+			.resync()
 			.call(function() {
 				this.unitToShowInfo = unit;
 				if (this.unitToShowInfo !== null) {
@@ -122,7 +122,7 @@ TargetMenu.prototype.getInput = function()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
 				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
-				.synchronize()
+				.resync()
 				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();
 			break;
@@ -133,7 +133,7 @@ TargetMenu.prototype.getInput = function()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
 				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
-				.synchronize()
+				.resync()
 				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();
 			break;

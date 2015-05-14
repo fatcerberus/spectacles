@@ -70,7 +70,7 @@ Game.battles =
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(2.0)
 					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
-					.synchronize()
+					.resync()
 					.run(true);
 				if (scott != null) {
 					scott.addStatus('specsAura');
@@ -131,7 +131,7 @@ Game.battles =
 					.playSound("Munch.wav")
 				.end()
 				.talk("Xemnas", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
-				.synchronize()
+				.resync()
 				.talk("Scott", true, 2.0, Infinity, "Can I get back to fighting Bruce and Robert now? Sheesh, talk about empty calories...")
 				.talk("maggie", true, 2.0, Infinity, "Yeah, you know what? I'm still hungry. Watch this trick!")
 				.call(function() { maggieUnit.takeDamage(maggieUnit.hp, [], true); })

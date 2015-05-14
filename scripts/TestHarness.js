@@ -17,6 +17,7 @@ TestHarness.initialize = function()
 		'run': this.runTest
 	});
 	this.tests = {};
+	this.isBattleRunning = false;
 };
 
 TestHarness.addBattle = function(testID, setupData)
@@ -24,6 +25,10 @@ TestHarness.addBattle = function(testID, setupData)
 	this.tests[testID] = {
 		setup: setupData,
 		run: function() {
+			if (TestHarness.isBattleRunning) {
+				mini.Console.write("Unable to start test battle, one is ongoing");
+				return;
+			}
 			mini.Console.write("Preparing test battle");
 			mini.Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
@@ -40,9 +45,11 @@ TestHarness.addBattle = function(testID, setupData)
 					session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
 				}
 			}
+			TestHarness.isBattleRunning = true;
 			new mini.Scene()
 				.battle(this.setup.battleID, session)
 				.run(true);
+			TestHarness.isBattleRunning = false;
 		}
 	};
 	mini.Console.write("Added battle test '" + testID + "'");

@@ -1,12 +1,10 @@
 /**
- * minisphere Runtime 1.1b4 - (c) 2015 Fat Cerberus
- * A set of system scripts providing advanced, high-level functionality not
- * available in the engine itself.
- *
- * [mini/Link.js]
- * A powerful functional programming library which is used like .NET LINQ to
- * perform complex queries on JS arrays. Originally based on Link 0.3.0 by
- * Andrew Helenius.
+* Script: Link.js
+* Written by: Andrew Helenius
+* Updated: May/11/2015
+* Version: 0.3.0
+* Desc: Link.js is a very fast general-purpose functional programming library.
+		Still somewhat experimental, and still under construction.
 **/
 
 RequireSystemScript('mini/Core.js');
@@ -310,6 +308,14 @@ mini.Link = (function(undefined) {
 	ZipPoint.prototype.exec = function(item, i) { this.next.exec([item, array[this.i++]], i); }
 	
 	ZipPoint.prototype.reset = function() { this.i = 0; }
+	
+	function RemovePoint() { // endpoint
+		this.items = [];
+	}
+	
+	RemovePoint.prototype.exec = function(item, i) {
+		this.items.push(i);
+	}
 	
 	function GroupByPoint(groupFn, container) { // end point
 		this.next  = null;
@@ -1142,6 +1148,13 @@ mini.Link = (function(undefined) {
 		return this;
 	}
 	
+	function Remove() {
+		var point = new RemovePoint();
+		this.run(point);
+		var a = point.items, i = a.length;
+		while (i--) { this.target.splice(a[i], 1); }
+	}
+	
 	function Slice(a, b) {
 		if (a == 0) return this;
 		this.env.take = true;
@@ -1309,6 +1322,7 @@ mini.Link = (function(undefined) {
 		recurse   : Recurse,
 		reduce    : Reduce,
 		reject    : Reject,
+		remove    : Remove,
 		sample    : Sample,
 		select    : Select,
 		shuffle   : Shuffle,
