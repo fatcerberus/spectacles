@@ -24,14 +24,14 @@ Engine = new (function()
 	//     duration:  The amount of time, in seconds, to keep the image on-screen.
 	this.showLogo = function(imageName, duration)
 	{
-		var image = LoadImage("Logos/" + imageName + ".png");
+		var image = new Image("Logos/" + imageName + ".png");
 		var scene = new mini.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 			.pause(duration)
 			.fadeTo(CreateColor(0, 0, 0, 255), 1.0)
 			.run();
-		mini.Threads.join(mini.Threads.doWith(scene, {
+		mini.Threads.join(mini.Threads.createEx(scene, {
 			update: function() { return this.isRunning(); },
 			render: function() { image.blit(0, 0); }
 		}));

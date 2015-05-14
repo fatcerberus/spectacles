@@ -40,23 +40,6 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	var extensions = typeof GetExtensions === 'undefined'
-		? [ 'sphere-legacy-api', 'sphere-map-engine' ]
-		: GetExtensions();
-	var q = mini.Link(extensions);
-	var isSupportedEngine = GetVersion() >= 1.5
-		&& q.contains('sphere-legacy-api')
-		&& q.contains('sphere-obj-constructors')
-		&& q.contains('sphere-obj-props')
-		&& q.contains('sphere-map-engine')
-		&& q.contains('sphere-galileo')
-		&& q.contains('minisphere-new-sockets')
-		&& q.contains('minisphere-rng-object')
-		&& q.contains('set-script-function');
-	if (!isSupportedEngine) {
-		Abort("This engine is not supported.\n");
-	}
-	
 	// initialize Specs Engine components
 	Engine.initialize(60);
 	analogue.init();
@@ -89,7 +72,7 @@ function game()
 	
 	// show the title screen and start the game!
 	if (!DBG_DISABLE_TITLE_CARD) {
-		BGM.override('SpectaclesTheme');
+		mini.BGM.push('BGM/SpectaclesTheme.ogg');
 		Engine.showLogo('TitleCard', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();

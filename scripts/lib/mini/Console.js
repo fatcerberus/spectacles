@@ -41,7 +41,7 @@ mini.onStartUp.add(mini.Console, function(params)
 		: Math.floor((GetScreenHeight() - 32) / this.font.getHeight());
 	var bufferSize = 'consoleBuffer' in params ? params.consoleBuffer : 1000;
 	var filename = 'logFile' in params ? params.logFile : null;
-	var prompt = 'consolePrompt' in params ? params.consolePrompt : "command:";
+	var prompt = 'consolePrompt' in params ? params.consolePrompt : "Command:";
 	
 	if (typeof filename === 'string')
 		this.log = OpenLog(params.logFile);
@@ -62,7 +62,9 @@ mini.onStartUp.add(mini.Console, function(params)
 		.run();
 	mini.Threads.create(this, 101);
 	
-	this.write("minisphere Runtime 1.1 Console");
+	var game = GetGameInformation();
+	this.write(game.name + " Console Log");
+	this.write(game.directory);
 	this.write("Sphere " + GetVersionString());
 	this.write("");
 });

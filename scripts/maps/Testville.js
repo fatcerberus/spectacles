@@ -1,6 +1,6 @@
 ({
 	enter: function(map, world) {
-		analogue.world.munchSound = LoadSound('Munch.wav', false);
+		analogue.world.munchSound = new Sound('Munch.wav', false);
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
@@ -41,7 +41,7 @@
 		FollowPerson('Scott T', 'Katelyn', 32);
 		FollowPerson('Amanda', 'Scott T', 32);
 		
-		mini.BGM.play('BGM/Portentia.ogg');
+		mini.BGM.play('BGM/OneWorldIsNotEnough.ogg');
 	},
 	
 	robert: {
@@ -128,7 +128,7 @@
 						var session = analogue.getWorld().session;
 						session.party.remove('scott');
 						session.party.add('maggie', 100);
-						mini.BGM.play('BGM/RiseOfThePrimus.ogg');
+						mini.BGM.play('BGM/BasicInstinct.ogg');
 					}
 					person.isBlocked = true;
 					return;
