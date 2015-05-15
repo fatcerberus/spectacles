@@ -20,6 +20,7 @@ RequireSystemScript('mini/RNG.js');
 RequireSystemScript('mini/Scenes.js');
 RequireSystemScript('mini/Threads.js');
 RequireSystemScript('analogue.js');
+RequireSystemScript('kh2Bar.js');
 RequireSystemScript('SpriteImage.js');
 
 RequireScript('Core/Engine.js');
