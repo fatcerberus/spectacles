@@ -3,7 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-// ScottStarcrossAI() constructor
+// ScottStarcrossAI() constructor		
 // Creates an AI to control Scott Starcross in the Spectacles III final battle.
 // Arguments:
 //     battle:    The battle session this AI is participating in.
@@ -46,6 +46,7 @@ function ScottStarcrossAI(aiContext)
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('berserkCharge');
+	//this.aic.definePhases([ 4500, 2500, 1000 ], 50);
 }
 
 // .dispose() method

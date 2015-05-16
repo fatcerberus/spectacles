@@ -13,8 +13,12 @@ TestHarness = new (function()
 TestHarness.initialize = function()
 {
 	mini.Console.write("Initializing Specs Engine test harness");
-	mini.Console.register('harness', TestHarness, {
-		'run': this.runTest
+	mini.Console.register('harness', this, {
+		'run': function(testID) {
+			if (!(testID in this.tests))
+				return mini.Console.write("Unknown test ID '" + testID + "'");
+			this.runTest(testID);
+		}
 	});
 	this.tests = {};
 	this.isBattleRunning = false;
@@ -26,7 +30,7 @@ TestHarness.addBattle = function(testID, setupData)
 		setup: setupData,
 		run: function() {
 			if (TestHarness.isBattleRunning) {
-				mini.Console.write("Unable to start test battle, one is ongoing");
+				mini.Console.write("Unable to run test battle, one is ongoing");
 				return;
 			}
 			mini.Console.write("Preparing test battle");

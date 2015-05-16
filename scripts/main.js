@@ -66,6 +66,13 @@ function game()
 		'stop': function() { this.play(null); },
 		'vol': function(volume) { this.adjust(volume, 0.5); },
 	});
+	mini.Console.register('field', Sphere, {
+		'add': function(name) {
+			CreatePerson(name, 'battlers/' + name + '.rss', false);
+			SetPersonX(name, RNG.range(22, 26) * 32);
+			SetPersonY(name, RNG.range(23, 25) * 32);
+		}
+	});
 	
 	// set up the beta test harness
 	TestHarness.initialize();
