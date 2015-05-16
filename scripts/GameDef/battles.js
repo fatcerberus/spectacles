@@ -84,7 +84,7 @@ Game.battles =
 	scottTemple: {
 		title: "First Lucidan Scott Temple",
 		isFinalBattle: false,
-		bgm: 'HymnOfLiberty',
+		bgm: 'MyDreamsButADropOfFuel2',
 		battleLevel: 60,
 		enemies: [
 			'scottTemple'
@@ -96,7 +96,7 @@ Game.battles =
 	scottStarcross: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'EndOfInnocence',
+		bgm: 'DeathComeNearMe',
 		battleLevel: 60,
 		enemies: [
 			'scottStarcross'

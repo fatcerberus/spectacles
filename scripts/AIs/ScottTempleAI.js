@@ -10,9 +10,9 @@
 function ScottTempleAI(aiContext)
 {
 	this.aic = aiContext;
-	this.aic.battle.itemUsed.addHook(this, this.onItemUsed);
-	this.aic.battle.skillUsed.addHook(this, this.onSkillUsed);
-	this.aic.phaseChanged.addHook(this, this.onPhaseChanged);
+	this.aic.battle.itemUsed.add(this, this.onItemUsed);
+	this.aic.battle.skillUsed.add(this, this.onSkillUsed);
+	this.aic.phaseChanged.add(this, this.onPhaseChanged);
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('swordSlash');
@@ -23,9 +23,9 @@ function ScottTempleAI(aiContext)
 // Relinquishes resources and shuts down the AI.
 ScottTempleAI.prototype.dispose = function()
 {
-	this.aic.battle.itemUsed.removeHook(this, this.onItemUsed);
-	this.aic.battle.skillUsed.removeHook(this, this.onSkillUsed);
-	this.aic.phaseChanged.removeHook(this, this.onPhaseChanged);
+	this.aic.battle.itemUsed.remove(this, this.onItemUsed);
+	this.aic.battle.skillUsed.remove(this, this.onSkillUsed);
+	this.aic.phaseChanged.remove(this, this.onPhaseChanged);
 };
 
 // .strategize() method
