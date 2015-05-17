@@ -137,6 +137,29 @@ Game.characters =
 		]
 	},
 	
+	// Katelyn Hippofoood
+	// Doesn't actually exist.
+	katelyn: {
+		name: "Katelyn",
+		fullName: "Katelyn Hippofoood",
+		baseStats: {
+			vit: 40,
+			str: 5,
+			def: 30,
+			foc: 80,
+			mag: 65,
+			agi: 50
+		},
+		skills: [
+			'potshot',
+			'inferno',
+			'subzero',
+			'discharge',
+			'tenPointFive',
+			'omni'
+		],
+	},
+	
 	// Lauren Adora
 	// Scott's love interest and one of the three initial party members. She tends keep to herself
 	// (except where maggie is involved) and often keeps quiet about things she really should

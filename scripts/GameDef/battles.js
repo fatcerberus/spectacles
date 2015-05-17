@@ -5,6 +5,22 @@
 
 Game.battles =
 {
+	suckfest: {
+		title: "Scott Starcross",
+		isFinalBattle: true,
+		bgm: 'RunawayTrain',
+		battleLevel: 100,
+		enemies: [
+			'scottStarcross'
+		],
+		onStart: function() {
+			this.findUnit('scottStarcross')
+				.addStatus('specsAura');
+			this.findUnit('scott')
+				.addStatus('specsAura');
+		}
+	},
+	
 	// Lumisquirrel x3
 	lumisquirrel3: {
 		enemies: [

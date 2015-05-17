@@ -30,16 +30,18 @@
 		AttachCamera('scott');
 		AttachInput('scott');
 		
-		CreatePerson('Bruce', 'battlers/Bruce.rss', false);
-		CreatePerson('Lauren', 'battlers/Lauren.rss', false);
-		CreatePerson('Katelyn', 'battlers/Katelyn.rss', false);
-		CreatePerson('Scott T', 'battlers/Scott T.rss', false);
-		CreatePerson('Amanda', 'battlers/Amanda.rss', false);
-		FollowPerson('Bruce', 'scott', 32);
-		FollowPerson('Lauren', 'Bruce', 32);
-		FollowPerson('Katelyn', 'Lauren', 32);
-		FollowPerson('Scott T', 'Katelyn', 32);
-		FollowPerson('Amanda', 'Scott T', 32);
+		CreatePerson('bruce', 'battlers/Bruce.rss', false);
+		CreatePerson('lauren', 'battlers/Lauren.rss', false);
+		CreatePerson('katelyn', 'battlers/Katelyn.rss', false);
+		CreatePerson('temple', 'battlers/Scott T.rss', false);
+		CreatePerson('amanda', 'battlers/Amanda.rss', false);
+		CreatePerson('justin', 'battlers/Justin.rss', false);
+		FollowPerson('bruce', 'scott', 32);
+		FollowPerson('lauren', 'bruce', 32);
+		FollowPerson('katelyn', 'lauren', 32);
+		FollowPerson('temple', 'katelyn', 32);
+		FollowPerson('amanda', 'temple', 32);
+		FollowPerson('justin', 'amanda', 32);
 		
 		mini.BGM.play('BGM/OneWorldIsNotEnough.ogg');
 	},

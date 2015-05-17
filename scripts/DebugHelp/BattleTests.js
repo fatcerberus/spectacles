@@ -3,6 +3,16 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
+TestHarness.addBattle('suckfest',
+{
+	battleID: 'suckfest',
+	party: {
+		scott: { level: 100, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+		lauren: { level: 100, weapon: 'risingSun', items: [ 'tonic', 'holyWater' ] },
+		katelyn: { level: 100, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic' ] },
+	}
+});
+
 TestHarness.addBattle('lumi',
 {
 	battleID: 'lumisquirrel3',
