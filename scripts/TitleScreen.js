@@ -40,11 +40,11 @@ TitleScreen.prototype.show = function()
 	}
 	this.transition = new mini.Scene()
 		.adjustBGM(1.0)
-		.playBGM(this.themeTrack)
+		.pushBGM(this.themeTrack)
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();
 	mini.Threads.join(mini.Threads.create(this));
-	mini.BGM.reset();
+	mini.BGM.pop();
 	mini.BGM.adjust(1.0);
 	return new Session();
 };

@@ -11,14 +11,7 @@ var DBG_DISABLE_TRANSITIONS = false;
 var DBG_LOG_CONSOLE_OUTPUT = false;
 var DBG_IN_GAME_CONSOLE = true;
 
-RequireSystemScript('mini/Core.js');
-RequireSystemScript('mini/BGM.js');
-RequireSystemScript('mini/Console.js');
-RequireSystemScript('mini/Link.js');
-RequireSystemScript('mini/Promises.js');
-RequireSystemScript('mini/RNG.js');
-RequireSystemScript('mini/Scenes.js');
-RequireSystemScript('mini/Threads.js');
+RequireSystemScript('mini/miniRT.js');
 RequireSystemScript('analogue.js');
 RequireSystemScript('kh2Bar.js');
 RequireSystemScript('SpriteImage.js');
@@ -87,8 +80,6 @@ function game()
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
 	
-	SetTalkActivationKey(GetPlayerKey(PLAYER_1, PLAYER_KEY_A));
-	SetTalkActivationButton(0);
 	MapEngine('Testville.rmp', 60);
 }
 
