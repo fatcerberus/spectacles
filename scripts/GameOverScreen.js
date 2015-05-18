@@ -40,9 +40,9 @@ GameOverScreen.prototype.show = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		this.fadeness = 0.0;
 	}
-	mini.BGM.change(null);
+	mini.BGM.play(null);
 	this.transition = new mini.Scene()
-		.playBGM("GameOver")
+		.pushBGM("GameOver")
 		.adjustBGM(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
 		.run();
@@ -77,7 +77,7 @@ GameOverScreen.prototype.update = function()
 			break;
 		case 'transitionOut':
 			if (!this.transition.isRunning()) {
-				mini.BGM.reset();
+				mini.BGM.pop();
 				mini.BGM.adjust(1.0);
 			}
 			return this.transition.isRunning();

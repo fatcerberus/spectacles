@@ -22,7 +22,7 @@ function BattleHUD(partyMaxMP)
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.highlightColor = CreateColor(0, 0, 0, 0);
-	this.highlightedName = null;
+	this.highlightedUnit = null;
 	this.hpGaugesInfo = [];
 	this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
 	this.partyInfo = [ null, null, null ];
@@ -59,7 +59,7 @@ function BattleHUD(partyMaxMP)
 			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 192, 192, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
-		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.name);
+		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.unit.name);
 		//this.drawText(this.font, x + 62, y + 6, 1, headingColor, "HP");
 		//this.drawText(this.font, x + 61, y + 2, 1, textColor, Math.round(memberInfo.hp), 'right');
 		Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
@@ -98,14 +98,14 @@ BattleHUD.prototype.dispose = function()
 // .createEnemyHPGauge() method
 // Creates an enemy HP gauge to be displayed on the HUD.
 // Arguments:
-//     name:     The name of the character that the gauge belongs to.
-//     capacity: The HP capacity of the gauge.
-BattleHUD.prototype.createEnemyHPGauge = function(name, capacity)
+//     unit:     The battle unit that the gauge belongs to.
+BattleHUD.prototype.createEnemyHPGauge = function(unit)
 {
-	var gauge = new kh2Bar(capacity, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
-	this.hpGaugesInfo.push({ owner: name, gauge: gauge });
+	var gauge = new kh2Bar(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
+	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
-	mini.Console.write("Created HP gauge on HUD for " + name);
+	mini.Console.write("Created HP gauge for unit '" + unit.name + "'");
+	mini.Console.append("cap: " + unit.maxHP);
 };
 
 // .hide() method
@@ -120,11 +120,11 @@ BattleHUD.prototype.hide = function()
 // .highlight() method
 // Highlights a character on the HUD.
 // Arguments:
-//     name: The name of the character to highlight.
-BattleHUD.prototype.highlight = function(name)
+//     unit: The unit whose entry will be highlighted.
+BattleHUD.prototype.highlight = function(unit)
 {
-	if (name !== null) {
-		this.highlightedName = name;
+	if (unit !== null) {
+		this.highlightedUnit = unit;
 		new mini.Scene()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
@@ -148,7 +148,7 @@ BattleHUD.prototype.render = function()
 		var itemX = 160;
 		var itemY = y + i * 20;
 		if (this.partyInfo[i] !== null) {
-			this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedName == this.partyInfo[i].name);
+			this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedUnit == this.partyInfo[i].unit);
 		} else {
 			this.drawElementBox(itemX, itemY, 100, 20);
 		}
@@ -158,7 +158,7 @@ BattleHUD.prototype.render = function()
 		var itemX = 160;
 		var itemY = y + this.partyInfo.length * 20 + i * 20;
 		this.drawElementBox(itemX, itemY, 160, 20);
-		if (this.highlightedName == gaugeInfo.owner) {
+		if (this.highlightedUnit == gaugeInfo.owner) {
 			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 		}
 		Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
@@ -170,13 +170,13 @@ BattleHUD.prototype.render = function()
 // .setHP() method
 // Changes the displayed HP for a character on the HUD.
 // Arguments:
-//     name: The name of the character whose HP is being changed.
+//     unit: The battle unit whose HP is being changed.
 //     hp:   The number of hit points to change the display to.
-BattleHUD.prototype.setHP = function(name, hp)
+BattleHUD.prototype.setHP = function(unit, hp)
 {
 	for (var i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
-		if (characterInfo !== null && characterInfo.name == name && hp != characterInfo.hp) {
+		if (characterInfo !== null && characterInfo.unit == unit && hp != characterInfo.hp) {
 			characterInfo.hpGauge.set(hp);
 			var gaugeColor = hp / characterInfo.maxHP <= 0.1 ? CreateColor(255, 0, 0, 255)
 				: hp / characterInfo.maxHP <= 0.33 ? CreateColor(255, 255, 0, 255)
@@ -194,7 +194,7 @@ BattleHUD.prototype.setHP = function(name, hp)
 	}
 	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
-		if (gaugeInfo.owner == name) {
+		if (gaugeInfo.owner == unit) {
 			gaugeInfo.gauge.set(hp);
 		}
 	}
@@ -204,10 +204,10 @@ BattleHUD.prototype.setHP = function(name, hp)
 // Changes the character displayed in one of the party slots.
 // Arguments:
 //     slot:  The slot index (0-2 inclusive) of the party slot to be changed.
-//     name:  The name of the character being switched in.
+//     unit:  The battle unit being switched in.
 //     hp:    The amount of remaining hit points to displayed for the character.
 //     maxHP: The character's maximum HP.
-BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
+BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 {
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
@@ -215,7 +215,7 @@ BattleHUD.prototype.setPartyMember = function(slot, name, hp, maxHP)
 	var hpGauge = new kh2Bar(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
-		name: name,
+		unit: unit,
 		hp: hp,
 		maxHP: maxHP,
 		hpGauge: hpGauge,

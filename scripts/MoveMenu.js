@@ -270,7 +270,7 @@ MoveMenu.prototype.getInput = function()
 MoveMenu.prototype.open = function()
 {
 	this.battle.suspend();
-	this.battle.ui.hud.highlight(this.unit.name);
+	this.battle.ui.hud.highlight(this.unit);
 	var chosenTargets = null;
 	this.stance = this.lastStance = this.menuStance;
 	while (chosenTargets === null) {

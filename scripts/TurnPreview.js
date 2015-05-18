@@ -53,7 +53,7 @@ TurnPreview.prototype.render = function()
 //     unit: The battle unit to check for.
 TurnPreview.prototype.ensureEntries = function(unit)
 {
-	if (!(unit.id in this.entries)) {
+	if (!(unit.tag in this.entries)) {
 		var entry = {
 			color: unit.isPartyMember() ? CreateColor(64, 80, 96, 255) : CreateColor(96, 48, 48, 255),
 			name: unit.name,
@@ -62,7 +62,7 @@ TurnPreview.prototype.ensureEntries = function(unit)
 		for (var i = 0; i < 8; ++i) {
 			entry.turnBoxes[i] = { x: 160, tween: null };
 		}
-		this.entries[unit.id] = entry;
+		this.entries[unit.tag] = entry;
 	}
 };
 
@@ -78,7 +78,7 @@ TurnPreview.prototype.set = function(prediction)
 		for (var i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
 			var unit = this.lastPrediction[i].unit;
 			var turnIndex = this.lastPrediction[i].turnIndex;
-			var turnBox = this.entries[unit.id].turnBoxes[turnIndex];
+			var turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
 			if (turnBox.tween !== null) {
 				turnBox.tween.stop();
 			}
@@ -92,7 +92,7 @@ TurnPreview.prototype.set = function(prediction)
 		var unit = prediction[i].unit;
 		var turnIndex = prediction[i].turnIndex;
 		this.ensureEntries(unit);
-		var turnBox = this.entries[unit.id].turnBoxes[turnIndex];
+		var turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
 		if (turnBox.tween !== null) {
 			turnBox.tween.stop();
 		}

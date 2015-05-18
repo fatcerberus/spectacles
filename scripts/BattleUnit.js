@@ -111,7 +111,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.hp = this.maxHP;
 		this.weapon = Game.weapons[this.enemyInfo.weapon];
 		if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar) {
-			this.battle.ui.hud.createEnemyHPGauge(this.name, this.maxHP);
+			this.battle.ui.hud.createEnemyHPGauge(this);
 		}
 		this.ai = new AIContext(this, battle, this.enemyInfo.aiType);
 	}
@@ -122,7 +122,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		: new MPPool(this.id + "MP", Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
 	this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 	if (this.isPartyMember()) {
-		this.battle.ui.hud.setPartyMember(position == 2 ? 0 : position == 0 ? 2 : position, this.name, this.hp, this.maxHP);
+		this.battle.ui.hud.setPartyMember(position == 2 ? 0 : position == 0 ? 2 : position, this, this.hp, this.maxHP);
 	}
 	if (!this.isPartyMember()) {
 		this.actor.enter(true);
@@ -165,6 +165,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	var unitType = this.ai === null ? "player" : "AI";
 	mini.Console.write("Created " + unitType + " unit '" + this.name + "'");
 	mini.Console.append("hp: " + this.hp + "/" + this.maxHP);
+	mini.Console.append("id: " + this.tag);
 }
 
 // .dispose() method
@@ -286,7 +287,7 @@ BattleUnit.prototype.die = function()
 	this.battle.unitKilled.invoke(this.id);
 	this.lazarusFlag = false;
 	this.hp = 0;
-	this.battle.ui.hud.setHP(this.name, this.hp);
+	this.battle.ui.hud.setHP(this, this.hp);
 	this.statuses = [];
 	this.actor.animate('die');
 	mini.Console.write(this.fullName + " afflicted with death");
@@ -450,7 +451,7 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 	if (amount > 0) {
 		this.hp = Math.min(this.hp + amount, this.maxHP);
 		this.actor.showHealing(amount);
-		this.battle.ui.hud.setHP(this.name, this.hp);
+		this.battle.ui.hud.setHP(this, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
 		mini.Console.write(this.name + " healed for " + amount + " HP");
 		mini.Console.append("now: " + this.hp);
@@ -780,7 +781,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 				: CreateColor(255, 255, 255, 255);
 			this.actor.showDamage(amount, damageColor);
 		}
-		this.battle.ui.hud.setHP(this.name, this.hp);
+		this.battle.ui.hud.setHP(this, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
 			mini.Console.write(this.name + " dying due to lack of HP");
 			this.lazarusFlag = true;
