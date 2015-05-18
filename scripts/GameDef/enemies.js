@@ -9,6 +9,7 @@ RequireScript('AIs/Robert1AI.js');
 RequireScript('AIs/Robert2AI.js');
 RequireScript('AIs/ScottTempleAI.js');
 RequireScript('AIs/ScottStarcrossAI.js');
+RequireScript('AIs/VictorAI.js');
 
 Game.enemies =
 {
@@ -61,6 +62,28 @@ Game.enemies =
 		munchData: {
 			skill: 'delusion'
 		}
+	},
+	
+	victor: {
+		name: "Victor",
+		fullName: "Victor Spellbinder",
+		aiType: VictorAI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 1.0,
+		baseStats: {
+			vit: 50,
+			str: 60,
+			def: 85,
+			foc: 75,
+			mag: 85,
+			agi: 50,
+		},
+		immunities: [],
+		weapon: 'templeSword',
+		items: [
+			'alcohol'
+		],
 	},
 	
 	// Robert Spellbinder (I) (Spectacles: Bruce's Story)

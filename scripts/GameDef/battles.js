@@ -6,17 +6,17 @@
 Game.battles =
 {
 	suckfest: {
-		title: "Scott Starcross",
+		title: "Battle Royal Suckfest",
 		isFinalBattle: true,
 		bgm: 'RunawayTrain',
 		battleLevel: 100,
 		enemies: [
-			'scottStarcross'
+			'scottStarcross',
+			'robert2',
+			'victor'
 		],
 		onStart: function() {
 			this.findUnit('scottStarcross')
-				.addStatus('specsAura');
-			this.findUnit('scott')
 				.addStatus('specsAura');
 		}
 	},

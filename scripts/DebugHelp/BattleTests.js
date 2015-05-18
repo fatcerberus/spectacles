@@ -7,9 +7,9 @@ TestHarness.addBattle('suckfest',
 {
 	battleID: 'suckfest',
 	party: {
-		scott: { level: 100, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+		justin: { level: 100, weapon: 'templeSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 		lauren: { level: 100, weapon: 'risingSun', items: [ 'tonic', 'holyWater' ] },
-		katelyn: { level: 100, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic' ] },
+		katelyn: { level: 100, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'alcohol' ] },
 	}
 });
 
