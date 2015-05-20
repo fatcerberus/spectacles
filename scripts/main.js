@@ -8,7 +8,7 @@ var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TITLE_CARD = true;
 var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
-var DBG_LOG_CONSOLE_OUTPUT = false;
+var DBG_LOG_CONSOLE_OUTPUT = true;
 var DBG_IN_GAME_CONSOLE = true;
 
 RequireSystemScript('mini/miniRT.js');
@@ -28,7 +28,7 @@ RequireScript('Session.js');
 RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
 
-EvaluateScript('gamedef/game.js');
+EvaluateScript('GameDef/game.js');
 
 // game() function
 // This is called by Sphere when the game is launched.
@@ -38,7 +38,7 @@ function game()
 	Engine.initialize(60);
 	analogue.init();
 	
-	// initialize the minisphere runtime
+	// initialize miniRT
 	mini.initialize({
 		frameRate: 60,
 		scenePriority: 99,
@@ -53,9 +53,9 @@ function game()
 	});
 	mini.Console.register('bgm', mini.BGM, {
 		'kill': function() { this.play(null); this.play = this.push = this.pop = function() {} },
-		'play': function(trackName) { this.play("BGM/" + trackName + ".ogg"); },
+		'play': function(trackName) { this.play('BGM/' + trackName + '.ogg'); },
 		'pop': function() { this.pop(); },
-		'push': function(trackName) { this.push("BGM/" + trackName + ".ogg"); },
+		'push': function(trackName) { this.push('BGM/' + trackName + '.ogg'); },
 		'stop': function() { this.play(null); },
 		'vol': function(volume) { this.adjust(volume, 0.5); },
 	});

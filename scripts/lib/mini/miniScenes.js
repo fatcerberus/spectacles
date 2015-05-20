@@ -1,7 +1,7 @@
 /**
- * minisphere Runtime 1.1 - (c) 2015 Fat Cerberus
- * A set of system scripts providing advanced, high-level functionality not
- * available in the engine itself.
+ * miniRT 1.1.2  (c) 2015 Fat Cerberus
+ * A set of system scripts for minisphere providing advanced, high-level
+ * functionality not available in the engine itself.
  *
  * [mini/miniScenes.js]
  * An advanced scene manager that allows you to coordinate complex sequences
