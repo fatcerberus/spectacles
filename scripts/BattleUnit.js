@@ -128,75 +128,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.actor.enter(true);
 	}
 	this.resetCounter(Game.defaultMoveRank, true);
-	mini.Console.register(this.id, this, {
-		'add': function(statusID) {
-			if (statusID in Game.statuses) {
-				this.addStatus(statusID);
-			} else {
-				mini.Console.write("Invalid status ID '" + statusID + "'");
-			}
-		},
-		'lift': function(statusID) {
-			if (statusID in Game.statuses) {
-				this.liftStatus(statusID);
-			} else {
-				mini.Console.write("Invalid status ID '" + statusID + "'");
-			}
-		},
-		'damage': function(amount) {
-			tags = [].slice.call(arguments, 1);
-			amount = Math.max(parseInt(amount), 0);
-			this.takeDamage(amount, tags);
-		},
-		'heal': function(amount) {
-			tags = [].slice.call(arguments, 1);
-			amount = Math.max(parseInt(amount), 0);
-			this.heal(amount, tags);
-		},
-		'items': function(instruction) {
-			if (arguments.length < 1)
-				return mini.Console.write("'" + this.id + " item': No instruction provided");
-			switch (instruction) {
-			case 'add':
-				if (arguments.length < 2)
-					return mini.Console.write("'" + this.id + " item add': Item ID required");
-				var usable = new ItemUsable(arguments[1]);
-				this.items.push(usable);
-				mini.Console.write(usable.usesLeft + "x " + usable.name + " added to " + this.name + "'s inventory");
-				break;
-			case 'munch':
-				new mini.Scene().playSound('Munch.wav').run();
-				this.items.length = 0;
-				mini.Console.write("maggie ate " + this.name + "'s entire inventory");
-				break;
-			case 'rm':
-				if (arguments.length < 2)
-					return mini.Console.write("'" + this.id + " item add': Item ID required");
-				var itemID = arguments[1];
-				var itemCount = 0;
-				mini.Link(this.items)
-					.filterBy('itemID', itemID)
-					.execute(function(usable) { itemCount += usable.usesLeft })
-					.remove();
-				if (itemCount > 0)
-					mini.Console.write(itemCount + "x " + Game.items[itemID].name
-						+ " deleted from " + this.name + "'s inventory");
-				else
-					mini.Console.write("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
-				break;
-			default:
-				return mini.Console.write("'" + this.id + " item': Unknown instruction '" + instruction + "'");
-			}
-		},
-		'revive': function() { this.resurrect(); },
-		'scan': function(flag) {
-			flag = flag.toLowerCase();
-			if (flag == 'on') this.allowTargetScan = true;
-			if (flag == 'off') this.allowTargetScan = false;
-			mini.Console.write("Target Scan for " + this.name + " is " +
-				(this.allowTargetScan ? "ON" : "OFF"));
-		},
-	});
+	this.registerCommands();
 	var unitType = this.ai === null ? "player" : "AI";
 	mini.Console.write("Created " + unitType + " unit '" + this.name + "'");
 	mini.Console.append("hp: " + this.hp + "/" + this.maxHP);
@@ -664,6 +596,101 @@ BattleUnit.prototype.refreshInfo = function()
 		this.battlerInfo.statuses.push(statusID);
 	}.bind(this));
 	this.battlerInfo.stance = this.stance;
+};
+
+// .registerCommands() method
+// Registers the BattleUnit with the console.
+BattleUnit.prototype.registerCommands = function()
+{
+	mini.Console.register(this.id, this, {
+		
+		'add': function(statusID) {
+			if (statusID in Game.statuses) {
+				this.addStatus(statusID);
+			} else {
+				mini.Console.write("Invalid status ID '" + statusID + "'");
+			}
+		},
+		
+		'lift': function(statusID) {
+			if (statusID in Game.statuses) {
+				this.liftStatus(statusID);
+			} else {
+				mini.Console.write("Invalid status ID '" + statusID + "'");
+			}
+		},
+		
+		'damage': function(amount) {
+			tags = [].slice.call(arguments, 1);
+			amount = Math.max(parseInt(amount), 0);
+			this.takeDamage(amount, tags);
+		},
+		
+		'heal': function(amount) {
+			tags = [].slice.call(arguments, 1);
+			amount = Math.max(parseInt(amount), 0);
+			this.heal(amount, tags);
+		},
+		
+		'item': function(instruction) {
+			if (arguments.length < 1)
+				return mini.Console.write("'" + this.id + " item': No instruction provided");
+			switch (instruction) {
+			case 'add':
+				if (arguments.length < 2)
+					return mini.Console.write("'" + this.id + " item add': Item ID required");
+				var itemID = arguments[1];
+				if (!(itemID in Game.items))
+					return mini.Console.write("No such item ID '" + itemID + "'");
+				var defaultUses = 'uses' in Game.items[itemID] ? Game.items[itemID].uses : 1;
+				var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
+				var addCount = 0;
+				mini.Link(this.items)
+					.filterBy('itemID', itemID)
+					.each(function(item)
+				{
+					item.usesLeft += itemCount;
+					addCount += itemCount;
+				});
+				mini.Console.write(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
+				break;
+			case 'munch':
+				new mini.Scene().playSound('Munch.wav').run();
+				this.items.length = 0;
+				mini.Console.write("maggie ate " + this.name + "'s entire inventory");
+				break;
+			case 'rm':
+				if (arguments.length < 2)
+					return mini.Console.write("'" + this.id + " item add': Item ID required");
+				var itemID = arguments[1];
+				var itemCount = 0;
+				mini.Link(this.items)
+					.filterBy('itemID', itemID)
+					.execute(function(usable) { itemCount += usable.usesLeft })
+					.remove();
+				if (itemCount > 0)
+					mini.Console.write(itemCount + "x " + Game.items[itemID].name
+						+ " deleted from " + this.name + "'s inventory");
+				else
+					mini.Console.write("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
+				break;
+			default:
+				return mini.Console.write("'" + this.id + " item': Unknown instruction '" + instruction + "'");
+			}
+		},
+		
+		'revive': function() {
+			this.resurrect();
+		},
+		
+		'scan': function(flag) {
+			flag = flag.toLowerCase();
+			if (flag == 'on') this.allowTargetScan = true;
+			if (flag == 'off') this.allowTargetScan = false;
+			mini.Console.write("Target Scan for " + this.name + " is " +
+				(this.allowTargetScan ? "ON" : "OFF"));
+		},
+	});
 };
 
 // .resetCounter() method
