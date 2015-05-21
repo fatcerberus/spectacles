@@ -47,6 +47,22 @@ function game()
 		logFile: DBG_LOG_CONSOLE_OUTPUT ? 'consoleLog.txt' : null,
 	});
 	
+	var pixelShader = new PixelShader('pixel.glsl');
+	var vertexShader = new VertexShader('vertex.glsl');
+	var shader = new ShaderProgram(pixelShader, vertexShader);
+	var image = new Image('MapTiles/Grass.png');
+	var shape = new Shape([
+		{ x: 10, y: 10 },
+		{ x: 110, y: 10 },
+		{ x: 110, y: 110 },
+		{ x: 10, y: 110 },
+	], image);
+	var group = new Group([ shape ], shader);
+	mini.Threads.createEx(group, {
+		update: function() { return true; },
+		render: function() { this.draw(); }
+	});
+	
 	mini.Console.register('yap', null, {
 		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are currently ON"); }, 
 		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are currently OFF"); }, 
