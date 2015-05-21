@@ -107,7 +107,8 @@ Game.statuses =
 	
 	// Drunk status
 	// Increases attack power, but reduces the affected unit's speed and accuracy and
-	// creates a weakness to Earth damage.
+	// creates a weakness to Earth damage. Also ups the success rate of eaty moves
+	// (e.g. Munch).
 	drunk: {
 		name: "Drunk",
 		tags: [ 'acute' ],
@@ -140,7 +141,10 @@ Game.statuses =
 			}.bind(this));
 		},
 		aiming: function(unit, eventData) {
-			eventData.aimRate /= Math.sqrt(Game.bonusMultiplier);
+			if (eventData.action.accuracyType == 'devour')
+				eventData.aimRate *= 2.0;
+			else
+				eventData.aimRate /= Math.sqrt(Game.bonusMultiplier);
 		},
 		beginTurn: function(unit, eventData) {
 			--this.turnsLeft;

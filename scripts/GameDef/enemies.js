@@ -189,23 +189,23 @@ Game.enemies =
 		weapon: 'templeSword'
 	},
 	
-	// Xemnas (Kingdom Hearts II)
-	// No idea what the heck this guy is doing here! My guess is he's probably going
+	// Katelyn (Spectacles 0: Nothing's Call)
+	// No idea what the heck this girl is doing here! My guess is she's probably going
 	// to get eaten. By a hunger-pig. Which will then, um, eat itself, for... some reason?
 	// Probably to show off.
-	xemnas: {
-		name: "Xemnas",
-		fullName: "Xemnas Ignoto",
+	katelyn: {
+		name: "Katelyn",
+		fullName: "Katelyn Hippofoood",
 		aiType: ScottStarcrossAI,
 		hasLifeBar: true,
-		tier: 4,
+		tier: 1,
 		baseStats: {
-			vit: 100,
-			str: 100,
-			def: 100,
-			foc: 100,
-			mag: 100,
-			agi: 100
+			vit: 0,
+			str: 0,
+			def: 0,
+			foc: 0,
+			mag: 0,
+			agi: 0
 		},
 		immunities: [],
 		weapon: 'templeSword'

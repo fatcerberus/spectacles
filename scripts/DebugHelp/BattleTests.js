@@ -11,7 +11,25 @@ TestHarness.addBattle('suckfest',
 	}
 });
 
-TestHarness.addBattle('lumi',
+TestHarness.addBattle('arm+leg',
+{
+	battleID: 'robert2',
+	party: {
+		maggie: { level: 50, items: [ 'alcohol' ] },
+	}
+});
+
+TestHarness.addBattle('munchfest',
+{
+	battleID: 'scottStarcross2',
+	party: {
+		bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
+		robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
+		maggie: { level: 60, items: [ 'alcohol' ] },
+	}
+});
+
+TestHarness.addBattle('3x-lumi',
 {
 	battleID: 'lumisquirrel3',
 	party: {
@@ -46,14 +64,6 @@ TestHarness.addBattle('rsb',
 	}
 });
 
-TestHarness.addBattle('rsb-v-maggie',
-{
-	battleID: 'robert2',
-	party: {
-		maggie: { level: 100, items: [ 'redBull', 'alcohol' ] },
-	}
-});
-
 TestHarness.addBattle('temple',
 {
 	battleID: 'scottTemple',
@@ -63,22 +73,12 @@ TestHarness.addBattle('temple',
 	}
 });
 
-TestHarness.addBattle('runaway-train',
+TestHarness.addBattle('starcross',
 {
 	battleID: 'scottStarcross',
 	party: {
 		bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 		robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
 		amanda: { level: 60, items: [ 'powerTonic', 'redBull', 'holyWater' ] },
-	}
-});
-
-TestHarness.addBattle('xemnas',
-{
-	battleID: 'scottStarcross2',
-	party: {
-		bruce: { level: 60, weapon: 'arsenRifle', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-		robert: { level: 60, weapon: 'rsbSword', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ] },
-		maggie: { level: 60, items: [ 'alcohol' ] },
 	}
 });

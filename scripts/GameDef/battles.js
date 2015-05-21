@@ -124,34 +124,35 @@ Game.battles =
 	
 	// Scott Starcross (Final Battle)
 	// Final Boss of Spectacles III: The Last Lucidan
-	// ...with some other weird guy in it. He totally gets eaten though
+	// ...with some other weird girl in it. She totally gets eaten though
 	scottStarcross2: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'EndOfInnocence',
+		bgm: 'HymnOfLiberty',
 		battleLevel: 60,
 		enemies: [
 			'scottStarcross',
-			'xemnas'
+			'katelyn'
 		],
 		onStart: function() {
-			var xemnasUnit = this.findUnit('xemnas');
+			var katelynUnit = this.findUnit('katelyn');
 			var maggieUnit = this.findUnit('maggie');
 			new mini.Scene()
-				.talk("Xemnas", true, 0.5, Infinity, "Nothingness... is... eternal...!")
-				.talk("maggie", true, 2.0, Infinity, "Where the hell did this guy come from? Screw this, I'ma eat him!")
+				.talk("Katelyn", true, 3.0, Infinity, "Hey guys, whatcha doin'?")
+				.talk("Robert", true, 2.0, Infinity, "Wait a minute... she's not even supposed to exist...!")
+				.talk("maggie", true, 2.0, Infinity, "Don't worry, I can fix that! I'ma eat her!")
 				.fork()
 					.pause(1.5)
-					.call(function() { xemnasUnit.takeDamage(xemnasUnit.hp, [], true); })
+					.call(function() { katelynUnit.takeDamage(katelynUnit.hp, [], true); })
 					.playSound("Munch.wav")
 				.end()
-				.talk("Xemnas", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
+				.talk("Katelyn", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
 				.resync()
 				.talk("Scott", true, 2.0, Infinity, "Can I get back to fighting Bruce and Robert now? Sheesh, talk about empty calories...")
 				.talk("maggie", true, 2.0, Infinity, "Yeah, you know what? I'm still hungry. Watch this trick!")
 				.call(function() { maggieUnit.takeDamage(maggieUnit.hp, [], true); })
 				.playSound("Munch.wav")
-				.talk("Scott", true, 0.5, Infinity, "...")
+				.talk("Scott", true, 2.0, 1.0, "...")
 				.talk("Scott", true, 2.0, Infinity, "No comment.")
 				.run(true);
 			var scottUnit = this.findUnit('scottStarcross');
