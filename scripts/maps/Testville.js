@@ -36,12 +36,14 @@
 		CreatePerson('temple', 'battlers/Scott T.rss', false);
 		CreatePerson('amanda', 'battlers/Amanda.rss', false);
 		CreatePerson('justin', 'battlers/Justin.rss', false);
+		CreatePerson('victor', 'battlers/Victor.rss', false);
 		FollowPerson('bruce', 'scott', 32);
 		FollowPerson('lauren', 'bruce', 32);
 		FollowPerson('katelyn', 'lauren', 32);
 		FollowPerson('temple', 'katelyn', 32);
 		FollowPerson('amanda', 'temple', 32);
 		FollowPerson('justin', 'amanda', 32);
+		FollowPerson('victor', 'justin', 32);
 		
 		mini.BGM.play('BGM/OneWorldIsNotEnough.ogg');
 	},
