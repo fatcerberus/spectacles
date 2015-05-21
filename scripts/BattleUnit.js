@@ -632,13 +632,13 @@ BattleUnit.prototype.registerCommands = function()
 			this.heal(amount, tags);
 		},
 		
-		'item': function(instruction) {
+		'inv': function(instruction) {
 			if (arguments.length < 1)
-				return mini.Console.write("'" + this.id + " item': No instruction provided");
+				return mini.Console.write("'" + this.id + " inv': No instruction provided");
 			switch (instruction) {
 			case 'add':
 				if (arguments.length < 2)
-					return mini.Console.write("'" + this.id + " item add': Item ID required");
+					return mini.Console.write("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				if (!(itemID in Game.items))
 					return mini.Console.write("No such item ID '" + itemID + "'");
@@ -652,6 +652,12 @@ BattleUnit.prototype.registerCommands = function()
 					item.usesLeft += itemCount;
 					addCount += itemCount;
 				});
+				if (addCount == 0) {
+					var usable = new ItemUsable(itemID);
+					usable.usesLeft = itemCount;
+					this.items.push(usable);
+					addCount = itemCount;
+				}
 				mini.Console.write(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
 				break;
 			case 'munch':
@@ -661,7 +667,7 @@ BattleUnit.prototype.registerCommands = function()
 				break;
 			case 'rm':
 				if (arguments.length < 2)
-					return mini.Console.write("'" + this.id + " item add': Item ID required");
+					return mini.Console.write("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				var itemCount = 0;
 				mini.Link(this.items)
@@ -675,7 +681,7 @@ BattleUnit.prototype.registerCommands = function()
 					mini.Console.write("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
 				break;
 			default:
-				return mini.Console.write("'" + this.id + " item': Unknown instruction '" + instruction + "'");
+				return mini.Console.write("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
 			}
 		},
 		
