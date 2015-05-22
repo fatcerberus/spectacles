@@ -1,15 +1,16 @@
 #ifdef GL_ES
 precision mediump float;
 #endif
+
 uniform sampler2D al_tex;
-uniform vec3 tint;
+uniform bool al_use_tex;
 varying vec4 varying_color;
 varying vec2 varying_texcoord;
+
 void main()
 {
-   vec4 tmp = varying_color * texture2D(al_tex, varying_texcoord);
-   tmp.r *= tint.r;
-   tmp.g *= tint.g;
-   tmp.b *= tint.b;
-   gl_FragColor = tmp;
+	if (al_use_tex)
+		gl_FragColor = varying_color * texture2D(al_tex, varying_texcoord);
+	else
+		gl_FragColor = varying_color;
 }

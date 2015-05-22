@@ -174,6 +174,7 @@ mini.Console.execute = function(command)
 {
 	// tokenize the command string
 	var tokens = command.match(/'.*?'|".*?"|\S+/g);
+	if (tokens == null) return;
 	for (var i = 0; i < tokens.length; ++i) {
 		tokens[i] = tokens[i].replace(/'(.*)'/, "$1");
 		tokens[i] = tokens[i].replace(/"(.*)"/, "$1");
