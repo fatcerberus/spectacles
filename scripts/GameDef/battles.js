@@ -114,10 +114,10 @@ Game.battles =
 		bgm: 'DeathComeNearMe',
 		battleLevel: 60,
 		enemies: [
-			'scottStarcross'
+			'starcross'
 		],
 		onStart: function() {
-			var scottUnit = this.findUnit('scottStarcross');
+			var scottUnit = this.findUnit('starcross');
 			scottUnit.addStatus('specsAura');
 		}
 	},

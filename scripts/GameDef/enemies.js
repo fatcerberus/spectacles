@@ -170,7 +170,7 @@ Game.enemies =
 	
 	// Scott Starcross (Spectacles III)
 	// Final Boss of Spectacles III
-	scottStarcross: {
+	starcross: {
 		name: "Scott",
 		fullName: "Scott Starcross",
 		aiType: ScottStarcrossAI,
