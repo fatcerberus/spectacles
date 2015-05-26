@@ -256,7 +256,9 @@ mini.Console.getInput = function()
 			case KEY_TAB: break;
 			case null: break;
 			default:
-				this.entry += GetKeyString(keycode, IsKeyPressed(KEY_SHIFT));
+				var ch = GetKeyString(keycode, IsKeyPressed(KEY_SHIFT));
+				ch = GetToggleState(KEY_CAPSLOCK) ? ch.toUpperCase() : ch;
+				this.entry += ch;
 		}
 	}
 };
