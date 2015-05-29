@@ -37,6 +37,7 @@
 		CreatePerson('amanda', 'battlers/Amanda.rss', false);
 		CreatePerson('justin', 'battlers/Justin.rss', false);
 		CreatePerson('victor', 'battlers/Victor.rss', false);
+		CreatePerson('elysia', 'battlers/Elysia.rss', false);
 		FollowPerson('bruce', 'scott', 32);
 		FollowPerson('lauren', 'bruce', 32);
 		FollowPerson('katelyn', 'lauren', 32);
@@ -44,8 +45,9 @@
 		FollowPerson('amanda', 'temple', 32);
 		FollowPerson('justin', 'amanda', 32);
 		FollowPerson('victor', 'justin', 32);
+		FollowPerson('elysia', 'victor', 32);
 		
-		mini.BGM.play('BGM/OneWorldIsNotEnough.ogg');
+		mini.BGM.play('BGM/Portentia.ogg');
 	},
 	
 	robert: {
@@ -136,7 +138,7 @@
 						var session = analogue.getWorld().session;
 						session.party.remove('scott');
 						session.party.add('maggie', 100);
-						mini.BGM.play('BGM/BasicInstinct.ogg');
+						mini.BGM.play('BGM/Animals.ogg');
 					}
 					person.isBlocked = true;
 					return;
