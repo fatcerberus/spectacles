@@ -3,8 +3,6 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireSystemScript('kh2Bar.js');
-
 RequireScript('MPGauge.js');
 RequireScript('TurnPreview.js');
 
@@ -101,7 +99,7 @@ BattleHUD.prototype.dispose = function()
 //     unit:     The battle unit that the gauge belongs to.
 BattleHUD.prototype.createEnemyHPGauge = function(unit)
 {
-	var gauge = new kh2Bar(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
+	var gauge = new kh2Bar.HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
 	mini.Console.write("Created HP gauge for unit '" + unit.name + "'");
@@ -212,7 +210,7 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	var hpGauge = new kh2Bar(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
+	var hpGauge = new kh2Bar.HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
 		unit: unit,
