@@ -73,7 +73,7 @@
 	
 	maggie: {
 		create: function(person) {
-			person.command = COMMAND_MOVE_SOUTH;
+			person.command = COMMAND_MOVE_SOUTHWEST;
 			person.timesStopped = 0;
 			person.steps = 0;
 			person.isActive = true;
@@ -100,7 +100,13 @@
 			if (!person.isActive) return;
 			var x = GetPersonX('maggie');
 			var y = GetPersonY('maggie');
-			if (person.command == COMMAND_MOVE_NORTH) --y; else ++y;
+			if (person.command == COMMAND_MOVE_NORTHEAST) {
+				++x;
+				--y;
+			} else {
+				--x;
+				++y;
+			}
 			if (IsPersonObstructed('maggie', x, y)) {
 				if (person.isBlocked) return;
 				var food = GetObstructingPerson('maggie', x, y);
@@ -148,7 +154,7 @@
 			QueuePersonCommand('maggie', person.command, false);
 			++person.steps;
 			if (person.steps > 128) {
-				person.command = person.command == COMMAND_MOVE_SOUTH ? COMMAND_MOVE_NORTH : COMMAND_MOVE_SOUTH;
+				person.command = person.command == COMMAND_MOVE_SOUTHWEST ? COMMAND_MOVE_NORTHEAST : COMMAND_MOVE_SOUTHWEST;
 				person.steps = 0;
 			}
 		}
