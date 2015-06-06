@@ -1,6 +1,17 @@
 ({
 	enter: function(map, world) {
 		analogue.world.munchSound = new Sound('Munch.wav', false);
+		var followers = [
+			{ name: 'Bruce', sprite: 'battlers/Bruce.rss' },
+			{ name: 'Lauren', sprite: 'battlers/Lauren.rss' },
+			{ name: 'Katelyn', sprite: 'battlers/Katelyn.rss' },
+			{ name: 'Scott Temple', sprite: 'battlers/Scott T.rss' },
+			{ name: 'Amanda', sprite: 'battlers/Amanda.rss' },
+			{ name: 'Justin', sprite: 'battlers/Justin.rss' },
+			{ name: 'Victor', sprite: 'battlers/Victor.rss' },
+			{ name: 'Elysia', sprite: 'battlers/Elysia.rss' },
+		];
+		
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
@@ -11,18 +22,73 @@
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, function() {
 			name = GetCurrentPerson();
 			if (name == 'maggie' || name == 'robert') return;
-			new mini.Scene()
-				.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
-				.talk("maggie", true, 2.0, Infinity, "Too late!")
-				.killPerson(name)
-				.playSound('Munch.wav')
-				.run(true)
+			if (GetInputPerson() == 'scott') {
+				new mini.Scene()
+					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "!")
+					.talk(name, true, 2.0, Infinity, "Scott, you suck. Go get eaten by a hunger-pig or something.")
+					.run(true);
+			} else {
+				new mini.Scene()
+					.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
+					.talk("maggie", true, 2.0, Infinity, "Too late!")
+					.killPerson(name)
+					.playSound('Munch.wav')
+					.run(true);
+			}
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
 			food = GetCurrentPerson();
+			if (food == 'maggie') return;  // nobody is allowed to eat maggie!
 			if (IsInputAttached() && GetInputPerson() == 'maggie' && food != 'robert') {
 				analogue.world.munchSound.play(false);
 				DestroyPerson(food);
+			}
+		});
+		
+		mini.Threads.createEx(null, {
+			update: function() {
+				var doorX = 24 * GetTileWidth() + GetTileWidth() / 2;
+				var doorY = 22 * GetTileHeight() + GetTileHeight() / 2;
+				if (IsPersonObstructed('maggie', doorX, doorY))
+					return true;
+				mini.Link(followers)
+					.pluck('name')
+					.where(function(name) { return !DoesPersonExist(name); })
+					.first(1)
+					.unpluck()
+					.each(function(info)
+				{
+					CreatePerson(info.name, info.sprite, false);
+					SetPersonMask(info.name, new Color(255, 255, 255, 128));
+					var maggieX = GetPersonX('maggie');
+					var maggieY = GetPersonY('maggie');
+					SetPersonX(info.name, RNG.range(maggieX - 160, maggieX + 160));
+					SetPersonY(info.name, RNG.range(maggieY - 160, maggieY + 160));
+					SetPersonIgnoreList(info.name, mini.Link(followers).pluck('name').toArray());
+					IgnoreTileObstructions(info.name, true);
+					QueuePersonCommand(info.name, COMMAND_FACE_SOUTH, true);
+					for (var i = 0; i < 2 * 32; ++i)
+						QueuePersonCommand(info.name, COMMAND_MOVE_SOUTH, false);
+					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {
+						var name = GetCurrentPerson();
+						var maggieX = GetPersonX('maggie');
+						var maggieY = GetPersonY('maggie');
+						var currentX = GetPersonX(name);
+						var currentY = GetPersonY(name);
+						var movement = RNG.sample([
+							COMMAND_MOVE_NORTH,
+							COMMAND_MOVE_EAST,
+							COMMAND_MOVE_SOUTH,
+							COMMAND_MOVE_WEST,
+						]);
+						var facing = movement - COMMAND_MOVE_NORTH + COMMAND_FACE_NORTH;
+						var steps = RNG.normal(3, 1) * 32;
+						QueuePersonCommand(name, facing, true);
+						for (var i = 0; i < steps; ++i)
+							QueuePersonCommand(name, movement, false);
+					});
+				});
+				return true;
 			}
 		});
 		
@@ -30,22 +96,14 @@
 		AttachCamera('scott');
 		AttachInput('scott');
 		
-		CreatePerson('bruce', 'battlers/Bruce.rss', false);
-		CreatePerson('lauren', 'battlers/Lauren.rss', false);
-		CreatePerson('katelyn', 'battlers/Katelyn.rss', false);
-		CreatePerson('temple', 'battlers/Scott T.rss', false);
-		CreatePerson('amanda', 'battlers/Amanda.rss', false);
-		CreatePerson('justin', 'battlers/Justin.rss', false);
-		CreatePerson('victor', 'battlers/Victor.rss', false);
-		CreatePerson('elysia', 'battlers/Elysia.rss', false);
-		FollowPerson('bruce', 'scott', 32);
-		FollowPerson('lauren', 'bruce', 32);
-		FollowPerson('katelyn', 'lauren', 32);
-		FollowPerson('temple', 'katelyn', 32);
-		FollowPerson('amanda', 'temple', 32);
-		FollowPerson('justin', 'amanda', 32);
-		FollowPerson('victor', 'justin', 32);
-		FollowPerson('elysia', 'victor', 32);
+		var leader = 'scott';
+		for (var i = 0; i < followers.length; ++i) {
+			var name = followers[i].name;
+			var spriteset = followers[i].sprite;
+			CreatePerson(name, spriteset, false);
+			FollowPerson(name, leader, 32);
+			leader = name;
+		}
 		
 		mini.BGM.play('BGM/Portentia.ogg');
 	},
