@@ -1,15 +1,17 @@
 ({
 	enter: function(map, world) {
+		var font = GetSystemFont();
 		analogue.world.munchSound = new Sound('Munch.wav', false);
+		
 		var followers = [
-			{ name: 'Bruce', sprite: 'battlers/Bruce.rss' },
-			{ name: 'Lauren', sprite: 'battlers/Lauren.rss' },
-			{ name: 'Katelyn', sprite: 'battlers/Katelyn.rss' },
-			{ name: 'Scott Temple', sprite: 'battlers/Scott T.rss' },
-			{ name: 'Amanda', sprite: 'battlers/Amanda.rss' },
-			{ name: 'Justin', sprite: 'battlers/Justin.rss' },
-			{ name: 'Victor', sprite: 'battlers/Victor.rss' },
-			{ name: 'Elysia', sprite: 'battlers/Elysia.rss' },
+			{ name: 'Bruce', sprite: 'battlers/Bruce.rss', ghostLevel: 0 },
+			{ name: 'Lauren', sprite: 'battlers/Lauren.rss', ghostLevel: 0 },
+			{ name: 'Katelyn', sprite: 'battlers/Katelyn.rss', ghostLevel: 0 },
+			{ name: 'Scott Temple', sprite: 'battlers/Scott T.rss', ghostLevel: 0 },
+			{ name: 'Amanda', sprite: 'battlers/Amanda.rss', ghostLevel: 0 },
+			{ name: 'Justin', sprite: 'battlers/Justin.rss', ghostLevel: 0 },
+			{ name: 'Victor', sprite: 'battlers/Victor.rss', ghostLevel: 0 },
+			{ name: 'Elysia', sprite: 'battlers/Elysia.rss', ghostLevel: 0 },
 		];
 		
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
@@ -24,7 +26,7 @@
 			if (name == 'maggie' || name == 'robert') return;
 			if (GetInputPerson() == 'scott') {
 				new mini.Scene()
-					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "!")
+					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "! maggie is just on a rampage today, isn't she? Eating ghosts left and right... how do you eat a ghost anyway?")
 					.talk(name, true, 2.0, Infinity, "Scott, you suck. Go get eaten by a hunger-pig or something.")
 					.run(true);
 			} else {
@@ -46,43 +48,59 @@
 		});
 		
 		mini.Threads.createEx(null, {
-			update: function() {
-				var doorX = 24 * GetTileWidth() + GetTileWidth() / 2;
-				var doorY = 22 * GetTileHeight() + GetTileHeight() / 2;
-				if (IsPersonObstructed('maggie', doorX, doorY))
-					return true;
+			render: function() {
 				mini.Link(followers)
-					.pluck('name')
-					.where(function(name) { return !DoesPersonExist(name); })
-					.first(1)
-					.unpluck()
+					.where(function(info) { return DoesPersonExist(info.name); })
+					.where(function(info) { return info.ghostLevel > 0; })
 					.each(function(info)
 				{
+					var x = MapToScreenX('Base', GetPersonX(info.name));
+					var y = MapToScreenY('Base', GetPersonY(info.name));
+					DrawTextEx(font, x, y, "Lv." + info.ghostLevel, new Color(255, 255, 255, 128), 1, 'center');
+				});
+			},
+			update: function() {
+				mini.Link(followers)
+					.where(function(info) { return !DoesPersonExist(info.name); })
+					.first(1)
+					.each(function(info)
+				{
+					++info.ghostLevel;
 					CreatePerson(info.name, info.sprite, false);
 					SetPersonMask(info.name, new Color(255, 255, 255, 128));
 					var maggieX = GetPersonX('maggie');
 					var maggieY = GetPersonY('maggie');
-					SetPersonX(info.name, RNG.range(maggieX - 160, maggieX + 160));
-					SetPersonY(info.name, RNG.range(maggieY - 160, maggieY + 160));
-					SetPersonIgnoreList(info.name, mini.Link(followers).pluck('name').toArray());
-					IgnoreTileObstructions(info.name, true);
-					QueuePersonCommand(info.name, COMMAND_FACE_SOUTH, true);
-					for (var i = 0; i < 2 * 32; ++i)
-						QueuePersonCommand(info.name, COMMAND_MOVE_SOUTH, false);
+					SetPersonIgnoreList(info.name, mini.Link(followers)
+						.pluck('name')
+						.concat([ 'robert' ])
+						.toArray());
+					var x, y;
+					do {
+						x = RNG.range(maggieX - 160, maggieX + 160);
+						y = RNG.range(maggieY - 160, maggieY + 160);
+					} while (IsPersonObstructed(info.name, x, y));
+					SetPersonXYFloat(info.name, x, y);
 					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {
 						var name = GetCurrentPerson();
 						var maggieX = GetPersonX('maggie');
 						var maggieY = GetPersonY('maggie');
-						var currentX = GetPersonX(name);
-						var currentY = GetPersonY(name);
-						var movement = RNG.sample([
-							COMMAND_MOVE_NORTH,
-							COMMAND_MOVE_EAST,
-							COMMAND_MOVE_SOUTH,
-							COMMAND_MOVE_WEST,
-						]);
+						var xDelta = GetPersonX(name) - maggieX;
+						var yDelta = GetPersonY(name) - maggieY;
+						var isMoveOK = false;
+						do {
+							var movement = RNG.sample([
+								COMMAND_MOVE_NORTH,
+								COMMAND_MOVE_EAST,
+								COMMAND_MOVE_SOUTH,
+								COMMAND_MOVE_WEST,
+							]);
+							isMoveOK = (movement != COMMAND_MOVE_NORTH || yDelta >= -128)
+								&& (movement != COMMAND_MOVE_EAST || xDelta <= 128)
+								&& (movement != COMMAND_MOVE_SOUTH || yDelta <= 128)
+								&& (movement != COMMAND_MOVE_WEST || xDelta >= -128);
+						} while (!isMoveOK);
 						var facing = movement - COMMAND_MOVE_NORTH + COMMAND_FACE_NORTH;
-						var steps = RNG.normal(3, 1) * 32;
+						var steps = RNG.normal(2, 1) * 32;
 						QueuePersonCommand(name, facing, true);
 						for (var i = 0; i < steps; ++i)
 							QueuePersonCommand(name, movement, false);
@@ -131,7 +149,7 @@
 	
 	maggie: {
 		create: function(person) {
-			person.command = COMMAND_MOVE_SOUTHWEST;
+			person.command = COMMAND_MOVE_SOUTH;
 			person.timesStopped = 0;
 			person.steps = 0;
 			person.isActive = true;
@@ -158,13 +176,7 @@
 			if (!person.isActive) return;
 			var x = GetPersonX('maggie');
 			var y = GetPersonY('maggie');
-			if (person.command == COMMAND_MOVE_NORTHEAST) {
-				++x;
-				--y;
-			} else {
-				--x;
-				++y;
-			}
+			if (person.command == COMMAND_MOVE_NORTH) --y; else ++y;
 			if (IsPersonObstructed('maggie', x, y)) {
 				if (person.isBlocked) return;
 				var food = GetObstructingPerson('maggie', x, y);
@@ -212,7 +224,7 @@
 			QueuePersonCommand('maggie', person.command, false);
 			++person.steps;
 			if (person.steps > 128) {
-				person.command = person.command == COMMAND_MOVE_SOUTHWEST ? COMMAND_MOVE_NORTHEAST : COMMAND_MOVE_SOUTHWEST;
+				person.command = person.command == COMMAND_MOVE_SOUTH ? COMMAND_MOVE_NORTH : COMMAND_MOVE_SOUTH;
 				person.steps = 0;
 			}
 		}
