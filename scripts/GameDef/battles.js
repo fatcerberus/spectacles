@@ -3,39 +3,20 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
+RequireScript('battleAI/HeadlessHorseAI.js');
+RequireScript('battleAI/LumisquirrelAI.js');
+RequireScript('battleAI/Robert1AI.js');
+RequireScript('battleAI/Robert2AI.js');
+RequireScript('battleAI/ScottTempleAI.js');
+RequireScript('battleAI/ScottStarcrossAI.js');
+RequireScript('battleAI/VictorAI.js');
+
+// boss and miniboss battle definitions.
+// random field battles don't have specific definitions as the
+// game composes them ex nihilo on the fly.
 Game.battles =
 {
-	suckfest: {
-		title: "#11's Suckfest",
-		bgm: 'RunawayTrain',
-		battleLevel: 100,
-		enemies: [
-			'scottStarcross'
-		],
-		onStart: function() {
-			this.findUnit('scottStarcross')
-				.addStatus('specsAura');
-			this.findUnit('scott')
-				.addStatus('specsAura');
-		}
-	},
-	
-	// Lumisquirrel x3
-	lumisquirrel3: {
-		enemies: [
-			'lumisquirrel',
-			'lumisquirrel',
-			'lumisquirrel'
-		],
-		onFirstStart: function() {
-			new mini.Scene()
-				.talk("Scott", true, 2.0, Infinity, "Well, these things are more than a little creepy...")
-				.talk("Elysia", true, 2.0, Infinity, "Lumisquirrels. Be careful, or you'll be in for a shock!")
-				.run(true);
-		}
-	},
-	
-	// Headless Horse (Boss Battle)
+	// Headless Horse
 	headlessHorse: {
 		title: "Headless Horse",
 		bgm: 'ManorBoss',
@@ -52,19 +33,18 @@ Game.battles =
 		}
 	},
 	
-	// Robert Spellbinder (I) (Boss Battle)
-	robert1: {
+	// Robert Spellbinder (Balcony)
+	rsbBalcony: {
 		title: "Robert Spellbinder",
-		bgm: 'MyDreamsButADropOfFuel',
+		bgm: 'BattleForLucida',
 		battleLevel: 45,
 		enemies: [
 			'robert1'
 		]
 	},
 	
-	// Robert Spellbinder (II) (Final Battle)
-	// Final Boss of Spectacles: Bruce's Story
-	robert2: {
+	// Robert Spellbinder (Final)
+	rsbFinal: {
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
 		bgm: 'ThePromise',
@@ -121,42 +101,183 @@ Game.battles =
 			scottUnit.addStatus('specsAura');
 		}
 	},
-	
-	// Scott Starcross (Final Battle)
-	// Final Boss of Spectacles III: The Last Lucidan
-	// ...with some other weird girl in it. She totally gets eaten though
-	scottStarcross2: {
-		title: "Scott Starcross",
-		isFinalBattle: true,
-		bgm: 'HymnOfLiberty',
-		battleLevel: 60,
-		enemies: [
-			'scottStarcross',
-			'katelyn'
-		],
-		onStart: function() {
-			var katelynUnit = this.findUnit('katelyn');
-			var maggieUnit = this.findUnit('maggie');
-			new mini.Scene()
-				.talk("Katelyn", true, 3.0, Infinity, "Hey guys, whatcha doin'?")
-				.talk("Robert", true, 2.0, Infinity, "Wait a minute... she's not even supposed to exist...!")
-				.talk("maggie", true, 2.0, Infinity, "Don't worry, I can fix that! I'ma eat her!")
-				.fork()
-					.pause(1.5)
-					.call(function() { katelynUnit.takeDamage(katelynUnit.hp, [], true); })
-					.playSound("Munch.wav")
-				.end()
-				.talk("Katelyn", true, 2.0, 0.0, "NO NO NO NO AHHHHHHHHHHHH-----")
-				.resync()
-				.talk("Scott", true, 2.0, Infinity, "Can I get back to fighting Bruce and Robert now? Sheesh, talk about empty calories...")
-				.talk("maggie", true, 2.0, Infinity, "Yeah, you know what? I'm still hungry. Watch this trick!")
-				.call(function() { maggieUnit.takeDamage(maggieUnit.hp, [], true); })
-				.playSound("Munch.wav")
-				.talk("Scott", true, 2.0, 1.0, "...")
-				.talk("Scott", true, 2.0, Infinity, "No comment.")
-				.run(true);
-			var scottUnit = this.findUnit('scottStarcross');
-			scottUnit.addStatus('specsAura');
+};
+
+// enemy definitions.
+// this includes boss and miniboss battlers as well as
+// field enemies.
+Game.enemies =
+{
+	// Lumisquirrel
+	lumisquirrel: {
+		name: "Lumisquirrel",
+		aiType: LumisquirrelAI,
+		baseStats: {
+			vit: 30,
+			str: 20,
+			def: 15,
+			foc: 80,
+			mag: 95,
+			agi: 90
+		},
+		damageModifiers: {
+			bow: Game.bonusMultiplier,
+			shuriken: Game.bonusMultiplier,
+			lightning: 1 / Game.bonusMultiplier
+		},
+		immunities: [],
+		munchData: {
+			skill: 'delusion'
 		}
-	}
+	},
+	
+	// Headless Horse (Boss)
+	headlessHorse: {
+		name: "H. Horse",
+		fullName: "Headless Horse",
+		aiType: HeadlessHorseAI,
+		hasLifeBar: true,
+		tier: 2,
+		turnRatio: 3.0,
+		baseStats: {
+			vit: 50,
+			str: 10,
+			def: 55,
+			foc: 65,
+			mag: 30,
+			agi: 70
+		},
+		damageModifiers: {
+			bow: Game.bonusMultiplier,
+			gun: Game.bonusMultiplier,
+			fire: -1.0,
+			fat: Game.bonusMultiplier
+		},
+		immunities: [],
+		munchData: {
+			skill: 'spectralDraw'
+		}
+	},
+	
+	// Victor Spellbinder (Boss)
+	victor: {
+		name: "Victor",
+		fullName: "Victor Spellbinder",
+		aiType: VictorAI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 1.0,
+		baseStats: {
+			vit: 50,
+			str: 60,
+			def: 85,
+			foc: 75,
+			mag: 85,
+			agi: 50,
+		},
+		immunities: [],
+		weapon: 'templeSword',
+		items: [
+			'alcohol'
+		],
+	},
+	
+	// Robert Spellbinder (Balcony)
+	robert1: {
+		name: "Robert",
+		fullName: "Robert Spellbinder",
+		aiType: Robert1AI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 3.0,
+		baseStats: {
+			vit: 75,
+			str: 75,
+			def: 75,
+			foc: 75,
+			mag: 75,
+			agi: 75
+		},
+		immunities: [],
+		weapon: 'rsbSword',
+		munchData: {
+			skill: 'omni'
+		},
+		items: [
+			'tonic',
+			'powerTonic',
+			'vaccine'
+		]
+	},
+	
+	// Robert Spellbinder (Final)
+	robert2: {
+		name: "Robert",
+		fullName: "Robert Spellbinder",
+		aiType: Robert2AI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 1.0,
+		baseStats: {
+			vit: 75,
+			str: 75,
+			def: 75,
+			foc: 75,
+			mag: 75,
+			agi: 75
+		},
+		immunities: [],
+		weapon: 'rsbSword',
+		munchData: {
+			skill: 'omni'
+		},
+		items: [
+			'tonic',
+			'powerTonic',
+			'redBull',
+			'holyWater',
+			'vaccine',
+			'alcohol'
+		]
+	},
+	
+	// Scott Temple
+	scottTemple: {
+		name: "Scott T",
+		fullName: "Scott Victor Temple",
+		aiType: ScottTempleAI,
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 2.0,
+		baseStats: {
+			vit: 100,
+			str: 85,
+			def: 80,
+			foc: 60,
+			mag: 90,
+			agi: 70
+		},
+		immunities: [ 'zombie' ],
+		weapon: 'templeSword'
+	},
+	
+	// Scott Starcross
+	starcross: {
+		name: "Scott",
+		fullName: "Scott Starcross",
+		aiType: ScottStarcrossAI,
+		hasLifeBar: true,
+		tier: 4,
+		turnRatio: 2.0,
+		baseStats: {
+			vit: 80,
+			str: 80,
+			def: 80,
+			foc: 80,
+			mag: 80,
+			agi: 80
+		},
+		immunities: [],
+		weapon: 'templeSword'
+	},
 };

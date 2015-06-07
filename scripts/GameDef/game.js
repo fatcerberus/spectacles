@@ -22,15 +22,14 @@ Game =
 	stanceChangeRank: 5,
 };
 
-EvaluateScript('GameDef/battles.js');
-EvaluateScript('GameDef/characters.js');
-EvaluateScript('GameDef/conditions.js');
-EvaluateScript('GameDef/enemies.js');
-EvaluateScript('GameDef/items.js');
-EvaluateScript('GameDef/maps.js');
-EvaluateScript('GameDef/math.js');
-EvaluateScript('GameDef/moveEffects.js');
-EvaluateScript('GameDef/skills.js');
-EvaluateScript('GameDef/statuses.js');
-EvaluateScript('GameDef/stats.js');
-EvaluateScript('GameDef/weapons.js');
+EvaluateScript('gamedef/battles.js');
+EvaluateScript('gamedef/characters.js');
+EvaluateScript('gamedef/conditions.js');
+EvaluateScript('gamedef/items.js');
+EvaluateScript('gamedef/maps.js');
+EvaluateScript('gamedef/math.js');
+EvaluateScript('gamedef/moveEffects.js');
+EvaluateScript('gamedef/skills.js');
+EvaluateScript('gamedef/statuses.js');
+EvaluateScript('gamedef/stats.js');
+EvaluateScript('gamedef/weapons.js');

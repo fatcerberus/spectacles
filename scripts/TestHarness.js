@@ -4,7 +4,7 @@
 ***/
 
 // TestHarness object
-// Handles what-if testing, e.g. dry runs of battles, maps.
+// Handles what-if testing, e.g. dry runs of battles, maps, etc.
 TestHarness = new (function()
 {
 	this.tests = null;
@@ -22,6 +22,12 @@ TestHarness.initialize = function()
 	});
 	this.tests = {};
 	this.isBattleRunning = false;
+	
+	var testScripts = GetFileList('~/scripts/testcases');
+	for (var i = 0; i < testScripts.length; ++i) {
+		mini.Console.write("Loading testcases from '" + testScripts[i] + "'");
+		EvaluateScript('~/scripts/testcases/' + testScripts[i]);
+	}
 };
 
 TestHarness.addBattle = function(testID, setupData)

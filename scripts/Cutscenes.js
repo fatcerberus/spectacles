@@ -180,7 +180,7 @@ mini.Scenelet('talk',
 			case "idle":
 				if (this.timeout !== Infinity) {
 					if (this.topLine + 3 >= this.text[this.currentPage].length) {
-						this.timeoutLeft -= 1.0 / Engine.frameRate;
+						this.timeoutLeft -= 1.0 / GetFrameRate();
 						if (this.timeoutLeft <= 0.0) {
 							if (this.currentPage < this.text.length - 1) {
 								this.mode = "page";
@@ -202,9 +202,9 @@ mini.Scenelet('talk',
 				}
 				break;
 			case "write":
-				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Engine.frameRate, 1.0);
+				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / GetFrameRate(), 1.0);
 				if (this.nameVisibility >= 1.0) {
-					this.lineVisibility = Math.min(this.lineVisibility + (0.5 * this.textSpeed) / Engine.frameRate, 1.0);
+					this.lineVisibility = Math.min(this.lineVisibility + (0.5 * this.textSpeed) / GetFrameRate(), 1.0);
 					var lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					var currentLineText = this.text[this.currentPage][this.lineToReveal];
 					var currentLineWidth = this.font.getStringWidth(currentLineText);
@@ -232,7 +232,7 @@ mini.Scenelet('talk',
 					this.mode = "write";
 					break;
 				}
-				this.scrollOffset = Math.min(this.scrollOffset + (8.0 * this.textSpeed) / Engine.frameRate, 1.0);
+				this.scrollOffset = Math.min(this.scrollOffset + (8.0 * this.textSpeed) / GetFrameRate(), 1.0);
 				if (this.scrollOffset >= 1.0) {
 					this.topLine += 1;
 					this.scrollOffset = 0.0;
@@ -242,7 +242,7 @@ mini.Scenelet('talk',
 				}
 				break;
 			case "page":
-				this.textVisibility = Math.max(this.textVisibility - (2.0 * this.textSpeed) / Engine.frameRate, 0.0);
+				this.textVisibility = Math.max(this.textVisibility - (2.0 * this.textSpeed) / GetFrameRate(), 0.0);
 				if (this.textVisibility <= 0.0) {
 					this.mode = "write";
 					++this.currentPage;
@@ -254,7 +254,7 @@ mini.Scenelet('talk',
 				}
 				break;
 			case "hidetext":
-				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Engine.frameRate, 0.0);
+				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / GetFrameRate(), 0.0);
 				if (this.textVisibility <= 0.0) {
 					this.transition = new mini.Scene()
 						.tween(this, 0.375, 'easeInBack', { boxVisibility: 0.0 })

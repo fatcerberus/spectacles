@@ -10,10 +10,10 @@ RequireScript('Party.js');
 // Specifies the difficulty level of the game.
 GameDifficulty =
 {
-	beginner: 1,  // Beginner mode (easy)
-	standard: 2,  // Standard mode (normal)
-	proud:    3,  // Proud mode (hard)
-	critical: 4   // Critical mode (unforgiving)
+	beginner: 1,  // Easy
+	standard: 2,  // Normal
+	proud:    3,  // Hard
+	critical: 4   // Unforgiving
 };
 
 // Session() constructor
