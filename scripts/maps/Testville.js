@@ -131,17 +131,29 @@
 		talk: function() {
 			var inputPerson = GetInputPerson();
 			DetachInput();
+			var session = analogue.getWorld().session;
 			if (inputPerson === 'scott') {
+				var scott = session.party.members['scott'];
+				scott.items.push(new ItemUsable('tonic'));
+				scott.items.push(new ItemUsable('powerTonic'));
+				scott.items.push(new ItemUsable('redBull'));
+				scott.items.push(new ItemUsable('holyWater'));
+				scott.items.push(new ItemUsable('vaccine'));
+				scott.items.push(new ItemUsable('alcohol'));
 				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Scott, you suck. Fight me to decide who gets to kill my sister!")
-					.battle('robert2', analogue.getWorld().session)
+					.battle('rsbFinal', analogue.getWorld().session)
 					.run(true);
+				scott.items = [];
 			} else {
+				var maggie = session.party.members['maggie'];
+				maggie.items.push(new ItemUsable('alcohol'));
 				new mini.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Hey maggie, where did Scott go?  Please tell me you didn't do... what I think you did... I hope?")
 					.talk("maggie", true, 2.0, Infinity, "Guess what?  You're next!")
-					.battle('robert2', analogue.getWorld().session)
+					.battle('rsbFinal', analogue.getWorld().session)
 					.run(true);
+				maggie.items = [];
 			}
 			AttachInput(inputPerson);
 		}

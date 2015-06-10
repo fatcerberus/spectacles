@@ -30,13 +30,13 @@ EvaluateScript('gamedef/game.js');
 // game() function
 // This is called by Sphere when the game is launched.
 function game()
-{
+{	
 	analogue.init();
 	
 	// initialize miniRT
 	mini.initialize({
 		frameRate: 60,
-		consolePrompt: "Specs Engine",
+		consolePrompt: "Specs Engine:",
 		consoleLines: 10,
 		logFile: 'consoleLog.txt',
 		scenePriority: 99,
