@@ -12,6 +12,7 @@
 			{ name: 'Justin', sprite: 'battlers/Justin.rss', ghostLevel: 0 },
 			{ name: 'Victor', sprite: 'battlers/Victor.rss', ghostLevel: 0 },
 			{ name: 'Elysia', sprite: 'battlers/Elysia.rss', ghostLevel: 0 },
+			{ name: 'scott', sprite: 'battlers/Scott.rss', ghostLevel: 0 },
 		];
 		
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
@@ -41,7 +42,7 @@
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
 			food = GetCurrentPerson();
 			if (food == 'maggie') return;  // nobody is allowed to eat maggie!
-			if (IsInputAttached() && GetInputPerson() == 'maggie' && food != 'robert') {
+			if (IsInputAttached('maggie') && food != 'robert') {
 				analogue.world.munchSound.play(false);
 				DestroyPerson(food);
 			}
@@ -113,14 +114,17 @@
 		CreatePerson('scott', 'battlers/Scott.rss', false);
 		AttachCamera('scott');
 		AttachInput('scott');
+		AttachPlayerInput('maggie', PLAYER_2);
 		
 		var leader = 'scott';
 		for (var i = 0; i < followers.length; ++i) {
 			var name = followers[i].name;
 			var spriteset = followers[i].sprite;
-			CreatePerson(name, spriteset, false);
-			FollowPerson(name, leader, 32);
-			leader = name;
+			if (name != 'scott') {
+				CreatePerson(name, spriteset, false);
+				FollowPerson(name, leader, 32);
+				leader = name;
+			}
 		}
 		
 		mini.BGM.play('BGM/Portentia.ogg');
@@ -186,6 +190,7 @@
 		},
 		generator: function(person) {
 			if (!person.isActive) return;
+			if (IsInputAttached('maggie')) return;
 			var x = GetPersonX('maggie');
 			var y = GetPersonY('maggie');
 			if (person.command == COMMAND_MOVE_NORTH) --y; else ++y;
