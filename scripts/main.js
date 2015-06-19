@@ -38,7 +38,7 @@ function game()
 		frameRate: 60,
 		consolePrompt: "Specs Engine:",
 		consoleLines: 10,
-		logFile: '~usr/Spectacles_Saga/consoleLog.txt',
+		logFile: '~usr/Spectacles Saga/consoleLog.txt',
 		scenePriority: 99,
 	});
 	

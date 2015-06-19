@@ -1,6 +1,7 @@
 ({
 	enter: function(map, world) {
 		var font = GetSystemFont();
+		var wantNostalgia = true;
 		analogue.world.munchSound = new Sound('Munch.wav', false);
 		
 		var followers = [
@@ -13,6 +14,7 @@
 			{ name: 'Victor', sprite: 'battlers/Victor.rss', ghostLevel: 0 },
 			{ name: 'Elysia', sprite: 'battlers/Elysia.rss', ghostLevel: 0 },
 			{ name: 'scott', sprite: 'battlers/Scott.rss', ghostLevel: 0 },
+			{ name: 'robert', sprite: 'battlers/Robert.rss', ghostLevel: 0 },
 		];
 		
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
@@ -40,12 +42,25 @@
 			}
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
+			muncher = GetActivePerson();
 			food = GetCurrentPerson();
-			if (food == 'maggie') return;  // nobody is allowed to eat maggie!
-			if (IsInputAttached('maggie') && food != 'robert') {
-				analogue.world.munchSound.play(false);
-				DestroyPerson(food);
+			if (food == 'maggie') {
+				muncher = GetCurrentPerson();
+				food = GetActivePerson();
 			}
+			if (muncher != 'maggie')
+				return;  // nobody can munch except maggie!
+			maggieX = GetPersonX(muncher);
+			maggieY = GetPersonY(muncher);
+			pose = GetPersonDirection(muncher);
+			foodX = GetPersonX(food);
+			foodY = GetPersonY(food);
+			if (maggieY - foodY < -8 && pose.indexOf('south') == -1) return;
+			if (maggieY - foodY > 8 && pose.indexOf('north') == -1) return;
+			if (maggieX - foodX < -8 && pose.indexOf('east') == -1) return;
+			if (maggieX - foodX > 8 && pose.indexOf('west') == -1) return;
+			analogue.world.munchSound.play(false);
+			DestroyPerson(food);
 		});
 		
 		mini.Threads.createEx(null, {
@@ -107,6 +122,25 @@
 							QueuePersonCommand(name, movement, false);
 					});
 				});
+				if (!IsCameraAttached()) {  // it seems Scott got eaten...
+					new mini.Scene()
+						.fork()
+							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
+							.setSprite('maggie', 'battlers/maggie_hippo.rss')
+							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
+						.end()
+						.followPerson('maggie')
+						.changeBGM('Animals')
+						.call(AttachInput, 'maggie')
+						.run(true);
+				}
+				var ghostCount = mini.Link(followers)
+					.where(function(info) { return info.ghostLevel > 0 })
+					.length();
+				if (ghostCount == followers.length && wantNostalgia) {
+					wantNostalgia = false;
+					mini.BGM.play('BGM/Nostalgia.ogg');
+				}
 				return true;
 			}
 		});
@@ -120,7 +154,7 @@
 		for (var i = 0; i < followers.length; ++i) {
 			var name = followers[i].name;
 			var spriteset = followers[i].sprite;
-			if (name != 'scott') {
+			if (name != 'scott' && name != 'robert') {
 				CreatePerson(name, spriteset, false);
 				FollowPerson(name, leader, 32);
 				leader = name;
@@ -165,7 +199,7 @@
 	
 	maggie: {
 		create: function(person) {
-			person.command = COMMAND_MOVE_SOUTH;
+			person.command = COMMAND_MOVE_SOUTHWEST;
 			person.timesStopped = 0;
 			person.steps = 0;
 			person.isActive = true;
@@ -193,7 +227,7 @@
 			if (IsInputAttached('maggie')) return;
 			var x = GetPersonX('maggie');
 			var y = GetPersonY('maggie');
-			if (person.command == COMMAND_MOVE_NORTH) --y; else ++y;
+			if (person.command == COMMAND_MOVE_NORTHEAST) { --y; ++x; } else { ++y; --x; }
 			if (IsPersonObstructed('maggie', x, y)) {
 				if (person.isBlocked) return;
 				var food = GetObstructingPerson('maggie', x, y);
@@ -241,7 +275,7 @@
 			QueuePersonCommand('maggie', person.command, false);
 			++person.steps;
 			if (person.steps > 128) {
-				person.command = person.command == COMMAND_MOVE_SOUTH ? COMMAND_MOVE_NORTH : COMMAND_MOVE_SOUTH;
+				person.command = person.command == COMMAND_MOVE_SOUTHWEST ? COMMAND_MOVE_NORTHEAST : COMMAND_MOVE_SOUTHWEST;
 				person.steps = 0;
 			}
 		}
