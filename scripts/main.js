@@ -67,7 +67,7 @@ function game()
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
 	
-	MapEngine('Testville.rmp', 60);
+	MapEngine('main.rmp', 60);
 }
 
 // clone() function
