@@ -60,6 +60,8 @@
 			if (maggieX - foodX < -8 && pose.indexOf('east') == -1) return;
 			if (maggieX - foodX > 8 && pose.indexOf('west') == -1) return;
 			analogue.world.munchSound.play(false);
+			var name = GetPersonMask(food).alpha == 255 ? food : food + "'s ghost";
+			mini.Console.write(name + " got eaten by maggie");
 			DestroyPerson(food);
 		});
 		

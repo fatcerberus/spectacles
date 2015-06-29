@@ -116,7 +116,7 @@ mini.Scenelet('talk',
 		this.numLinesToDraw = 0;
 		this.topLine = 0;
 		this.lineToReveal = 0;
-		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
+		this.textSurface = new Surface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		this.transition = new mini.Scene()
 			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
@@ -160,7 +160,7 @@ mini.Scenelet('talk',
 				if (this.lineToReveal == trueLine) {
 					var shownArea = textAreaWidth * this.lineVisibility;
 					this.textSurface.setBlendMode(SUBTRACT);
-					this.textSurface.gradientRectangle((textX - lineHeight) + shownArea, textY, lineHeight, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
+					this.textSurface.gradientRectangle((textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
 					this.textSurface.setBlendMode(REPLACE);
 					this.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
 					this.textSurface.setBlendMode(BLEND);

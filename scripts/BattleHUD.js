@@ -3,6 +3,8 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
+RequireSystemScript('kh2Bar.js');
+
 RequireScript('MPGauge.js');
 RequireScript('TurnPreview.js');
 

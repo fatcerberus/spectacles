@@ -11,7 +11,6 @@ var DBG_DISABLE_TRANSITIONS = false;
 
 RequireSystemScript('mini/miniRT.js');
 RequireSystemScript('analogue.js');
-RequireSystemScript('kh2Bar.js');
 RequireSystemScript('SpriteImage.js');
 
 RequireScript('Battle.js');
@@ -67,7 +66,7 @@ function game()
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
 	
-	MapEngine('main.rmp', 60);
+	MapEngine('Testville.rmp', 60);
 }
 
 // clone() function
