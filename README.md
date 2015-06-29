@@ -29,15 +29,18 @@ the action menu and ranging from 1 to 5, determines how long the move will take
 to recover from. The higher the rank, the more recovery time is needed and the
 longer it will take before the unit's next turn arrives.
 
-Units can also choose to change to a defensive stance to guard against powerful
-blows or even counterattack at the cost of one or more lost turns. Pressing the
-key assigned to [X] in the engine configuration utility during move selection
-will switch between the Attack and Counter stances; the latter of which allows
-you to do additional damage with an attack in response to damage received.
-Pressing the key assigned to [Y] will instead allow you to switch to Guard
-Stance, which reduces damage from attacks and prevents secondary effects, such
-as the Zombie affliction caused by Electrocute. It cannot block statuses
-inflicted as a primary effect, however, such as that from Necromancy.
+Battlers can also choose to change to a defensive stance to parry powerful blows
+and counterattack. Pressing the key assigned to [Y] in the engine configuration
+utility during move selection will switch the battler to Guard Stance, which
+reduces the damage taken from attacks and prevents secondary effects, such as
+the Zombie affliction caused by Electrocute. It cannot block statuses inflicted
+as a primary effect, however, such as that from Necromancy. Guarding is treated
+as a Rank 5 action; if the cooldown expires before the character is attacked,
+they will automatically return to Attack Stance.
+
+Note that when a melee (sword or contact) move is Guarded, the attack will miss
+outright. The opening thus created will allow the Guarding character to
+counterattack, dealing extra damage with their attack.
 
 
 Status Effects
@@ -52,13 +55,13 @@ Below are descriptions of some of the statuses available in the Spectacles Saga.
 
 - *Crackdown:* Crackdown, as its name suggests, cracks down on consecutive
                attacks of the same type. Each time an attack of the same type as
-			   the previous one is used, its efficacy is cut by 25%. Using a
-			   different type of move will reset the multiplier, but the
-			   affliction will remain in effect until the end of the battle.
+               the previous one is used, its efficacy is cut by 25%. Using a
+               different type of move will reset the multiplier, but the
+               affliction will remain in effect until the end of the battle.
 			   
 - *Disarray:*  Randomizes the ranks of actions taken by the afflicted unit. This
                cannot be cured, but will wear off on its own after the victim
-			   has taken 3 actions.
+               has taken 3 actions.
 			   
 - *Drunk:*     Using Alcohol constitutes full HP recovery at the cost of
                inflicting the Drunk status on the user. This cuts the victim's
@@ -69,9 +72,9 @@ Below are descriptions of some of the statuses available in the Spectacles Saga.
                
 - *Frostbite:* Inflicts a small amount of ice damage after every action taken by
                the victim. The effect worsens over time, peaking at double its
-			   initial efficacy. Frostbite can be removed by subjecting the
-			   afflicted battler to a fire attack, the damage from which will be
-			   doubled as a tradeoff.
+               initial efficacy. Frostbite can be removed by subjecting the
+               afflicted battler to a fire attack, the damage from which will be
+               doubled as a tradeoff.
 			   
 - *Ghost:*     A battler in Ghost status can't be damaged by anything other than
                magic; however, they are also limited to using magic against
@@ -81,19 +84,19 @@ Below are descriptions of some of the statuses available in the Spectacles Saga.
 			   
 - *Ignite:*    Similar to Frostbite, except it inflicts fire damage and hits
                between turns, dealing damage with every action taken in the
-			   battle. As a tradeoff, the effect weakens over time, quickly
-			   dropping to only half its initial output. As with Frostbite, this
-			   can be removed by attacking the afflicted unit with ice.
+               battle. As a tradeoff, the effect weakens over time, quickly
+               dropping to only half its initial output. As with Frostbite, this
+               can be removed by attacking the afflicted unit with ice.
 			   
 - *Skeleton:*  The end result of Zombie (see below) if the status is not cured
                before the victim reaches 0 HP. Skeletons have their STR and FOC
-			   cut in half in exchange for being allowed to continue fighting
-			   after death. Any physical or slash damage will end a Skeleton,
-			   however. Skeleton can be removed with Holy Water, reviving the
-			   battler with 1 HP.
+               cut in half in exchange for being allowed to continue fighting
+               after death. Any physical or slash damage will end a Skeleton,
+               however. Skeleton can be removed with Holy Water, reviving the
+               battler with 1 HP.
 			   
 - *Zombie:*    Reverses HP restoration (healing), converting it into an
                equivalent amount of damage. If a zombified battler is reduced to
-			   0 HP by an attack, the status will progress to Skeleton; however,
-			   converted restoratives will bypass this clause. Zombie can be
-			   cured with the use of  Holy Water.
+               0 HP by an attack, the status will progress to Skeleton; however,
+               converted restoratives will bypass this clause. Zombie can be
+               cured with the use of  Holy Water.
