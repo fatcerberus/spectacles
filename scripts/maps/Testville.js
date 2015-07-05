@@ -2,6 +2,7 @@
 	enter: function(map, world) {
 		var font = GetSystemFont();
 		var wantNostalgia = true;
+		var maggieSize = 1.0;
 		analogue.world.munchSound = new Sound('Munch.wav', false);
 		
 		var followers = [
@@ -55,14 +56,16 @@
 			pose = GetPersonDirection(muncher);
 			foodX = GetPersonX(food);
 			foodY = GetPersonY(food);
-			if (maggieY - foodY < -8 && pose.indexOf('south') == -1) return;
-			if (maggieY - foodY > 8 && pose.indexOf('north') == -1) return;
-			if (maggieX - foodX < -8 && pose.indexOf('east') == -1) return;
-			if (maggieX - foodX > 8 && pose.indexOf('west') == -1) return;
+			if (maggieY - foodY < -8 * maggieSize && pose.indexOf('south') == -1) return;
+			if (maggieY - foodY > 8 * maggieSize && pose.indexOf('north') == -1) return;
+			if (maggieX - foodX < -8 * maggieSize && pose.indexOf('east') == -1) return;
+			if (maggieX - foodX > 8 * maggieSize && pose.indexOf('west') == -1) return;
 			analogue.world.munchSound.play(false);
 			var name = GetPersonMask(food).alpha == 255 ? food : food + "'s ghost";
 			mini.Console.write(name + " got eaten by maggie");
 			DestroyPerson(food);
+			SetPersonScaleFactor(muncher, maggieSize, maggieSize);
+			maggieSize += 0.05;
 		});
 		
 		mini.Threads.createEx(null, {
@@ -125,6 +128,9 @@
 					});
 				});
 				if (!IsCameraAttached()) {  // it seems Scott got eaten...
+					var session = analogue.getWorld().session;
+					session.party.remove('scott');
+					session.party.add('maggie', 100);
 					new mini.Scene()
 						.fork()
 							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
