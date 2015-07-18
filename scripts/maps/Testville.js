@@ -3,7 +3,7 @@
 		var font = GetSystemFont();
 		var wantNostalgia = true;
 		var maggieSize = 1.0;
-		analogue.world.munchSound = new Sound('Munch.wav', false);
+		analogue.world.munchSound = new Sound('Munch.wav');
 		
 		var followers = [
 			{ name: 'Bruce', sprite: 'battlers/Bruce.rss', ghostLevel: 0 },
@@ -96,9 +96,10 @@
 						.concat([ 'robert' ])
 						.toArray());
 					var x, y;
+					var distance = 160 * maggieSize;
 					do {
-						x = RNG.range(maggieX - 160, maggieX + 160);
-						y = RNG.range(maggieY - 160, maggieY + 160);
+						x = RNG.range(maggieX - distance, maggieX + distance);
+						y = RNG.range(maggieY - distance, maggieY + distance);
 					} while (IsPersonObstructed(info.name, x, y));
 					SetPersonXYFloat(info.name, x, y);
 					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {
@@ -138,7 +139,7 @@
 							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
 						.end()
 						.followPerson('maggie')
-						.changeBGM('Animals')
+						.changeSong('Animals', 5.0)
 						.call(AttachInput, 'maggie')
 						.run(true);
 				}
@@ -147,7 +148,7 @@
 					.length();
 				if (ghostCount == followers.length && wantNostalgia) {
 					wantNostalgia = false;
-					mini.BGM.play('BGM/Nostalgia.ogg');
+					mini.BGM.play('BGM/Nostalgia.ogg', 2.0);
 				}
 				return true;
 			}

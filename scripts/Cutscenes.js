@@ -67,8 +67,8 @@ mini.Scenelet('changeMap',
 
 mini.Scenelet('changeBGM',
 {
-	start: function(scene, trackName) {
-		mini.BGM.play("BGM/" + trackName + ".ogg");
+	start: function(scene, trackName, fadeTime) {
+		mini.BGM.play("BGM/" + trackName + ".ogg", fadeTime);
 	}
 });
 

@@ -67,6 +67,7 @@
 	{
 		CreatePerson('hero', 'battlers/Scott.rss', false);
 		AttachCamera('hero');
+		SetPersonVisible('hero', false);
 		world.scrambler = new Scrambler('hero');
 		world.scrambler.setBattles([ 'headlessHorse' ]);
 		world.scrambler.start();
