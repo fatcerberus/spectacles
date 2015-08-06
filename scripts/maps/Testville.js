@@ -139,7 +139,7 @@
 							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
 						.end()
 						.followPerson('maggie')
-						.changeSong('Animals', 5.0)
+						.changeBGM('Animals', 5.0)
 						.call(AttachInput, 'maggie')
 						.run(true);
 				}
