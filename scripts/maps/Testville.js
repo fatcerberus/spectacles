@@ -1,7 +1,11 @@
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2015 Power-Command
+***/
+
 ({
 	enter: function(map, world) {
 		var font = GetSystemFont();
-		var wantNostalgia = true;
 		var maggieSize = 1.0;
 		analogue.world.munchSound = new Sound('Munch.wav');
 		
@@ -26,7 +30,7 @@
 			});
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, function() {
-			name = GetCurrentPerson();
+			var name = GetCurrentPerson();
 			if (name == 'maggie' || name == 'robert') return;
 			if (GetInputPerson() == 'scott') {
 				new mini.Scene()
@@ -43,26 +47,25 @@
 			}
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
-			muncher = GetActivePerson();
-			food = GetCurrentPerson();
+			var muncher = GetActivePerson();
+			var food = GetCurrentPerson();
 			if (food == 'maggie') {
 				muncher = GetCurrentPerson();
 				food = GetActivePerson();
 			}
 			if (muncher != 'maggie')
 				return;  // nobody can munch except maggie!
-			maggieX = GetPersonX(muncher);
-			maggieY = GetPersonY(muncher);
-			pose = GetPersonDirection(muncher);
-			foodX = GetPersonX(food);
-			foodY = GetPersonY(food);
+			var maggieX = GetPersonX(muncher);
+			var maggieY = GetPersonY(muncher);
+			var pose = GetPersonDirection(muncher);
+			var foodX = GetPersonX(food);
+			var foodY = GetPersonY(food);
 			if (maggieY - foodY < -8 * maggieSize && pose.indexOf('south') == -1) return;
 			if (maggieY - foodY > 8 * maggieSize && pose.indexOf('north') == -1) return;
 			if (maggieX - foodX < -8 * maggieSize && pose.indexOf('east') == -1) return;
 			if (maggieX - foodX > 8 * maggieSize && pose.indexOf('west') == -1) return;
 			analogue.world.munchSound.play(false);
 			var name = GetPersonMask(food).alpha == 255 ? food : food + "'s ghost";
-			mini.Console.write(name + " got eaten by maggie");
 			DestroyPerson(food);
 			SetPersonScaleFactor(muncher, maggieSize, maggieSize);
 			maggieSize += 0.05;
@@ -139,17 +142,12 @@
 							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
 						.end()
 						.followPerson('maggie')
-						.changeBGM('Animals', 5.0)
 						.call(AttachInput, 'maggie')
 						.run(true);
 				}
 				var ghostCount = mini.Link(followers)
 					.where(function(info) { return info.ghostLevel > 0 })
 					.length();
-				if (ghostCount == followers.length && wantNostalgia) {
-					wantNostalgia = false;
-					mini.BGM.play('BGM/Nostalgia.ogg', 2.0);
-				}
 				return true;
 			}
 		});
@@ -170,7 +168,7 @@
 			}
 		}
 		
-		mini.BGM.play('BGM/Portentia.ogg');
+		mini.BGM.play('BGM/SeasonsEnd.ogg');
 	},
 	
 	robert: {
@@ -274,7 +272,6 @@
 						var session = analogue.getWorld().session;
 						session.party.remove('scott');
 						session.party.add('maggie', 100);
-						mini.BGM.play('BGM/Animals.ogg');
 					}
 					person.isBlocked = true;
 					return;

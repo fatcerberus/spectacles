@@ -29,7 +29,7 @@ EvaluateScript('gamedef/game.js');
 // game() function
 // This is called by Sphere when the game is launched.
 function game()
-{	
+{
 	analogue.init();
 	
 	// initialize miniRT
@@ -45,14 +45,6 @@ function game()
 		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are currently ON"); }, 
 		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are currently OFF"); }, 
 	});
-	mini.Console.register('bgm', mini.BGM, {
-		'kill': function() { this.play(null); this.play = this.push = this.pop = function() {} },
-		'play': function(trackName) { this.play('BGM/' + trackName + '.ogg'); },
-		'pop': function() { this.pop(); },
-		'push': function(trackName) { this.push('BGM/' + trackName + '.ogg'); },
-		'stop': function() { this.play(null); },
-		'vol': function(volume) { this.adjust(volume, 0.5); },
-	});
 	
 	// set up the beta test harness
 	TestHarness.initialize();
@@ -62,11 +54,11 @@ function game()
 		mini.BGM.push('BGM/SpectaclesTheme.ogg');
 		ShowLogo('Logos/TitleCard.png', 5.0);
 	}
+	throw "8:12";
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	
-	MapEngine('Testville.rmp', 60);
+	MapEngine('main.rmp', 60);
 }
 
 // clone() function

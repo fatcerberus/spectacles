@@ -3,6 +3,59 @@
 	{
 		DetachInput();
 		new mini.Scene()
+			.fadeTo(new Color(0, 0, 0, 255), 0.0)
+			.talk("Scott", true, 2.0, 2.0, "Bruce!")
+			.pause(1.0)
+			.pushBGM('LamentForBruce')
+			.talk("Scott", false, 1.0, Infinity,
+				"No...", "He sacrificed himself to save me...")
+			.fadeTo(new Color(0, 0, 0, 255), 2.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"Everything we've been through and I never saw this coming.",
+				"Never.")
+			// TODO: fade in to Snowplain
+			.talk("Scott", false, 1.0, Infinity,
+				"If I had been honest with myself I might have realized it, said to myself " +
+				"\"Hey wait a minute, Scott, you've known Bruce a lot longer than you have Robert!\" " +
+				"I... well, I had no reason to distrust him. Unfortunately, I let Robert skew my " +
+				"judgement, and well... look where we are.")
+			.pause(2.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"I'm not even sure anymore what I saw in Robert. He'd proven early on that the only " +
+				"thing he cared about was putting his sister in her place for breaking a stupid promise " +
+				"that, in the end, was inconsequential.")
+			.pause(1.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"He used me. And everyone could see but me, because I was too blind to see it on my own.")
+			.pause(1.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"I wanted so desperately to believe that Robert could be trusted that I refused to " +
+				"consider anything else. Bruce's warnings, my own common sense, everything--it all " +
+				"fell on deaf ears.")
+			// TODO: fade to Lexington Park
+			.pause(2.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"At some level though, I knew. I had to, because every time I so much as set foot in " +
+				"Lexington Park, I remembered just how Bruce and I had met... and I realized, if only " +
+				"for a moment, that Bruce was right.")
+			.pause(2.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"What's truly unfortunate is that... well, Bruce must have blamed himself, right? " +
+				"When I wouldn't listen to reason, he'd have accused himself of pushing too hard. " +
+				"That was his personality.")
+			.pause(3.0)
+			.talk("Scott", false, 1.0, Infinity,
+				"So why should I be surprised? Bruce gave his life to save me, knowing that if he'd " +
+				"ever owed me anything, his dues would be paid in full.")
+			// TODO: fade back to present
+			.talk("Scott", true, 2.0, Infinity, "This... this was his final selfless act.")
+			.pause(1.0)
+			// TODO: Lauren walks over
+			.talk("Lauren", true, 2.0, 2.0, "Scott...")
+			.fadeTo(new Color(0, 0, 0, 255), 2.0)
+			.run(true);
+		return;
+		new mini.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.pushBGM('BruceTellsHisStory')
 			.pause(1.0)
