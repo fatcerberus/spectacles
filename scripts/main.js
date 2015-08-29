@@ -41,6 +41,9 @@ function game()
 		scenePriority: 99,
 	});
 	
+	mini.Console.register('specs', sphere, {
+		'exit': function() { Exit(); }
+	});
 	mini.Console.register('yap', null, {
 		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are currently ON"); }, 
 		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are currently OFF"); }, 
@@ -54,7 +57,6 @@ function game()
 		mini.BGM.push('BGM/SpectaclesTheme.ogg');
 		ShowLogo('Logos/TitleCard.png', 5.0);
 	}
-	throw "8:12";
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
