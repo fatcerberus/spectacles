@@ -548,5 +548,5 @@ Game.statuses =
 				eventData.cancel = true;
 			}
 		}
-	}
+	},
 };

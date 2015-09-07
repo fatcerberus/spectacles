@@ -8,7 +8,6 @@ TestHarness.addBattle('temple',
 	battleID: 'scottTemple',
 	party: {
 		elysia: { level: 60, weapon: 'powerBow', items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
-		justin: { level: 60, items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine' ] },
 	}
 });
 

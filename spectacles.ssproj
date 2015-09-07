@@ -5,4 +5,5 @@ description=Follow Scott Starcross in his quest to defeat the Primus.
 screenWidth=320
 screenHeight=240
 mainScript=main.js
+buildDir=./
 

@@ -14,6 +14,7 @@ Game.math =
 			return 1.0;
 		},
 		devour: function(userInfo, targetInfo) {
+			return 1.0;
 			return (100 - targetInfo.health) / 100 / targetInfo.tier
 				* userInfo.stats.agi / targetInfo.stats.agi;
 		},

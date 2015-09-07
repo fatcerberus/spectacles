@@ -22,6 +22,7 @@ Game =
 	stanceChangeRank: 5,
 };
 
+EvaluateScript('gamedef/animations.js');
 EvaluateScript('gamedef/battles.js');
 EvaluateScript('gamedef/characters.js');
 EvaluateScript('gamedef/conditions.js');

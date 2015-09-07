@@ -59,9 +59,6 @@ Game.moveEffects =
 				actor.growSkill(munchData.skill, experience);
 			}
 			mini.Console.write(targets[i].fullName + " got eaten by " + actor.name);
-			new mini.Scene()
-				.playSound("Munch.wav")
-				.run();
 			targets[i].die();
 		}
 		actor.heal(actor.maxHP - actor.hp, [], true);

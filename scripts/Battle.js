@@ -381,9 +381,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		var effectHandler = Game.moveEffects[effect.type];
 		mini.Console.write("Applying effect '" + effect.type + "'");
 		mini.Console.append("retarg: " + effect.targetHint);
+		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
 	mini.Link(targetUnits).invoke('takeHit', actingUnit, action);
@@ -418,16 +418,30 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if (targetsHit.length == 0) {
 		return [];
 	}
+	
+	// apply move effects to target(s)
 	mini.Link(targetsHit).invoke('beginTargeting', actingUnit);
-	mini.Link(action.effects)
+	var effects = mini.Link(action.effects)
 		.filterBy('targetHint', 'selected')
 		.where(function(effect) { return effect.type != null; })
-		.each(function(effect)
-	{
-		mini.Console.write("Applying effect '" + effect.type + "'");
-		mini.Console.append("retarg: " + effect.targetHint);
-		Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
-	});
+		.toArray();
+	var applyIndex = 0;
+	var animContext = {
+		apply: function() {
+			if (applyIndex < effects.length) {
+				var effect = effects[applyIndex++];
+				mini.Console.write("Applying effect '" + effect.type + "'");
+				mini.Console.append("retarg: " + effect.targetHint);
+				Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
+			}
+			return applyIndex < effects.length;
+		}
+	};
+	if (action.animation in Game.animations) {
+		Game.animations[action.animation]
+			.call(animContext, actingUnit, targetsHit, false);
+	}
+	while (animContext.apply());
 	mini.Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
 };

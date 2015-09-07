@@ -1031,6 +1031,7 @@ Game.skills =
 		actions: [
 			{
 				announceAs: "Munch",
+				animation: 'munch',
 				rank: 5,
 				accuracyType: 'devour',
 				isMelee: true,
