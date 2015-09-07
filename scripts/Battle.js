@@ -421,27 +421,27 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	
 	// apply move effects to target(s)
 	mini.Link(targetsHit).invoke('beginTargeting', actingUnit);
-	var effects = mini.Link(action.effects)
-		.filterBy('targetHint', 'selected')
-		.where(function(effect) { return effect.type != null; })
-		.toArray();
-	var applyIndex = 0;
 	var animContext = {
-		apply: function() {
-			if (applyIndex < effects.length) {
-				var effect = effects[applyIndex++];
+		effects: mini.Link(action.effects)
+			.filterBy('targetHint', 'selected')
+			.where(function(effect) { return effect.type != null; })
+			.toArray(),
+		pc: 0,
+		nextEffect: function() {
+			if (this.pc < this.effects.length) {
+				var effect = this.effects[this.pc++];
 				mini.Console.write("Applying effect '" + effect.type + "'");
 				mini.Console.append("retarg: " + effect.targetHint);
 				Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
 			}
-			return applyIndex < effects.length;
+			return this.pc < this.effects.length;
 		}
 	};
 	if (action.animation in Game.animations) {
 		Game.animations[action.animation]
 			.call(animContext, actingUnit, targetsHit, false);
 	}
-	while (animContext.apply());
+	while (animContext.nextEffect());
 	mini.Link(targetsHit).invoke('endTargeting');
 	return targetsHit;
 };

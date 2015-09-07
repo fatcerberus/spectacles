@@ -290,6 +290,7 @@ Game.skills =
 		actions: [
 			{
 				announceAs: "Triple Shot",
+				animation: 'tripleShot',
 				rank: 2,
 				accuracyType: 'bow',
 				accuracyRate: 1 / Game.bonusMultiplier,

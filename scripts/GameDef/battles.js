@@ -77,7 +77,7 @@ Game.battles =
 	// Scott Temple (Boss Battle)
 	// Penultimate Boss of Spectacles III
 	scottTemple: {
-		title: "First Lucidan Scott Temple",
+		title: "Scott Victor Temple",
 		isFinalBattle: false,
 		bgm: 'MyDreamsButADropOfFuel2',
 		battleLevel: 60,
