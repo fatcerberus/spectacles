@@ -62,7 +62,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.stance = BattleStance.attack;
 	this.stats = {};
 	this.statuses = [];
-	this.tag = RNG.name();
+	this.tag = RNG.string();
 	this.turnRatio = 1.0;
 	this.weapon = null;
 	
