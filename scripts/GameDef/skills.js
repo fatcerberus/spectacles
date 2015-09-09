@@ -296,11 +296,23 @@ Game.skills =
 				accuracyRate: 1 / Game.bonusMultiplier,
 				effects: [
 					{
-						targetHint: 'selected',
+						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
 						power: 25
-					}
+					},
+					{
+						targetHint: 'random',
+						type: 'damage',
+						damageType: 'bow',
+						power: 25
+					},
+					{
+						targetHint: 'random',
+						type: 'damage',
+						damageType: 'bow',
+						power: 25
+					},
 				],
 			}
 		]

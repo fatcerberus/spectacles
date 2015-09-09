@@ -82,7 +82,9 @@ Game.battles =
 		bgm: 'MyDreamsButADropOfFuel2',
 		battleLevel: 60,
 		enemies: [
-			'scottTemple'
+			'scottTemple',
+			'scottTemple',
+			'scottTemple',
 		]
 	},
 	

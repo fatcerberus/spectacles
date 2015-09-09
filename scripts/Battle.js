@@ -423,16 +423,19 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	mini.Link(targetsHit).invoke('beginTargeting', actingUnit);
 	var animContext = {
 		effects: mini.Link(action.effects)
-			.filterBy('targetHint', 'selected')
+			.filterBy('targetHint', [ 'selected', 'random' ])
 			.where(function(effect) { return effect.type != null; })
 			.toArray(),
 		pc: 0,
 		nextEffect: function() {
 			if (this.pc < this.effects.length) {
 				var effect = this.effects[this.pc++];
+				var targets = effect.targetHint == 'random'
+					? [ RNG.sample(targetsHit) ]
+					: targetsHit;
 				mini.Console.write("Applying effect '" + effect.type + "'");
 				mini.Console.append("retarg: " + effect.targetHint);
-				Game.moveEffects[effect.type](actingUnit, targetsHit, effect);
+				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;
 		}
