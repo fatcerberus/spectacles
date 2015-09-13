@@ -7,7 +7,7 @@
 	enter: function(map, world) {
 		var font = GetSystemFont();
 		var maggieSize = 1.0;
-		analogue.world.munchSound = new Sound('Munch.wav');
+		analogue.world.munchSound = new Sound('sounds/Munch.wav');
 		
 		var followers = [
 			{ name: 'Bruce', sprite: 'battlers/Bruce.rss', ghostLevel: 0 },
@@ -168,7 +168,7 @@
 			}
 		}
 		
-		mini.BGM.play('BGM/SeasonsEnd.ogg');
+		mini.BGM.play('sounds/BGM/SeasonsEnd.ogg');
 	},
 	
 	robert: {
