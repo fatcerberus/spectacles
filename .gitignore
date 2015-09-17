@@ -1,6 +1,6 @@
 desktop.ini
 Thumbs.db
 
-*.sgm
 *.ssuser
-logs/
+*.sgm
+dist/

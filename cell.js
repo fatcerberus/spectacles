@@ -1,5 +1,6 @@
-function make()
+function _sphere()
 {
+	install("*.js|*png|*.wav|*.ogg|*.rmp|*.rts|*.rss");
 	game({
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
