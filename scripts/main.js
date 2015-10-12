@@ -35,9 +35,8 @@ function game()
 	// initialize miniRT
 	mini.initialize({
 		frameRate: 60,
-		consolePrompt: "Specs Engine:",
+		consolePrompt: "$",
 		consoleLines: 10,
-		logFile: '~usr/Spectacles Saga/consoleLog.txt',
 		scenePriority: 99,
 	});
 	
@@ -54,8 +53,8 @@ function game()
 	
 	// show the title screen and start the game!
 	if (!DBG_DISABLE_TITLE_CARD) {
-		mini.BGM.push('BGM/SpectaclesTheme.ogg');
-		ShowLogo('Logos/TitleCard.png', 5.0);
+		mini.BGM.push('sounds/BGM/SpectaclesTheme.ogg');
+		ShowLogo('images/Logos/TitleCard.png', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;

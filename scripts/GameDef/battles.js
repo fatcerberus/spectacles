@@ -79,11 +79,9 @@ Game.battles =
 	scottTemple: {
 		title: "Scott Victor Temple",
 		isFinalBattle: false,
-		bgm: 'MyDreamsButADropOfFuel2',
+		bgm: 'BattleForLucida',
 		battleLevel: 60,
 		enemies: [
-			'scottTemple',
-			'scottTemple',
 			'scottTemple',
 		]
 	},

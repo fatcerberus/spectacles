@@ -138,7 +138,7 @@
 					new mini.Scene()
 						.fork()
 							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
-							.setSprite('maggie', 'battlers/maggie_hippo.rss')
+							.setSprite('maggie', 'spritesets/battlers/maggie_hippo.rss')
 							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
 						.end()
 						.followPerson('maggie')
@@ -168,7 +168,7 @@
 			}
 		}
 		
-		mini.BGM.play('sounds/BGM/SeasonsEnd.ogg');
+		mini.BGM.play('sounds/BGM/Portentia.ogg');
 	},
 	
 	robert: {

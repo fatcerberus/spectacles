@@ -18,13 +18,9 @@ TestHarness.addBattle('rsbFinal',
 {
 	battleID: 'rsbFinal',
 	party: {
-		maggie: {
-			level: 100,
-			items: [ 'alcohol' ]
-		},
-		/*scott: {
+		scott: {
 			level: 50, weapon: 'templeSword',
-			items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ]
-		},*/
+			items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
+		},
 	}
 });

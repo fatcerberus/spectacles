@@ -1,9 +1,9 @@
 [.ssproj]
-name=Spectacles: Bruce's Story
 author=Fat Cerberus
+buildDir=dist/
 description=Follow Scott Starcross in his quest to defeat the Primus.
-screenWidth=320
-screenHeight=240
 mainScript=main.js
-buildDir=./
+name=Spectacles: Bruce's Story
+screenHeight=240
+screenWidth=320
 
