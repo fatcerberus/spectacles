@@ -35,8 +35,7 @@ function game()
 	// initialize miniRT
 	mini.initialize({
 		frameRate: 60,
-		consolePrompt: "$",
-		consoleLines: 10,
+		consoleLines: 15,
 		scenePriority: 99,
 	});
 	
@@ -53,7 +52,7 @@ function game()
 	
 	// show the title screen and start the game!
 	if (!DBG_DISABLE_TITLE_CARD) {
-		mini.BGM.push('sounds/BGM/SpectaclesTheme.ogg');
+		mini.BGM.push('music/SpectaclesTheme.ogg');
 		ShowLogo('images/Logos/TitleCard.png', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();

@@ -168,7 +168,7 @@
 			}
 		}
 		
-		mini.BGM.play('sounds/BGM/Portentia.ogg');
+		mini.BGM.play('music/Portentia.ogg');
 	},
 	
 	robert: {

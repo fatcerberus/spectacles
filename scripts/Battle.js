@@ -239,7 +239,7 @@ Battle.prototype.go = function()
 		battleBGMTrack = this.parameters.bgm;
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
-	mini.BGM.push("sounds/BGM/" + battleBGMTrack + ".ogg");
+	mini.BGM.push("music/" + battleBGMTrack + ".ogg");
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';

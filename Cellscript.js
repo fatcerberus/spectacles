@@ -4,9 +4,9 @@ function $sphere()
 	install(files("images/*.png", true), "images");
 	install(files("maps/*.rmp", true), "maps");
 	install(files("maps/*.rts", true), "maps");
+	install(files("music/*.ogg", true), "music");
 	install(files("spritesets/*.rss", true), "spritesets");
 	install(files("sounds/*.wav", true), "sounds");
-	install(files("sounds/*.ogg", true), "sounds");
 	
 	install(sgm({
 		name: "Spectacles: Bruce's Story",
