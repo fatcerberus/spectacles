@@ -35,7 +35,6 @@ function game()
 	// initialize miniRT
 	mini.initialize({
 		frameRate: 60,
-		consoleLines: 15,
 		scenePriority: 99,
 	});
 	

@@ -24,7 +24,7 @@ RequireScript('WeaponUsable.js');
 function AIContext(unit, battle, aiType)
 {
 	// .phaseChanged event
-	// Occurs when the AI context enters a new attack phase.
+	// Occurs when the AI enters a new attack phase.
 	// Arguments (for event handler):
 	//     aiContext: The AIContext that triggered the phase change.
 	//     newPhase:  The phase the AI context is switching to.

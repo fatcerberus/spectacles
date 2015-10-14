@@ -13,6 +13,6 @@ function $sphere()
 		author: "Fat Cerberus",
 		description: "Follow Scott Starcross in his quest to stop the Primus.",
 		resolution: "320x240",
-		script: "main.js"
+		script: "scripts/main.js"
 	}));
 }
