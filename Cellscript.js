@@ -7,6 +7,7 @@ function $sphere()
 	install(files("music/*.ogg", true), "music");
 	install(files("spritesets/*.rss", true), "spritesets");
 	install(files("sounds/*.wav", true), "sounds");
+	install(files("icon.png"));
 	
 	install(sgm({
 		name: "Spectacles: Bruce's Story",

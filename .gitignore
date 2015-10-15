@@ -4,4 +4,5 @@ Thumbs.db
 *.ssuser
 *.sgm
 *.spk
+.cell/
 dist/

@@ -1,7 +1,9 @@
 [.ssproj]
 author=Fat Cerberus
 buildDir=dist/
-description=Follow Scott Starcross in his quest to defeat the Primus.
+compiler=Cell
+description=Follow Scott Starcross in his quest to stop the Primus.
+engine=minisphere
 mainScript=main.js
 name=Spectacles: Bruce's Story
 screenHeight=240
