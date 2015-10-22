@@ -9,11 +9,17 @@ function $sphere()
 	install(files("sounds/*.wav", true), "sounds");
 	install(files("icon.png"));
 	
-	install(sgm({
+	install(s2gm({
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
-		description: "Follow Scott Starcross in his quest to stop the Primus.",
+		summary: "Follow Scott Starcross in his quest to stop the Primus.",
 		resolution: "320x240",
-		script: "scripts/main.js"
+		script: "scripts/main.js",
+		
+		enableLogging: false,
+		disableAnimation: false,
+		disableBattles: false,
+		disableSplash: true,
+		disableTitle: true,
 	}));
 }

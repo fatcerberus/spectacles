@@ -192,7 +192,7 @@ Battle.prototype.getLevel = function()
 //     The ID of the thread managing the battle.
 Battle.prototype.go = function()
 {
-	if (DBG_DISABLE_BATTLES) {
+	if (GetGameManifest().disableBattles) {
 		mini.Console.write("Battles disabled, automatic win");
 		mini.Console.append("battleID: " + this.battleID);
 		this.result = BattleResult.playerWon;

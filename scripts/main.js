@@ -3,10 +3,7 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-var DBG_DISABLE_BATTLES = false;
 var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TITLE_CARD = true;
-var DBG_DISABLE_TITLE_SCREEN = true;
 var DBG_DISABLE_TRANSITIONS = false;
 
 RequireSystemScript('mini/miniRT.js');
@@ -30,10 +27,14 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
+	var manifest = GetGameManifest();
 	analogue.init();
 	
 	// initialize miniRT
 	mini.initialize({
+		logFile: manifest.enableLogging
+			? "~usr/Spectacles Saga/ConsoleLog.txt"
+			: null,
 		frameRate: 60,
 		scenePriority: 99,
 	});
@@ -50,7 +51,7 @@ function game()
 	TestHarness.initialize();
 	
 	// show the title screen and start the game!
-	if (!DBG_DISABLE_TITLE_CARD) {
+	if (!manifest.disableSplash) {
 		mini.BGM.push('music/SpectaclesTheme.ogg');
 		ShowLogo('images/Logos/TitleCard.png', 5.0);
 	}
