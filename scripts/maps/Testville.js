@@ -42,7 +42,7 @@
 					.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
 					.talk("maggie", true, 2.0, Infinity, "Too late!")
 					.killPerson(name)
-					.playSound('Munch.wav')
+					.playSound('sounds/Munch.wav')
 					.run(true);
 			}
 		});

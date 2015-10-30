@@ -3,8 +3,8 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TRANSITIONS = false;
+const DBG_DISABLE_TEXTBOXES = false;
+const DBG_DISABLE_TRANSITIONS = false;
 
 RequireSystemScript('mini/miniRT.js');
 RequireSystemScript('analogue.js');
@@ -28,13 +28,12 @@ EvaluateScript('gamedef/game.js');
 function game()
 {
 	var manifest = GetGameManifest();
+	
 	analogue.init();
 	
 	// initialize miniRT
 	mini.initialize({
-		logFile: manifest.enableLogging
-			? "~usr/Spectacles Saga/ConsoleLog.txt"
-			: null,
+		logFile: 'logPath' in manifest ? manifest.logPath : null,
 		frameRate: 60,
 		scenePriority: 99,
 	});

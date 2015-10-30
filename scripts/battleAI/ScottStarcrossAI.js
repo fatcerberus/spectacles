@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (C) 2015 Power-Command
 ***/
 
 // ScottStarcrossAI() constructor		

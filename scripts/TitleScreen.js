@@ -31,7 +31,7 @@ TitleScreen.prototype.render = function()
 // Activates the title screen and waits for the player to choose an action to take.
 TitleScreen.prototype.show = function()
 {
-	if (this.manifest.disableTitle) {
+	if (this.manifest.disableTitleScreen) {
 		return new Session();
 	}
 	this.choice = null;

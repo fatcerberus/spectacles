@@ -8,18 +8,19 @@ function $sphere()
 	install(files("spritesets/*.rss", true), "spritesets");
 	install(files("sounds/*.wav", true), "sounds");
 	install(files("icon.png"));
-	
+
 	install(s2gm({
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
 		summary: "Follow Scott Starcross in his quest to stop the Primus.",
-		resolution: "320x240",
-		script: "scripts/main.js",
-		
-		enableLogging: false,
+		resolution: '320x240',
+		script: 'scripts/main.js',
+
+		// Specs Engine specifics
+		logPath: '~usr/Spectacles Saga/Console Log.txt',
 		disableAnimation: false,
 		disableBattles: false,
 		disableSplash: true,
-		disableTitle: true,
+		disableTitleScreen: true,
 	}));
 }
