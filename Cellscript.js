@@ -15,7 +15,7 @@ function $sphere()
 		summary: "Follow Scott Starcross in his quest to stop the Primus.",
 		resolution: '320x240',
 		script: 'scripts/main.js',
-		
+
 		minimumPlatform: {
 			recommend: "minisphere 2.1 or later",
 			apiVersion: 2.0,
@@ -30,8 +30,15 @@ function $sphere()
 			]
 		},
 
-		// Specs Engine specifics
+		// miniRT options
+		frameRate: 60,
+		sceneRenderPriority: 99,
 		logPath: '~usr/Spectacles Saga/Console Log.txt',
+		consoleBuffer: 1000,
+		consoleLines: 10,
+		consolePrompt: "specs",
+		
+		// Specs Engine debug options
 		disableAnimation: false,
 		disableBattles: false,
 		disableSplash: true,

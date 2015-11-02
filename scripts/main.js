@@ -27,16 +27,8 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	var manifest = GetGameManifest();
-	
+	mini.initialize();
 	analogue.init();
-	
-	// initialize miniRT
-	mini.initialize({
-		logFile: 'logPath' in manifest ? manifest.logPath : null,
-		frameRate: 60,
-		scenePriority: 99,
-	});
 	
 	mini.Console.register('specs', sphere, {
 		'exit': function() { Exit(); }
@@ -50,6 +42,7 @@ function game()
 	TestHarness.initialize();
 	
 	// show the title screen and start the game!
+	var manifest = GetGameManifest();
 	if (!manifest.disableSplash) {
 		mini.BGM.push('music/SpectaclesTheme.ogg');
 		ShowLogo('images/Logos/TitleCard.png', 5.0);

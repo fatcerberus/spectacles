@@ -71,11 +71,10 @@ mini.Delegate.prototype.invoke = function()
 //             be passed to each registered initializer.
 mini.initialize = function(params)
 {
-    params = typeof params !== 'undefined' ? params : {};
-    
-	var frameRate = 'frameRate' in params ? params.frameRate : 0;
+	var manifest = GetGameManifest();
+	var frameRate = 'frameRate' in manifest ? manifest.frameRate : 0;
 	SetFrameRate(frameRate);
-    mini.onStartUp.invoke(params);
+    mini.onStartUp.invoke();
 }
 
 // mini.onStartUp
