@@ -58,7 +58,7 @@ mini.Scenelet = function(name, code)
 mini.onStartUp.add(mini.Scenes, function()
 {
 	var manifest = GetGameManifest();
-	this.priority = 'sceneRenderPriority' in manifest ? manifest.scenePriority : 0;
+	this.priority = 'sceneRenderPriority' in manifest ? manifest.sceneRenderPriority : 0;
 	this.screenMask = new Color(0, 0, 0, 0);
 	this.threadID = mini.Threads.create(this, this.priority);
 });

@@ -36,7 +36,6 @@ function $sphere()
 		logPath: '~usr/Spectacles Saga/Console Log.txt',
 		consoleBuffer: 1000,
 		consoleLines: 10,
-		consolePrompt: "specs",
 		
 		// Specs Engine debug options
 		disableAnimation: false,
