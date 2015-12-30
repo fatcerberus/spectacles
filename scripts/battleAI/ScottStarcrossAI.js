@@ -13,11 +13,6 @@ function ScottStarcrossAI(aiContext)
 {
 	this.aic = aiContext;
 	
-	// HP thresholds for phase transitions
-	this.phasePoints = mini.Link([ 4500, 2500, 1000 ])
-		.map(function(value) { return Math.round(RNG.normal(value, 50)); })
-		.toArray();
-	
 	// Scott's move combos
 	// Each entry should include the following properties:
 	//     phase:  The earliest phase in which the combination will be used.
@@ -38,15 +33,14 @@ function ScottStarcrossAI(aiContext)
 	];
 	
 	// AI state variables
-	this.phase = 0;
 	this.tactics = null;
 	this.isOpenerPending = true;
 	this.targetingMode = 'random';
 	this.weaponID = 'templeSword';
 	
 	// Prepare the AI for use
-	this.aic.setDefaultSkill('berserkCharge');
-	//this.aic.definePhases([ 4500, 2500, 1000 ], 50);
+	this.aic.setDefaultSkill('swordSlash');
+	this.aic.definePhases([ 4500, 2500, 1000 ], 50);
 }
 
 // .dispose() method
@@ -59,12 +53,6 @@ ScottStarcrossAI.prototype.dispose = function()
 // Allows Scott to decide what he will do next when his turn arrives.
 ScottStarcrossAI.prototype.strategize = function(stance, phase)
 {
-	var milestone = mini.Link(this.phasePoints)
-		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))
-		.last()[0];
-	var phaseToEnter = 2 + mini.Link(this.phasePoints).indexOf(milestone);
-	var lastPhase = this.phase;
-	this.phase = Math.max(phaseToEnter, this.phase);
 	if (this.isOpenerPending) {
 		this.aic.queueSkill('berserkCharge');
 		this.isOpenerPending = false;
@@ -72,7 +60,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 		if (this.tactics === null) {
 			var targets = mini.Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
 			var combos = mini.Link(mini.Link(this.combos)
-				.where(function(combo) { return this.phase >= combo.phase; }.bind(this))
+				.where(function(combo) { return phase >= combo.phase; }.bind(this))
 				.random(targets.length))
 				.sort(function(a, b) { return b.rating - a.rating; });
 			this.tactics = [];

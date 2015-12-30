@@ -173,9 +173,8 @@ Battle.prototype.enemiesOf = function(unit)
 //     exists.
 Battle.prototype.findUnit = function(unitID)
 {
-	var unit = mini.Link(this.enemyUnits, this.playerUnits).first(function(unit) {
-		return unit.id == unitID;
-	});
+	var unit = mini.Link(this.enemyUnits, this.playerUnits)
+		.first(function(unit) { return unit.id == unitID; });
 	return unit !== undefined ? unit : null;
 };
 
