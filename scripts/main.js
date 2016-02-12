@@ -30,7 +30,7 @@ function game()
 	mini.initialize();
 	analogue.init();
 	
-	mini.Console.register('specs', sphere, {
+	mini.Console.register('specs', global, {
 		'exit': function() { Exit(); }
 	});
 	mini.Console.register('yap', null, {
