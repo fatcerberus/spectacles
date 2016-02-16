@@ -56,9 +56,8 @@ function TargetMenu(unit, battle, usable, moveName)
 	
 	this.moveCursor = function(direction)
 	{
-		if (this.isGroupCast) {
+		if (this.isGroupCast || this.targets == null)
 			return;
-		}
 		var position = this.targets[0].actor.position;
 		var candidates = this.battle.alliesOf(this.targets[0]);
 		var unitToSelect = null;
@@ -148,7 +147,7 @@ TargetMenu.prototype.getInput = function()
 			}
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
-			if (!this.isTargetLocked) {
+			if (!this.isTargetLocked && this.targets != null) {
 				if (!this.isGroupCast) {
 					this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
 				} else {
@@ -158,7 +157,7 @@ TargetMenu.prototype.getInput = function()
 			}
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
-			if (!this.isTargetLocked) {
+			if (!this.isTargetLocked && this.targets != null) {
 				if (!this.isGroupCast) {
 					this.targets = [ this.unit ];
 				} else {
