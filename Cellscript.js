@@ -1,4 +1,4 @@
-function $sphere()
+function $game()
 {
 	install(files("scripts/*.js", true), "scripts");
 	install(files("images/*.png", true), "images");
