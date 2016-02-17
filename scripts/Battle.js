@@ -302,7 +302,7 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	nextActions = nextActions !== void null ? nextActions : null;
 	
 	var forecast = [];
-	for (var turnIndex = 0; turnIndex < 10; ++turnIndex) {
+	for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
 		var bias = 0;
 		mini.Link(this.enemyUnits, this.playerUnits)
 			.reject(function(unit) { return unit === actingUnit && turnIndex == 0; })
