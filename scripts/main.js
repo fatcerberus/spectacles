@@ -34,8 +34,8 @@ function game()
 		'exit': function() { Exit(); }
 	});
 	mini.Console.register('yap', null, {
-		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are currently ON"); }, 
-		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are currently OFF"); }, 
+		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Yappy times are now ON"); }, 
+		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("Yappy times are now OFF"); }, 
 	});
 	
 	// set up the beta test harness

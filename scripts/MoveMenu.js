@@ -234,7 +234,7 @@ MoveMenu.prototype.getInput = function()
 			this.showMoveList.stop();
 			this.chooseMove.run();
 		}
-	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B)) {
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isExpanded) {
 		this.drawers[this.topCursor].cursor = this.moveCursor;
 		this.isExpanded = false;
 		this.showMoveList.stop();
