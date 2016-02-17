@@ -11,7 +11,7 @@ TestHarness.addBattle('temple',
 	}
 });
 
-TestHarness.addBattle('starcross',
+TestHarness.addBattle('scott',
 {
 	battleID: 'scottStarcross',
 	party: {

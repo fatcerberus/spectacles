@@ -3,7 +3,7 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-TestHarness.addBattle('rsbBalcony',
+TestHarness.addBattle('rsb1',
 {
 	battleID: 'rsbBalcony',
 	party: {
@@ -14,7 +14,7 @@ TestHarness.addBattle('rsbBalcony',
 	}
 });
 
-TestHarness.addBattle('rsbFinal',
+TestHarness.addBattle('rsb2',
 {
 	battleID: 'rsbFinal',
 	party: {
