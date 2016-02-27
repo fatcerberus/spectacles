@@ -1,4 +1,4 @@
-function $game()
+function $default()
 {
 	install(files("scripts/*.js", true), "scripts");
 	install(files("images/*.png", true), "images");
