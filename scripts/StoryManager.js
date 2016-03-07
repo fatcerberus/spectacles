@@ -9,9 +9,11 @@ StoryManager = new (function()
 
 StoryManager.show = function(sceneID)
 {
-	var sceneHandler = Game.scenes[sceneID];
-	var lastInputPerson = GetInputPerson();
-	DetachInput();
-	sceneHandler();
-	AttachInput(lastInputPerson);
+	var sceneFunction = Game.scenes[sceneID];
+	SetDelayScript(0, function() {
+		var lastInputPerson = GetInputPerson();
+		DetachInput();
+		sceneFunction();
+		AttachInput(lastInputPerson);
+	});
 }

@@ -66,6 +66,16 @@ Game.scenes =
 			.run(true);
 	},
 	
+	argumentAtSnowplain: function() {
+		new mini.Scene()
+			.talk("Scott", true, 1.0, Infinity,
+				"You know, I guess I shouldn't be surprised Victor Spellbinder would be my father.",
+				"At some level I suspected it. Honestly, Robert treated me too much like a brother for it to to have been any other way.")
+			.talk("Elkovsky", true, 1.0, Infinity, "Victor fathered eleven children in total. Of them, you are the youngest--the eleventh. According to a prophecy made twenty years ago, it is the eleventh Littermate's responsibility--and only his--to destroy the Primus.")
+			.talk("Scott", true, 1.0, Infinity, "But what exactly IS the Primus?")
+			.run(true);
+	},
+	
 	lamentForBruce: function() {
 		new mini.Scene()
 			.fadeTo(new Color(0, 0, 0, 255), 0.0)
