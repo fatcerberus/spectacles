@@ -18,6 +18,7 @@ RequireScript('LucidaClock.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
 RequireScript('Session.js');
+RequireScript('StoryManager.js');
 RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
 
@@ -50,7 +51,7 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	MapEngine('Testville.rmp', 60);
+	MapEngine('main.rmp', 60);
 }
 
 // clone() function

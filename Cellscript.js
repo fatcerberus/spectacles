@@ -1,6 +1,7 @@
 function $default()
 {
 	install(files("scripts/*.js", true), "scripts");
+	install(files("scripts/*.ts", true), "scripts");
 	install(files("images/*.png", true), "images");
 	install(files("maps/*.rmp", true), "maps");
 	install(files("maps/*.rts", true), "maps");
@@ -13,11 +14,11 @@ function $default()
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
 		summary: "Follow Scott Starcross in his quest to stop the Primus.",
-		resolution: '320x240',
+		resolution: '320x200',
 		script: 'scripts/main.js',
 
 		minimumPlatform: {
-			recommend: "minisphere 2.1 or later",
+			recommend: "minisphere 3.0+",
 			apiVersion: 2.0,
 			extensions: [
 				"sphere-legacy-api",
@@ -27,6 +28,7 @@ function $default()
 				"sphere-rng-object",
 				"sphere-s2gm",
 				"sphere-spherefs",
+				"sphere-typescript",
 			]
 		},
 

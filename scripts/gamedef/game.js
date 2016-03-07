@@ -30,6 +30,7 @@ EvaluateScript('gamedef/items.js');
 EvaluateScript('gamedef/maps.js');
 EvaluateScript('gamedef/math.js');
 EvaluateScript('gamedef/moveEffects.js');
+EvaluateScript('gamedef/scenes.js');
 EvaluateScript('gamedef/skills.js');
 EvaluateScript('gamedef/statuses.js');
 EvaluateScript('gamedef/stats.js');
