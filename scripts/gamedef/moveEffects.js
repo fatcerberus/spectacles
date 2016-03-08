@@ -35,12 +35,12 @@ Game.moveEffects =
 			}
 			var damage = Math.max(Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(damage / 10);
-			targets[i].takeDamage(Math.max(RNG.vary(damage, tolerance), 1), damageTags);
+			targets[i].takeDamage(Math.max(RNG.uniform(damage, tolerance), 1), damageTags);
 			var recoilFunction = effect.damageType + "Recoil";
 			if (recoilFunction in Game.math.damage) {
 				var recoil = Math.round(Game.math.damage[recoilFunction](userInfo, targetInfo, effect.power));
 				var tolerance = Math.round(recoil / 10);
-				actor.takeDamage(Math.max(RNG.vary(recoil, tolerance), 1), [ 'recoil' ], true);
+				actor.takeDamage(Math.max(RNG.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
 			}
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
@@ -79,7 +79,7 @@ Game.moveEffects =
 			var targetInfo = targets[i].battlerInfo;
 			var healing = Math.max(Math.round(Game.math.healing(userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(healing / 10);
-			targets[i].heal(Math.max(RNG.vary(healing, tolerance), 1), [ 'cure' ]);
+			targets[i].heal(Math.max(RNG.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
 				if (statusChance > Math.random()) {
