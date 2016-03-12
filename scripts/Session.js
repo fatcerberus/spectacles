@@ -29,7 +29,7 @@ function Session(difficulty)
 	mini.Console.append("diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party(50);
-	mini.Link(Game.initialParty)
+	link(Game.initialParty)
 		.each(function(characterID)
 	{
 		this.party.add(characterID);

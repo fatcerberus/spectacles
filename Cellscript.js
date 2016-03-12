@@ -1,7 +1,7 @@
 function $default()
 {
 	install(files("scripts/*.js", true), "scripts");
-	install(files("scripts/*.ts", true), "scripts");
+	install(files("commonjs/*.js", true), "commonjs");
 	install(files("images/*.png", true), "images");
 	install(files("maps/*.rmp", true), "maps");
 	install(files("maps/*.rts", true), "maps");

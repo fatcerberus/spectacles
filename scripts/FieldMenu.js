@@ -21,7 +21,7 @@ function FieldMenu(session)
 	this.font = GetSystemFont();
 	this.isOpen = false;
 	this.itemFader = null;
-	this.selection = mini.Link(this.items).pluck('id').toArray().indexOf('party');
+	this.selection = link(this.items).pluck('id').toArray().indexOf('party');
 }
 
 FieldMenu.prototype.update = function()

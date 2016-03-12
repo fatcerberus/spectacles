@@ -36,7 +36,7 @@ function MoveMenu(unit, battle, stance)
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
 	var drawerTable = {};
-	mini.Link(this.unit.skills).each(function(skill) {
+	link(this.unit.skills).each(function(skill) {
 		var category = skill.skillInfo.category;
 		if (!(category in drawerTable)) {
 			drawerTable[category] = {

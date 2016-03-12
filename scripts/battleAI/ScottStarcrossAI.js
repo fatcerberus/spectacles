@@ -58,8 +58,8 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 		this.isOpenerPending = false;
 	} else {
 		if (this.tactics === null) {
-			var targets = mini.Link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
-			var combos = mini.Link(mini.Link(this.combos)
+			var targets = link(this.aic.battle.enemiesOf(this.aic.unit)).shuffle();
+			var combos = link(link(this.combos)
 				.where(function(combo) { return phase >= combo.phase; }.bind(this))
 				.random(targets.length))
 				.sort(function(a, b) { return b.rating - a.rating; });
@@ -68,7 +68,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: targets[i] });
 			}
 		}
-		this.tactics = mini.Link(this.tactics)
+		this.tactics = link(this.tactics)
 			.where(function(tactic) { return tactic.unit.isAlive(); })
 			.where(function(tactic) { return tactic.moveIndex < tactic.moves.length; })
 			.toArray();

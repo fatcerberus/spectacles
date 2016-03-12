@@ -62,7 +62,7 @@ HeadlessHorseAI.prototype.strategize = function()
 				var hellfireTurns = this.aic.predictSkillTurns('hellfire');
 				if (!this.aic.unit.hasStatus('ignite')) {
 					this.aic.queueSkill('hellfire', 'headlessHorse');
-					if (mini.Link(hellfireTurns).pluck('unit').pluck('id').contains('elysia')) {
+					if (link(hellfireTurns).pluck('unit').pluck('id').contains('elysia')) {
 						this.aic.queueSkill('spectralDraw', 'elysia');
 					}
 				} else {
@@ -102,9 +102,9 @@ HeadlessHorseAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 // Allows the Headless Horse to react when someone attacks.
 HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (mini.Link(targetIDs).contains('headlessHorse')) {
+	if (link(targetIDs).contains('headlessHorse')) {
 		var iceSkills = [ 'chillShot', 'chill', 'windchill' ];
-		if (mini.Link(iceSkills).contains(skillID) && (this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('rearing'))) {
+		if (link(iceSkills).contains(skillID) && (this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('rearing'))) {
 			this.trampleTarget = userID;
 		}
 	}
@@ -115,7 +115,7 @@ HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, actingUnit)
 {
 	if (unit === this.aic.unit && actingUnit !== null) {
-		if (mini.Link(tags).contains('magic') && mini.Link(this.ghosts).contains(actingUnit.id)) {
+		if (link(tags).contains('magic') && link(this.ghosts).contains(actingUnit.id)) {
 			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}
 		if (!(actingUnit.id in this.damageTaken)) {
@@ -146,8 +146,8 @@ HeadlessHorseAI.prototype.onUnitReady = function(unitID)
 HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
 	if (unit === this.aic.unit) {
-		var isPhysical = mini.Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical')
-		                 || mini.Link(action.effects).filterBy('type', 'damage').pluck('element').contains('earth');
+		var isPhysical = link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical')
+		                 || link(action.effects).filterBy('type', 'damage').pluck('element').contains('earth');
 		if (isPhysical && this.aic.unit.hasStatus('rearing')) {
 			if (this.trampleTarget === null) {
 				this.aic.queueSkill('flameBreath');
@@ -155,7 +155,7 @@ HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 				this.trampleTarget = actingUnit.id;
 			}
 		}
-		var isMagic = mini.Link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('magic');
+		var isMagic = link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('magic');
 		if (isMagic && this.aic.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
 			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}

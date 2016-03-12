@@ -42,7 +42,7 @@ TestHarness.addBattle = function(testID, setupData)
 			mini.Console.write("Preparing test battle");
 			mini.Console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
-			mini.Link(Game.initialParty).each(function(id) {
+			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
 			});
 			for (var id in this.setup.party) {

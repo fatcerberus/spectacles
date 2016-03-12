@@ -157,8 +157,9 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	
 	if (this.isAlive() && !this.hasStatus(statusID)) {
 		var statusName = Game.statuses[statusID].name;
-		var isOverruled = mini.Link(this.statuses).some(function(status) { return status.overrules(statusID); });
-		if (!this.isPartyMember() && mini.Link(this.enemyInfo.immunities).contains(statusID)) {
+		var isOverruled = link(this.statuses)
+			.some(function(status) { return status.overrules(statusID); });
+		if (!this.isPartyMember() && link(this.enemyInfo.immunities).contains(statusID)) {
 			if (!isGuardable) {
 				this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
 			}
@@ -178,7 +179,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				var effect = new StatusContext(eventData.statusID, this);
 				this.statuses.push(effect);
 				this.battlerInfo.statuses = [];
-				mini.Link(this.statuses).pluck('statusID').each(function(statusID) {
+				link(this.statuses).pluck('statusID').each(function(statusID) {
 					this.battlerInfo.statuses.push(statusID);
 				}.bind(this));
 				mini.Console.write(this.name + " took on status " + effect.name);
@@ -385,7 +386,7 @@ BattleUnit.prototype.getNextAction = function()
 //     statusID: The ID of the status to test for, as defined in the gamedef.
 BattleUnit.prototype.hasStatus = function(statusID)
 {
-	return mini.Link(this.statuses).pluck('statusID').contains(statusID);
+	return link(this.statuses).pluck('statusID').contains(statusID);
 };
 
 // .heal() method
@@ -464,7 +465,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 			}
 		}
 		this.battlerInfo.statuses = [];
-		mini.Link(this.statuses).pluck('statusID').each(function(statusID) {
+		link(this.statuses).pluck('statusID').each(function(statusID) {
 			this.battlerInfo.statuses.push(statusID);
 		}.bind(this));
 	}
@@ -474,8 +475,8 @@ BattleUnit.prototype.liftStatusTags = function(tags)
 {
 	var me = this;
 	var activeStatuses = this.statuses.slice();
-	var statusIDs = mini.Link(activeStatuses)
-		.where(function(status) { return mini.Link(status.statusDef.tags).some(tags); })
+	var statusIDs = link(activeStatuses)
+		.where(function(status) { return link(status.statusDef.tags).some(tags); })
 		.pluck('statusID')
 		.each(function(statusID)
 	{
@@ -533,7 +534,7 @@ BattleUnit.prototype.queueMove = function(move)
 {
 	this.moveUsed = move;
 	var alliesInBattle = this.battle.alliesOf(this.moveUsed.targets[0]);
-	var alliesAlive = mini.Link(alliesInBattle)
+	var alliesAlive = link(alliesInBattle)
 		.where(function(unit) { return unit.isAlive(); })
 		.toArray();
 	this.moveUsed.targets = this.moveUsed.usable.isGroupCast
@@ -572,7 +573,7 @@ BattleUnit.prototype.raiseEvent = function(eventID, data)
 	data = data !== void null ? data : null;
 	
 	var statuses = this.statuses.slice();
-	mini.Link(statuses).invoke('invoke', eventID, data);
+	link(statuses).invoke('invoke', eventID, data);
 };
 
 // .refreshInfo() method
@@ -592,7 +593,7 @@ BattleUnit.prototype.refreshInfo = function()
 		this.battlerInfo.stats[statID] = this.stats[statID].getValue();
 	}
 	this.battlerInfo.statuses = [];
-	mini.Link(this.statuses).pluck('statusID').each(function(statusID) {
+	link(this.statuses).pluck('statusID').each(function(statusID) {
 		this.battlerInfo.statuses.push(statusID);
 	}.bind(this));
 	this.battlerInfo.stance = this.stance;
@@ -645,7 +646,7 @@ BattleUnit.prototype.registerCommands = function()
 				var defaultUses = 'uses' in Game.items[itemID] ? Game.items[itemID].uses : 1;
 				var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 				var addCount = 0;
-				mini.Link(this.items)
+				link(this.items)
 					.filterBy('itemID', itemID)
 					.each(function(item)
 				{
@@ -670,7 +671,7 @@ BattleUnit.prototype.registerCommands = function()
 					return mini.Console.write("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				var itemCount = 0;
-				mini.Link(this.items)
+				link(this.items)
 					.filterBy('itemID', itemID)
 					.execute(function(usable) { itemCount += usable.usesLeft })
 					.remove();
@@ -838,7 +839,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		mini.Console.append("left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
-			mini.Link(tags)
+			link(tags)
 				.where(function(tag) { return tag in Game.elements; })
 				.each(function(tag)
 			{

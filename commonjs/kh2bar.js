@@ -1,9 +1,14 @@
 /**
- * kh2Bar for Sphere  (c) 2013-2015 Bruce Pascoe
+ * kh2Bar for Sphere 2.0  (c) 2013-2016 Bruce Pascoe
  * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
 **/
 
-var kh2Bar =
+if (typeof module === 'undefined')
+{
+	throw new TypeError("kh2bar.js must be loaded using require()");
+}
+
+module.exports =
 (function(undefined) {
     'use strict';
 	
@@ -26,7 +31,7 @@ var kh2Bar =
         return -(end - start) / 2 * (Math.cos(Math.PI * time / duration) - 1) + start;
     }
 	
-    // kh2Bar() constructor
+    // HPGauge() constructor
     // Creates a Kingdom Hearts-style segmented HP gauge.
     // Arguments:
     //     capacity:   The largest HP value representable by the gauge.
@@ -36,10 +41,10 @@ var kh2Bar =
     //     maxSectors: Optional. The maximum number of sectors the gauge can display. If this is not specified or
     //                 is null, the gauge will be rendered as it would be in Kingdom Hearts 2, with the maximum number
     //                 of sectors determined by the width and height of the gauge.
-    function kh2Bar(capacity, sectorSize, color, maxSectors)
+    function HPGauge(capacity, sectorSize, color, maxSectors)
     {
         if (arguments.length < 1) {
-            Abort("kh2Bar(): 1 or more arguments expected, got " + arguments.length, -1);
+            Abort("HPGauge(): expected 1 or more arguments", -1);
         }
         
         sectorSize = sectorSize !== undefined ? sectorSize : 100;
@@ -72,7 +77,7 @@ var kh2Bar =
     // .beginCombo() method
     // Begins a combo. Damage displayed on the gauge will accumulate without fading out until
     // the combo is ended by calling .endCombo().
-    kh2Bar.prototype.beginCombo = function()
+    HPGauge.prototype.beginCombo = function()
     {
         ++this.numCombosRunning;
     };
@@ -83,7 +88,7 @@ var kh2Bar =
     //     color:    The color to change the gauge to.
     //     duration: Optional. The length of time over which to ease in the new color. A duration of 0
     //               means no easing (immediate). (default: 0.0)
-    kh2Bar.prototype.changeColor = function(color, duration)
+    HPGauge.prototype.changeColor = function(color, duration)
     {
         duration = duration !== undefined ? duration : 0.0;
         
@@ -104,12 +109,10 @@ var kh2Bar =
     //     y:       The Y coordinate of the top left corner of the gauge, in pixels.
     //     width:   The width of the gauge, in pixels.
     //     height:  The height of the gauge, in pixels.
-    kh2Bar.prototype.draw = function(x, y, width, height)
+    HPGauge.prototype.draw = function(x, y, width, height)
     {
         if (arguments.length < 4) {
-            Abort("kh2Bar:draw(): Wrong number of arguments\n" +
-                "4 arguments were expected; caller passed " + arguments.length + ".",
-                -1);
+            Abort("HPGauge:draw(): expected 4 or more arguments", -1);
         }
         
         if (this.fadeness >= 1.0) {
@@ -172,7 +175,7 @@ var kh2Bar =
 	
     // .endCombo() method
     // Ends a combo, causing all damage sustained since .beginCombo() was called to fade out.
-    kh2Bar.prototype.endCombo = function()
+    HPGauge.prototype.endCombo = function()
     {
         --this.numCombosRunning;
         if (this.numCombosRunning < 0) {
@@ -184,7 +187,7 @@ var kh2Bar =
     // Hides the gauge.
     // Arguments:
     //     duration: Optional. The duration of the hide animation, in seconds. (default: 0.0)
-    kh2Bar.prototype.hide = function(duration)
+    HPGauge.prototype.hide = function(duration)
     {
         duration = duration !== undefined ? duration : 0.0;
         
@@ -198,12 +201,10 @@ var kh2Bar =
 	
     // .set() method
     // Sets the gauge's current HP reading.
-    kh2Bar.prototype.set = function(value)
+    HPGauge.prototype.set = function(value)
     {
         if (arguments.length < 1) {
-            Abort("kh2Bar:set(): Wrong number of arguments\n" +
-                "1 argument was expected; caller passed " + arguments.length + ".",
-                -1);
+            Abort("HPGauge:set(): expected 1 or more arguments", -1);
         }
         
         value = Math.min(Math.max(Math.round(value), 0), this.capacity);
@@ -224,7 +225,7 @@ var kh2Bar =
     // Displays the gauge.
     // Arguments:
     //     duration: Optional. The duration of the show animation, in seconds. (default: 0.0)
-    kh2Bar.prototype.show = function(duration)
+    HPGauge.prototype.show = function(duration)
     {
         duration = duration !== undefined ? duration : 0.0;
         
@@ -238,7 +239,7 @@ var kh2Bar =
 	
     // .update() method
     // Updates the gauge for the next frame.
-    kh2Bar.prototype.update = function()
+    HPGauge.prototype.update = function()
     {
         var frameRate = IsMapEngineRunning() ? GetMapEngineFrameRate() : GetFrameRate();
         this.colorFadeTimer += 1.0 / frameRate;
@@ -267,12 +268,7 @@ var kh2Bar =
         }
     };
     
-    return kh2Bar;
+    return {
+		HPGauge: HPGauge
+	};
 })();
-
-// CommonJS export table
-// Allows this script to be loaded as a CJS module.
-if (typeof exports !== 'undefined')
-{
-    exports.kh2Bar = kh2Bar;
-}

@@ -25,7 +25,7 @@
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
-			mini.Link(GetPersonFollowers(person)).each(function(name) {
+			link(GetPersonFollowers(person)).each(function(name) {
 				FollowPerson(name, GetPersonLeader(person), distance);
 			});
 		});
@@ -73,7 +73,7 @@
 		
 		mini.Threads.createEx(null, {
 			render: function() {
-				mini.Link(followers)
+				link(followers)
 					.where(function(info) { return DoesPersonExist(info.name); })
 					.where(function(info) { return info.ghostLevel > 0; })
 					.each(function(info)
@@ -84,7 +84,7 @@
 				});
 			},
 			update: function() {
-				mini.Link(followers)
+				link(followers)
 					.where(function(info) { return !DoesPersonExist(info.name); })
 					.first(1)
 					.each(function(info)
@@ -94,7 +94,7 @@
 					SetPersonMask(info.name, new Color(255, 255, 255, 128));
 					var maggieX = GetPersonX('maggie');
 					var maggieY = GetPersonY('maggie');
-					SetPersonIgnoreList(info.name, mini.Link(followers)
+					SetPersonIgnoreList(info.name, link(followers)
 						.pluck('name')
 						.concat([ 'robert' ])
 						.toArray());
@@ -145,7 +145,7 @@
 						.call(AttachInput, 'maggie')
 						.run(true);
 				}
-				var ghostCount = mini.Link(followers)
+				var ghostCount = link(followers)
 					.where(function(info) { return info.ghostLevel > 0 })
 					.length();
 				return true;

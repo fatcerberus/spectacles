@@ -44,7 +44,7 @@ LumisquirrelAI.prototype.strategize = function(stance)
 {
 	if (stance !== BattleStance.counter) {
 		if (this.targetID === null) {
-			this.targetID = mini.Link(this.aic.battle.enemiesOf(this.aic.unit))
+			this.targetID = link(this.aic.battle.enemiesOf(this.aic.unit))
 				.random(1)[0].id;
 		}
 		switch (this.strategy) {

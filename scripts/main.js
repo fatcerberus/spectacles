@@ -3,12 +3,14 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
+global.kh2Bar = require('kh2bar');
+global.link   = require('link');
+
 const DBG_DISABLE_TEXTBOXES = false;
 const DBG_DISABLE_TRANSITIONS = false;
 
 RequireSystemScript('mini/miniRT.js');
 RequireSystemScript('analogue.js');
-RequireSystemScript('SpriteImage.js');
 
 RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
@@ -18,6 +20,7 @@ RequireScript('LucidaClock.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
 RequireScript('Session.js');
+RequireScript('SpriteImage.js');
 RequireScript('StoryManager.js');
 RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
