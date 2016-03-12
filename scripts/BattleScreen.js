@@ -153,7 +153,7 @@ BattleScreen.prototype.go = function(title)
 // Renders the BattleScreen.
 BattleScreen.prototype.render = function()
 {
-	this.background.blit(0, -16);
+	this.background.blit(0, -56);
 	for (var type in this.actorTypes) {
 		for (var i = 0; i < this.actors[type].length; ++i) {
 			this.actors[type][i].render();

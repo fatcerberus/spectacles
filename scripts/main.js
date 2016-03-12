@@ -51,7 +51,7 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	MapEngine('main.rmp', 60);
+	MapEngine('Testville.rmp', 60);
 }
 
 // clone() function

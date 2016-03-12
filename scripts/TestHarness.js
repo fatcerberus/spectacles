@@ -17,7 +17,7 @@ TestHarness.initialize = function()
 		'run': function(testID) {
 			if (!(testID in this.tests))
 				return mini.Console.write("Unknown test ID '" + testID + "'");
-			this.runTest(testID);
+			this.run(testID);
 		}
 	});
 	this.tests = {};
@@ -75,12 +75,12 @@ TestHarness.addTest = function(testID, func)
 		}
 	};
 	mini.Console.register(testID, this.tests[testID], {
-		'test': TestHarness.runTest.bind(TestHarness, testID)
+		'test': TestHarness.run.bind(TestHarness, testID)
 	});
 	mini.Console.write("Added generic test '" + testID + "'");
 };
 
-TestHarness.runTest = function(testID)
+TestHarness.run = function(testID)
 {
 	mini.Console.write("Test harness invoked");
 	mini.Console.append("testID: " + testID);

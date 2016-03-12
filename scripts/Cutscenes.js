@@ -166,7 +166,7 @@ mini.Scenelet('talk',
 					this.textSurface.setBlendMode(BLEND);
 				}
 			}
-			if (this.showSpeaker && this.speakerName != null && this.currentPage == 0 && trueLine == 0) {
+			if (this.showSpeaker && this.speakerName != null && trueLine == 0) {
 				this.font.setColorMask(CreateColor(0, 0, 0, this.textVisibility * this.nameVisibility * 255));
 				this.textSurface.drawText(this.font, 1, textY + 1, this.speakerText);
 				this.font.setColorMask(CreateColor(255, 192, 0, this.textVisibility * this.nameVisibility * 255));
@@ -204,7 +204,7 @@ mini.Scenelet('talk',
 			case "write":
 				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / GetFrameRate(), 1.0);
 				if (this.nameVisibility >= 1.0) {
-					this.lineVisibility = Math.min(this.lineVisibility + (0.5 * this.textSpeed) / GetFrameRate(), 1.0);
+					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / GetFrameRate(), 1.0);
 					var lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					var currentLineText = this.text[this.currentPage][this.lineToReveal];
 					var currentLineWidth = this.font.getStringWidth(currentLineText);
@@ -232,7 +232,7 @@ mini.Scenelet('talk',
 					this.mode = "write";
 					break;
 				}
-				this.scrollOffset = Math.min(this.scrollOffset + (8.0 * this.textSpeed) / GetFrameRate(), 1.0);
+				this.scrollOffset = Math.min(this.scrollOffset + 8.0 * this.textSpeed / GetFrameRate(), 1.0);
 				if (this.scrollOffset >= 1.0) {
 					this.topLine += 1;
 					this.scrollOffset = 0.0;

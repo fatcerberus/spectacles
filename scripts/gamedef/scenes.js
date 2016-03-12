@@ -69,10 +69,11 @@ Game.scenes =
 	argumentAtSnowplain: function() {
 		new mini.Scene()
 			.talk("Scott", true, 1.0, Infinity,
-				"You know, I guess I shouldn't be surprised Victor Spellbinder would be my father.",
-				"At some level I suspected it. Honestly, Robert treated me too much like a brother for it to to have been any other way.")
-			.talk("Elkovsky", true, 1.0, Infinity, "Victor fathered eleven children in total. Of them, you are the youngest--the eleventh. According to a prophecy made twenty years ago, it is the eleventh Littermate's responsibility--and only his--to destroy the Primus.")
-			.talk("Scott", true, 1.0, Infinity, "But what exactly IS the Primus?")
+				"I suppose I shouldn't be surprised...",
+				"Victor Spellbinder being my father, I mean.",
+				"At times, I felt like Robert saw me as a brother...  I guess now I know why.")
+			.talk("Elkovsky", true, 1.0, Infinity, "Victor fathered eleven children.  You are the youngest--the eleventh.  Per the prophecy made twenty years ago, the eleventh Littermate is destined to destroy the Primus.")
+			.talk("Scott", true, 1.0, Infinity, "But what IS the Primus?")
 			.run(true);
 	},
 	
