@@ -6,7 +6,7 @@
 Game.scenes =
 {
 	openingScenes: function() {
-		new mini.Scene()
+		new scenes.Scene()
 			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 			.pushBGM('BruceTellsHisStory')
 			.pause(1.0)
@@ -67,7 +67,7 @@ Game.scenes =
 	},
 	
 	argumentAtSnowplain: function() {
-		new mini.Scene()
+		new scenes.Scene()
 			.talk("Scott", true, 1.0, Infinity,
 				"I suppose I shouldn't be surprised...",
 				"Victor Spellbinder being my father, I mean.",
@@ -78,7 +78,7 @@ Game.scenes =
 	},
 	
 	lamentForBruce: function() {
-		new mini.Scene()
+		new scenes.Scene()
 			.fadeTo(new Color(0, 0, 0, 255), 0.0)
 			.talk("Scott", true, 2.0, 2.0, "Bruce!")
 			.pause(1.0)

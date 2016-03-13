@@ -87,7 +87,7 @@ function TargetMenu(unit, battle, usable, moveName)
 		if (this.doChangeInfo != null) {
 			this.doChangeInfo.stop();
 		}
-		this.doChangeInfo = new mini.Scene()
+		this.doChangeInfo = new scenes.Scene()
 			.fork()
 				.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 			.end()
@@ -116,7 +116,7 @@ TargetMenu.prototype.getInput = function()
 {
 	switch (AreKeysLeft() ? GetKey() : null) {
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
-			new mini.Scene()
+			new scenes.Scene()
 				.fork()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
@@ -127,7 +127,7 @@ TargetMenu.prototype.getInput = function()
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
 			this.targets = null;
-			new mini.Scene()
+			new scenes.Scene()
 				.fork()
 					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
@@ -193,7 +193,7 @@ TargetMenu.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	mini.Threads.join(mini.Threads.create(this, 10));
+	threads.join(threads.create(this, 10));
 	return this.targets;
 };
 

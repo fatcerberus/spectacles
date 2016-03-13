@@ -286,7 +286,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 		}
 	} else if (userID == 'robert2' && itemID == 'alcohol' && link(targetIDs).contains('robert2')) {
 		this.aic.unit.addStatus('finalStand');
-		new mini.Scene()
+		new scenes.Scene()
 			.adjustBGM(0.5, 5.0)
 			.talk("Scott", true, 2.0, Infinity,
 				"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "

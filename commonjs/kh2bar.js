@@ -1,6 +1,7 @@
 /**
- * kh2Bar for Sphere 2.0  (c) 2013-2016 Bruce Pascoe
- * A multi-segment HP gauge styled after the enemy HP bars in Kingdom Hearts 2.
+ *  kh2Bar CommonJS module for Sphere 2.0
+ *  a multi-segment HP gauge inspired by Kingdom Hearts
+ *  (c) 2013-2016 Bruce Pascoe
 **/
 
 if (typeof module === 'undefined')

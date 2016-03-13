@@ -8,7 +8,7 @@ function SpecsClient(hostname, person)
 	this.socket = OpenAddress(hostname, 812);
 	this.person = person;
 	this.isReady = false;
-	mini.Console.write("Connecting to person server at " + hostname + ":812");
+	console.log("Connecting to person server at " + hostname + ":812");
 	Threads.createEntityThread(this);
 }
 
@@ -21,8 +21,8 @@ SpecsClient.prototype.update = function()
 		for (var i = 0; i < lines.length; ++i) {
 			if (lines[i] == 'specs client?') {
 				this.socket.write('specs client.\nperson-id ' + this.person);
-				mini.Console.write("Successfully connected to person server");
-				mini.Console.write("Now controlling '" + this.person + "' remotely");
+				console.log("Successfully connected to person server");
+				console.log("Now controlling '" + this.person + "' remotely");
 				this.isReady = true;
 				this.lastX = GetPersonX(this.person);
 				this.lastY = GetPersonY(this.person);

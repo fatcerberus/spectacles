@@ -12,11 +12,11 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	mini.Console.write("Initializing Specs Engine test harness");
-	mini.Console.register('harness', this, {
+	console.log("Initializing Specs Engine test harness");
+	console.register('harness', this, {
 		'run': function(testID) {
 			if (!(testID in this.tests))
-				return mini.Console.write("Unknown test ID '" + testID + "'");
+				return console.log("Unknown test ID '" + testID + "'");
 			this.run(testID);
 		}
 	});
@@ -25,7 +25,7 @@ TestHarness.initialize = function()
 	
 	var testScripts = GetFileList('~/scripts/testcases');
 	for (var i = 0; i < testScripts.length; ++i) {
-		mini.Console.write("Loading testcases from '" + testScripts[i] + "'");
+		console.log("Loading testcases from '" + testScripts[i] + "'");
 		EvaluateScript('~/scripts/testcases/' + testScripts[i]);
 	}
 };
@@ -36,11 +36,11 @@ TestHarness.addBattle = function(testID, setupData)
 		setup: setupData,
 		run: function() {
 			if (TestHarness.isBattleRunning) {
-				mini.Console.write("Unable to run test battle, one is ongoing");
+				console.log("Unable to run test battle, one is ongoing");
 				return;
 			}
-			mini.Console.write("Preparing test battle");
-			mini.Console.append("battleID: " + this.setup.battleID);
+			console.log("Preparing test battle");
+			console.append("battleID: " + this.setup.battleID);
 			var session = new Session();
 			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -56,13 +56,13 @@ TestHarness.addBattle = function(testID, setupData)
 				}
 			}
 			TestHarness.isBattleRunning = true;
-			new mini.Scene()
+			new scenes.Scene()
 				.battle(this.setup.battleID, session)
 				.run(true);
 			TestHarness.isBattleRunning = false;
 		}
 	};
-	mini.Console.write("Added battle test '" + testID + "'");
+	console.log("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -74,15 +74,15 @@ TestHarness.addTest = function(testID, func)
 			this.func.call(this.context);
 		}
 	};
-	mini.Console.register(testID, this.tests[testID], {
+	console.register(testID, this.tests[testID], {
 		'test': TestHarness.run.bind(TestHarness, testID)
 	});
-	mini.Console.write("Added generic test '" + testID + "'");
+	console.log("Added generic test '" + testID + "'");
 };
 
 TestHarness.run = function(testID)
 {
-	mini.Console.write("Test harness invoked");
-	mini.Console.append("testID: " + testID);
+	console.log("Test harness invoked");
+	console.append("testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

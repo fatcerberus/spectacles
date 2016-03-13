@@ -8,7 +8,7 @@
 		world.scrambler = new Scrambler('hero');
 		world.scrambler.setBattles([ 'headlessHorse' ]);
 		world.scrambler.start();
-		mini.BGM.play('music/ScottsHomecoming.ogg');
+		music.play('music/ScottsHomecoming.ogg');
 		StoryManager.show('argumentAtSnowplain');
 	}
 })

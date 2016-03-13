@@ -90,7 +90,7 @@ function BattleHUD(partyMaxMP)
 BattleHUD.prototype.dispose = function()
 {
 	this.turnPreview.dispose();
-	mini.Threads.kill(this.thread);
+	threads.kill(this.thread);
 };
 
 // .createEnemyHPGauge() method
@@ -102,15 +102,15 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 	var gauge = new kh2Bar.HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
-	mini.Console.write("Created HP gauge for unit '" + unit.name + "'");
-	mini.Console.append("cap: " + unit.maxHP);
+	console.log("Created HP gauge for unit '" + unit.name + "'");
+	console.append("cap: " + unit.maxHP);
 };
 
 // .hide() method
 // Hides the HUD.
 BattleHUD.prototype.hide = function()
 {
-	new mini.Scene()
+	new scenes.Scene()
 		.tween(this, 0.5, 'easeInExpo', { fadeness: 0.0 })
 		.run();
 };
@@ -123,12 +123,12 @@ BattleHUD.prototype.highlight = function(unit)
 {
 	if (unit !== null) {
 		this.highlightedUnit = unit;
-		new mini.Scene()
+		new scenes.Scene()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
-		new mini.Scene()
+		new scenes.Scene()
 			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 0, 0, 0))
 			.run();
 	}
@@ -181,7 +181,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 				: CreateColor(0, 255, 0, 255);
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
-			new mini.Scene()
+			new scenes.Scene()
 				.fork()
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColor)
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', CreateColor(0, 0, 0, 0))
@@ -226,10 +226,10 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
-		mini.Console.write("Activating in-battle HUD");
-		this.thread = mini.Threads.create(this, 20);
+		console.log("Activating in-battle HUD");
+		this.thread = threads.create(this, 20);
 	}
-	new mini.Scene()
+	new scenes.Scene()
 		.tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 })
 		.run();
 };

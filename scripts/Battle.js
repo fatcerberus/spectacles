@@ -27,7 +27,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	mini.Console.write("Initializing battle context for '" + battleID + "'");
+	console.log("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
@@ -44,7 +44,7 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the item used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the item was used on, or
 	//                 null in the case of a non-targeted item.
-	this.itemUsed = new mini.Delegate();
+	this.itemUsed = new delegates.Delegate();
 	
 	// .skillUsed event
 	// Occurs when a skill is used by a battle unit.
@@ -53,14 +53,14 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the skill used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
 	//                 null in the case of a non-targeted skill.
-	this.skillUsed = new mini.Delegate();
+	this.skillUsed = new delegates.Delegate();
 	
 	// .stanceChanged event
 	// Occurs when a unit changes stance.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit changing stance.
 	//     stance: The unit's new stance.
-	this.stanceChanged = new mini.Delegate();
+	this.stanceChanged = new delegates.Delegate();
 	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
@@ -69,26 +69,26 @@ function Battle(session, battleID)
 	//     amount:     The amount of damage taken.
 	//     actingUnit: The unit responsible for inflicting the damage. In the case of residual
 	//                 (e.g. status-induced) damage, this will be null.
-	this.unitDamaged = new mini.Delegate();
+	this.unitDamaged = new delegates.Delegate();
 	
 	// .unitHealed event
 	// Occurs when a unit in the battle recovers HP.
 	// Arguments (for event handler):
 	//     unit:     The unit recovering HP.
 	//     amount:   The number of hit points recovered.
-	this.unitHealed = new mini.Delegate();
+	this.unitHealed = new delegates.Delegate();
 	
 	// .unitKilled event
 	// Occurs when a unit falls in battle.
 	// Arguments (for event handler):
 	//     unitID: The ID of the downed unit.
-	this.unitKilled = new mini.Delegate();
+	this.unitKilled = new delegates.Delegate();
 	
 	// .unitReady event
 	// Occurs when a unit is about to take its turn.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit whose turn is up.
-	this.unitReady = new mini.Delegate();
+	this.unitReady = new delegates.Delegate();
 	
 	// .unitTargeted event
 	// Occurs when a unit in the battle is successfully targeted by an action.
@@ -99,7 +99,7 @@ function Battle(session, battleID)
 	// Remarks:
 	//     If, after accuracy is taken into account, the action would result in
 	//     a miss, this event will not be raised.
-	this.unitTargeted = new mini.Delegate();
+	this.unitTargeted = new delegates.Delegate();
 }
 
 // .addCondition() method
@@ -116,9 +116,9 @@ Battle.prototype.addCondition = function(conditionID)
 	if (!eventData.cancel) {
 		var effect = new ConditionContext(eventData.conditionID, this);
 		this.conditions.push(effect);
-		mini.Console.write("Installed field condition " + effect.name);
+		console.log("Installed field condition " + effect.name);
 	} else {
-		mini.Console.write("FC installation (ID: " + conditionID + ") canceled by existing FC");
+		console.log("FC installation (ID: " + conditionID + ") canceled by existing FC");
 	}
 };
 
@@ -192,20 +192,20 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (GetGameManifest().disableBattles) {
-		mini.Console.write("Battles disabled, automatic win");
-		mini.Console.append("battleID: " + this.battleID);
+		console.log("Battles disabled, automatic win");
+		console.append("battleID: " + this.battleID);
 		this.result = BattleResult.playerWon;
 		return null;
 	}
-	mini.Console.write("");
-	mini.Console.write("Starting battle engine");
-	mini.Console.append("battleID: " + this.battleID);
+	console.log("");
+	console.log("Starting battle engine");
+	console.append("battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
 		var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 		partyMaxMP += mpDonated;
-		mini.Console.write(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+		console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -238,14 +238,14 @@ Battle.prototype.go = function()
 		battleBGMTrack = this.parameters.bgm;
 	}
 	this.ui.hud.turnPreview.set(this.predictTurns());
-	mini.BGM.push("music/" + battleBGMTrack + ".ogg");
+	music.push("music/" + battleBGMTrack + ".ogg");
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
-	mini.Console.register('battle', this, {
+	console.register('battle', this, {
 		'spawn': this.spawnEnemy
 	});
-	var battleThread = mini.Threads.create(this);
+	var battleThread = threads.create(this);
 	return battleThread;
 };
 
@@ -275,7 +275,7 @@ Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			mini.Console.write("Battle condition " + this.conditions[i].name + " lifted");
+			console.log("Battle condition " + this.conditions[i].name + " lifted");
 			this.conditions.splice(i, 1);
 			--i; continue;
 		}
@@ -380,8 +380,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		mini.Console.write("Applying effect '" + effect.type + "'");
-		mini.Console.append("retarg: " + effect.targetHint);
+		console.log("Applying effect '" + effect.type + "'");
+		console.append("retarg: " + effect.targetHint);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
@@ -404,13 +404,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			aimRate = eventData.aimRate;
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-		mini.Console.write("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
+		console.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
 		if (RNG.chance(odds)) {
-			mini.Console.append("hit");
+			console.append("hit");
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
-			mini.Console.append("miss");
+			console.append("miss");
 			targetUnits[i].evade(actingUnit, action);
 		}
 	}
@@ -432,8 +432,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 				var targets = effect.targetHint == 'random'
 					? [ RNG.sample(targetsHit) ]
 					: targetsHit;
-				mini.Console.write("Applying effect '" + effect.type + "'");
-				mini.Console.append("retarg: " + effect.targetHint);
+				console.log("Applying effect '" + effect.type + "'");
+				console.append("retarg: " + effect.targetHint);
 				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;
@@ -454,7 +454,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
-	mini.Console.write("Spawning new enemy '" + enemyClass + "'");
+	console.log("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
@@ -474,8 +474,8 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
-	mini.Console.write("");
-	mini.Console.write("Beginning CTB cycle #" + (this.timer + 1));
+	console.log("");
+	console.log("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -488,17 +488,17 @@ Battle.prototype.tick = function()
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (link(this.playerUnits).none(isUnitAlive)) {
-			mini.BGM.adjust(0.0, 2.0);
+			music.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.enemyWon;
-			mini.Console.write("All active party members have been killed");
+			console.log("All active party members have been killed");
 			return;
 		}
 		if (link(this.enemyUnits).none(isUnitAlive)) {
-			mini.BGM.adjust(0.0, 1.0);
+			music.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.partyWon;
-			mini.Console.write("All enemies have been killed");
+			console.log("All enemies have been killed");
 			return;
 		}
 	}
@@ -523,12 +523,12 @@ Battle.prototype.update = function() {
 			if (!link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
-					mini.Console.write("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					console.log("Calling onFirstStart() for battleID '" + this.battleID + "'");
 					this.parameters.onFirstStart.call(this);
 				 }
 			}
 			if ('onStart' in this.parameters) {
-				mini.Console.write("Calling onStart() for battleID '" + this.battleID + "'");
+				console.log("Calling onStart() for battleID '" + this.battleID + "'");
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
@@ -539,12 +539,12 @@ Battle.prototype.update = function() {
 			break;
 	}
 	if (this.result !== null) {
-		mini.Console.write("Battle engine shutting down");
+		console.log("Battle engine shutting down");
 		link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
-		mini.BGM.pop();
-		mini.BGM.adjust(1.0, 0.0);
-		mini.Console.unregister('battle');
+		music.pop();
+		music.adjust(1.0, 0.0);
+		console.unregister('battle');
 		return false;
 	} else {
 		return true;

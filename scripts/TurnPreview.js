@@ -18,7 +18,7 @@ function TurnPreview()
 // Frees resources associated with this TurnPreview object.
 TurnPreview.prototype.dispose = function()
 {
-	mini.Threads.kill(this.thread);
+	threads.kill(this.thread);
 };
 
 // .render() method
@@ -82,7 +82,7 @@ TurnPreview.prototype.set = function(prediction)
 			if (turnBox.tween !== null) {
 				turnBox.tween.stop();
 			}
-			turnBox.tween = new mini.Scene()
+			turnBox.tween = new scenes.Scene()
 				.tween(turnBox, moveTime, moveEasing, { x: 160 });
 			turnBox.tween.run();
 		}
@@ -96,7 +96,7 @@ TurnPreview.prototype.set = function(prediction)
 		if (turnBox.tween !== null) {
 			turnBox.tween.stop();
 		}
-		turnBox.tween = new mini.Scene()
+		turnBox.tween = new scenes.Scene()
 			.tween(turnBox, moveTime, moveEasing, { x: 48 + i * 16 });
 		turnBox.tween.run();
 	}
@@ -107,10 +107,10 @@ TurnPreview.prototype.set = function(prediction)
 TurnPreview.prototype.show = function()
 {
 	if (this.thread === null) {
-		mini.Console.write("Activating in-battle turn preview");
-		this.thread = mini.Threads.create(this, 20);
+		console.log("Activating in-battle turn preview");
+		this.thread = threads.create(this, 20);
 	}
-	new mini.Scene()
+	new scenes.Scene()
 		.tween(this, 0.5, 'easeOutExpo', { fadeness: 0.0 })
 		.run();
 };

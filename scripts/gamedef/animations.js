@@ -14,7 +14,7 @@ Game.animations =
 	//     doesMiss: true if the move was determined to have missed, false otherwise.
 	
 	munch: function(user, targets, doesMiss) {
-		new mini.Scene()
+		new scenes.Scene()
 			.playSound("Munch.wav")
 			.run();
 		this.nextEffect();

@@ -39,14 +39,14 @@ TitleScreen.prototype.show = function()
 	if (this.manifest.disableAnimation) {
 		this.fadeness = 0.0;
 	}
-	this.transition = new mini.Scene()
+	this.transition = new scenes.Scene()
 		.adjustBGM(1.0)
 		.pushBGM(this.themeTrack)
 		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
 		.run();
-	mini.Threads.join(mini.Threads.create(this));
-	mini.BGM.pop();
-	mini.BGM.adjust(1.0);
+	threads.join(threads.create(this));
+	music.pop();
+	music.adjust(1.0);
 	return new Session();
 };
 
@@ -64,7 +64,7 @@ TitleScreen.prototype.update = function()
 				if (this.manifest.disableAnimation) {
 					this.fadeness = 1.0;
 				}
-				this.transition = new mini.Scene()
+				this.transition = new scenes.Scene()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()

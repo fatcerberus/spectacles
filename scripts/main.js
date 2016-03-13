@@ -3,13 +3,17 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-global.kh2Bar = require('kh2bar');
-global.link   = require('link');
+global.console   = require('miniRT/console');
+global.delegates = require('miniRT/delegates');
+global.kh2Bar    = require('kh2bar');
+global.link      = require('link');
+global.music     = require('miniRT/music');
+global.scenes    = require('miniRT/scenes');
+global.threads   = require('miniRT/threads');
 
 const DBG_DISABLE_TEXTBOXES = false;
 const DBG_DISABLE_TRANSITIONS = false;
 
-RequireSystemScript('mini/miniRT.js');
 RequireSystemScript('analogue.js');
 
 RequireScript('Battle.js');
@@ -31,15 +35,15 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	mini.initialize();
+	SetFrameRate(60);
 	analogue.init();
 	
-	mini.Console.register('specs', global, {
+	console.register('specs', global, {
 		'exit': function() { Exit(); }
 	});
-	mini.Console.register('yap', null, {
-		'on': function() { DBG_DISABLE_TEXTBOXES = false; mini.Console.write("Oh, yappy times are here again..."); }, 
-		'off': function() { DBG_DISABLE_TEXTBOXES = true; mini.Console.write("The yappy times are OVER!"); }, 
+	console.register('yap', null, {
+		'on': function() { DBG_DISABLE_TEXTBOXES = false; console.write("Oh, yappy times are here again..."); }, 
+		'off': function() { DBG_DISABLE_TEXTBOXES = true; console.write("The yappy times are OVER!"); }, 
 	});
 	
 	// set up the beta test harness
@@ -48,7 +52,7 @@ function game()
 	// show the title screen and start the game!
 	var manifest = GetGameManifest();
 	if (!manifest.disableSplash) {
-		mini.BGM.push('music/SpectaclesTheme.ogg');
+		music.push('music/SpectaclesTheme.ogg');
 		ShowLogo('images/Logos/TitleCard.png', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
@@ -124,17 +128,17 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 function ShowLogo(filename, time)
 {
 	var image = new Image(filename);
-	var scene = new mini.Scene()
+	var scene = new scenes.Scene()
 		.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 		.pause(time)
 		.fadeTo(CreateColor(0, 0, 0, 255), 1.0)
 		.run();
-	mini.Threads.join(mini.Threads.createEx(scene, {
+	threads.join(threads.createEx(scene, {
 		update: function() { return this.isRunning(); },
 		render: function() { image.blit(0, 0); }
 	}));
-	new mini.Scene()
+	new scenes.Scene()
 		.fadeTo(CreateColor(0, 0, 0, 0), 0.0)
 		.run(true);
 };

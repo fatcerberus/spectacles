@@ -34,10 +34,7 @@ function $default()
 
 		// miniRT options
 		frameRate: 60,
-		sceneRenderPriority: 99,
 		logPath: '~usr/Spectacles Saga/Console Log.txt',
-		consoleBuffer: 1000,
-		consoleLines: 10,
 		
 		// Specs Engine debug options
 		disableAnimation: false,

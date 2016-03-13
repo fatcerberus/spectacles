@@ -18,7 +18,7 @@ function ConditionContext(conditionID, battle)
 	this.name = Game.conditions[conditionID].name;
 	this.conditionDef = Game.conditions[conditionID];
 	this.conditionID = conditionID;
-	mini.Console.write("Initializing FC context " + this.name);
+	console.log("Initializing FC context " + this.name);
 	if ('overrules' in this.conditionDef) {
 		for (var i = 0; i < this.conditionDef.overrules.length; ++i) {
 			this.battle.liftCondition(this.conditionDef.overrules[i]);
@@ -55,7 +55,7 @@ ConditionContext.prototype.invoke = function(eventID, data)
 	if (!(eventID in this.conditionDef)) {
 		return;
 	}
-	mini.Console.write("Invoking FC " + this.name);
-	mini.Console.append("evt: " + eventID);
+	console.log("Invoking FC " + this.name);
+	console.append("evt: " + eventID);
 	this.conditionDef[eventID].call(this.context, this.battle, data);
 };

@@ -18,7 +18,7 @@ function StatusContext(statusID, unit)
 	this.statusDef = Game.statuses[statusID];
 	this.statusID = statusID;
 	this.unit = unit;
-	mini.Console.write("Initializing status context " + unit.name + "->" + this.name);
+	console.log("Initializing status context " + unit.name + "->" + this.name);
 	if ('overrules' in this.statusDef) {
 		for (var i = 0; i < this.statusDef.overrules.length; ++i) {
 			this.unit.liftStatus(this.statusDef.overrules[i]);
@@ -61,8 +61,8 @@ StatusContext.prototype.invoke = function(eventID, data)
 	if (!(eventID in this.statusDef)) {
 		return;
 	}
-	mini.Console.write("Invoking " + this.unit.name + "->" + this.name);
-	mini.Console.append("evt: " + eventID);
+	console.log("Invoking " + this.unit.name + "->" + this.name);
+	console.append("evt: " + eventID);
 	this.unit.battle.suspend();
 	this.statusDef[eventID].call(this.context, this.unit, data);
 	this.unit.battle.resume();

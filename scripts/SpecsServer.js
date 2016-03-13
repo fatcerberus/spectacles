@@ -9,9 +9,9 @@ function SpecsServer()
 	this.connections = [];
 	if (this.socket != null) {
 		this.thread = Threads.createEntityThread(this);
-		mini.Console.write("Specs server started running on port 812");
+		console.log("Specs server started running on port 812");
 	} else {
-		mini.Console.write("Couldn't start Specs server");
+		console.log("Couldn't start Specs server");
 	}
 }
 
@@ -25,14 +25,14 @@ SpecsServer.prototype.update = function()
 {
 	var socket = this.socket.acceptNext();
 	if (socket != null) {
-		mini.Console.write("Accepted connection from " + socket.getRemoteAddress() + ":" + socket.getRemotePort());
+		console.log("Accepted connection from " + socket.getRemoteAddress() + ":" + socket.getRemotePort());
 		this.connections.push(new SpecsServerSocket(socket));
 	}
 	for (var i = 0; i < this.connections.length; ++i) {
 		if (!this.connections[i].isConnected()) {
 			var ip = this.connections[i].ip;
 			var port = this.connections[i].port;
-			mini.Console.write(ip + ":" + port + " has disconnected");
+			console.log(ip + ":" + port + " has disconnected");
 			this.connections[i].dispose();
 			this.connections.splice(i, 1);
 			--i;
@@ -69,13 +69,13 @@ SpecsServerSocket.prototype.update = function()
 	}
 	for (var i = 0; i < lines.length; ++i) {
 		if (lines[i] == 'specs client.' && !this.isSpecsClient) {
-			mini.Console.write(this.ip + ":" + this.port + " is a Specs Engine client");
+			console.log(this.ip + ":" + this.port + " is a Specs Engine client");
 			this.isSpecsClient = true;
 		}
 		if (!this.isSpecsClient) continue;
 		if (lines[i].substr(0, 10) == 'person-id ') {
 			this.person = lines[i].substr(10);
-			mini.Console.write(this.ip + ":" + this.port + " took control of '" + this.person + "'");
+			console.log(this.ip + ":" + this.port + " took control of '" + this.person + "'");
 		} else if (this.person != null) {
 			switch(lines[i]) {
 				case 'n':

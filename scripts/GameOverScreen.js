@@ -40,13 +40,13 @@ GameOverScreen.prototype.show = function()
 	if (DBG_DISABLE_TRANSITIONS) {
 		this.fadeness = 0.0;
 	}
-	mini.BGM.play(null);
-	this.transition = new mini.Scene()
+	music.play(null);
+	this.transition = new scenes.Scene()
 		.pushBGM("GameOver")
 		.adjustBGM(1.0)
 		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
 		.run();
-	return mini.Threads.create(this);
+	return threads.create(this);
 };
 
 // .update() method
@@ -66,7 +66,7 @@ GameOverScreen.prototype.update = function()
 				if (DBG_DISABLE_TRANSITIONS) {
 					this.fadeness = 1.0;
 				}
-				this.transition = new mini.Scene()
+				this.transition = new scenes.Scene()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()
@@ -77,8 +77,8 @@ GameOverScreen.prototype.update = function()
 			break;
 		case 'transitionOut':
 			if (!this.transition.isRunning()) {
-				mini.BGM.pop();
-				mini.BGM.adjust(1.0);
+				music.pop();
+				music.adjust(1.0);
 			}
 			return this.transition.isRunning();
 	}

@@ -5,15 +5,15 @@
 
 RequireScript('Battle.js');
 
-mini.Scenelet('adjustBGM',
+scenes.scenelet('adjustBGM',
 {
 	start: function(scene, volume, duration) {
 		duration = duration !== undefined ? duration : 0.0;
 		
-		mini.BGM.adjust(volume, duration);
+		music.adjust(volume, duration);
 	},
 	update: function(scene) {
-		return mini.BGM.isAdjusting();
+		return music.isAdjusting();
 	}
 });
 
@@ -21,7 +21,7 @@ mini.Scenelet('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-mini.Scenelet('battle',
+scenes.scenelet('battle',
 {
 	start: function(scene, battleID, session) {
 		this.mode = 'battle';
@@ -31,9 +31,9 @@ mini.Scenelet('battle',
 	update: function(scene) {
 		switch (this.mode) {
 			case 'battle':
-				if (!mini.Threads.isRunning(this.battleThread)) {
+				if (!threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.enemyWon) {
-						mini.Console.write("Player lost battle, showing Game Over screen");
+						console.log("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -43,9 +43,9 @@ mini.Scenelet('battle',
 				}
 				break;
 			case 'gameOver':
-				if (!mini.Threads.isRunning(this.gameOverThread)) {
+				if (!threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
-						mini.Console.write("Player asked to retry last battle");
+						console.log("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
@@ -58,35 +58,35 @@ mini.Scenelet('battle',
 	}
 });
 
-mini.Scenelet('changeMap',
+scenes.scenelet('changeMap',
 {
 	start: function(scene, map) {
 		ChangeMap(map);
 	}
 });
 
-mini.Scenelet('changeBGM',
+scenes.scenelet('changeBGM',
 {
 	start: function(scene, trackName, fadeTime) {
-		mini.BGM.play("music/" + trackName + ".ogg", fadeTime);
+		music.play("music/" + trackName + ".ogg", fadeTime);
 	}
 });
 
-mini.Scenelet('pushBGM',
+scenes.scenelet('pushBGM',
 {
 	start: function(scene, trackName) {
-		mini.BGM.push("music/" + trackName + ".ogg");
+		music.push("music/" + trackName + ".ogg");
 	}
 });
 
-mini.Scenelet('popBGM',
+scenes.scenelet('popBGM',
 {
 	start: function(scene) {
-		mini.BGM.pop();
+		music.pop();
 	}
 });
 
-mini.Scenelet('talk',
+scenes.scenelet('talk',
 {
 	start: function(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
@@ -117,7 +117,7 @@ mini.Scenelet('talk',
 		this.topLine = 0;
 		this.lineToReveal = 0;
 		this.textSurface = new Surface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
-		this.transition = new mini.Scene()
+		this.transition = new scenes.Scene()
 			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
@@ -256,7 +256,7 @@ mini.Scenelet('talk',
 			case "hidetext":
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / GetFrameRate(), 0.0);
 				if (this.textVisibility <= 0.0) {
-					this.transition = new mini.Scene()
+					this.transition = new scenes.Scene()
 						.tween(this, 0.375, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					this.mode = "fadeout";

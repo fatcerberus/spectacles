@@ -91,18 +91,18 @@ FieldMenu.prototype.open = function()
 {
 	this.isOpen = true;
 	this.fadeness = 0.0;
-	var thread = mini.Threads.create(this, 100);
+	var thread = threads.create(this, 100);
 	this.selectItem(this.selection);
-	new mini.Scene()
+	new scenes.Scene()
 		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })
 		.run(true);
-	mini.Threads.join(thread);
+	threads.join(thread);
 };
 
 FieldMenu.prototype.close = function()
 {
 	this.isOpen = false;
-	new mini.Scene()
+	new scenes.Scene()
 		.fork().tween(this.items[this.selection].highlight, 0.5, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.5, 'easeInSine', this.itemTextColor).end()
 		.tween(this, 0.5, 'easeInQuint', { fadeness: 0.0 })
@@ -114,7 +114,7 @@ FieldMenu.prototype.selectItem = function(itemID)
 	if (this.itemFader != null) {
 		this.itemFader.stop();
 	}
-	this.itemFader = new mini.Scene()
+	this.itemFader = new scenes.Scene()
 		.fork().tween(this.items[this.selection].highlight, 0.25, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.25, 'easeInSine', this.itemTextColor).end()
 		.fork().tween(this.items[itemID].highlight, 0.25, 'easeOutSine', this.highlightColor).end()

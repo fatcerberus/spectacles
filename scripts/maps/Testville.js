@@ -33,12 +33,12 @@
 			var name = GetCurrentPerson();
 			if (name == 'maggie' || name == 'robert') return;
 			if (GetInputPerson() == 'scott') {
-				new mini.Scene()
+				new scenes.Scene()
 					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "! maggie is just on a rampage today, isn't she? Eating ghosts left and right... how do you eat a ghost anyway?")
 					.talk(name, true, 2.0, Infinity, "Scott, you suck. Go get eaten by a hunger-pig or something.")
 					.run(true);
 			} else {
-				new mini.Scene()
+				new scenes.Scene()
 					.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
 					.talk("maggie", true, 2.0, Infinity, "Too late!")
 					.killPerson(name)
@@ -71,7 +71,7 @@
 			maggieSize += 0.05;
 		});
 		
-		mini.Threads.createEx(null, {
+		threads.createEx(null, {
 			render: function() {
 				link(followers)
 					.where(function(info) { return DoesPersonExist(info.name); })
@@ -135,7 +135,7 @@
 					var session = analogue.getWorld().session;
 					session.party.remove('scott');
 					session.party.add('maggie', 100);
-					new mini.Scene()
+					new scenes.Scene()
 						.fork()
 							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
 							.setSprite('maggie', 'spritesets/battlers/maggie_hippo.rss')
@@ -168,7 +168,7 @@
 			}
 		}
 		
-		mini.BGM.play('music/Portentia.ogg');
+		music.play('music/Portentia.ogg');
 	},
 	
 	robert: {
@@ -185,7 +185,7 @@
 				scott.items.push(new ItemUsable('holyWater'));
 				scott.items.push(new ItemUsable('vaccine'));
 				scott.items.push(new ItemUsable('alcohol'));
-				new mini.Scene()
+				new scenes.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Scott, you suck. Fight me to decide who gets to kill my sister!")
 					.battle('rsbFinal', analogue.getWorld().session)
 					.run(true);
@@ -193,7 +193,7 @@
 			} else {
 				var maggie = session.party.members['maggie'];
 				maggie.items.push(new ItemUsable('alcohol'));
-				new mini.Scene()
+				new scenes.Scene()
 					.talk("Robert", true, 2.0, Infinity, "Hey maggie, where did Scott go?  Please tell me you didn't do... what I think you did... I hope?")
 					.talk("maggie", true, 2.0, Infinity, "Guess what?  You're next!")
 					.battle('rsbFinal', analogue.getWorld().session)
@@ -218,7 +218,7 @@
 			DetachInput();
 			person.isActive = false;
 			var number = person.peopleEaten != 1 ? person.peopleEaten.toString() : "one";
-			new mini.Scene()
+			new scenes.Scene()
 				.doIf(function() { return person.peopleEaten > 0; })
 					.talk("Scott", true, 2.0, Infinity,
 						"Thanks maggie, you just devoured " + number + " of my friends!",
@@ -246,14 +246,14 @@
 					DetachInput('scott');
 					person.isActive = false;
 					if (++person.timesStopped <= 1) {
-						new mini.Scene()
+						new scenes.Scene()
 							.talk("maggie", true, 2.0, Infinity, "Hey, watch where you're going Scott!  Do it again and you'll get eaten!")
 							.run(true);
 						person.isActive = true;
 						AttachInput('scott');
 					} else {
 						DetachCamera();
-						new mini.Scene()
+						new scenes.Scene()
 							.talk("maggie", true, 2.0, Infinity, "That's it, you blocked my path for the last time! Prepare to be devoured!")
 							.fork()
 								.focusOnPerson('maggie', 2.0)

@@ -25,7 +25,7 @@ Game.battles =
 			'headlessHorse'
 		],
 		onStart: function() {
-			new mini.Scene()
+			new scenes.Scene()
 				.talk("maggie", true, 2.0, Infinity,
 					"I'd suggest keeping your wits about you while fighting this thing if you don't want to be barbequed. "
 					+ "It won't hesitate to roast you--and then I'd have to eat you!")
@@ -55,7 +55,7 @@ Game.battles =
 		onStart: function() {
 			var scott = this.findUnit('scott');
 			if (scott != null) {
-				new mini.Scene()
+				new scenes.Scene()
 					.talk("Robert", true, 1.0, Infinity,
 						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
 						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "

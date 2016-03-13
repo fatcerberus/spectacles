@@ -56,7 +56,7 @@ function MoveMenu(unit, battle, stance)
 			{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 	}
 	
-	this.chooseMove = new mini.Scene()
+	this.chooseMove = new scenes.Scene()
 		.fork()
 			.tween(this.moveCursorColor, 0.125, 'easeInOutSine', this.lockedCursorColor)
 		.end()
@@ -65,7 +65,7 @@ function MoveMenu(unit, battle, stance)
 		.end()
 		.tween(this, 0.25, 'easeInBack', { fadeness: 0.0 });
 	
-	this.hideMoveList = new mini.Scene()
+	this.hideMoveList = new scenes.Scene()
 		.fork()
 			.tween(this.moveCursorColor, 0.25, 'linear', CreateColor(0, 0, 0, 0))
 		.end()
@@ -74,14 +74,14 @@ function MoveMenu(unit, battle, stance)
 		.end()
 		.tween(this, 0.25, 'easeInBack', { expansion: 0.0 });
 	
-	this.showMenu = new mini.Scene()
+	this.showMenu = new scenes.Scene()
 		.fork()	
 			.tween(this.topCursorColor, 0.25, 'easeOutQuad', CreateColor(192, 192, 192, 255))
 			.tween(this.topCursorColor, 0.25, 'easeOutQuad', this.normalCursorColor)
 		.end()
 		.tween(this, 0.5, 'easeOutBounce', { fadeness: 1.0 });
 	
-	this.showMoveList = new mini.Scene()
+	this.showMoveList = new scenes.Scene()
 		.fork()
 			.tween(this.topCursorColor, 0.25, 'easeInOutSine', this.lockedCursorColor)
 		.end()
@@ -281,8 +281,8 @@ MoveMenu.prototype.open = function()
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
 		this.updateTurnPreview();
-		this.menuThread = mini.Threads.create(this, 10);
-		mini.Threads.join(this.menuThread);
+		this.menuThread = threads.create(this, 10);
+		threads.join(this.menuThread);
 		switch (this.stance) {
 			case BattleStance.attack:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();

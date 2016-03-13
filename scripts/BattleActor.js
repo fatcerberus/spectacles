@@ -41,18 +41,18 @@ BattleActor.prototype.animate = function(animationID)
 	switch (animationID) {
 		case 'die':
 			this.sprite.direction = 'north';
-			new mini.Scene()
+			new scenes.Scene()
 				.tween(this, 1.0, 'easeInOutSine', { opacity: 0.1 })
 				.run();
 			break;
 		case 'revive':
-			new mini.Scene()
+			new scenes.Scene()
 				.tween(this, 1.0, 'easeInOutSine', { opacity: 1.0 })
 				.call(function() { this.sprite.direction = this.isEnemy ? 'east' : 'west'; }.bind(this))
 				.run();
 			break;
 		case 'sleep':
-			new mini.Scene()
+			new scenes.Scene()
 				.talk("maggie", 2.0, this.name + " fell asleep! Hey, does that mean I get to eat him now?")
 				.run(true);
 			break;
@@ -75,7 +75,7 @@ BattleActor.prototype.enter = function(isImmediate)
 	var newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
 	var threadID = null;
 	if (!isImmediate) {
-		var entrance = new mini.Scene()
+		var entrance = new scenes.Scene()
 			.tween(this, 1.5, 'linear', { x: newX })
 			.run(true);
 	} else {
@@ -133,7 +133,7 @@ BattleActor.prototype.showDamage = function(amount, color)
 		data[yName] = finalY - (20 - i * 5);
 		tweenInfo[yName] = finalY;
 	}
-	data.scene = new mini.Scene()
+	data.scene = new scenes.Scene()
 		.tween(data, 0.5, 'easeOutBounce', tweenInfo)
 		.pause(0.25);
 	data.scene.run();
@@ -151,7 +151,7 @@ BattleActor.prototype.showHealing = function(amount, color)
 	color = color !== void null ? color : null;
 	
 	var data = { amount: amount, color: color, y: 20, alpha: 255 };
-	data.scene = new mini.Scene()
+	data.scene = new scenes.Scene()
 		.tween(data, 1.0, 'easeOutExpo', { y: -11 * this.healings.length })
 		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
 	data.scene.run();
@@ -174,7 +174,7 @@ BattleActor.prototype.update = function()
 				var yName = 'y' + i2.toString();
 				tweenInfo[yName] = finalY;
 			}
-			data.scene = new mini.Scene()
+			data.scene = new scenes.Scene()
 				.tween(data, 0.5, 'easeOutBounce', tweenInfo)
 				.pause(0.25);
 			data.scene.run();
