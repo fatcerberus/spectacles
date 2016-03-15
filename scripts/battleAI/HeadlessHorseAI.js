@@ -12,11 +12,11 @@
 function HeadlessHorseAI(aiContext)
 {
 	this.aic = aiContext;
-	this.aic.battle.itemUsed.add(this, this.onItemUsed);
-	this.aic.battle.skillUsed.add(this, this.onSkillUsed);
-	this.aic.battle.unitDamaged.add(this, this.onUnitDamaged);
-	this.aic.battle.unitReady.add(this, this.onUnitReady);
-	this.aic.battle.unitTargeted.add(this, this.onUnitTargeted);
+	this.aic.battle.itemUsed.add(this.onItemUsed, this);
+	this.aic.battle.skillUsed.add(this.onSkillUsed, this);
+	this.aic.battle.unitDamaged.add(this.onUnitDamaged, this);
+	this.aic.battle.unitReady.add(this.onUnitReady, this);
+	this.aic.battle.unitTargeted.add(this.onUnitTargeted, this);
 
 	// HP thresholds for phase transitions
 	this.phasePoints = [ 500 ];  // (starting with P2)
@@ -39,11 +39,11 @@ function HeadlessHorseAI(aiContext)
 // Relinquishes resources and shuts down the AI.
 HeadlessHorseAI.prototype.dispose = function()
 {
-	this.aic.battle.itemUsed.remove(this, this.onItemUsed);
-	this.aic.battle.skillUsed.remove(this, this.onSkillUsed);
-	this.aic.battle.unitDamaged.remove(this, this.onUnitDamaged);
-	this.aic.battle.unitReady.remove(this, this.onUnitReady);
-	this.aic.battle.unitTargeted.remove(this, this.onUnitTargeted);
+	this.aic.battle.itemUsed.remove(this.onItemUsed, this);
+	this.aic.battle.skillUsed.remove(this.onSkillUsed, this);
+	this.aic.battle.unitDamaged.remove(this.onUnitDamaged, this);
+	this.aic.battle.unitReady.remove(this.onUnitReady, this);
+	this.aic.battle.unitTargeted.remove(this.onUnitTargeted, this);
 };
 
 // .strategize() method

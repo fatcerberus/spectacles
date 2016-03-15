@@ -34,7 +34,7 @@ function $default()
 
 		// miniRT options
 		frameRate: 60,
-		logPath: '~usr/Spectacles Saga/Console Log.txt',
+		logPath: '~usr/Spectacles Saga/console.log',
 		
 		// Specs Engine debug options
 		disableAnimation: false,

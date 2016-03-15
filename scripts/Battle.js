@@ -209,12 +209,12 @@ Battle.prototype.go = function()
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
-	partyMPPool.gainedMP.add(this, function(mpPool, availableMP) {
+	partyMPPool.gainedMP.add(function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
-	});
-	partyMPPool.lostMP.add(this, function(mpPool, availableMP) {
+	}, this);
+	partyMPPool.lostMP.add(function(mpPool, availableMP) {
 		this.ui.hud.mpGauge.set(availableMP);
-	});
+	}, this);
 	this.ui = new BattleScreen(partyMaxMP);
 	this.battleUnits = [];
 	this.playerUnits = [];

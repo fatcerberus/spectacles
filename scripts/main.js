@@ -5,9 +5,10 @@
 
 global.console   = require('miniRT/console');
 global.delegates = require('miniRT/delegates');
-global.kh2Bar    = require('kh2bar');
+global.kh2bar    = require('kh2bar');
 global.link      = require('link');
 global.music     = require('miniRT/music');
+global.pacts     = require('miniRT/pacts');
 global.scenes    = require('miniRT/scenes');
 global.threads   = require('miniRT/threads');
 
@@ -35,9 +36,8 @@ EvaluateScript('gamedef/game.js');
 // This is called by Sphere when the game is launched.
 function game()
 {
-	SetFrameRate(60);
 	analogue.init();
-	
+
 	console.register('specs', global, {
 		'exit': function() { Exit(); }
 	});
@@ -45,10 +45,10 @@ function game()
 		'on': function() { DBG_DISABLE_TEXTBOXES = false; console.write("Oh, yappy times are here again..."); }, 
 		'off': function() { DBG_DISABLE_TEXTBOXES = true; console.write("The yappy times are OVER!"); }, 
 	});
-	
+
 	// set up the beta test harness
 	TestHarness.initialize();
-	
+
 	// show the title screen and start the game!
 	var manifest = GetGameManifest();
 	if (!manifest.disableSplash) {
@@ -58,7 +58,7 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	MapEngine('Testville.rmp', 60);
+	MapEngine('Testville.rmp');
 }
 
 // clone() function
@@ -96,7 +96,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	color = color !== void null ? color : CreateColor(255, 255, 255, 255);
 	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
 	alignment = alignment !== void null ? alignment : 'left';
-	
+
 	if (arguments.length < 4) {
 		Abort(
 			"DrawTextEx() - error: Wrong number of arguments\n" +

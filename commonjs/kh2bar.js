@@ -1,16 +1,17 @@
 /**
- *  kh2Bar CommonJS module for Sphere 2.0
- *  a multi-segment HP gauge inspired by Kingdom Hearts
+ *  kh2bar CommonJS module for Sphere 2.0
+ *  a multi-segment HP gauge inspired by Kingdom Hearts 2
  *  (c) 2013-2016 Bruce Pascoe
 **/
 
-if (typeof module === 'undefined')
+if (typeof exports === 'undefined')
 {
 	throw new TypeError("kh2bar.js must be loaded using require()");
 }
 
-module.exports =
-(function(undefined) {
+var kh2bar =
+module.exports = (function(undefined)
+{
     'use strict';
 	
     function drawSegment(x, y, width, height, color)
