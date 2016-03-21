@@ -16,8 +16,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.filterBy('type', 'damage')
-				.each(function(effect)
+				.where(effect => effect.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
@@ -25,7 +25,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Crackdown to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
@@ -128,9 +128,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.filterBy('targetHint', 'selected')
-				.filterBy('type', 'damage')
-				.each(function(effect)
+				.where(it => it.targetHint == 'selected')
+				.where(it => it.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(Game.bonusMultiplier * effect.power);
@@ -138,7 +138,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Drunk to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		aiming: function(unit, eventData) {
 			if (eventData.action.accuracyType == 'devour')
@@ -181,9 +181,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.filterBy('targetHint', 'selected')
-				.filterBy('type', 'damage')
-				.each(function(effect)
+				.where(x => x.targetHint == 'selected')
+				.where(x => x.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
@@ -191,7 +191,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Final Stand to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		attacked: function(unit, eventData) {
 			if (eventData.stance == BattleStance.counter) {

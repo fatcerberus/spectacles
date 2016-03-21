@@ -34,8 +34,8 @@
 			if (name == 'maggie' || name == 'robert') return;
 			if (GetInputPerson() == 'scott') {
 				new scenes.Scene()
-					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "! maggie is just on a rampage today, isn't she? Eating ghosts left and right... how do you eat a ghost anyway?")
-					.talk(name, true, 2.0, Infinity, "Scott, you suck. Go get eaten by a hunger-pig or something.")
+					.talk("Scott", true, 2.0, Infinity, "Oh, hey " + name + "! maggie is just on a rampage today, isn't she?  Eating ghosts left and right... how do you eat a ghost anyway?")
+					.talk(name, true, 2.0, Infinity, "Scott, you suck.  Go get eaten by a hunger-pig or something.")
 					.run(true);
 			} else {
 				new scenes.Scene()
@@ -47,14 +47,15 @@
 			}
 		});
 		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
-			var muncher = GetActivePerson();
+			var muncher = GetActingPerson();
 			var food = GetCurrentPerson();
 			if (food == 'maggie') {
 				muncher = GetCurrentPerson();
-				food = GetActivePerson();
+				food = GetActingPerson();
 			}
 			if (muncher != 'maggie')
 				return;  // nobody can munch except maggie!
+			
 			var maggieX = GetPersonX(muncher);
 			var maggieY = GetPersonY(muncher);
 			var pose = GetPersonDirection(muncher);

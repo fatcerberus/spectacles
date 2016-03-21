@@ -42,8 +42,14 @@ function game()
 		'exit': function() { Exit(); }
 	});
 	console.register('yap', null, {
-		'on': function() { DBG_DISABLE_TEXTBOXES = false; console.write("Oh, yappy times are here again..."); }, 
-		'off': function() { DBG_DISABLE_TEXTBOXES = true; console.write("The yappy times are OVER!"); }, 
+		'on': function() {
+			DBG_DISABLE_TEXTBOXES = false;
+			console.log("Oh, yappy times are here again...");
+		}, 
+		'off': function() {
+			DBG_DISABLE_TEXTBOXES = true;
+			console.log("The yappy times are OVER!");
+		}, 
 	});
 
 	// set up the beta test harness
@@ -93,24 +99,21 @@ function clone(o)
 
 function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 {
-	color = color !== void null ? color : CreateColor(255, 255, 255, 255);
+	color = color !== void null ? color : new Color(255, 255, 255, 255);
 	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
 	alignment = alignment !== void null ? alignment : 'left';
 
-	if (arguments.length < 4) {
-		Abort(
-			"DrawTextEx() - error: Wrong number of arguments\n" +
-			"At least 4 arguments were expected; caller only passed " + arguments.length + "."
-		, -1);
-	}
+	if (arguments.length < 4)
+		Abort("DrawTextEx(): 4+ arguments expected (got: " + arguments.length + ")", -1);
+
 	var alignments = {
 		left: function(font, x, text) { return x; },
 		center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
 		right: function(font, x, text) { return x - font.getStringWidth(text); }
 	};
-	if (!(alignment in alignments)) {
-		Abort("DrawTextEx() - error: Invalid argument\nThe caller specified an invalid text alignment mode: '" + alignment + "'.", -1);
-	}
+	if (!(alignment in alignments))
+		Abort("DrawTextEx(): invalid text alignment mode `" + alignment + "`", -1);
+
 	x = alignments[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();
 	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
@@ -129,16 +132,16 @@ function ShowLogo(filename, time)
 {
 	var image = new Image(filename);
 	var scene = new scenes.Scene()
-		.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
-		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+		.fadeTo(new Color(0, 0, 0, 255), 0.0)
+		.fadeTo(new Color(0, 0, 0, 0), 1.0)
 		.pause(time)
-		.fadeTo(CreateColor(0, 0, 0, 255), 1.0)
+		.fadeTo(new Color(0, 0, 0, 255), 1.0)
 		.run();
 	threads.join(threads.createEx(scene, {
 		update: function() { return this.isRunning(); },
 		render: function() { image.blit(0, 0); }
 	}));
 	new scenes.Scene()
-		.fadeTo(CreateColor(0, 0, 0, 0), 0.0)
+		.fadeTo(new Color(0, 0, 0, 0), 0.0)
 		.run(true);
-};
+}

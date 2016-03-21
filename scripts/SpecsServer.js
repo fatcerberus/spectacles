@@ -5,10 +5,10 @@
 
 function SpecsServer()
 {
-	this.socket = ListenOnPort(812, 10);
+	this.socket = new ListeningSocket(812, 10);
 	this.connections = [];
 	if (this.socket != null) {
-		this.thread = Threads.createEntityThread(this);
+		this.thread = threads.create(this);
 		console.log("Specs server started running on port 812");
 	} else {
 		console.log("Couldn't start Specs server");
@@ -17,13 +17,13 @@ function SpecsServer()
 
 SpecsServer.prototype.dispose = function()
 {
-	Threads.kill(this.thread);
+	threads.kill(this.thread);
 	this.socket.close();
 };
 
 SpecsServer.prototype.update = function()
 {
-	var socket = this.socket.acceptNext();
+	var socket = this.socket.accept();
 	if (socket != null) {
 		console.log("Accepted connection from " + socket.getRemoteAddress() + ":" + socket.getRemotePort());
 		this.connections.push(new SpecsServerSocket(socket));

@@ -10,7 +10,7 @@
 function ItemUsable(itemID)
 {
 	if (!(itemID in Game.items)) {
-		Abort("ItemUsable(): The item definition '" + itemID + "' doesn't exist.");
+		Abort("ItemUsable(): item definition `" + itemID + "` doesn't exist.");
 	}
 	this.givesExperience = false;
 	this.isUnlimited = false;

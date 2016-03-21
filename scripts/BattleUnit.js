@@ -197,7 +197,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 
 BattleUnit.prototype.announce = function(text)
 {
-	var bannerColor = this.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
+	var bannerColor = this.isPartyMember() ? new Color(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 	this.battle.ui.announceAction(text, this.isPartyMember() ? 'party' : 'enemy', bannerColor);
 };
 

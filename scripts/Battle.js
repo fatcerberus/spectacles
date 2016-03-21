@@ -546,7 +546,8 @@ Battle.prototype.update = function() {
 		music.adjust(1.0, 0.0);
 		console.unregister('battle');
 		return false;
-	} else {
+	}
+	else {
 		return true;
 	}
 };
