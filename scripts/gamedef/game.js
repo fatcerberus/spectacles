@@ -32,6 +32,6 @@ EvaluateScript('gamedef/math.js');
 EvaluateScript('gamedef/moveEffects.js');
 EvaluateScript('gamedef/scenes.js');
 EvaluateScript('gamedef/skills.js');
-EvaluateScript('gamedef/statuses.ts');
+EvaluateScript('gamedef/statuses.js');
 EvaluateScript('gamedef/stats.js');
 EvaluateScript('gamedef/weapons.js');

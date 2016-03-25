@@ -16,8 +16,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.where(effect => effect.type == 'damage')
-				.each(effect =>
+				.where(function(x) { return x.type == 'damage'; })
+				.each(function(effect)
 			{
 				var oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
@@ -128,9 +128,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.where(it => it.targetHint == 'selected')
-				.where(it => it.type == 'damage')
-				.each(effect =>
+				.where(function(x) { return x.targetHint == 'selected'; })
+				.where(function(x) { return x.type == 'damage'; })
+				.each(function(effect)
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(Game.bonusMultiplier * effect.power);
@@ -181,9 +181,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			link(eventData.action.effects)
-				.where(x => x.targetHint == 'selected')
-				.where(x => x.type == 'damage')
-				.each(effect =>
+				.where(function(x) { return x.targetHint == 'selected'; })
+				.where(function(x) { return x.type == 'damage'; })
+				.each(function(x)
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
