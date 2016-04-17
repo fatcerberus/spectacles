@@ -9,6 +9,7 @@ global.kh2bar    = require('kh2bar');
 global.link      = require('link');
 global.music     = require('miniRT/music');
 global.pacts     = require('miniRT/pacts');
+global.render    = require('miniRT/render');
 global.scenes    = require('miniRT/scenes');
 global.threads   = require('miniRT/threads');
 

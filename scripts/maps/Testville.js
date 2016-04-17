@@ -6,6 +6,7 @@
 ({
 	enter: function(map, world) {
 		var font = GetSystemFont();
+		var isHippoAround = false;
 		var maggieSize = 1.0;
 		analogue.world.munchSound = new Sound('sounds/Munch.wav');
 		
@@ -69,7 +70,8 @@
 			var name = GetPersonMask(food).alpha == 255 ? food : food + "'s ghost";
 			DestroyPerson(food);
 			SetPersonScaleFactor(muncher, maggieSize, maggieSize);
-			maggieSize += 0.05;
+			if (isHippoAround)
+				maggieSize += 0.05;
 		});
 		
 		threads.createEx(null, {
@@ -141,10 +143,12 @@
 							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
 							.setSprite('maggie', 'spritesets/battlers/maggie_hippo.rss')
 							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
+							.changeBGM('Animals', 2.0)
 						.end()
 						.followPerson('maggie')
 						.call(AttachInput, 'maggie')
 						.run(true);
+					isHippoAround = true;
 				}
 				var ghostCount = link(followers)
 					.where(function(info) { return info.ghostLevel > 0 })
