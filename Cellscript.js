@@ -1,7 +1,7 @@
 function $default()
 {
 	install(files("scripts/*.js", true), "scripts");
-	install(files("commonjs/*.js", true), "commonjs");
+	install(files("lib/*.js", true), "lib");
 	install(files("images/*.png", true), "images");
 	install(files("maps/*.rmp", true), "maps");
 	install(files("maps/*.rts", true), "maps");
@@ -18,8 +18,8 @@ function $default()
 		script: 'scripts/main.js',
 
 		minimumPlatform: {
-			recommend: "minisphere 3.0+",
-			apiVersion: 2.0,
+			recommend: "minisphere 3.1.x",
+			apiLevel: 1,
 			extensions: [
 				"sphere-legacy-api",
 				"sphere-obj-constructors",
@@ -34,7 +34,7 @@ function $default()
 
 		// miniRT options
 		frameRate: 60,
-		logPath: '~usr/Spectacles Saga/console.log',
+		logPath: '~/Spectacles Saga/console.log',
 		
 		// Specs Engine debug options
 		disableAnimation: false,
