@@ -25,7 +25,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Crackdown to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			});
+			}.bind(this));
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
@@ -138,7 +138,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Drunk to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			});
+			}.bind(this));
 		},
 		aiming: function(unit, eventData) {
 			if (eventData.action.accuracyType == 'devour')
@@ -191,7 +191,7 @@ Game.statuses =
 					console.log("Outgoing POW modified by Final Stand to " + effect.power);
 					console.append("was: " + oldPower);
 				}
-			});
+			}.bind(this));
 		},
 		attacked: function(unit, eventData) {
 			if (eventData.stance == BattleStance.counter) {
@@ -225,13 +225,13 @@ Game.statuses =
 				if ('addStatus' in effect && effect.addStatus == 'ignite') {
 					delete effect.addStatus;
 				}
-			});
+			}.bind(this));
 			link(eventData.action.effects)
 				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
 				.each(function(effect)
 			{
 				effect.type = null;
-			});
+			}.bind(this));
 		},
 		damaged: function(unit, eventData) {
 			if (link(eventData.tags).contains('fire') && unit.stance != BattleStance.guard) {
@@ -301,13 +301,13 @@ Game.statuses =
 				if ('addStatus' in effect && effect.addStatus == 'frostbite') {
 					delete effect.addStatus;
 				}
-			});
+			}.bind(this));
 			link(eventData.action.effects)
 				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
 				.each(function(effect)
 			{
 				effect.type = null;
-			});
+			}.bind(this));
 		},
 		damaged: function(unit, eventData) {
 			if (link(eventData.tags).contains('ice') && unit.stance != BattleStance.guard) {
