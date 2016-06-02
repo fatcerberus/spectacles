@@ -13,8 +13,8 @@ global.prim      = require('miniRT/prim');
 global.scenes    = require('miniRT/scenes');
 global.threads   = require('miniRT/threads');
 
-const DBG_DISABLE_TEXTBOXES = false;
-const DBG_DISABLE_TRANSITIONS = false;
+var DBG_DISABLE_TEXTBOXES = false;
+var DBG_DISABLE_TRANSITIONS = false;
 
 RequireSystemScript('analogue.js');
 
@@ -100,7 +100,7 @@ function clone(o)
 
 function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 {
-	color = color !== void null ? color : new Color(255, 255, 255, 255);
+	color = color !== void null ? color : Color.White;
 	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
 	alignment = alignment !== void null ? alignment : 'left';
 
@@ -133,10 +133,10 @@ function ShowLogo(filename, time)
 {
 	var image = new Image(filename);
 	var scene = new scenes.Scene()
-		.fadeTo(new Color(0, 0, 0, 255), 0.0)
+		.fadeTo(Color.Black, 0.0)
 		.fadeTo(new Color(0, 0, 0, 0), 1.0)
 		.pause(time)
-		.fadeTo(new Color(0, 0, 0, 255), 1.0)
+		.fadeTo(Color.Black, 1.0)
 		.run();
 	threads.join(threads.createEx(scene, {
 		update: function() { return this.isRunning(); },

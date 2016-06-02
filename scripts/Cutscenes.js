@@ -95,7 +95,7 @@ scenes.scenelet('talk',
 		this.textSpeed = textSpeed;
 		this.timeout = timeout;
 		this.timeoutLeft = this.timeout;
-		this.font = GetSystemFont();
+		this.font = Font.Default;
 		this.text = [];
 		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
 		var textAreaWidth = GetScreenWidth() - 16;

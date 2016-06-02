@@ -12,13 +12,13 @@ RequireScript('TurnPreview.js');
 //     partyMaxMP: The party's current MP capacity.
 function BattleHUD(partyMaxMP)
 {
-	this.enemyHPGaugeColor = CreateColor(255, 255, 255, 255);
-	this.partyHPGaugeColor = CreateColor(0, 255, 0, 255);
-	this.partyHighlightColor = CreateColor(0, 36, 72, 255);
-	this.partyMPGaugeColor = CreateColor(128, 64, 128, 255);
+	this.enemyHPGaugeColor = Color.White;
+	this.partyHPGaugeColor = Color.Lime;
+	this.partyHighlightColor = Color.MidnightBlue;
+	this.partyMPGaugeColor = Color.DarkViolet;
 	
 	this.fadeness = 0.0;
-	this.font = GetSystemFont();
+	this.font = Font.Default;
 	this.highlightColor = CreateColor(0, 0, 0, 0);
 	this.highlightedUnit = null;
 	this.hpGaugesInfo = [];
@@ -29,18 +29,18 @@ function BattleHUD(partyMaxMP)
 	
 	this.drawElementBox = function(x, y, width, height)
 	{
-		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 192));
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
+		Rectangle(x, y, width, height, Color.Black.fade(192));
+		OutlinedRectangle(x, y, width, height, Color.Black.fade(32));
 	};
 	
 	this.drawHighlight = function(x, y, width, height, color)
 	{
 		var outerColor = color;
-		var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
+		var innerColor = Color.mix(outerColor, Color.Black.fade(color.alpha));
 		var halfHeight = Math.round(height / 2);
 		GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
-		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 128 * color.alpha / 255));
+		OutlinedRectangle(x, y, width, height, Color.Black.fade(color.alpha / 2));
 	};
 	
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted)
@@ -51,10 +51,10 @@ function BattleHUD(partyMaxMP)
 		}
 		this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
 		var headingColor = isHighlighted ?
-			BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			Color.mix(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 144, 0, 255);
 		var textColor = isHighlighted ?
-			BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			Color.mix(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 			CreateColor(192, 192, 192, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.unit.name);
@@ -124,7 +124,7 @@ BattleHUD.prototype.highlight = function(unit)
 	if (unit !== null) {
 		this.highlightedUnit = unit;
 		new scenes.Scene()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
+			.tween(this.highlightColor, 0.1, 'easeInQuad', Color.mix(this.partyHighlightColor, Color.White.fade(this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
@@ -176,9 +176,10 @@ BattleHUD.prototype.setHP = function(unit, hp)
 		var characterInfo = this.partyInfo[i];
 		if (characterInfo !== null && characterInfo.unit == unit && hp != characterInfo.hp) {
 			characterInfo.hpGauge.set(hp);
-			var gaugeColor = hp / characterInfo.maxHP <= 0.1 ? CreateColor(255, 0, 0, 255)
-				: hp / characterInfo.maxHP <= 0.33 ? CreateColor(255, 255, 0, 255)
-				: CreateColor(0, 255, 0, 255);
+			var gaugeColor =
+				hp / characterInfo.maxHP <= 0.1 ? Color.Red
+				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
+				: Color.Lime;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()

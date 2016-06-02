@@ -9,7 +9,7 @@ function TurnPreview()
 {
 	this.entries = {};
 	this.fadeness = 1.0;
-	this.font = GetSystemFont();
+	this.font = Font.Default;
 	this.lastPrediction = null;
 	this.thread = null;
 };
@@ -28,19 +28,19 @@ TurnPreview.prototype.render = function()
 	var alpha = 255 * (1.0 - this.fadeness);
 	var y = -16 * this.fadeness;
 	SetClippingRectangle(0, y, 160, 16);
-	Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
-	OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
-	DrawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
-	Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, 192 * alpha / 255));
-	OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, 32 * alpha / 255));
+	Rectangle(0, y, 48, 16, Color.Black.fade(alpha * 0.75));
+	OutlinedRectangle(0, y, 48, 16, Color.Black.fade(alpha * 0.125));
+	DrawTextEx(this.font, 24, y + 2, "next:", Color.Gray.fade(alpha), 1, 'center');
+	Rectangle(48, y, 112, 16, Color.Black.fade(alpha * 0.75));
+	OutlinedRectangle(48, y, 112, 16, Color.Black.fade(alpha * 0.125));
 	for (var id in this.entries) {
 		var entry = this.entries[id];
 		for (var i = 0; i < entry.turnBoxes.length; ++i) {
 			var turnBox = entry.turnBoxes[i];
-			var pictureColor = CreateColor(entry.color.red, entry.color.green, entry.color.blue, entry.color.alpha * alpha / 255);
+			var pictureColor = entry.color.fade(alpha);
 			Rectangle(turnBox.x, y, 16, 16, pictureColor);
-			OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, 64 * alpha / 255));
-			DrawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], CreateColor(255, 255, 255, 128 * alpha / 255), 1);
+			OutlinedRectangle(turnBox.x, y, 16, 16, Color.Black.fade(alpha * 0.25));
+			DrawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], Color.mix(entry.color, Color.White), 1);
 		}
 	}
 	SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
@@ -55,7 +55,7 @@ TurnPreview.prototype.ensureEntries = function(unit)
 {
 	if (!(unit.tag in this.entries)) {
 		var entry = {
-			color: unit.isPartyMember() ? CreateColor(64, 80, 96, 255) : CreateColor(96, 48, 48, 255),
+			color: unit.isPartyMember() ? Color.DarkSlateBlue : Color.Maroon,
 			name: unit.name,
 			turnBoxes: []
 		};
