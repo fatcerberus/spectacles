@@ -117,7 +117,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 
 	x = alignments[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();
-	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
+	font.setColorMask(Color.Black.fade(color.alpha));
 	font.drawText(x + shadowDistance, y + shadowDistance, text);
 	font.setColorMask(color);
 	font.drawText(x, y, text);

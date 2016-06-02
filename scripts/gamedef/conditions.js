@@ -16,13 +16,10 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
-			if (eventData.targets.length == 1 && 0.5 > Math.random()) {
+			if (eventData.targets.length == 1 && RNG.chance(0.5)) {
 				var target = eventData.targets[0];
-				var newTargets = Math.random() < 0.5
-					? battle.alliesOf(target)
-					: battle.enemiesOf(target);
-				var targetID = Math.min(Math.floor(Math.random() * newTargets.length), newTargets.length - 1);
-				eventData.targets = [ newTargets[targetID] ];
+				var newTargets = RNG.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
+				eventData.targets = [ RNG.sample(newTargets) ];
 			}
 			--this.actionsLeft;
 			if (this.actionsLeft <= 0) {
@@ -47,7 +44,7 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			var oldRank = eventData.action.rank
-			eventData.action.rank = Math.min(Math.floor(Math.random() * 5 + 1), 5);
+			eventData.action.rank = RNG.range(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log("Rank of action changed by G. Disarray to " + eventData.action.rank);
 				console.append("was: " + oldRank);
@@ -77,7 +74,7 @@ Game.conditions =
 			var units = link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
-			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
+			var unit = RNG.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(vit, [ 'cure' ]);
 			--this.cyclesLeft;
@@ -133,7 +130,7 @@ Game.conditions =
 			var units = link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
-			var unit = units[Math.min(Math.floor(Math.random() * units.length), units.length - 1)];
+			var unit = RNG.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
@@ -255,7 +252,7 @@ Game.conditions =
 		},
 		
 		endTurn: function(battle, eventData) {
-			if (0.5 > Math.random()) {
+			if (RNG.chance(0.5)) {
 				var unit = eventData.actingUnit;
 				console.log(unit.name + " struck by lightning from Thunderstorm");
 				var level = battle.getLevel();

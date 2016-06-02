@@ -65,7 +65,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.tag = RNG.string();
 	this.turnRatio = 1.0;
 	this.weapon = null;
-	
+
 	if (basis instanceof PartyMember) {
 		this.partyMember = basis;
 		this.id = this.partyMember.characterID;

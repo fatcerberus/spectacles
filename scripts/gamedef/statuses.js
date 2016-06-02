@@ -90,7 +90,7 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			var oldRank = eventData.action.rank;
-			eventData.action.rank = Math.floor(Math.min(Math.random() * 5 + 1, 5));
+			eventData.action.rank = RNG.range(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log("Rank of action changed by Disarray to " + eventData.action.rank);
 				console.append("was: " + oldRank);
@@ -486,7 +486,7 @@ Game.statuses =
 			this.wakeChance = 0.0;
 		},
 		beginCycle: function(unit, eventData) {
-			if (Math.random() < this.wakeChance) {
+			if (RNG.chance(this.wakeChance)) {
 				unit.liftStatus('sleep');
 			}
 			this.wakeChance += 0.01;
@@ -497,7 +497,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			var healthLost = 100 * eventData.amount / unit.maxHP;
-			if (Math.random() < healthLost * 5 * this.wakeChance
+			if (RNG.chance(healthLost * 5 * this.wakeChance)
 				&& eventData.tags.indexOf('magic') === -1
 				&& eventData.tags.indexOf('special') === -1)
 			{

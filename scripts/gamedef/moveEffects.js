@@ -44,7 +44,7 @@ Game.moveEffects =
 			}
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (statusChance > Math.random()) {
+				if (RNG.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus, true);
 				}
 			}
@@ -82,7 +82,7 @@ Game.moveEffects =
 			targets[i].heal(Math.max(RNG.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (statusChance > Math.random()) {
+				if (RNG.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus);
 				}
 			}
