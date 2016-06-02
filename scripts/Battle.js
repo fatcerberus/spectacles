@@ -12,9 +12,9 @@ RequireScript('MPPool.js');
 // Specifies the outcome of a battle.
 BattleResult =
 {
-	partyWon: 1,
-	partyRetreated: 2,
-	enemyWon: 3
+	Win: 1,
+	Flee: 2,
+	Lose: 3,
 };
 
 // Battle() constructor
@@ -194,7 +194,7 @@ Battle.prototype.go = function()
 	if (GetGameManifest().disableBattles) {
 		console.log("Battles disabled, automatic win");
 		console.append("battleID: " + this.battleID);
-		this.result = BattleResult.playerWon;
+		this.result = BattleResult.Win;
 		return null;
 	}
 	console.log("");
@@ -222,13 +222,13 @@ Battle.prototype.go = function()
 	this.conditions = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyID = this.parameters.enemies[i];
-		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle);
+		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.Middle);
 		this.battleUnits.push(unit);
 		this.enemyUnits.push(unit);
 	}
 	var i = 0;
 	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.middle, partyMPPool);
+		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.Middle, partyMPPool);
 		this.battleUnits.push(unit);
 		this.playerUnits.push(unit);
 		++i;
@@ -490,14 +490,14 @@ Battle.prototype.tick = function()
 		if (link(this.playerUnits).none(isUnitAlive)) {
 			music.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
-			this.result = BattleResult.enemyWon;
+			this.result = BattleResult.Lose;
 			console.log("All active party members have been killed");
 			return;
 		}
 		if (link(this.enemyUnits).none(isUnitAlive)) {
 			music.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
-			this.result = BattleResult.partyWon;
+			this.result = BattleResult.Win;
 			console.log("All enemies have been killed");
 			return;
 		}

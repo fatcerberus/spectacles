@@ -161,7 +161,7 @@ AIContext.prototype.getNextMove = function()
 		var isMoveUsable;
 		do {
 			candidateMove = this.moveQueue.shift();
-			var isMoveLegal = candidateMove.stance != BattleStance.attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
+			var isMoveLegal = candidateMove.stance != BattleStance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 			var isMoveUsable = isMoveLegal && candidateMove.predicate();
 			if (!isMoveUsable) {
 				console.log("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
@@ -287,7 +287,7 @@ AIContext.prototype.queueGuard = function()
 {
 	this.moveQueue.push({
 		usable: null,
-		stance: BattleStance.guard,
+		stance: BattleStance.Guard,
 		predicate: function() { return true; }
 	});
 };
@@ -321,7 +321,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 		: itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
-		stance: BattleStance.attack,
+		stance: BattleStance.Attack,
 		targets: targets,
 		predicate: function() { return true; }
 	});
@@ -358,7 +358,7 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 		: skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
-		stance: BattleStance.attack,
+		stance: BattleStance.Attack,
 		targets: targets,
 		predicate: predicate
 	});
@@ -374,7 +374,7 @@ AIContext.prototype.queueWeapon = function(weaponID)
 	var weaponUsable = new WeaponUsable(weaponID);
 	this.moveQueue.push({
 		usable: weaponUsable,
-		stance: BattleStance.attack,
+		stance: BattleStance.Attack,
 		targets: weaponUsable.defaultTargets(this.unit),
 		predicate: function() { return true; }
 	});

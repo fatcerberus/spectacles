@@ -27,7 +27,7 @@ function Robert2AI(aiContext)
 	this.necromancyChance = 0.0;
 	this.nextElementalMove = null;
 	this.rezombieChance = 0.0;
-	this.scottStance = BattleStance.attack;
+	this.scottStance = BattleStance.Attack;
 	this.scottImmuneTurnsLeft = 0;
 	this.turnCount = {};
 	this.zombieHealAlertLevel = 0.0;
@@ -61,7 +61,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 			if (this.doChargeSlashNext) {
 				this.aic.queueSkill('chargeSlash');
 				this.doChargeSlashNext = false;
-			} else if (this.scottStance == BattleStance.attack || this.isComboStarted) {
+			} else if (this.scottStance == BattleStance.Attack || this.isComboStarted) {
 				qsTurns = this.aic.predictSkillTurns('quickstrike');
 				if (qsTurns[0].unit === this.aic.unit) {
 					this.aic.queueSkill('quickstrike');
@@ -227,7 +227,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 			var finisherID = this.aic.isSkillUsable(skillID) ? skillID : 'swordSlash';
 			var qsTurns = this.aic.predictSkillTurns('quickstrike');
 			this.aic.queueSkill(qsTurns[0].unit == this.aic.unit ? 'quickstrike' : finisherID);
-			if (this.aic.isSkillQueued(finisherID) && this.scottStance == BattleStance.guard) {
+			if (this.aic.isSkillQueued(finisherID) && this.scottStance == BattleStance.Guard) {
 				this.aic.queueSkill('chargeSlash');
 			}
 			break;
@@ -408,7 +408,7 @@ Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 		} else if (skillID == 'windchill') {
 			this.nextElementalMove = 'hellfire';
 		} else if (skillID == 'necromancy' || skillID == 'electrocute') {
-			this.isScottZombie = (skillID == 'necromancy' || skillID == 'electrocute' && this.scottStance != BattleStance.guard)
+			this.isScottZombie = (skillID == 'necromancy' || skillID == 'electrocute' && this.scottStance != BattleStance.Guard)
 				&& this.scottImmuneTurnsLeft <= 0;
 			this.isNecroTonicItemPending = this.isScottZombie && this.necroTonicItem !== null
 				&& this.aic.isItemUsable(this.necroTonicItem);

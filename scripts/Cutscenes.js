@@ -32,7 +32,7 @@ scenes.scenelet('battle',
 		switch (this.mode) {
 			case 'battle':
 				if (!threads.isRunning(this.battleThread)) {
-					if (this.battle.result == BattleResult.enemyWon) {
+					if (this.battle.result == BattleResult.Lose) {
 						console.log("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();

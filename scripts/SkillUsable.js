@@ -129,8 +129,8 @@ SkillUsable.prototype.isUsable = function(user, stance)
 	var isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
 		&& this.skillInfo.targetType == 'single' && this.skillInfo.actions.length == 1;
 	return this.mpCost(user) <= user.mpPool.availableMP
-		&& (stance != BattleStance.counter || isValidCounter)
-		&& stance != BattleStance.guard;
+		&& (stance != BattleStance.Counter || isValidCounter)
+		&& stance != BattleStance.Guard;
 }
 
 // .mpCost() method
