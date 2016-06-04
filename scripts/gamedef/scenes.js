@@ -7,7 +7,7 @@ Game.scenes =
 {
 	openingScenes: function() {
 		new scenes.Scene()
-			.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
+			.fadeTo(new Color(0, 0, 0, 255), 0.0)
 			.pushBGM('BruceTellsHisStory')
 			.pause(1.0)
 			.talk("Bruce", false, 1.0, 2.0,
@@ -26,7 +26,7 @@ Game.scenes =
 				.changeBGM('ThePromise')
 				.adjustBGM(1.0, 2.0)
 			.end()
-			.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
+			.fadeTo(new Color(0, 0, 0, 0), 2.0)
 			.resync()
 			.talk("Robert", true, 2.0, Infinity, "There must be some other way, Amanda...")
 			.pause(2.0)  // TODO: Amanda looks into the distance
@@ -51,13 +51,13 @@ Game.scenes =
 			.fork()
 				.adjustBGM(0.0, 5.0)
 			.end()
-			.fadeTo(CreateColor(0, 0, 0, 255), 2.0)
+			.fadeTo(new Color(0, 0, 0, 255), 2.0)
 			.talk("Bruce", false, 1.0, 2.0, "...is that it all began with a promise.")
 			.pause(2.0)
 			.popBGM()
 			.changeMap('Portentia.rmp')
 			.adjustBGM(1.0)
-			.fadeTo(CreateColor(0, 0, 0, 0), 5.0)
+			.fadeTo(new Color(0, 0, 0, 0), 5.0)
 			.pause(5.0)
 			.pause(2.0)  // TODO: Scott walks out of his house
 			.talk("Scott", true, 2.0, Infinity,

@@ -116,7 +116,7 @@ MenuStrip.prototype.open = function()
 		var itemText = this.menuItems[i].text;
 		carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 	}
-	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
+	this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, new Color(0, 0, 0, 0));
 	while (AreKeysLeft()) {
 		GetKey();
 	}
@@ -135,24 +135,24 @@ MenuStrip.prototype.render = function()
 {
 	var height = this.font.getHeight() + 10;
 	var menuY = GetScreenHeight() - height * this.openness;
-	var normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
-	var litStripColor = CreateColor(255, 255, 255, this.openness * 192);
-	var stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
+	var normalStripColor = new Color(0, 0, 0, this.openness * 192);
+	var litStripColor = new Color(255, 255, 255, this.openness * 192);
+	var stripColor = Color.mix(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
 	Rectangle(0, menuY, GetScreenWidth(), height, stripColor);
-	var normalTitleColor = CreateColor(64, 64, 64, this.openness * 255);
-	var litTitleColor = CreateColor(0, 0, 0, this.openness * 255);
-	var titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
-	this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
+	var normalTitleColor = new Color(64, 64, 64, this.openness * 255);
+	var litTitleColor = new Color(0, 0, 0, this.openness * 255);
+	var titleColor = Color.mix(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
+	this.font.setColorMask(new Color(0, 0, 0, this.openness * 255));
 	this.font.drawText(6, menuY + 6, this.title);
 	this.font.setColorMask(titleColor);
 	this.font.drawText(5, menuY + 5, this.title);
 	this.carouselSurface.setBlendMode(REPLACE);
-	this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, CreateColor(0, 0, 0, 0));
+	this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, new Color(0, 0, 0, 0));
 	this.carouselSurface.setBlendMode(BLEND);
 	var xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carouselSurface.width;
-	var normalItemColor = CreateColor(255, 192, 0, this.openness * 255);
-	var litItemColor = CreateColor(128, 128, 64, this.openness * 255);
-	var itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
+	var normalItemColor = new Color(255, 192, 0, this.openness * 255);
+	var litItemColor = new Color(128, 128, 64, this.openness * 255);
+	var itemColor = Color.mix(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
 	for (var i = -1; i <= this.menuItems.length; ++i) {
 		var itemIndex = i;
 		if (i >= this.menuItems.length) {
@@ -162,23 +162,23 @@ MenuStrip.prototype.render = function()
 		}
 		var itemText = this.menuItems[itemIndex].text;
 		var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
-		this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
+		this.font.setColorMask(new Color(0, 0, 0, this.openness * 255));
 		this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, itemText);
 		this.font.setColorMask(itemColor);
 		this.carouselSurface.drawText(this.font, textX - xOffset, 5, itemText);
 	}
 	carouselX = GetScreenWidth() - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
 	this.carouselSurface.blit(carouselX, menuY);
-	this.font.setColorMask(CreateColor(128, 128, 128, this.openness * 255));
+	this.font.setColorMask(new Color(128, 128, 128, this.openness * 255));
 	this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
 	if (this.scrollDirection == -1) {
-		this.font.setColorMask(CreateColor(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
+		this.font.setColorMask(new Color(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
 		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
 	}
-	this.font.setColorMask(CreateColor(128, 128, 128, this.openness * 255));
+	this.font.setColorMask(new Color(128, 128, 128, this.openness * 255));
 	this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
 	if (this.scrollDirection == 1) {
-		this.font.setColorMask(CreateColor(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
+		this.font.setColorMask(new Color(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
 		this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
 	}
 };

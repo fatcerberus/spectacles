@@ -24,7 +24,7 @@ function TitleScreen(themeTrack)
 TitleScreen.prototype.render = function()
 {
 	this.image.blit(0, 0);
-	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
+	ApplyColorMask(new Color(0, 0, 0, this.fadeness * 255));
 };
 
 // .show() method

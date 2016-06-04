@@ -5,14 +5,14 @@
 
 Game.elements =
 {
-	fire: { name: "Fire", color: CreateColor(255, 0, 0, 255) },
-	ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
-	lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
-	earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
-	cure: { name: "Cure", color: CreateColor(64, 255, 128, 255) },
-	omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
-	fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) },
-	zombie: { name: "Zombie", color: CreateColor(128, 255, 0, 255) }
+	fire: { name: "Fire", color: new Color(255, 0, 0, 255) },
+	ice: { name: "Ice", color: new Color(0, 128, 255, 255) },
+	lightning: { name: "Lightning", color: new Color(255, 192, 0, 255) },
+	earth: { name: "Earth", color: new Color(255, 128, 0, 255) },
+	cure: { name: "Cure", color: new Color(64, 255, 128, 255) },
+	omni: { name: "Omni", color: new Color(255, 255, 255, 255) },
+	fat: { name: "Fat", color: new Color(255, 0, 255, 255) },
+	zombie: { name: "Zombie", color: new Color(128, 255, 0, 255) }
 };
 
 Game.moveEffects =

@@ -50,7 +50,7 @@ BattleScreen.prototype.dispose = function()
 //     bannerColor: The background color to use for the announcement banner.
 BattleScreen.prototype.announceAction = function(actionName, alignment, bannerColor)
 {
-	var bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(64, 64, 192, 192);
+	var bannerColor = alignment == 'enemy' ? new Color(128, 32, 32, 192) : new Color(64, 64, 192, 192);
 	var announcement = {
 		screen: this,
 		text: actionName,
@@ -64,10 +64,10 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			var x = GetScreenWidth() / 2 - width / 2;
 			var y = 112;
 			var textY = y + height / 2 - this.font.getHeight() / 2;
-			var boxColor = CreateColor(this.color.red, this.color.green, this.color.blue, this.color.alpha * (1.0 - this.fadeness));
+			var boxColor = new Color(this.color.red, this.color.green, this.color.blue, this.color.alpha * (1.0 - this.fadeness));
 			Rectangle(x, y, width, height, boxColor);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64 * (1.0 - this.fadeness)));
-			DrawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
+			OutlinedRectangle(x, y, width, height, new Color(0, 0, 0, 64 * (1.0 - this.fadeness)));
+			DrawTextEx(this.font, x + width / 2, textY, this.text, new Color(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 		},
 		update: function() {
 			return true;
@@ -121,9 +121,9 @@ BattleScreen.prototype.fadeOut = function(duration)
 		return;
 	}
 	new scenes.Scene()
-		.fadeTo(CreateColor(0, 0, 0, 255), duration)
+		.fadeTo(new Color(0, 0, 0, 255), duration)
 		.call(this.dispose.bind(this))
-		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+		.fadeTo(new Color(0, 0, 0, 0), 0.5)
 		.run(true);
 };
 
@@ -138,13 +138,13 @@ BattleScreen.prototype.go = function(title)
 	this.title = title;
 	new scenes.Scene()
 		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
-			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
-			.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
-			.fadeTo(CreateColor(255, 255, 255, 255), 0.25)
+			.fadeTo(new Color(255, 255, 255, 255), 0.25)
+			.fadeTo(new Color(0, 0, 0, 0), 0.5)
+			.fadeTo(new Color(255, 255, 255, 255), 0.25)
 		.end()
 		.call(this.startRunning.bind(this))
 		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
-			.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+			.fadeTo(new Color(0, 0, 0, 0), 1.0)
 		.end()
 		.run(true);
 };
@@ -172,7 +172,7 @@ BattleScreen.prototype.showTitle = function()
 		return;
 	}
 	new scenes.Scene()
-		.marquee(this.title, CreateColor(0, 0, 0, 128))
+		.marquee(this.title, new Color(0, 0, 0, 128))
 		.run(true);
 };
 

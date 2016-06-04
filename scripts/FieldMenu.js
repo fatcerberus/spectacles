@@ -5,9 +5,9 @@
 
 function FieldMenu(session)
 {
-	this.itemTextColor = CreateColor(64, 64, 64, 255);
-	this.litItemTextColor = CreateColor(255, 255, 255, 255);
-	this.highlightColor = CreateColor(0, 72, 144, 255);
+	this.itemTextColor = new Color(64, 64, 64, 255);
+	this.litItemTextColor = new Color(255, 255, 255, 255);
+	this.highlightColor = new Color(0, 72, 144, 255);
 	
 	this.items = [
 		{ name: "Party", id: 'party' },
@@ -15,8 +15,8 @@ function FieldMenu(session)
 		{ name: "Battlers", id: 'battlers' }
 	];
 	for (var i = 0; i < this.items.length; ++i) {
-		this.items[i].highlight = CreateColor(0, 0, 0, 0);
-		this.items[i].textColor = BlendColors(this.itemTextColor, this.itemTextColor);
+		this.items[i].highlight = new Color(0, 0, 0, 0);
+		this.items[i].textColor = Color.mix(this.itemTextColor, this.itemTextColor);
 	}
 	this.font = GetSystemFont();
 	this.isOpen = false;
@@ -66,22 +66,22 @@ FieldMenu.prototype.render = function()
 	
 	// draw game progress log
 	var y = -(1.0 - this.fadeness) * 208;
-	Rectangle(0, y, 320, 224, CreateColor(0, 0, 0, 192));
-	OutlinedRectangle(0, y, 320, 224, CreateColor(0, 0, 0, 64));
-	DrawTextEx(this.font, 160, y + 16, time.toString(), CreateColor(0, 64, 255, 255), 1, 'center');
+	Rectangle(0, y, 320, 224, new Color(0, 0, 0, 192));
+	OutlinedRectangle(0, y, 320, 224, new Color(0, 0, 0, 64));
+	DrawTextEx(this.font, 160, y + 16, time.toString(), new Color(0, 64, 255, 255), 1, 'center');
 	
 	// draw main menu items
 	y = 240 - this.fadeness * 16;
-	Rectangle(0, y, 320, 16, CreateColor(0, 0, 0, 192));
+	Rectangle(0, y, 320, 16, new Color(0, 0, 0, 192));
 	var itemWidth = Math.floor(320 / this.items.length);
 	var firstItemWidth = itemWidth + 320 % this.items.length;
 	var x = 0;
 	for (var i = 0; i < this.items.length; ++i) {
 		var width = i == 0 ? firstItemWidth : itemWidth;
-		var color2 = BlendColors(this.items[i].highlight, CreateColor(0, 0, 0, 255));
+		var color2 = Color.mix(this.items[i].highlight, new Color(0, 0, 0, 255));
 		GradientRectangle(x, y, width, 8, color2, color2, this.items[i].highlight, this.items[i].highlight);
 		GradientRectangle(x, y + 8, width, 8, this.items[i].highlight, this.items[i].highlight, color2, color2);
-		OutlinedRectangle(x, y, width, 16, CreateColor(0, 0, 0, 128));
+		OutlinedRectangle(x, y, width, 16, new Color(0, 0, 0, 128));
 		DrawTextEx(this.font, x + width / 2, y + 2, this.items[i].name, this.items[i].textColor, 1, 'center');
 		x += width;
 	}
@@ -103,7 +103,7 @@ FieldMenu.prototype.close = function()
 {
 	this.isOpen = false;
 	new scenes.Scene()
-		.fork().tween(this.items[this.selection].highlight, 0.5, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
+		.fork().tween(this.items[this.selection].highlight, 0.5, 'easeInSine', new Color(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.5, 'easeInSine', this.itemTextColor).end()
 		.tween(this, 0.5, 'easeInQuint', { fadeness: 0.0 })
 		.run(true);
@@ -115,7 +115,7 @@ FieldMenu.prototype.selectItem = function(itemID)
 		this.itemFader.stop();
 	}
 	this.itemFader = new scenes.Scene()
-		.fork().tween(this.items[this.selection].highlight, 0.25, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
+		.fork().tween(this.items[this.selection].highlight, 0.25, 'easeInSine', new Color(0, 0, 0, 0)).end()
 		.fork().tween(this.items[this.selection].textColor, 0.25, 'easeInSine', this.itemTextColor).end()
 		.fork().tween(this.items[itemID].highlight, 0.25, 'easeOutSine', this.highlightColor).end()
 		.fork().tween(this.items[itemID].textColor, 0.25, 'easeOutSine', this.litItemTextColor).end()

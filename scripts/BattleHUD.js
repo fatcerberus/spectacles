@@ -19,7 +19,7 @@ function BattleHUD(partyMaxMP)
 	
 	this.fadeness = 0.0;
 	this.font = Font.Default;
-	this.highlightColor = CreateColor(0, 0, 0, 0);
+	this.highlightColor = new Color(0, 0, 0, 0);
 	this.highlightedUnit = null;
 	this.hpGaugesInfo = [];
 	this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
@@ -45,23 +45,23 @@ function BattleHUD(partyMaxMP)
 	
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted)
 	{
-		this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
+		this.drawElementBox(x, y, 100, 20, new Color(0, 32, 0, 192));
 		if (isHighlighted) {
 			this.drawHighlight(x, y, 100, 20, this.highlightColor);
 		}
 		this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
 		var headingColor = isHighlighted ?
-			Color.mix(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-			CreateColor(192, 144, 0, 255);
+			Color.mix(new Color(255, 192, 0, 255), new Color(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			new Color(192, 144, 0, 255);
 		var textColor = isHighlighted ?
-			Color.mix(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-			CreateColor(192, 192, 192, 255);
+			Color.mix(new Color(255, 255, 255, 255), new Color(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
+			new Color(192, 192, 192, 255);
 		memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 		this.drawText(this.font, x + 34, y + 4, 1, textColor, memberInfo.unit.name);
 		//this.drawText(this.font, x + 62, y + 6, 1, headingColor, "HP");
 		//this.drawText(this.font, x + 61, y + 2, 1, textColor, Math.round(memberInfo.hp), 'right');
-		Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
-		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
+		Rectangle(x + 81, y + 3, 14, 14, new Color(64, 96, 128, 255));
+		OutlinedRectangle(x + 81, y + 3, 14, 14, new Color(0, 0, 0, 255));
 	}
 	
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
@@ -78,7 +78,7 @@ function BattleHUD(partyMaxMP)
 			Abort("BattleHUD.drawText(): Invalid text alignment '" + alignment + "'.");
 		}
 		x = alignments[alignment](font, x, text);
-		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
+		font.setColorMask(new Color(0, 0, 0, color.alpha));
 		font.drawText(x + shadowDistance, y + shadowDistance, text);
 		font.setColorMask(color);
 		font.drawText(x, y, text);
@@ -129,7 +129,7 @@ BattleHUD.prototype.highlight = function(unit)
 			.run();
 	} else {
 		new scenes.Scene()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 0, 0, 0))
+			.tween(this.highlightColor, 0.1, 'easeInQuad', new Color(0, 0, 0, 0))
 			.run();
 	}
 };
@@ -159,8 +159,8 @@ BattleHUD.prototype.render = function()
 		if (this.highlightedUnit == gaugeInfo.owner) {
 			this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 		}
-		Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
-		OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
+		Rectangle(itemX + 141, itemY + 3, 14, 14, new Color(128, 32, 32, 255));
+		OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, new Color(0, 0, 0, 255));
 		gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
 	}
 };
@@ -181,11 +181,11 @@ BattleHUD.prototype.setHP = function(unit, hp)
 				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
 				: Color.Lime;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
-			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
+			var flashColor = hp > characterInfo.hp ? new Color(0, 192, 0, 255) : new Color(192, 0, 0, 255);
 			new scenes.Scene()
 				.fork()
 					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColor)
-					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', CreateColor(0, 0, 0, 0))
+					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', new Color(0, 0, 0, 0))
 				.end()
 				.tween(characterInfo, 0.25, 'easeInOutSine', { hp: hp })
 				.run();
@@ -218,7 +218,7 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 		hp: hp,
 		maxHP: maxHP,
 		hpGauge: hpGauge,
-		lightColor: CreateColor(255, 0, 0, 0)
+		lightColor: new Color(255, 0, 0, 0)
 	};
 };
 

@@ -101,15 +101,15 @@ BattleActor.prototype.render = function()
 			var yName = 'y' + i2.toString();
 			var y = this.y + this.damages[i][yName];
 			var color = this.damages[i].color !== null ? this.damages[i].color
-				: CreateColor(255, 255, 255, 255);
+				: new Color(255, 255, 255, 255);
 			DrawTextEx(this.messageFont, x, y, text[i2], color, 1);
 			x += this.messageFont.getStringWidth(text[i2]);
 		}
 	}
 	for (var i = 0; i < this.healings.length; ++i) {
 		var y = this.y + this.healings[i].y;
-		var color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
-		var textColor = BlendColors(color, color);
+		var color = this.healings[i].color !== null ? this.healings[i].color : new Color(64, 255, 128, 255);
+		var textColor = Color.mix(color, color);
 		textColor.alpha *= this.healings[i].alpha / 255;
 		DrawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
 	}

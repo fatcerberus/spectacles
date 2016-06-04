@@ -5,7 +5,7 @@
 
 function MPGauge(capacity, color)
 {
-	color !== void null ? color : CreateColor(128, 128, 128, 255);
+	color !== void null ? color : new Color(128, 128, 128, 255);
 	
 	this.color = color;
 	this.textFont = GetSystemFont();
@@ -14,7 +14,7 @@ function MPGauge(capacity, color)
 	this.capacity = capacity;
 	this.reading = capacity;
 	this.usage = 0;
-	this.usageColor = CreateColor(0, 0, 0, 0);
+	this.usageColor = new Color(0, 0, 0, 0);
 	this.value = capacity;
 	
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
@@ -31,7 +31,7 @@ function MPGauge(capacity, color)
 			Abort("MPGauge.drawText(): Invalid text alignment '" + alignment + "'.");
 		}
 		x = alignments[alignment](font, x, text);
-		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
+		font.setColorMask(new Color(0, 0, 0, color.alpha));
 		font.drawText(x + shadowDistance, y + shadowDistance, text);
 		font.setColorMask(color);
 		font.drawText(x, y, text);
@@ -44,14 +44,14 @@ MPGauge.prototype.draw = function(x, y, size)
 	SetClippingRectangle(x, y, size, size);
 	if (this.capacity > 0) {
 		var innerFillColor = this.color;
-		var outerFillColor = BlendColors(this.color, CreateColor(0, 0, 0, this.color.alpha));
+		var outerFillColor = Color.mix(this.color, new Color(0, 0, 0, this.color.alpha));
 		var outerUsageColor = this.usageColor;
-		var innerUsageColor = BlendColors(this.usageColor, CreateColor(0, 0, 0, this.usageColor.alpha));
+		var innerUsageColor = Color.mix(this.usageColor, new Color(0, 0, 0, this.usageColor.alpha));
 		var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
 		GradientCircle(x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
-		this.drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, CreateColor(255, 255, 255, 255), Math.round(this.reading), 'right');
-		this.drawText(this.textFont, x + size - 20, y + size / 2 - 4, 1, CreateColor(255, 192, 0, 255), "MP");
+		this.drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, new Color(255, 255, 255, 255), Math.round(this.reading), 'right');
+		this.drawText(this.textFont, x + size - 20, y + size / 2 - 4, 1, new Color(255, 192, 0, 255), "MP");
 	}
 	SetClippingRectangle(oldClip.x, oldClip.y, oldClip.width, oldClip.height);
 };
@@ -71,7 +71,7 @@ MPGauge.prototype.set = function(value)
 				.tween(this, 0.25, 'easeInOutSine', { reading: value })
 			.end()
 			.tween(this.usageColor, 0.1, 'easeInOutSine', this.color)
-			.tween(this.usageColor, 0.5, 'easeInOutSine', CreateColor(0, 0, 0, 0))
+			.tween(this.usageColor, 0.5, 'easeInOutSine', new Color(0, 0, 0, 0))
 			.run();
 	}
 	this.value = value;

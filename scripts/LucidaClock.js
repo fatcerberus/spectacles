@@ -8,11 +8,11 @@
 // in the dream world of Lucida.
 LucidaClock = new (function()
 {
-	var MY_DAY_MASK = CreateColor(0, 0, 0, 0);
-	var MY_TWILIGHT_MASK = CreateColor(128, 32, 16, 160);
-	var MY_NIGHT_MASK = CreateColor(0, 0, 32, 144);
+	var MY_DAY_MASK = new Color(0, 0, 0, 0);
+	var MY_TWILIGHT_MASK = new Color(128, 32, 16, 160);
+	var MY_NIGHT_MASK = new Color(0, 0, 32, 144);
 	
-	this.currentMask = CreateColor(0, 0, 0, 0);
+	this.currentMask = new Color(0, 0, 0, 0);
 	
 	// .initialize() method
 	// Initializes and activates the time-of-day manager.
@@ -40,22 +40,22 @@ LucidaClock = new (function()
 			fromMask = MY_NIGHT_MASK;
 			toMask = MY_TWILIGHT_MASK;
 			alpha = now.minute / 60;
-			this.currentMask = BlendColorsWeighted(toMask, fromMask, alpha, 1.0 - alpha);
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		} else if (now.hour >= 6 && now.hour < 7) {
 			fromMask = MY_TWILIGHT_MASK;
 			toMask = MY_DAY_MASK;
 			alpha = now.minute / 60;
-			this.currentMask = BlendColorsWeighted(toMask, fromMask, alpha, 1.0 - alpha);
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		} else if (now.hour >= 17 && now.hour < 18) {
 			fromMask = MY_DAY_MASK;
 			toMask = MY_TWILIGHT_MASK;
 			alpha = now.minute / 60;
-			this.currentMask = BlendColorsWeighted(toMask, fromMask, alpha, 1.0 - alpha);
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		} else if (now.hour >= 18 && now.hour < 19) {
 			fromMask = MY_TWILIGHT_MASK;
 			toMask = MY_NIGHT_MASK;
 			alpha = now.minute / 60;
-			this.currentMask = BlendColorsWeighted(toMask, fromMask, alpha, 1.0 - alpha);
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		}
 		return true;
 	};

@@ -116,7 +116,7 @@ scenes.scenelet('talk',
 		this.numLinesToDraw = 0;
 		this.topLine = 0;
 		this.lineToReveal = 0;
-		this.textSurface = new Surface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
+		this.textSurface = new Surface(textAreaWidth, this.font.getHeight() * 3 + 1, new Color(0, 0, 0, 0));
 		this.transition = new scenes.Scene()
 			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
@@ -134,10 +134,10 @@ scenes.scenelet('talk',
 		var boxHeight = lineHeight * 3 + 11;
 		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
 		var boxY = finalBoxY + (GetScreenHeight() - finalBoxY) * (1.0 - this.boxVisibility);
-		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
+		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, new Color(0, 0, 0, 144 * this.boxVisibility));
+		Rectangle(0, boxY, GetScreenWidth(), boxHeight, new Color(0, 0, 0, 128 * this.boxVisibility));
 		this.textSurface.setBlendMode(REPLACE);
-		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, CreateColor(0, 0, 0, 0));
+		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, new Color(0, 0, 0, 0));
 		this.textSurface.setBlendMode(BLEND);
 		var lineCount = this.text[this.currentPage].length;
 		var textAreaWidth = this.textSurface.width;
@@ -153,23 +153,23 @@ scenes.scenelet('talk',
 			var lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
 			if (this.lineVisibility > 0.0 || this.lineToReveal != trueLine) {
 				var lineText = this.text[this.currentPage][trueLine];
-				this.font.setColorMask(CreateColor(0, 0, 0, 255 * this.textVisibility * lineVisibility));
+				this.font.setColorMask(new Color(0, 0, 0, 255 * this.textVisibility * lineVisibility));
 				this.textSurface.drawText(this.font, textX + 1, textY + 1, lineText);
-				this.font.setColorMask(CreateColor(255, 255, 255, 255 * this.textVisibility * lineVisibility));
+				this.font.setColorMask(new Color(255, 255, 255, 255 * this.textVisibility * lineVisibility));
 				this.textSurface.drawText(this.font, textX, textY, lineText);
 				if (this.lineToReveal == trueLine) {
 					var shownArea = textAreaWidth * this.lineVisibility;
 					this.textSurface.setBlendMode(SUBTRACT);
-					this.textSurface.gradientRectangle((textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
+					this.textSurface.gradientRectangle((textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1, new Color(0, 0, 0, 0), new Color(0, 0, 0, 255), new Color(0, 0, 0, 255 * this.boxVisibility), new Color(0, 0, 0, 0));
 					this.textSurface.setBlendMode(REPLACE);
-					this.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
+					this.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, new Color(0, 0, 0, 0));
 					this.textSurface.setBlendMode(BLEND);
 				}
 			}
 			if (this.showSpeaker && this.speakerName != null && trueLine == 0) {
-				this.font.setColorMask(CreateColor(0, 0, 0, this.textVisibility * this.nameVisibility * 255));
+				this.font.setColorMask(new Color(0, 0, 0, this.textVisibility * this.nameVisibility * 255));
 				this.textSurface.drawText(this.font, 1, textY + 1, this.speakerText);
-				this.font.setColorMask(CreateColor(255, 192, 0, this.textVisibility * this.nameVisibility * 255));
+				this.font.setColorMask(new Color(255, 192, 0, this.textVisibility * this.nameVisibility * 255));
 				this.textSurface.drawText(this.font, 0, textY, this.speakerText);
 			}
 		}
