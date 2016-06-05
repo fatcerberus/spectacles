@@ -18,7 +18,7 @@ function FieldMenu(session)
 		this.items[i].highlight = new Color(0, 0, 0, 0);
 		this.items[i].textColor = Color.mix(this.itemTextColor, this.itemTextColor);
 	}
-	this.font = GetSystemFont();
+	this.font = Font.Default;
 	this.isOpen = false;
 	this.itemFader = null;
 	this.selection = link(this.items).pluck('id').toArray().indexOf('party');

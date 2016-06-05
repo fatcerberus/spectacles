@@ -10,7 +10,7 @@ function MapContext(mapID)
 	if (!(mapID in Game.maps)) {
 		Abort("MapContext(): The map definition '" + mapID + "' doesn't exist!");
 	}
-	console.log("Creating map context for map '" + mapID + "'");
+	terminal.log("Creating map context for map '" + mapID + "'");
 	this.mapID = mapID;
 	this.mapDef = Game.maps[this.mapID];
 	this.sprites = [];
@@ -24,7 +24,7 @@ function MapContext(mapID)
 MapContext.prototype.invoke = function(eventID)
 {
 	if (eventID in this.mapDef) {
-		console.log("Invoking map event " + this.mapID + "->" + eventID);
+		terminal.log("Invoking map event " + this.mapID + "->" + eventID);
 		this.mapDef[eventID].call(this.state);
 	}
 };
@@ -35,7 +35,7 @@ MapContext.prototype.invoke = function(eventID)
 //     engine: The FieldEngine that the map will be loaded into.
 MapContext.prototype.loadMap = function(engine)
 {
-	console.log("Loading map " + this.mapID + " into field engine");
+	terminal.log("Loading map " + this.mapID + " into field engine");
 	engine.createGrid(10, 8);
 };
 

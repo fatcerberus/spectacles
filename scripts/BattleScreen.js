@@ -21,12 +21,12 @@ function BattleScreen(partyMaxMP)
 	for (var type in this.actorTypes) {
 		this.actors[type] = [];
 	}
-	this.background = LoadImage("TestBattle.png");
+	this.background = new Image("images/TestBattle.png");
 	this.hud = new BattleHUD(partyMaxMP);
 	
 	this.startRunning = function()
 	{
-		console.log("Activating battle screen");
+		terminal.log("Activating battle screen");
 		this.thread = threads.create(this);
 		this.hud.show();
 	};
@@ -56,7 +56,7 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 		text: actionName,
 		alignment: alignment,
 		color: bannerColor,
-		font: GetSystemFont(),
+		font: Font.Default,
 		fadeness: 1.0,
 		render: function() {
 			var width = this.font.getStringWidth(this.text) + 20;

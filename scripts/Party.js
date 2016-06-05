@@ -17,7 +17,7 @@ function Party(level)
 	
 	this.defaultLevel = level;
 	this.members = {};
-	console.log("Created party manager");
+	terminal.log("Created party manager");
 }
 
 // .add() method
@@ -32,7 +32,7 @@ Party.prototype.add = function(characterID, level)
 	
 	var newMember = new PartyMember(characterID, level);
 	this.members[characterID] = newMember;
-	console.log("Added PC " + newMember.name + " to party");
+	terminal.log("Added PC " + newMember.name + " to party");
 };
 
 // .getLevel() method
@@ -72,7 +72,7 @@ Party.prototype.remove = function(characterID)
 {
 	for (var id in this.members) {
 		if (id === characterID) {
-			console.log("Removing PC " + this.members[id].name + " from party");
+			terminal.log("Removing PC " + this.members[id].name + " from party");
 			delete this.members[id];
 		}
 	}

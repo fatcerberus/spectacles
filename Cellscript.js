@@ -18,18 +18,8 @@ function $default()
 		script: 'scripts/main.js',
 
 		minimumPlatform: {
-			recommend: "minisphere 3.1.x",
+			recommend: "minisphere 4.0+",
 			apiLevel: 1,
-			extensions: [
-				"sphere-legacy-api",
-				"sphere-obj-constructors",
-				"sphere-obj-props",
-				"sphere-map-engine",
-				"sphere-rng-object",
-				"sphere-s2gm",
-				"sphere-spherefs",
-				"sphere-typescript",
-			]
 		},
 
 		// miniRT options

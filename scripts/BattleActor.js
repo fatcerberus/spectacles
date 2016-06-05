@@ -20,7 +20,7 @@ function BattleActor(name, position, row, isEnemy)
 	this.healings = [];
 	this.isEnemy = isEnemy;
 	this.isVisible = true;
-	this.messageFont = GetSystemFont();
+	this.messageFont = Font.Default;
 	this.name = name;
 	this.opacity = 1.0;
 	this.position = isEnemy ? position : 2 - position;

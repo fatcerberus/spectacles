@@ -14,7 +14,7 @@ RequireScript("Session.js");
 function TitleScreen(themeTrack)
 {
 	this.fadeness = 1.0;
-	this.image = LoadImage("TitleScreen.png");
+	this.image = new Image("images/TitleScreen.png");
 	this.manifest = GetGameManifest();
 	this.themeTrack = themeTrack;
 }

@@ -12,11 +12,11 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	console.log("Initializing Specs Engine test harness");
-	console.register('harness', this, {
+	terminal.log("Initializing Specs Engine test harness");
+	terminal.register('harness', this, {
 		'run': function(testID) {
 			if (!(testID in this.tests))
-				return console.log("Unknown test ID '" + testID + "'");
+				return terminal.log("Unknown test ID '" + testID + "'");
 			this.run(testID);
 		}
 	});
@@ -25,7 +25,7 @@ TestHarness.initialize = function()
 	
 	var testScripts = GetFileList('~/scripts/testcases');
 	for (var i = 0; i < testScripts.length; ++i) {
-		console.log("Loading testcases from '" + testScripts[i] + "'");
+		terminal.log("Loading testcases from '" + testScripts[i] + "'");
 		EvaluateScript('~/scripts/testcases/' + testScripts[i]);
 	}
 };
@@ -36,11 +36,11 @@ TestHarness.addBattle = function(testID, setupData)
 		setup: setupData,
 		run: function() {
 			if (TestHarness.isBattleRunning) {
-				console.log("Unable to run test battle, one is ongoing");
+				terminal.log("Unable to run test battle, one is ongoing");
 				return;
 			}
-			console.log("Preparing test battle");
-			console.append("battleID: " + this.setup.battleID);
+			terminal.log("Preparing test battle");
+			terminal.append("battleID: " + this.setup.battleID);
 			var session = new Session();
 			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -62,7 +62,7 @@ TestHarness.addBattle = function(testID, setupData)
 			TestHarness.isBattleRunning = false;
 		}
 	};
-	console.log("Added battle test '" + testID + "'");
+	terminal.log("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -74,15 +74,15 @@ TestHarness.addTest = function(testID, func)
 			this.func.call(this.context);
 		}
 	};
-	console.register(testID, this.tests[testID], {
+	terminal.register(testID, this.tests[testID], {
 		'test': TestHarness.run.bind(TestHarness, testID)
 	});
-	console.log("Added generic test '" + testID + "'");
+	terminal.log("Added generic test '" + testID + "'");
 };
 
 TestHarness.run = function(testID)
 {
-	console.log("Test harness invoked");
-	console.append("testID: " + testID);
+	terminal.log("Test harness invoked");
+	terminal.append("testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

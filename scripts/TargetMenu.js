@@ -30,8 +30,8 @@ function TargetMenu(unit, battle, usable, moveName)
 		: usable !== null ? usable.name
 		: unit.name;
 	this.statusNames = null;
-	this.cursorFont = GetSystemFont();
-	this.infoFont = GetSystemFont();
+	this.cursorFont = Font.Default;
+	this.infoFont = Font.Default;
 	this.targets = [];
 	this.unit = unit;
 	this.unitToShowInfo = null;

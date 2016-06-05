@@ -23,7 +23,7 @@ function MoveMenu(unit, battle, stance)
 	this.drawers = null;
 	this.expansion = 0.0;
 	this.fadeness = 0.0;
-	this.font = GetSystemFont();
+	this.font = Font.Default;
 	this.isExpanded = false;
 	this.menuStance = stance;
 	this.menuThread = null;

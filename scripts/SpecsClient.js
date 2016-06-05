@@ -5,16 +5,16 @@
 
 function SpecsClient(hostname, person)
 {
-	this.socket = new IOSocket(hostname, 812);
+	this.socket = new Socket(hostname, 812);
 	this.person = person;
 	this.isReady = false;
-	console.log("Connecting to person server at " + hostname + ":812");
+	terminal.log("Connecting to person server at " + hostname + ":812");
 	threads.create(this);
 }
 
 SpecsClient.prototype.update = function()
 {
-	if (!this.socket.isConnected())
+	if (!this.socket.connected)
 		return true;
 	
 	var pendingBytes = this.socket.getPendingReadSize();
@@ -23,8 +23,8 @@ SpecsClient.prototype.update = function()
 		for (var i = 0; i < lines.length; ++i) {
 			if (lines[i] == 'specs client?') {
 				this.socket.write('specs client.\nperson-id ' + this.person);
-				console.log("Successfully connected to person server");
-				console.log("Now controlling '" + this.person + "' remotely");
+				terminal.log("Successfully connected to person server");
+				terminal.log("Now controlling '" + this.person + "' remotely");
 				this.isReady = true;
 				this.lastX = GetPersonX(this.person);
 				this.lastY = GetPersonY(this.person);

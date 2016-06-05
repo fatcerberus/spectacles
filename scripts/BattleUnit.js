@@ -130,9 +130,9 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.resetCounter(Game.defaultMoveRank, true);
 	this.registerCommands();
 	var unitType = this.ai === null ? "player" : "AI";
-	console.log("Created " + unitType + " unit '" + this.name + "'");
-	console.append("hp: " + this.hp + "/" + this.maxHP);
-	console.append("id: " + this.tag);
+	terminal.log("Created " + unitType + " unit '" + this.name + "'");
+	terminal.append("hp: " + this.hp + "/" + this.maxHP);
+	terminal.append("id: " + this.tag);
 }
 
 // .dispose() method
@@ -142,7 +142,7 @@ BattleUnit.prototype.dispose = function()
 	if (this.ai !== null) {
 		this.ai.dispose();
 	}
-	console.unregister(this.id);
+	terminal.unregister(this.id);
 };
 
 // .addStatus() method
@@ -163,12 +163,12 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 			if (!isGuardable) {
 				this.actor.showHealing("immune", new Color(192, 192, 192, 255));
 			}
-			console.log(this.name + " is immune to " + statusName);
+			terminal.log(this.name + " is immune to " + statusName);
 		} else if (isOverruled) {
 			if (!isGuardable) {
 				this.actor.showHealing("ward", new Color(192, 192, 192, 255));
 			}
-			console.log(statusName + " overruled by another of " + this.name + "'s statuses");
+			terminal.log(statusName + " overruled by another of " + this.name + "'s statuses");
 		} else if (this.stance !== BattleStance.Guard || !isGuardable) {
 			var eventData = { unit: this, statusID: statusID, cancel: false };
 			this.battle.raiseEvent('unitAfflicted', eventData);
@@ -182,15 +182,15 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				link(this.statuses).pluck('statusID').each(function(statusID) {
 					this.battlerInfo.statuses.push(statusID);
 				}.bind(this));
-				console.log(this.name + " took on status " + effect.name);
+				terminal.log(this.name + " took on status " + effect.name);
 			} else {
 				if (!isGuardable) {
 					this.actor.showHealing("ward", new Color(192, 192, 192, 255));
 				}
-				console.log(this.name + "'s " + statusName + " infliction blocked by status/FC");
+				terminal.log(this.name + "'s " + statusName + " infliction blocked by status/FC");
 			}
 		} else {
-			console.log(this.name + " in GS, " + statusName + " infliction blocked");
+			terminal.log(this.name + " in GS, " + statusName + " infliction blocked");
 		}
 	}
 };
@@ -244,7 +244,7 @@ BattleUnit.prototype.clearQueue = function()
 {
 	if (this.actionQueue.length > 0) {
 		this.actionQueue = [];
-		console.log("Cleared " + this.name + "'s action queue");
+		terminal.log("Cleared " + this.name + "'s action queue");
 	}
 };
 
@@ -258,7 +258,7 @@ BattleUnit.prototype.die = function()
 	this.battle.ui.hud.setHP(this, this.hp);
 	this.statuses = [];
 	this.actor.animate('die');
-	console.log(this.fullName + " afflicted with death");
+	terminal.log(this.fullName + " afflicted with death");
 };
 
 // .endCycle() method
@@ -273,7 +273,7 @@ BattleUnit.prototype.endCycle = function()
 		if (this.ai == null) {
 			this.actor.animate('active');
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-			console.log("Asking player for " + this.name + "'s counterattack");
+			terminal.log("Asking player for " + this.name + "'s counterattack");
 			chosenMove = this.counterMenu.open();
 		} else {
 			chosenMove = this.ai.getNextMove();
@@ -290,7 +290,7 @@ BattleUnit.prototype.endCycle = function()
 		var stanceName = this.stance == BattleStance.Guard ? "Guard"
 			: this.stance == BattleStance.Counter ? "Counter"
 			: "Attack";
-		console.log(this.name + " is now in " + stanceName + " Stance");
+		terminal.log(this.name + " is now in " + stanceName + " Stance");
 	}
 };
 
@@ -310,13 +310,13 @@ BattleUnit.prototype.endTargeting = function()
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
 	this.actor.showHealing("miss", new Color(192, 192, 192, 255));
-	console.log(this.name + " evaded " + actingUnit.name + "'s attack");
+	terminal.log(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
 	if (isMelee && this.stance == BattleStance.Guard && isGuardBroken) {
 		this.stance = BattleStance.Counter;
 		this.counterTarget = actingUnit;
-		console.log(this.name + "'s Counter Stance activated");
+		terminal.log(this.name + "'s Counter Stance activated");
 	}
 };
 
@@ -362,7 +362,7 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 		var skill = this.partyMember.learnSkill(skillID);
 		this.skills.push(skill);
 		this.newSkills.push(skill);
-		console.log(this.name + " learned " + skill.name);
+		terminal.log(this.name + " learned " + skill.name);
 	}
 };
 
@@ -373,7 +373,7 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 BattleUnit.prototype.getNextAction = function()
 {
 	if (this.actionQueue.length > 0) {
-		console.log(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
+		terminal.log(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
 		return this.actionQueue.shift();
 	} else {
 		return null;
@@ -421,8 +421,8 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
-		console.log(this.name + " healed for " + amount + " HP");
-		console.append("now: " + this.hp);
+		terminal.log(this.name + " healed for " + amount + " HP");
+		terminal.append("now: " + this.hp);
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
 	}
@@ -459,7 +459,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	if (!eventData.cancel) {
 		for (var i = 0; i < this.statuses.length; ++i) {
 			if (statusID == this.statuses[i].statusID) {
-				console.log(this.name + " lost status " + this.statuses[i].name);
+				terminal.log(this.name + " lost status " + this.statuses[i].name);
 				this.statuses.splice(i, 1);
 				--i; continue;
 			}
@@ -518,8 +518,8 @@ BattleUnit.prototype.performAction = function(action, move)
 			}
 			for (var statID in experience) {
 				this.stats[statID].grow(experience[statID]);
-				console.log(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID]);
-				console.append("value: " + this.stats[statID].getValue());
+				terminal.log(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID]);
+				terminal.append("value: " + this.stats[statID].getValue());
 			}
 		}
 		this.resetCounter(action.rank);
@@ -552,7 +552,7 @@ BattleUnit.prototype.queueMove = function(move)
 			this.actionQueue.push(nextActions[i]);
 		}
 		if (this.actionQueue.length > 0) {
-			console.log("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
+			terminal.log("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
 		}
 	} else {
 		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns());
@@ -600,16 +600,16 @@ BattleUnit.prototype.refreshInfo = function()
 };
 
 // .registerCommands() method
-// Registers the BattleUnit with the console.
+// Registers the BattleUnit with the terminal.
 BattleUnit.prototype.registerCommands = function()
 {
-	console.register(this.id, this, {
+	terminal.register(this.id, this, {
 		
 		'add': function(statusID) {
 			if (statusID in Game.statuses) {
 				this.addStatus(statusID);
 			} else {
-				console.log("Invalid status ID '" + statusID + "'");
+				terminal.log("Invalid status ID '" + statusID + "'");
 			}
 		},
 		
@@ -617,7 +617,7 @@ BattleUnit.prototype.registerCommands = function()
 			if (statusID in Game.statuses) {
 				this.liftStatus(statusID);
 			} else {
-				console.log("Invalid status ID '" + statusID + "'");
+				terminal.log("Invalid status ID '" + statusID + "'");
 			}
 		},
 		
@@ -635,14 +635,14 @@ BattleUnit.prototype.registerCommands = function()
 		
 		'inv': function(instruction) {
 			if (arguments.length < 1)
-				return console.log("'" + this.id + " inv': No instruction provided");
+				return terminal.log("'" + this.id + " inv': No instruction provided");
 			switch (instruction) {
 			case 'add':
 				if (arguments.length < 2)
-					return console.log("'" + this.id + " inv add': Item ID required");
+					return terminal.log("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				if (!(itemID in Game.items))
-					return console.log("No such item ID '" + itemID + "'");
+					return terminal.log("No such item ID '" + itemID + "'");
 				var defaultUses = 'uses' in Game.items[itemID] ? Game.items[itemID].uses : 1;
 				var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 				var addCount = 0;
@@ -659,16 +659,16 @@ BattleUnit.prototype.registerCommands = function()
 					this.items.push(usable);
 					addCount = itemCount;
 				}
-				console.log(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
+				terminal.log(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
 				break;
 			case 'munch':
 				new scenes.Scene().playSound('Munch.wav').run();
 				this.items.length = 0;
-				console.log("maggie ate " + this.name + "'s entire inventory");
+				terminal.log("maggie ate " + this.name + "'s entire inventory");
 				break;
 			case 'rm':
 				if (arguments.length < 2)
-					return console.log("'" + this.id + " inv add': Item ID required");
+					return terminal.log("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				var itemCount = 0;
 				link(this.items)
@@ -676,13 +676,13 @@ BattleUnit.prototype.registerCommands = function()
 					.execute(function(usable) { itemCount += usable.usesLeft })
 					.remove();
 				if (itemCount > 0)
-					console.log(itemCount + "x " + Game.items[itemID].name
+					terminal.log(itemCount + "x " + Game.items[itemID].name
 						+ " deleted from " + this.name + "'s inventory");
 				else
-					console.log("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
+					terminal.log("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
 				break;
 			default:
-				return console.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
+				return terminal.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
 			}
 		},
 		
@@ -694,7 +694,7 @@ BattleUnit.prototype.registerCommands = function()
 			flag = flag.toLowerCase();
 			if (flag == 'on') this.allowTargetScan = true;
 			if (flag == 'off') this.allowTargetScan = false;
-			console.log("Target Scan for " + this.name + " is " +
+			terminal.log("Target Scan for " + this.name + " is " +
 				(this.allowTargetScan ? "ON" : "OFF"));
 		},
 	});
@@ -720,8 +720,8 @@ BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
 	this.cv = rank > 0
 		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 		: 1;
-	console.log(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv);
-	console.append("rank: " + rank);
+	terminal.log(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv);
+	terminal.append("rank: " + rank);
 };
 
 // .restoreMP() method
@@ -753,7 +753,7 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 		this.heal(isFullHeal ? this.maxHP : 1);
 		this.actor.animate('revive');
 		this.resetCounter(Game.reviveRank);
-		console.log(this.name + " brought back from the dead");
+		terminal.log(this.name + " brought back from the dead");
 	} else {
 		this.actor.showHealing("ward", new Color(192, 192, 192, 255));
 	}
@@ -763,7 +763,7 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 // Switches the unit into Guard Stance.
 BattleUnit.prototype.setGuard = function()
 {
-	console.log(this.name + " will switch to Guard Stance");
+	terminal.log(this.name + " will switch to Guard Stance");
 	this.announce("Guard");
 	this.newStance = BattleStance.Guard;
 	this.resetCounter(Game.stanceChangeRank);
@@ -778,7 +778,7 @@ BattleUnit.prototype.setWeapon = function(weaponID)
 	var weaponDef = Game.weapons[weaponID];
 	this.announce("equip " + weaponDef.name);
 	this.weapon = weaponDef;
-	console.log(this.name + " equipped weapon " + weaponDef.name);
+	terminal.log(this.name + " equipped weapon " + weaponDef.name);
 	this.resetCounter(Game.equipWeaponRank);
 };
 
@@ -825,18 +825,18 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.Counter) {
-			console.log(this.name + " hit from Counter Stance, damage increased");
+			terminal.log(this.name + " hit from Counter Stance, damage increased");
 			amount = Math.round(amount * Game.bonusMultiplier);
 		}
 		if (this.stance != BattleStance.Attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
-			console.log(this.name + " is in Guard Stance, damage reduced");
+			terminal.log(this.name + " is in Guard Stance, damage reduced");
 		}
 		var oldHPValue = this.hp;
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
-		console.log(this.name + " took " + amount + " HP damage");
-		console.append("left: " + this.hp);
+		terminal.log(this.name + " took " + amount + " HP damage");
+		terminal.append("left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
 			link(tags)
@@ -852,7 +852,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		}
 		this.battle.ui.hud.setHP(this, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
-			console.log(this.name + " dying due to lack of HP");
+			terminal.log(this.name + " dying due to lack of HP");
 			this.lazarusFlag = true;
 			var eventData = { unit: this, cancel: false };
 			this.battle.raiseEvent('unitDying', eventData);
@@ -863,7 +863,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			if (!this.lazarusFlag) {
 				this.die();
 			} else {
-				console.log(this.name + "'s death suspended by status/FC");
+				terminal.log(this.name + "'s death suspended by status/FC");
 			}
 		}
 	} else if (amount < 0) {
@@ -890,8 +890,8 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == BattleStance.Guard && isGuardBroken) {
-		console.log(this.name + "'s Guard Stance was broken");
-		console.append("by: " + actingUnit.name);
+		terminal.log(this.name + "'s Guard Stance was broken");
+		terminal.append("by: " + actingUnit.name);
 		this.newStance = BattleStance.Attack;
 		this.resetCounter(Game.guardBreakRank);
 	}
@@ -914,11 +914,11 @@ BattleUnit.prototype.tick = function()
 		if (this.stance == BattleStance.Guard) {
 			this.stance = this.newStance = BattleStance.Attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
-			console.log(this.name + "'s Guard Stance has expired");
+			terminal.log(this.name + "'s Guard Stance has expired");
 		} else if (this.stance == BattleStance.Counter) {
 			this.newStance = BattleStance.Attack;
 		}
-		console.log(this.name + "'s turn is up");
+		terminal.log(this.name + "'s turn is up");
 		this.actor.animate('active');
 		this.battle.unitReady.invoke(this.id);
 		var eventData = { skipTurn: false };
@@ -929,7 +929,7 @@ BattleUnit.prototype.tick = function()
 		}
 		if (eventData.skipTurn) {
 			this.clearQueue();
-			console.log(this.name + "'s turn was skipped");
+			terminal.log(this.name + "'s turn was skipped");
 			this.resetCounter(Game.defaultMoveRank);
 			this.battle.resume();
 			return true;
@@ -939,7 +939,7 @@ BattleUnit.prototype.tick = function()
 			var chosenMove = null;
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-				console.log("Asking player for " + this.name + "'s next move");
+				terminal.log("Asking player for " + this.name + "'s next move");
 				chosenMove = this.attackMenu.open();
 			} else {
 				chosenMove = this.ai.getNextMove();
@@ -960,7 +960,7 @@ BattleUnit.prototype.tick = function()
 		var eventData = { actingUnit: this };
 		this.battle.raiseEvent('endTurn', eventData);
 		this.actor.animate('dormant');
-		console.log("End of " + this.name + "'s turn");
+		terminal.log("End of " + this.name + "'s turn");
 		this.battle.resume();
 		return true;
 	} else {

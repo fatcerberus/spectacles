@@ -5,7 +5,7 @@
 
 ({
 	enter: function(map, world) {
-		var font = GetSystemFont();
+		var font = Font.Default;
 		var isHippoAround = false;
 		var maggieSize = 1.0;
 		analogue.world.munchSound = new Sound('sounds/Munch.wav');

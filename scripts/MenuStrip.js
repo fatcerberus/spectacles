@@ -20,7 +20,7 @@ function MenuStrip(title, isCancelable, items)
 	items = items !== void null ? items : null;
 	
 	this.carouselSurface = null;
-	this.font = GetSystemFont();
+	this.font = Font.Default;
 	this.isCancelable = isCancelable;
 	this.menuItems = [];
 	this.menuThread = null;

@@ -17,9 +17,9 @@ function MPPool(id, capacity, availableMP)
 	this.id = id;
 	this.availableMP = Math.min(availableMP, capacity);
 	this.capacity = capacity;
-	console.log("Created MP pool '" + this.id + "'");
-	console.append("cap: " + this.capacity);
-	console.append("avail: " + this.availableMP);
+	terminal.log("Created MP pool '" + this.id + "'");
+	terminal.append("cap: " + this.capacity);
+	terminal.append("avail: " + this.availableMP);
 	
 	// .gainedMP event
 	// Occurs when MP is returned to the pool.
@@ -46,8 +46,8 @@ MPPool.prototype.restore = function(amount)
 	this.availableMP = Math.min(this.availableMP + amount, this.capacity);
 	this.gainedMP.invoke(this, this.availableMP);
 	if (amount != 0) {
-		console.log(amount + " MP restored to pool '" + this.id + "'");
-		console.append("avail: " + this.availableMP);
+		terminal.log(amount + " MP restored to pool '" + this.id + "'");
+		terminal.append("avail: " + this.availableMP);
 	}
 };
 
@@ -64,7 +64,7 @@ MPPool.prototype.use = function(amount)
 	this.availableMP -= amount;
 	this.lostMP.invoke(this, this.availableMP);
 	if (amount != 0) {
-		console.log(Math.round(amount) + " MP used from pool '" + this.id + "'");
-		console.append("left: " + this.availableMP);
+		terminal.log(Math.round(amount) + " MP used from pool '" + this.id + "'");
+		terminal.append("left: " + this.availableMP);
 	}
 };

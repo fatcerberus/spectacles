@@ -18,7 +18,7 @@ GameOverAction =
 function GameOverScreen()
 {
 	this.fadeness = 1.0;
-	this.image = LoadImage("GameOverScreen.png");
+	this.image = new Image("images/GameOverScreen.png");
 	this.transition = null;
 }
 

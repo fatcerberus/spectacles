@@ -9,6 +9,6 @@
 		world.scrambler.setBattles([ 'headlessHorse' ]);
 		world.scrambler.start();
 		music.play('music/ScottsHomecoming.ogg');
-		StoryManager.show('argumentAtSnowplain');
+		StoryManager.show('opening');
 	}
 })

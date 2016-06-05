@@ -33,7 +33,7 @@ scenes.scenelet('battle',
 			case 'battle':
 				if (!threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.Lose) {
-						console.log("Player lost battle, showing Game Over screen");
+						terminal.log("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -45,7 +45,7 @@ scenes.scenelet('battle',
 			case 'gameOver':
 				if (!threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
-						console.log("Player asked to retry last battle");
+						terminal.log("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {

@@ -3,7 +3,6 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-global.console   = require('miniRT/console');
 global.delegates = require('miniRT/delegates');
 global.kh2bar    = require('kh2bar');
 global.link      = require('link');
@@ -11,6 +10,7 @@ global.music     = require('miniRT/music');
 global.pacts     = require('miniRT/pacts');
 global.prim      = require('miniRT/prim');
 global.scenes    = require('miniRT/scenes');
+global.terminal  = require('miniRT/console');
 global.threads   = require('miniRT/threads');
 
 var DBG_DISABLE_TEXTBOXES = false;
@@ -39,17 +39,17 @@ function game()
 {
 	analogue.init();
 
-	console.register('specs', global, {
+	terminal.register('specs', global, {
 		'exit': function() { Exit(); }
 	});
-	console.register('yap', null, {
+	terminal.register('yap', null, {
 		'on': function() {
 			DBG_DISABLE_TEXTBOXES = false;
-			console.log("Oh, yappy times are here again...");
+			terminal.log("Oh, yappy times are here again...");
 		}, 
 		'off': function() {
 			DBG_DISABLE_TEXTBOXES = true;
-			console.log("The yappy times are OVER!");
+			terminal.log("The yappy times are OVER!");
 		}, 
 	});
 

@@ -8,7 +8,7 @@ function MPGauge(capacity, color)
 	color !== void null ? color : new Color(128, 128, 128, 255);
 	
 	this.color = color;
-	this.textFont = GetSystemFont();
+	this.textFont = Font.Default;
 	
 	this.animation = null;
 	this.capacity = capacity;

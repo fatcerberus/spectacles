@@ -27,7 +27,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	console.log("Initializing battle context for '" + battleID + "'");
+	terminal.log("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
@@ -116,9 +116,9 @@ Battle.prototype.addCondition = function(conditionID)
 	if (!eventData.cancel) {
 		var effect = new ConditionContext(eventData.conditionID, this);
 		this.conditions.push(effect);
-		console.log("Installed field condition " + effect.name);
+		terminal.log("Installed field condition " + effect.name);
 	} else {
-		console.log("FC installation (ID: " + conditionID + ") canceled by existing FC");
+		terminal.log("FC installation (ID: " + conditionID + ") canceled by existing FC");
 	}
 };
 
@@ -192,20 +192,20 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (GetGameManifest().disableBattles) {
-		console.log("Battles disabled, automatic win");
-		console.append("battleID: " + this.battleID);
+		terminal.log("Battles disabled, automatic win");
+		terminal.append("battleID: " + this.battleID);
 		this.result = BattleResult.Win;
 		return null;
 	}
-	console.log("");
-	console.log("Starting battle engine");
-	console.append("battleID: " + this.battleID);
+	terminal.log("");
+	terminal.log("Starting battle engine");
+	terminal.append("battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
 		var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 		partyMaxMP += mpDonated;
-		console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+		terminal.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -242,7 +242,7 @@ Battle.prototype.go = function()
 	this.result = null;
 	this.timer = 0;
 	this.mode = 'setup';
-	console.register('battle', this, {
+	terminal.register('battle', this, {
 		'spawn': this.spawnEnemy
 	});
 	var battleThread = threads.create(this);
@@ -275,7 +275,7 @@ Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			console.log("Battle condition " + this.conditions[i].name + " lifted");
+			terminal.log("Battle condition " + this.conditions[i].name + " lifted");
 			this.conditions.splice(i, 1);
 			--i; continue;
 		}
@@ -380,8 +380,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		console.log("Applying effect '" + effect.type + "'");
-		console.append("retarg: " + effect.targetHint);
+		terminal.log("Applying effect '" + effect.type + "'");
+		terminal.append("retarg: " + effect.targetHint);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
@@ -404,13 +404,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			aimRate = eventData.aimRate;
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-		console.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
+		terminal.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
 		if (RNG.chance(odds)) {
-			console.append("hit");
+			terminal.append("hit");
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
-			console.append("miss");
+			terminal.append("miss");
 			targetUnits[i].evade(actingUnit, action);
 		}
 	}
@@ -432,8 +432,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 				var targets = effect.targetHint == 'random'
 					? [ RNG.sample(targetsHit) ]
 					: targetsHit;
-				console.log("Applying effect '" + effect.type + "'");
-				console.append("retarg: " + effect.targetHint);
+				terminal.log("Applying effect '" + effect.type + "'");
+				terminal.append("retarg: " + effect.targetHint);
 				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;
@@ -454,7 +454,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
-	console.log("Spawning new enemy '" + enemyClass + "'");
+	terminal.log("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
@@ -474,8 +474,8 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
-	console.log("");
-	console.log("Beginning CTB cycle #" + (this.timer + 1));
+	terminal.log("");
+	terminal.log("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -491,14 +491,14 @@ Battle.prototype.tick = function()
 			music.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.Lose;
-			console.log("All active party members have been killed");
+			terminal.log("All active party members have been killed");
 			return;
 		}
 		if (link(this.enemyUnits).none(isUnitAlive)) {
 			music.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.Win;
-			console.log("All enemies have been killed");
+			terminal.log("All enemies have been killed");
 			return;
 		}
 	}
@@ -523,12 +523,12 @@ Battle.prototype.update = function() {
 			if (!link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
-					console.log("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					terminal.log("Calling onFirstStart() for battleID '" + this.battleID + "'");
 					this.parameters.onFirstStart.call(this);
 				 }
 			}
 			if ('onStart' in this.parameters) {
-				console.log("Calling onStart() for battleID '" + this.battleID + "'");
+				terminal.log("Calling onStart() for battleID '" + this.battleID + "'");
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
@@ -539,12 +539,12 @@ Battle.prototype.update = function() {
 			break;
 	}
 	if (this.result !== null) {
-		console.log("Battle engine shutting down");
+		terminal.log("Battle engine shutting down");
 		link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
 		music.pop();
 		music.adjust(1.0, 0.0);
-		console.unregister('battle');
+		terminal.unregister('battle');
 		return false;
 	}
 	else {
