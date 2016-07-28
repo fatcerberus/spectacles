@@ -72,7 +72,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 						this.doChargeSlashNext = true;
 						this.isComboStarted = false;
 					} else {
-						var skillID = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
+						var skillID = random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 						if (this.aic.isSkillUsable(skillID)) {
 							this.aic.queueSkill(skillID);
 						} else {
@@ -81,7 +81,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 					}
 				}
 			} else {
-				var skillID = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
+				var skillID = random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 				if (this.aic.isSkillUsable(skillID)) {
 					this.aic.queueSkill(skillID);
 				} else {
@@ -128,13 +128,13 @@ Robert2AI.prototype.strategize = function(stance, phase)
 				}
 				this.isStatusHealPending = false;
 				this.wasHolyWaterUsed = false;
-			} else if ((RNG.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.aic.unit) {
+			} else if ((random.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.aic.unit) {
 				this.aic.queueSkill('quickstrike');
 				this.isComboStarted = true;
 				this.wasHolyWaterUsed = false;
 			} else if (this.isComboStarted) {
-				var skillToUse = RNG.chance(0.5)
-					? RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ])
+				var skillToUse = random.chance(0.5)
+					? random.sample([ 'flare', 'chill', 'lightning', 'quake' ])
 					: 'chargeSlash';
 				this.aic.queueSkill(skillToUse);
 				if (skillToUse == 'quake') {
@@ -144,7 +144,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 				this.isStatusHealPending = skillToUse == 'quake';
 				this.wasHolyWaterUsed = false;
 			} else {
-				var skillToUse = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
+				var skillToUse = random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 				this.aic.queueSkill(skillToUse);
 				if (skillToUse == 'quake') {
 					this.aic.queueSkill('upheaval');
@@ -176,7 +176,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 						this.aic.queueSkill('flare', 'robert2');
 					}
 				}
-			} else if (RNG.chance(0.5) || this.isComboStarted) {
+			} else if (random.chance(0.5) || this.isComboStarted) {
 				var forecast = this.aic.predictSkillTurns('chargeSlash');
 				if ((forecast[0].unit === this.aic.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 					this.isComboStarted = false;
@@ -185,7 +185,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 					} else {
 						this.aic.queueSkill(this.nextElementalMove !== null
 							? this.nextElementalMove
-							: RNG.sample([ 'hellfire', 'windchill' ]));
+							: random.sample([ 'hellfire', 'windchill' ]));
 					}
 				} else {
 					this.isComboStarted = true;
@@ -193,7 +193,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 					if (forecast[0].unit === this.aic.unit) {
 						this.aic.queueSkill('quickstrike');
 					} else {
-						var skillToUse = RNG.chance(0.5) ? 'quake' : 'swordSlash';
+						var skillToUse = random.chance(0.5) ? 'quake' : 'swordSlash';
 						if (this.aic.isSkillUsable(skillToUse)) {
 							this.aic.queueSkill(skillToUse);
 							if (skillToUse == 'quake') {
@@ -209,7 +209,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 					}
 				}
 			} else {
-				var skillID = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
+				var skillID = random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 				this.aic.queueSkill(skillID);
 				if (skillID == 'quake') {
 					this.aic.queueSkill('upheaval');
@@ -217,7 +217,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 			}
 			break;
 		case 4:
-			var skillID = RNG.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+			var skillID = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 			var finisherID = this.aic.isSkillUsable(skillID) ? skillID : 'swordSlash';
 			var qsTurns = this.aic.predictSkillTurns('quickstrike');
 			this.aic.queueSkill(qsTurns[0].unit == this.aic.unit ? 'quickstrike' : finisherID);
@@ -251,7 +251,7 @@ Robert2AI.prototype.strategize = function(stance, phase)
 				var moves = this.aic.unit.mpPool.availableMP >= 200
 					? [ 'flare', 'chill', 'lightning', 'quake', 'quickstrike', 'chargeSlash' ]
 					: [ 'quickstrike', 'chargeSlash' ];
-				var skillID = RNG.sample(moves);
+				var skillID = random.sample(moves);
 				if (skillID == 'quickstrike' || this.isComboStarted) {
 					skillID = qsTurns[0].unit === this.aic.unit ? 'quickstrike' : 'swordSlash';
 					this.isComboStarted = skillID == 'quickstrike';
@@ -327,7 +327,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			this.isScottZombie = false;
 			this.scottImmuneTurnsLeft = 6;
 		} else if (itemID == 'holyWater' && this.isScottZombie) {
-			if (this.aic.phase <= 3 && RNG.chance(this.rezombieChance) && !this.isNecroTonicItemPending) {
+			if (this.aic.phase <= 3 && random.chance(this.rezombieChance) && !this.isNecroTonicItemPending) {
 				this.aic.queueSkill('necromancy');
 			} else {
 				this.isScottZombie = false;
@@ -337,7 +337,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			&& this.zombieHealFixState === null)
 		{
 			this.necromancyChance += 0.25;
-			if (RNG.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
+			if (random.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
 				this.aic.queueSkill(this.aic.phase <= 2 ? 'necromancy' : 'electrocute');
 				this.necromancyChance = 0.0;
 			}

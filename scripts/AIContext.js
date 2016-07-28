@@ -79,8 +79,8 @@ AIContext.prototype.checkPhase = function(allowEvents)
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	if (allowEvents && this.phase > lastPhase) {
-		terminal.log(this.unit.name + " is entering Phase " + this.phase);
-		terminal.append("prev: " + (lastPhase > 0 ? lastPhase : "none"));
+		terminal.log(this.unit.name + " is entering Phase " + this.phase,
+			"prev: " + (lastPhase > 0 ? lastPhase : "none"));
 		this.phaseChanged.invoke(this, this.phase, lastPhase);
 	}
 };
@@ -102,7 +102,7 @@ AIContext.prototype.definePhases = function(thresholds, sigma)
 	
 	terminal.log("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
 	this.phasePoints = link(thresholds)
-		.map(function(value) { return Math.round(RNG.normal(value, sigma)); })
+		.map(function(value) { return Math.round(random.normal(value, sigma)); })
 		.toArray();
 	var phaseIndex = 1;
 	link(this.phasePoints).each(function(milestone) {
@@ -243,8 +243,8 @@ AIContext.prototype.isSkillUsable = function(skillID)
 AIContext.prototype.itemsLeft = function(itemID)
 {
 	var itemUsable = link(this.unit.items).filterBy('itemID', itemID).first();
-	terminal.log(this.unit.name + " requested item count for " + itemUsable.name);
-	terminal.append("left: " + itemUsable.usesLeft);
+	terminal.log(this.unit.name + " requested item count for " + itemUsable.name,
+		"left: " + itemUsable.usesLeft);
 	return itemUsable.usesLeft;
 };
 
@@ -260,8 +260,8 @@ AIContext.prototype.predictItemTurns = function(itemID)
 	}
 	var itemRank = 'rank' in Game.items[itemID] ? Game.items[itemID].rank : Game.defaultItemRank;
 	var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
-	terminal.log(this.unit.name + " considering " + Game.items[itemID].name);
-	terminal.append("next: " + forecast[0].unit.name);
+	terminal.log(this.unit.name + " considering " + Game.items[itemID].name,
+		"next: " + forecast[0].unit.name);
 	return forecast;
 };
 
@@ -276,8 +276,8 @@ AIContext.prototype.predictSkillTurns = function(skillID)
 		Abort("AIContext.predictSkillTurns(): The skill '" + skillID + "' doesn't exist!");
 	}
 	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
-	terminal.log(this.unit.name + " considering " + Game.skills[skillID].name);
-	terminal.append("next: " + forecast[0].unit.name);
+	terminal.log(this.unit.name + " considering " + Game.skills[skillID].name,
+		"next: " + forecast[0].unit.name);
 	return forecast;
 };
 

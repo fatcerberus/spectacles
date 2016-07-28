@@ -16,10 +16,10 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
-			if (eventData.targets.length == 1 && RNG.chance(0.5)) {
+			if (eventData.targets.length == 1 && random.chance(0.5)) {
 				var target = eventData.targets[0];
-				var newTargets = RNG.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
-				eventData.targets = [ RNG.sample(newTargets) ];
+				var newTargets = random.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
+				eventData.targets = [ random.sample(newTargets) ];
 			}
 			--this.actionsLeft;
 			if (this.actionsLeft <= 0) {
@@ -44,10 +44,10 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			var oldRank = eventData.action.rank
-			eventData.action.rank = RNG.range(1, 5);
+			eventData.action.rank = random.range(1, 5);
 			if (eventData.action.rank != oldRank) {
-				terminal.log("Rank of action changed by G. Disarray to " + eventData.action.rank);
-				terminal.append("was: " + oldRank);
+				terminal.log("Rank of action changed by G. Disarray to " + eventData.action.rank,
+					"was: " + oldRank);
 			}
 			--this.actionsLeft;
 			if (this.actionsLeft > 0) {
@@ -74,7 +74,7 @@ Game.conditions =
 			var units = link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
-			var unit = RNG.sample(units);
+			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(vit, [ 'cure' ]);
 			--this.cyclesLeft;
@@ -115,13 +115,13 @@ Game.conditions =
 				if (effect.element == 'fire') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
-					terminal.log("Fire attack strengthened by Inferno to " + effect.power + " POW");
-					terminal.append("was: " + oldPower);
+					terminal.log("Fire attack strengthened by Inferno to " + effect.power + " POW",
+						"was: " + oldPower);
 				} else if (effect.element == 'ice') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
-					terminal.log("Ice attack weakened by Inferno to " + effect.power + " POW");
-					terminal.append("was: " + oldPower);
+					terminal.log("Ice attack weakened by Inferno to " + effect.power + " POW",
+						"was: " + oldPower);
 				}
 			});
 		},
@@ -130,7 +130,7 @@ Game.conditions =
 			var units = link(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.toArray();
-			var unit = RNG.sample(units);
+			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
@@ -193,13 +193,13 @@ Game.conditions =
 				if (effect.element == 'ice') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
-					terminal.log("Ice attack strengthened by Subzero to " + effect.power + " POW");
-					terminal.append("was: " + oldPower);
+					terminal.log("Ice attack strengthened by Subzero to " + effect.power + " POW",
+						"was: " + oldPower);
 				} else if (effect.element == 'fire') {
 					var oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
-					terminal.log("Fire attack weakened by Subzero to " + effect.power + " POW");
-					terminal.append("was: " + oldPower);
+					terminal.log("Fire attack weakened by Subzero to " + effect.power + " POW",
+						"was: " + oldPower);
 				}
 			});
 		},
@@ -252,7 +252,7 @@ Game.conditions =
 		},
 		
 		endTurn: function(battle, eventData) {
-			if (RNG.chance(0.5)) {
+			if (random.chance(0.5)) {
 				var unit = eventData.actingUnit;
 				terminal.log(unit.name + " struck by lightning from Thunderstorm");
 				var level = battle.getLevel();

@@ -25,8 +25,7 @@ function Session(difficulty)
 {
 	difficulty = difficulty !== void null ? difficulty : GameDifficulty.standard;
 	
-	terminal.log("Initializing new game session");
-	terminal.append("diff lv: " + difficulty);
+	terminal.log("Initializing new game session", "diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party(50);
 	link(Game.initialParty)

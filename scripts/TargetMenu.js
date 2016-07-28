@@ -30,8 +30,8 @@ function TargetMenu(unit, battle, usable, moveName)
 		: usable !== null ? usable.name
 		: unit.name;
 	this.statusNames = null;
-	this.cursorFont = Font.Default;
-	this.infoFont = Font.Default;
+	this.cursorFont = GetSystemFont();
+	this.infoFont = GetSystemFont();
 	this.targets = [];
 	this.unit = unit;
 	this.unitToShowInfo = null;
@@ -43,15 +43,15 @@ function TargetMenu(unit, battle, usable, moveName)
 		var width = this.cursorFont.getStringWidth(this.name) + 10;
 		var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
 		var y = unit.actor.y + 6;
-		Rectangle(x, y, width, 20, new Color(0, 0, 0, 128));
-		OutlinedRectangle(x, y, width, 20, new Color(0, 0, 0, 64));
-		DrawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, new Color(255, 255, 255, 255), 1, 'center');
+		Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
+		OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
+		DrawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, CreateColor(255, 255, 255, 255), 1, 'center');
 	};
 	
 	this.drawInfoBox = function(x, y, width, height, alpha)
 	{
-		Rectangle(x, y, width, height, new Color(0, 0, 0, alpha * (1.0 - this.infoBoxFadeness)));
-		OutlinedRectangle(x, y, width, height, new Color(0, 0, 0, 32 * (1.0 - this.infoBoxFadeness)));
+		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha * (1.0 - this.infoBoxFadeness)));
+		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32 * (1.0 - this.infoBoxFadeness)));
 	};
 	
 	this.moveCursor = function(direction)
@@ -212,24 +212,24 @@ TargetMenu.prototype.render = function()
 		if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
 			var nameBoxHeight = 20 + 12 * this.statusNames.length;
 			var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
-			Rectangle(0, 16, 160, y - 16, new Color(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
+			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 			this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
-			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, new Color(192, 192, 192, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
 			var statusColor = this.statusNames.length == 0 ?
-				new Color(96, 192, 96, textAlpha) :
-				new Color(192, 192, 96, textAlpha);
+				CreateColor(96, 192, 96, textAlpha) :
+				CreateColor(192, 192, 96, textAlpha);
 			for (var i = 0; i < this.statusNames.length; ++i) {
-				DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], new Color(192, 192, 96, textAlpha), 1, 'center');
+				DrawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], CreateColor(192, 192, 96, textAlpha), 1, 'center');
 			}
 			this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);
-			DrawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, new Color(192, 192, 144, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 			this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 128);
-			DrawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, new Color(192, 192, 144, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 		} else {
 			var y = 16 - 20 * this.infoBoxFadeness;
-			Rectangle(0, 16, 160, y - 16, new Color(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
+			Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 			this.drawInfoBox(0, y, 160, 20, 160);
-			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, new Color(192, 192, 192, textAlpha), 1, 'center');
+			DrawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
 	}

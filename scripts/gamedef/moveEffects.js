@@ -5,14 +5,14 @@
 
 Game.elements =
 {
-	fire: { name: "Fire", color: new Color(255, 0, 0, 255) },
-	ice: { name: "Ice", color: new Color(0, 128, 255, 255) },
-	lightning: { name: "Lightning", color: new Color(255, 192, 0, 255) },
-	earth: { name: "Earth", color: new Color(255, 128, 0, 255) },
-	cure: { name: "Cure", color: new Color(64, 255, 128, 255) },
-	omni: { name: "Omni", color: new Color(255, 255, 255, 255) },
-	fat: { name: "Fat", color: new Color(255, 0, 255, 255) },
-	zombie: { name: "Zombie", color: new Color(128, 255, 0, 255) }
+	fire: { name: "Fire", color: CreateColor(255, 0, 0, 255) },
+	ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
+	lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
+	earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
+	cure: { name: "Cure", color: CreateColor(64, 255, 128, 255) },
+	omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
+	fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) },
+	zombie: { name: "Zombie", color: CreateColor(128, 255, 0, 255) }
 };
 
 Game.moveEffects =
@@ -35,16 +35,16 @@ Game.moveEffects =
 			}
 			var damage = Math.max(Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(damage / 10);
-			targets[i].takeDamage(Math.max(RNG.uniform(damage, tolerance), 1), damageTags);
+			targets[i].takeDamage(Math.max(random.uniform(damage, tolerance), 1), damageTags);
 			var recoilFunction = effect.damageType + "Recoil";
 			if (recoilFunction in Game.math.damage) {
 				var recoil = Math.round(Game.math.damage[recoilFunction](userInfo, targetInfo, effect.power));
 				var tolerance = Math.round(recoil / 10);
-				actor.takeDamage(Math.max(RNG.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
+				actor.takeDamage(Math.max(random.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
 			}
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (RNG.chance(statusChance)) {
+				if (random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus, true);
 				}
 			}
@@ -79,10 +79,10 @@ Game.moveEffects =
 			var targetInfo = targets[i].battlerInfo;
 			var healing = Math.max(Math.round(Game.math.healing(userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(healing / 10);
-			targets[i].heal(Math.max(RNG.uniform(healing, tolerance), 1), [ 'cure' ]);
+			targets[i].heal(Math.max(random.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (RNG.chance(statusChance)) {
+				if (random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus);
 				}
 			}

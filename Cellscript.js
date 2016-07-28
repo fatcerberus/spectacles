@@ -10,23 +10,15 @@ function $default()
 	install(files("sounds/*.wav", true), "sounds");
 	install(files("icon.png"));
 
-	install(s2gm({
+	install(manifest({
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
 		summary: "Follow Scott Starcross in his quest to stop the Primus.",
 		resolution: '320x200',
-		script: 'scripts/main.js',
+		main: 'scripts/main.js',
 
-		minimumPlatform: {
-			recommend: "minisphere 4.0+",
-			apiLevel: 1,
-		},
-
-		// miniRT options
-		frameRate: 60,
 		logPath: '~/Spectacles Saga/console.log',
 		
-		// Specs Engine debug options
 		disableAnimation: false,
 		disableBattles: false,
 		disableSplash: true,

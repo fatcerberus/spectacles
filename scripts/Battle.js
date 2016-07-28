@@ -191,15 +191,13 @@ Battle.prototype.getLevel = function()
 //     The ID of the thread managing the battle.
 Battle.prototype.go = function()
 {
-	if (GetGameManifest().disableBattles) {
-		terminal.log("Battles disabled, automatic win");
-		terminal.append("battleID: " + this.battleID);
+	if (engine.game.disableBattles) {
+		terminal.log("Battles disabled, automatic win", "battleID: " + this.battleID);
 		this.result = BattleResult.Win;
 		return null;
 	}
 	terminal.log("");
-	terminal.log("Starting battle engine");
-	terminal.append("battleID: " + this.battleID);
+	terminal.log("Starting battle engine", "battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
@@ -380,8 +378,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		terminal.log("Applying effect '" + effect.type + "'");
-		terminal.append("retarg: " + effect.targetHint);
+		terminal.log("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
@@ -404,13 +401,13 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			aimRate = eventData.aimRate;
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-		terminal.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%");
-		if (RNG.chance(odds)) {
-			terminal.append("hit");
+		var isHit = random.chance(odds);
+		terminal.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%",
+			isHit ? "hit" : "miss");
+		if (isHit) {
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
 			targetsHit.push(targetUnits[i]);
 		} else {
-			terminal.append("miss");
 			targetUnits[i].evade(actingUnit, action);
 		}
 	}
@@ -430,10 +427,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			if (this.pc < this.effects.length) {
 				var effect = this.effects[this.pc++];
 				var targets = effect.targetHint == 'random'
-					? [ RNG.sample(targetsHit) ]
+					? [ random.sample(targetsHit) ]
 					: targetsHit;
-				terminal.log("Applying effect '" + effect.type + "'");
-				terminal.append("retarg: " + effect.targetHint);
+				terminal.log("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
 				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;

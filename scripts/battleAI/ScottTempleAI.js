@@ -43,10 +43,10 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 				} else if (this.aic.battle.hasCondition('subzero')) {
 					this.aic.queueSkill('windchill');
 				} else {
-					this.aic.queueSkill(RNG.sample([ 'inferno', 'subzero' ]));
+					this.aic.queueSkill(random.sample([ 'inferno', 'subzero' ]));
 				}
 			} else {
-				this.aic.queueSkill(RNG.sample([ 'flare', 'chill', 'lightning', 'quake', 'heal' ]));
+				this.aic.queueSkill(random.sample([ 'flare', 'chill', 'lightning', 'quake', 'heal' ]));
 			}
 			break;
 		case 2:
@@ -55,7 +55,7 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 				if (qsTurns[0].unit === this.aic.unit) {
 					this.aic.queueSkill('quickstrike');
 				} else {
-					var skillToUse = RNG.sample([ 'flare', 'chill', 'lightning', 'quake' ])
+					var skillToUse = random.sample([ 'flare', 'chill', 'lightning', 'quake' ])
 					this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
 				}
 			} else if (this.movesTillReGen <= 0 && this.aic.isSkillUsable('rejuvenate')) {
@@ -65,8 +65,8 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 			} else {
 				--this.movesTillReGen;
 				var skillToUse = this.aic.unit.hasStatus('reGen')
-					? RNG.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike' ])
-					: RNG.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal' ]);
+					? random.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike' ])
+					: random.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal' ]);
 				skillToUse = this.aic.isSkillUsable(skillToUse) ? skillToUse : 'quickstrike';
 				if (skillToUse != 'quickstrike') {
 					this.aic.queueSkill(skillToUse);
@@ -88,11 +88,11 @@ ScottTempleAI.prototype.strategize = function(stance, phase)
 			} else if (!this.aic.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
 				this.aic.queueSkill('tenPointFive');
 			} else {
-				var skillToUse = RNG.sample([ 'quickstrike',
+				var skillToUse = random.sample([ 'quickstrike',
 					'hellfire', 'windchill', 'electrocute', 'upheaval',
 					'flare', 'chill', 'lightning', 'quake', 'heal' ]);
 				this.aic.queueSkill(this.aic.isSkillUsable(skillToUse) ? skillToUse
-					: RNG.sample([ 'swordSlash', 'quickstrike', 'chargeSlash' ]));
+					: random.sample([ 'swordSlash', 'quickstrike', 'chargeSlash' ]));
 				if (this.aic.isSkillQueued('quickstrike')) {
 					var qsTurns = this.aic.predictSkillTurns('quickstrike');
 					this.isQSComboStarted = qsTurns[0].unit === this.aic.unit;
@@ -121,7 +121,7 @@ ScottTempleAI.prototype.onPhaseChanged = function(aiContext, newPhase, lastPhase
 	switch (newPhase) {
 		case 1:
 			this.aic.queueSkill('omni', 'elysia');
-			var spellID = RNG.sample([ 'inferno', 'subzero' ]);
+			var spellID = random.sample([ 'inferno', 'subzero' ]);
 			this.phase2Opener = spellID != 'inferno' ? 'inferno' : 'subzero';
 			this.aic.queueSkill(spellID);
 			break;

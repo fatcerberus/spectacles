@@ -18,7 +18,7 @@ GameOverAction =
 function GameOverScreen()
 {
 	this.fadeness = 1.0;
-	this.image = new Image("images/GameOverScreen.png");
+	this.image = LoadImage('GameOverScreen.png');
 	this.transition = null;
 }
 
@@ -27,7 +27,7 @@ function GameOverScreen()
 GameOverScreen.prototype.render = function()
 {
 	this.image.blit(0, 0);
-	ApplyColorMask(new Color(0, 0, 0, this.fadeness * 255));
+	ApplyColorMask(CreateColor(0, 0, 0, this.fadeness * 255));
 };
 
 // .show() method

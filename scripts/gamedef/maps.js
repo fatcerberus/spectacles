@@ -8,7 +8,7 @@ Game.maps =
 	main: {
 		onEnter: function() {
 			new scenes.Scene()
-				.fadeTo(new Color(0, 0, 0, 255), 0.0)
+				.fadeTo(CreateColor(0, 0, 0, 255), 0.0)
 				.playBGM('BruceTellsHisStory')
 				.pause(1.0)
 				.talk("Bruce", false, 1.0, 2.0,
@@ -27,7 +27,7 @@ Game.maps =
 					.playBGM('ThePromise')
 					.adjustBGM(1.0, 2.0)
 				.end()
-				.fadeTo(new Color(0, 0, 0, 0), 2.0)
+				.fadeTo(CreateColor(0, 0, 0, 0), 2.0)
 				.resync()
 				.talk("Robert", true, 2.0, Infinity, "There must be some other way, Amanda...")
 				.pause(2.0)  // TODO: Amanda looks into the distance
@@ -52,13 +52,13 @@ Game.maps =
 				.fork()
 					.adjustBGM(0.0, 5.0)
 				.end()
-				.fadeTo(new Color(0, 0, 0, 255), 2.0)
+				.fadeTo(CreateColor(0, 0, 0, 255), 2.0)
 				.talk("Bruce", false, 1.0, 2.0, "...is that it all began with a promise.")
 				.pause(2.0)
 				.changeMap('Portentia.rmp')
 				.resetBGM()
 				.adjustBGM(1.0)
-				.fadeTo(new Color(0, 0, 0, 0), 5.0)
+				.fadeTo(CreateColor(0, 0, 0, 0), 5.0)
 				.pause(5.0)
 				.pause(2.0)  // TODO: Scott walks out of his house
 				.talk("Scott", true, 2.0, Infinity,
@@ -72,7 +72,7 @@ Game.maps =
 		bgm: 'LucidaByNight',
 		encounterRate: 0.005,
 		battleBGM: 'CreepFight',
-		canvasColor: new Color(0, 96, 0, 255),
+		canvasColor: CreateColor(0, 96, 0, 255),
 		
 		onEnter: function() {
 		}

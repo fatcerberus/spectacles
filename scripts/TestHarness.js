@@ -39,8 +39,7 @@ TestHarness.addBattle = function(testID, setupData)
 				terminal.log("Unable to run test battle, one is ongoing");
 				return;
 			}
-			terminal.log("Preparing test battle");
-			terminal.append("battleID: " + this.setup.battleID);
+			terminal.log("Preparing test battle", "battleID: " + this.setup.battleID);
 			var session = new Session();
 			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -82,7 +81,6 @@ TestHarness.addTest = function(testID, func)
 
 TestHarness.run = function(testID)
 {
-	terminal.log("Test harness invoked");
-	terminal.append("testID: " + testID);
+	terminal.log("Test harness invoked", "testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

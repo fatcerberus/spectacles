@@ -62,7 +62,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.stance = BattleStance.Attack;
 	this.stats = {};
 	this.statuses = [];
-	this.tag = RNG.string();
+	this.tag = random.string();
 	this.turnRatio = 1.0;
 	this.weapon = null;
 
@@ -130,9 +130,9 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.resetCounter(Game.defaultMoveRank, true);
 	this.registerCommands();
 	var unitType = this.ai === null ? "player" : "AI";
-	terminal.log("Created " + unitType + " unit '" + this.name + "'");
-	terminal.append("hp: " + this.hp + "/" + this.maxHP);
-	terminal.append("id: " + this.tag);
+	terminal.log("Created " + unitType + " unit '" + this.name + "'",
+		"hp: " + this.hp + "/" + this.maxHP,
+		"id: " + this.tag);
 }
 
 // .dispose() method
@@ -161,12 +161,12 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 			.some(function(status) { return status.overrules(statusID); });
 		if (!this.isPartyMember() && link(this.enemyInfo.immunities).contains(statusID)) {
 			if (!isGuardable) {
-				this.actor.showHealing("immune", new Color(192, 192, 192, 255));
+				this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
 			}
 			terminal.log(this.name + " is immune to " + statusName);
 		} else if (isOverruled) {
 			if (!isGuardable) {
-				this.actor.showHealing("ward", new Color(192, 192, 192, 255));
+				this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 			}
 			terminal.log(statusName + " overruled by another of " + this.name + "'s statuses");
 		} else if (this.stance !== BattleStance.Guard || !isGuardable) {
@@ -185,7 +185,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				terminal.log(this.name + " took on status " + effect.name);
 			} else {
 				if (!isGuardable) {
-					this.actor.showHealing("ward", new Color(192, 192, 192, 255));
+					this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 				}
 				terminal.log(this.name + "'s " + statusName + " infliction blocked by status/FC");
 			}
@@ -197,7 +197,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 
 BattleUnit.prototype.announce = function(text)
 {
-	var bannerColor = this.isPartyMember() ? new Color(64, 128, 192, 255) : new Color(192, 64, 64, 255);
+	var bannerColor = this.isPartyMember() ? CreateColor(64, 128, 192, 255) : CreateColor(192, 64, 64, 255);
 	this.battle.ui.announceAction(text, this.isPartyMember() ? 'party' : 'enemy', bannerColor);
 };
 
@@ -309,7 +309,7 @@ BattleUnit.prototype.endTargeting = function()
 //     action:     The action attempted to be performed on the unit.
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
-	this.actor.showHealing("miss", new Color(192, 192, 192, 255));
+	this.actor.showHealing("miss", CreateColor(192, 192, 192, 255));
 	terminal.log(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
@@ -421,8 +421,7 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
-		terminal.log(this.name + " healed for " + amount + " HP");
-		terminal.append("now: " + this.hp);
+		terminal.log(this.name + " healed for " + amount + " HP", "now: " + this.hp);
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
 	}
@@ -518,8 +517,8 @@ BattleUnit.prototype.performAction = function(action, move)
 			}
 			for (var statID in experience) {
 				this.stats[statID].grow(experience[statID]);
-				terminal.log(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID]);
-				terminal.append("value: " + this.stats[statID].getValue());
+				terminal.log(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID],
+					"value: " + this.stats[statID].getValue());
 			}
 		}
 		this.resetCounter(action.rank);
@@ -543,7 +542,7 @@ BattleUnit.prototype.queueMove = function(move)
 	if (!this.moveUsed.usable.isGroupCast && !this.moveUsed.targets[0].isAlive()
 		&& !this.moveUsed.usable.allowDeadTarget)
 	{
-		this.moveUsed.targets[0] = RNG.sample(alliesAlive);
+		this.moveUsed.targets[0] = random.sample(alliesAlive);
 	}
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 	if (nextActions !== null) {
@@ -720,8 +719,8 @@ BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
 	this.cv = rank > 0
 		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 		: 1;
-	terminal.log(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv);
-	terminal.append("rank: " + rank);
+	terminal.log(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv,
+		"rank: " + rank);
 };
 
 // .restoreMP() method
@@ -732,7 +731,7 @@ BattleUnit.prototype.restoreMP = function(amount)
 {
 	amount = Math.round(amount);
 	this.mpPool.restore(amount);
-	var color = Color.mix(new Color(255, 0, 255, 255), new Color(255, 255, 255, 255), 33, 66);
+	var color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
 	this.actor.showHealing(amount + "MP", color);
 };
 
@@ -755,7 +754,7 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 		this.resetCounter(Game.reviveRank);
 		terminal.log(this.name + " brought back from the dead");
 	} else {
-		this.actor.showHealing("ward", new Color(192, 192, 192, 255));
+		this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 	}
 };
 
@@ -835,19 +834,18 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		var oldHPValue = this.hp;
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
-		terminal.log(this.name + " took " + amount + " HP damage");
-		terminal.append("left: " + this.hp);
+		terminal.log(this.name + " took " + amount + " HP damage", "left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
 			link(tags)
 				.where(function(tag) { return tag in Game.elements; })
 				.each(function(tag)
 			{
-				damageColor = damageColor !== null ? Color.mix(damageColor, Game.elements[tag].color)
+				damageColor = damageColor !== null ? BlendColors(damageColor, Game.elements[tag].color)
 					: Game.elements[tag].color;
 			});
-			damageColor = damageColor !== null ? Color.mix(damageColor, new Color(255, 255, 255, 255), 33, 66)
-				: new Color(255, 255, 255, 255);
+			damageColor = damageColor !== null ? BlendColorsWeighted(damageColor, CreateColor(255, 255, 255, 255), 33, 66)
+				: CreateColor(255, 255, 255, 255);
 			this.actor.showDamage(amount, damageColor);
 		}
 		this.battle.ui.hud.setHP(this, this.hp);
@@ -890,8 +888,7 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == BattleStance.Guard && isGuardBroken) {
-		terminal.log(this.name + "'s Guard Stance was broken");
-		terminal.append("by: " + actingUnit.name);
+		terminal.log(this.name + "'s Guard Stance was broken", "by: " + actingUnit.name);
 		this.newStance = BattleStance.Attack;
 		this.resetCounter(Game.guardBreakRank);
 	}

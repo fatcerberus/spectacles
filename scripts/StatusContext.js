@@ -61,8 +61,7 @@ StatusContext.prototype.invoke = function(eventID, data)
 	if (!(eventID in this.statusDef)) {
 		return;
 	}
-	terminal.log("Invoking " + this.unit.name + "->" + this.name);
-	terminal.append("evt: " + eventID);
+	terminal.log("Invoking " + this.unit.name + "->" + this.name, "evt: " + eventID);
 	this.unit.battle.suspend();
 	this.statusDef[eventID].call(this.context, this.unit, data);
 	this.unit.battle.resume();

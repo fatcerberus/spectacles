@@ -5,10 +5,10 @@
 
 ({
 	enter: function(map, world) {
-		var font = Font.Default;
+		var font = GetSystemFont();
 		var isHippoAround = false;
 		var maggieSize = 1.0;
-		analogue.world.munchSound = new Sound('sounds/Munch.wav');
+		analogue.world.munchSound = LoadSound('Munch.wav');
 		
 		var followers = [
 			{ name: 'Bruce', sprite: 'battlers/Bruce.rss', ghostLevel: 0 },
@@ -74,7 +74,7 @@
 				maggieSize += 0.05;
 		});
 		
-		threads.createEx(null, {
+		threads.create({
 			render: function() {
 				link(followers)
 					.where(function(info) { return DoesPersonExist(info.name); })
@@ -83,7 +83,7 @@
 				{
 					var x = MapToScreenX('Base', GetPersonX(info.name));
 					var y = MapToScreenY('Base', GetPersonY(info.name));
-					DrawTextEx(font, x, y, "Lv." + info.ghostLevel, new Color(255, 255, 255, 128), 1, 'center');
+					DrawTextEx(font, x, y, "Lv." + info.ghostLevel, CreateColor(255, 255, 255, 128), 1, 'center');
 				});
 			},
 			update: function() {
@@ -94,7 +94,7 @@
 				{
 					++info.ghostLevel;
 					CreatePerson(info.name, info.sprite, false);
-					SetPersonMask(info.name, new Color(255, 255, 255, 128));
+					SetPersonMask(info.name, CreateColor(255, 255, 255, 128));
 					var maggieX = GetPersonX('maggie');
 					var maggieY = GetPersonY('maggie');
 					SetPersonIgnoreList(info.name, link(followers)
@@ -104,8 +104,8 @@
 					var x, y;
 					var distance = 160 * maggieSize;
 					do {
-						x = RNG.range(maggieX - distance, maggieX + distance);
-						y = RNG.range(maggieY - distance, maggieY + distance);
+						x = random.range(maggieX - distance, maggieX + distance);
+						y = random.range(maggieY - distance, maggieY + distance);
 					} while (IsPersonObstructed(info.name, x, y));
 					SetPersonXYFloat(info.name, x, y);
 					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {
@@ -116,7 +116,7 @@
 						var yDelta = GetPersonY(name) - maggieY;
 						var isMoveOK = false;
 						do {
-							var movement = RNG.sample([
+							var movement = random.sample([
 								COMMAND_MOVE_NORTH,
 								COMMAND_MOVE_EAST,
 								COMMAND_MOVE_SOUTH,
@@ -128,7 +128,7 @@
 								&& (movement != COMMAND_MOVE_WEST || xDelta >= -128);
 						} while (!isMoveOK);
 						var facing = movement - COMMAND_MOVE_NORTH + COMMAND_FACE_NORTH;
-						var steps = RNG.normal(2, 1) * 32;
+						var steps = random.normal(2, 1) * 32;
 						QueuePersonCommand(name, facing, true);
 						for (var i = 0; i < steps; ++i)
 							QueuePersonCommand(name, movement, false);
@@ -140,9 +140,9 @@
 					session.party.add('maggie', 100);
 					new scenes.Scene()
 						.fork()
-							.maskPerson('maggie', new Color(0, 0, 0, 0), 0.125)
-							.setSprite('maggie', 'spritesets/battlers/maggie_hippo.rss')
-							.maskPerson('maggie', new Color(255, 255, 255, 255), 0.125)
+							.maskPerson('maggie', CreateColor(0, 0, 0, 0), 0.125)
+							.setSprite('maggie', 'battlers/maggie_hippo.rss')
+							.maskPerson('maggie', CreateColor(255, 255, 255, 255), 0.125)
 							.changeBGM('Animals', 2.0)
 						.end()
 						.followPerson('maggie')
@@ -263,9 +263,9 @@
 							.fork()
 								.focusOnPerson('maggie', 2.0)
 							.end()
-							.maskPerson('maggie', new Color(0, 0, 0, 0), 1.0)
+							.maskPerson('maggie', CreateColor(0, 0, 0, 0), 1.0)
 							.setSprite('maggie', 'battlers/maggie_hippo.rss')
-							.maskPerson('maggie', new Color(255, 255, 255, 255), 1.0)
+							.maskPerson('maggie', CreateColor(255, 255, 255, 255), 1.0)
 							.resync()
 							.talk("Scott", true, 4.0, 0.0, "No maggie, please don't eaAHHHHHHHHHHHHHHHHH--")
 							.killPerson('scott')

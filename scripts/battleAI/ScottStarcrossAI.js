@@ -74,7 +74,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 			.toArray();
 		var tactic;
 		do {
-			tactic = RNG.sample(this.tactics);
+			tactic = random.sample(this.tactics);
 		} while (tactic === this.tactics[0] && tactic.moveIndex == tactic.moves.length - 1
 			&& this.tactics.length > 1);
 		this.aic.queueSkill(tactic.moves[tactic.moveIndex], tactic.unit.id);

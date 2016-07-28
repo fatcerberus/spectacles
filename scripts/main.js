@@ -3,15 +3,14 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-global.delegates = require('miniRT/delegates');
+global.delegates = require('event');
 global.kh2bar    = require('kh2bar');
 global.link      = require('link');
-global.music     = require('miniRT/music');
-global.pacts     = require('miniRT/pacts');
-global.prim      = require('miniRT/prim');
-global.scenes    = require('miniRT/scenes');
-global.terminal  = require('miniRT/console');
-global.threads   = require('miniRT/threads');
+global.music     = require('music');
+global.prim      = require('prim');
+global.scenes    = require('scenes');
+global.terminal  = require('terminal');
+global.threads   = require('thread');
 
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TRANSITIONS = false;
@@ -57,15 +56,15 @@ function game()
 	TestHarness.initialize();
 
 	// show the title screen and start the game!
-	var manifest = GetGameManifest();
+	var manifest = engine.game;
 	if (!manifest.disableSplash) {
 		music.push('music/SpectaclesTheme.ogg');
-		ShowLogo('images/Logos/TitleCard.png', 5.0);
+		ShowLogo('Logos/TitleCard.png', 5.0);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	MapEngine('Testville.rmp');
+	MapEngine('Testville.rmp', screen.frameRate);
 }
 
 // clone() function
@@ -100,7 +99,7 @@ function clone(o)
 
 function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 {
-	color = color !== void null ? color : Color.White;
+	color = color !== void null ? color : CreateColor(255, 255, 255, 255);
 	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
 	alignment = alignment !== void null ? alignment : 'left';
 
@@ -117,7 +116,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 
 	x = alignments[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();
-	font.setColorMask(Color.Black.fade(color.alpha));
+	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 	font.drawText(x + shadowDistance, y + shadowDistance, text);
 	font.setColorMask(color);
 	font.drawText(x, y, text);
@@ -131,18 +130,18 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 //     time:      The amount of time, in seconds, to keep the image on-screen.
 function ShowLogo(filename, time)
 {
-	var image = new Image(filename);
+	var image = LoadImage(filename);
 	var scene = new scenes.Scene()
 		.fadeTo(Color.Black, 0.0)
-		.fadeTo(new Color(0, 0, 0, 0), 1.0)
+		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
 		.pause(time)
 		.fadeTo(Color.Black, 1.0)
 		.run();
-	threads.join(threads.createEx(scene, {
-		update: function() { return this.isRunning(); },
+	threads.join(threads.create({
+		update: function() { return scene.isRunning(); },
 		render: function() { image.blit(0, 0); }
 	}));
 	new scenes.Scene()
-		.fadeTo(new Color(0, 0, 0, 0), 0.0)
+		.fadeTo(CreateColor(0, 0, 0, 0), 0.0)
 		.run(true);
 }

@@ -41,7 +41,7 @@ function SpriteImage(filename)
 		alpha = alpha !== void null ? alpha : 255;
 		
 		this.spriteset.images[this.spriteset.directions[this.directionID].frames[this.frameID].index]
-			.blitMask(x + this.xOff, y + this.yOff, new Color(255, 255, 255, alpha));
+			.blitMask(x + this.xOff, y + this.yOff, CreateColor(255, 255, 255, alpha));
 	};
 	
 	this.reset = function()
