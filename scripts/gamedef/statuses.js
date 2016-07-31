@@ -90,7 +90,7 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			var oldRank = eventData.action.rank;
-			eventData.action.rank = random.range(1, 5);
+			eventData.action.rank = random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				terminal.log("Rank of action changed by Disarray to " + eventData.action.rank,
 					"was: " + oldRank);

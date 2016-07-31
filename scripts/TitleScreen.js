@@ -15,7 +15,7 @@ function TitleScreen(themeTrack)
 {
 	this.fadeness = 1.0;
 	this.image = LoadImage('TitleScreen.png');
-	this.manifest = engine.game;
+	this.manifest = system.game;
 	this.themeTrack = themeTrack;
 }
 

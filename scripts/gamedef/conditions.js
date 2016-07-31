@@ -44,7 +44,7 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			var oldRank = eventData.action.rank
-			eventData.action.rank = random.range(1, 5);
+			eventData.action.rank = random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				terminal.log("Rank of action changed by G. Disarray to " + eventData.action.rank,
 					"was: " + oldRank);

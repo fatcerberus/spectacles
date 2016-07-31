@@ -104,8 +104,8 @@
 					var x, y;
 					var distance = 160 * maggieSize;
 					do {
-						x = random.range(maggieX - distance, maggieX + distance);
-						y = random.range(maggieY - distance, maggieY + distance);
+						x = random.discrete(maggieX - distance, maggieX + distance);
+						y = random.discrete(maggieY - distance, maggieY + distance);
 					} while (IsPersonObstructed(info.name, x, y));
 					SetPersonXYFloat(info.name, x, y);
 					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {

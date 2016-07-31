@@ -26,14 +26,14 @@ function MPPool(id, capacity, availableMP)
 	// Arguments (for event handler):
 	//     pool:        The MPPool object raising the event.
 	//     availableMP: The amount of MP available for use.
-	this.gainedMP = new delegates.Delegate();
+	this.gainedMP = new events.Delegate();
 	
 	// .lostMP event
 	// Occurs when MP is taken from the pool.
 	// Arguments (for event handler):
 	//     pool:        The MPPool object raising the event.
 	//     availableMP: The amount of MP available for use.
-	this.lostMP = new delegates.Delegate();
+	this.lostMP = new events.Delegate();
 }
 
 // .restore() method

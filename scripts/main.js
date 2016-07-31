@@ -3,14 +3,15 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-global.delegates = require('event');
+global.events    = require('events');
 global.kh2bar    = require('kh2bar');
 global.link      = require('link');
 global.music     = require('music');
 global.prim      = require('prim');
+global.random    = require('random');
 global.scenes    = require('scenes');
 global.terminal  = require('terminal');
-global.threads   = require('thread');
+global.threads   = require('threads');
 
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TRANSITIONS = false;
@@ -56,7 +57,7 @@ function game()
 	TestHarness.initialize();
 
 	// show the title screen and start the game!
-	var manifest = engine.game;
+	var manifest = system.game;
 	if (!manifest.disableSplash) {
 		music.push('music/SpectaclesTheme.ogg');
 		ShowLogo('Logos/TitleCard.png', 5.0);

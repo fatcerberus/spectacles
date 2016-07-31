@@ -44,7 +44,7 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the item used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the item was used on, or
 	//                 null in the case of a non-targeted item.
-	this.itemUsed = new delegates.Delegate();
+	this.itemUsed = new events.Delegate();
 	
 	// .skillUsed event
 	// Occurs when a skill is used by a battle unit.
@@ -53,14 +53,14 @@ function Battle(session, battleID)
 	//     itemID:     The ID of the skill used.
 	//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
 	//                 null in the case of a non-targeted skill.
-	this.skillUsed = new delegates.Delegate();
+	this.skillUsed = new events.Delegate();
 	
 	// .stanceChanged event
 	// Occurs when a unit changes stance.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit changing stance.
 	//     stance: The unit's new stance.
-	this.stanceChanged = new delegates.Delegate();
+	this.stanceChanged = new events.Delegate();
 	
 	// .unitDamaged event
 	// Occurs when a unit in the battle is damaged.
@@ -69,26 +69,26 @@ function Battle(session, battleID)
 	//     amount:     The amount of damage taken.
 	//     actingUnit: The unit responsible for inflicting the damage. In the case of residual
 	//                 (e.g. status-induced) damage, this will be null.
-	this.unitDamaged = new delegates.Delegate();
+	this.unitDamaged = new events.Delegate();
 	
 	// .unitHealed event
 	// Occurs when a unit in the battle recovers HP.
 	// Arguments (for event handler):
 	//     unit:     The unit recovering HP.
 	//     amount:   The number of hit points recovered.
-	this.unitHealed = new delegates.Delegate();
+	this.unitHealed = new events.Delegate();
 	
 	// .unitKilled event
 	// Occurs when a unit falls in battle.
 	// Arguments (for event handler):
 	//     unitID: The ID of the downed unit.
-	this.unitKilled = new delegates.Delegate();
+	this.unitKilled = new events.Delegate();
 	
 	// .unitReady event
 	// Occurs when a unit is about to take its turn.
 	// Arguments (for event handler):
 	//     unitID: The ID of the unit whose turn is up.
-	this.unitReady = new delegates.Delegate();
+	this.unitReady = new events.Delegate();
 	
 	// .unitTargeted event
 	// Occurs when a unit in the battle is successfully targeted by an action.
@@ -99,7 +99,7 @@ function Battle(session, battleID)
 	// Remarks:
 	//     If, after accuracy is taken into account, the action would result in
 	//     a miss, this event will not be raised.
-	this.unitTargeted = new delegates.Delegate();
+	this.unitTargeted = new events.Delegate();
 }
 
 // .addCondition() method
@@ -191,7 +191,7 @@ Battle.prototype.getLevel = function()
 //     The ID of the thread managing the battle.
 Battle.prototype.go = function()
 {
-	if (engine.game.disableBattles) {
+	if (system.game.disableBattles) {
 		terminal.log("Battles disabled, automatic win", "battleID: " + this.battleID);
 		this.result = BattleResult.Win;
 		return null;

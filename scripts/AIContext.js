@@ -29,7 +29,7 @@ function AIContext(unit, battle, aiType)
 	//     aiContext: The AIContext that triggered the phase change.
 	//     newPhase:  The phase the AI context is switching to.
 	//     lastPhase: The phase being exited.
-	this.phaseChanged = new delegates.Delegate();
+	this.phaseChanged = new events.Delegate();
 	
 	terminal.log("Initializing AI context for " + unit.fullName);
 	this.battle = battle;
