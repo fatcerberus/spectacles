@@ -11,6 +11,7 @@ function $default()
 	install(files("icon.png"));
 
 	install(manifest({
+		version: 1,
 		name: "Spectacles: Bruce's Story",
 		author: "Fat Cerberus",
 		summary: "Follow Scott Starcross in his quest to stop the Primus.",
