@@ -4,6 +4,7 @@
 ***/
 
 global.events    = require('events');
+global.joy       = require('joy');
 global.kh2bar    = require('kh2bar');
 global.link      = require('link');
 global.music     = require('music');

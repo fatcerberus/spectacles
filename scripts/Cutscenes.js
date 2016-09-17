@@ -163,7 +163,7 @@ scenes.defScenelet('marquee',
 		this.color = color;
 		this.background = backgroundColor;
 		this.font = Font.Default;
-		this.windowSize = screen.width + this.font.getStringWidth(this.text);
+		this.windowSize = screen.width + this.font.getTextSize(this.text).width;
 		this.height = this.font.height + 10;
 		this.textHeight = this.font.height;
 		this.fadeness = 0.0;
@@ -517,7 +517,7 @@ scenes.defScenelet('talk',
 	},
 	getInput: function(scene) {
 		if (this.mode != "idle") return;
-		if (IsKeyPressed(GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) && this.timeout == Infinity) {
+		if ((keyboard.isPressed(Key.Z) || joy.P1.isPressed(0)) && this.timeout == Infinity) {
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
 				if (this.currentPage < this.text.length - 1) {
 					this.mode = "page";
