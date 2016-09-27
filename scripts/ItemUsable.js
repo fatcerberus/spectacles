@@ -113,7 +113,7 @@ ItemUsable.prototype.use = function(unit, targets)
 		Abort("ItemUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable.");
 	}
 	--this.usesLeft;
-	terminal.log(unit.name + " is using " + this.name,
+	term.log(unit.name + " is using " + this.name,
 		"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name),
 		"left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };

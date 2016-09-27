@@ -26,7 +26,7 @@ function BattleScreen(partyMaxMP)
 	
 	this.startRunning = function()
 	{
-		terminal.log("Activating battle screen");
+		term.log("Activating battle screen");
 		this.thread = threads.create(this);
 		this.hud.show();
 	};

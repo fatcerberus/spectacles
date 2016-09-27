@@ -11,7 +11,7 @@ global.music     = require('music');
 global.prim      = require('prim');
 global.random    = require('random');
 global.scenes    = require('scenes');
-global.terminal  = require('terminal');
+global.term      = require('term');
 global.threads   = require('threads');
 
 var DBG_DISABLE_TEXTBOXES = false;
@@ -40,17 +40,17 @@ function game()
 {
 	analogue.init();
 
-	terminal.register('specs', global, {
+	term.define('specs', global, {
 		'exit': function() { Exit(); }
 	});
-	terminal.register('yap', null, {
+	term.define('yap', null, {
 		'on': function() {
 			DBG_DISABLE_TEXTBOXES = false;
-			terminal.log("Oh, yappy times are here again...");
+			term.log("Oh, yappy times are here again...");
 		}, 
 		'off': function() {
 			DBG_DISABLE_TEXTBOXES = true;
-			terminal.log("The yappy times are OVER!");
+			term.log("The yappy times are OVER!");
 		}, 
 	});
 

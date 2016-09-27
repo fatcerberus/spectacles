@@ -12,11 +12,11 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	terminal.log("Initializing Specs Engine test harness");
-	terminal.register('harness', this, {
+	term.log("Initializing Specs Engine test harness");
+	term.define('harness', this, {
 		'run': function(testID) {
 			if (!(testID in this.tests))
-				return terminal.log("Unknown test ID '" + testID + "'");
+				return term.log("Unknown test ID '" + testID + "'");
 			this.run(testID);
 		}
 	});
@@ -25,7 +25,7 @@ TestHarness.initialize = function()
 	
 	var testScripts = GetFileList('~/scripts/testcases');
 	for (var i = 0; i < testScripts.length; ++i) {
-		terminal.log("Loading testcases from '" + testScripts[i] + "'");
+		term.log("Loading testcases from '" + testScripts[i] + "'");
 		EvaluateScript('~/scripts/testcases/' + testScripts[i]);
 	}
 };
@@ -36,10 +36,10 @@ TestHarness.addBattle = function(testID, setupData)
 		setup: setupData,
 		run: function() {
 			if (TestHarness.isBattleRunning) {
-				terminal.log("Unable to run test battle, one is ongoing");
+				term.log("Unable to run test battle, one is ongoing");
 				return;
 			}
-			terminal.log("Preparing test battle", "battleID: " + this.setup.battleID);
+			term.log("Preparing test battle", "battleID: " + this.setup.battleID);
 			var session = new Session();
 			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -61,7 +61,7 @@ TestHarness.addBattle = function(testID, setupData)
 			TestHarness.isBattleRunning = false;
 		}
 	};
-	terminal.log("Added battle test '" + testID + "'");
+	term.log("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -73,14 +73,14 @@ TestHarness.addTest = function(testID, func)
 			this.func.call(this.context);
 		}
 	};
-	terminal.register(testID, this.tests[testID], {
+	term.define(testID, this.tests[testID], {
 		'test': TestHarness.run.bind(TestHarness, testID)
 	});
-	terminal.log("Added generic test '" + testID + "'");
+	term.log("Added generic test '" + testID + "'");
 };
 
 TestHarness.run = function(testID)
 {
-	terminal.log("Test harness invoked", "testID: " + testID);
+	term.log("Test harness invoked", "testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

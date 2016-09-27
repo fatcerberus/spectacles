@@ -31,7 +31,7 @@ function AIContext(unit, battle, aiType)
 	//     lastPhase: The phase being exited.
 	this.phaseChanged = new events.Delegate();
 	
-	terminal.log("Initializing AI context for " + unit.fullName);
+	term.log("Initializing AI context for " + unit.fullName);
 	this.battle = battle;
 	this.data = {};
 	this.defaultSkillID = null;
@@ -48,7 +48,7 @@ function AIContext(unit, battle, aiType)
 // Relinquishes resources held by the AI context.
 AIContext.prototype.dispose = function()
 {
-	terminal.log("Shutting down AI for " + this.unit.fullName);
+	term.log("Shutting down AI for " + this.unit.fullName);
 	if ('dispose' in this.strategy) {
 		this.strategy.dispose();
 	}
@@ -79,7 +79,7 @@ AIContext.prototype.checkPhase = function(allowEvents)
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	if (allowEvents && this.phase > lastPhase) {
-		terminal.log(this.unit.name + " is entering Phase " + this.phase,
+		term.log(this.unit.name + " is entering Phase " + this.phase,
 			"prev: " + (lastPhase > 0 ? lastPhase : "none"));
 		this.phaseChanged.invoke(this, this.phase, lastPhase);
 	}
@@ -100,14 +100,14 @@ AIContext.prototype.definePhases = function(thresholds, sigma)
 {
 	sigma = sigma !== void null ? sigma : 0;
 	
-	terminal.log("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
+	term.log("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
 	this.phasePoints = link(thresholds)
 		.map(function(value) { return Math.round(random.normal(value, sigma)); })
 		.toArray();
 	var phaseIndex = 1;
 	link(this.phasePoints).each(function(milestone) {
 		++phaseIndex;
-		terminal.log("Phase " + phaseIndex + " will start at <= " + milestone + " HP");
+		term.log("Phase " + phaseIndex + " will start at <= " + milestone + " HP");
 	});
 	this.phase = 0;
 }
@@ -128,7 +128,7 @@ AIContext.prototype.getNextMove = function()
 	var moveToUse = null;
 	do {
 		if (this.moveQueue.length == 0) {
-			terminal.log("Deferring to AI for " + this.unit.name + "'s next move");
+			term.log("Deferring to AI for " + this.unit.name + "'s next move");
 			var enemyList = this.battle.enemiesOf(this.unit);
 			this.enemies = [];
 			for (var i = 0; i < enemyList.length; ++i) {
@@ -149,7 +149,7 @@ AIContext.prototype.getNextMove = function()
 				this.strategy.strategize(this.unit.stance, this.phase);
 			}
 			if (this.moveQueue.length == 0) {
-				terminal.log("No moves queued for " + this.unit.name + ", using default");
+				term.log("No moves queued for " + this.unit.name + ", using default");
 				if (this.defaultSkillID !== null) {
 					this.queueSkill(this.defaultSkillID);
 				} else {
@@ -164,7 +164,7 @@ AIContext.prototype.getNextMove = function()
 			var isMoveLegal = candidateMove.stance != BattleStance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 			var isMoveUsable = isMoveLegal && candidateMove.predicate();
 			if (!isMoveUsable) {
-				terminal.log("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
+				term.log("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
 			}
 		} while (!isMoveUsable && this.moveQueue.length > 0);
 		if (isMoveUsable) {
@@ -243,7 +243,7 @@ AIContext.prototype.isSkillUsable = function(skillID)
 AIContext.prototype.itemsLeft = function(itemID)
 {
 	var itemUsable = link(this.unit.items).filterBy('itemID', itemID).first();
-	terminal.log(this.unit.name + " requested item count for " + itemUsable.name,
+	term.log(this.unit.name + " requested item count for " + itemUsable.name,
 		"left: " + itemUsable.usesLeft);
 	return itemUsable.usesLeft;
 };
@@ -260,7 +260,7 @@ AIContext.prototype.predictItemTurns = function(itemID)
 	}
 	var itemRank = 'rank' in Game.items[itemID] ? Game.items[itemID].rank : Game.defaultItemRank;
 	var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
-	terminal.log(this.unit.name + " considering " + Game.items[itemID].name,
+	term.log(this.unit.name + " considering " + Game.items[itemID].name,
 		"next: " + forecast[0].unit.name);
 	return forecast;
 };
@@ -276,7 +276,7 @@ AIContext.prototype.predictSkillTurns = function(skillID)
 		Abort("AIContext.predictSkillTurns(): The skill '" + skillID + "' doesn't exist!");
 	}
 	var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
-	terminal.log(this.unit.name + " considering " + Game.skills[skillID].name,
+	term.log(this.unit.name + " considering " + Game.skills[skillID].name,
 		"next: " + forecast[0].unit.name);
 	return forecast;
 };
@@ -325,7 +325,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 		targets: targets,
 		predicate: function() { return true; }
 	});
-	terminal.log(this.unit.name + " queued use of item " + itemToUse.name);
+	term.log(this.unit.name + " queued use of item " + itemToUse.name);
 };
 
 // .queueSkill() method
@@ -362,7 +362,7 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 		targets: targets,
 		predicate: predicate
 	});
-	terminal.log(this.unit.name + " queued use of skill " + skillToUse.name);
+	term.log(this.unit.name + " queued use of skill " + skillToUse.name);
 };
 
 // .queueWeapon() method
@@ -379,7 +379,7 @@ AIContext.prototype.queueWeapon = function(weaponID)
 		predicate: function() { return true; }
 	});
 	var weaponDef = Game.weapons[weaponID];
-	terminal.log(this.unit.name + " queued weapon change to " + weaponDef.name);
+	term.log(this.unit.name + " queued weapon change to " + weaponDef.name);
 };
 
 // .setDefaultSkill() method
@@ -389,7 +389,7 @@ AIContext.prototype.queueWeapon = function(weaponID)
 AIContext.prototype.setDefaultSkill = function(skillID)
 {
 	this.defaultSkillID = skillID;
-	terminal.log(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
+	term.log(this.unit.name + "'s default skill set to " + Game.skills[skillID].name);
 };
 
 // .setTarget() method

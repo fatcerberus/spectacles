@@ -102,7 +102,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 	var gauge = new kh2bar.HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
-	terminal.log("Created HP gauge for unit '" + unit.name + "'", "cap: " + unit.maxHP);
+	term.log("Created HP gauge for unit '" + unit.name + "'", "cap: " + unit.maxHP);
 };
 
 // .hide() method
@@ -226,7 +226,7 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
-		terminal.log("Activating in-battle HUD");
+		term.log("Activating in-battle HUD");
 		this.thread = threads.create(this, 20);
 	}
 	new scenes.Scene()

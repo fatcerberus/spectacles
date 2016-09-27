@@ -8,7 +8,7 @@ function SpecsClient(hostname, person)
 	this.socket = new Socket(hostname, 812);
 	this.person = person;
 	this.isReady = false;
-	terminal.log("Connecting to person server at " + hostname + ":812");
+	term.log("Connecting to person server at " + hostname + ":812");
 	threads.create(this);
 }
 
@@ -23,8 +23,8 @@ SpecsClient.prototype.update = function()
 		for (var i = 0; i < lines.length; ++i) {
 			if (lines[i] == 'specs client?') {
 				this.socket.write('specs client.\nperson-id ' + this.person);
-				terminal.log("Successfully connected to person server");
-				terminal.log("Now controlling '" + this.person + "' remotely");
+				term.log("Successfully connected to person server");
+				term.log("Now controlling '" + this.person + "' remotely");
 				this.isReady = true;
 				this.lastX = GetPersonX(this.person);
 				this.lastY = GetPersonY(this.person);

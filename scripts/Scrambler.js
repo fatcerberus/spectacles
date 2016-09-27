@@ -17,7 +17,7 @@ function Scrambler(name)
 	this.name = name;
 	this.encounterRate = 0.01;
 	this.battleIDs = [];
-	terminal.log("Created random battle scrambler for person '" + this.name + "'",
+	term.log("Created random battle scrambler for person '" + this.name + "'",
 		"encRate: ~" + Math.round(this.encounterRate * 100) + "%");
 }
 
@@ -36,7 +36,7 @@ Scrambler.prototype.start = function()
 	this.lastX = GetPersonX(this.name);
 	this.lastY = GetPersonY(this.name);
 	threads.create(this);
-	terminal.log("Started random battle scrambler for '" + this.name + "'");
+	term.log("Started random battle scrambler for '" + this.name + "'");
 };
 
 Scrambler.prototype.update = function()
@@ -48,7 +48,7 @@ Scrambler.prototype.update = function()
 			var inputPerson = IsInputAttached() ? GetInputPerson() : null;
 			DetachInput();
 			var battleID = random.sample(this.battleIDs);
-			terminal.log("Random battle triggered by person '" + this.name + "'",
+			term.log("Random battle triggered by person '" + this.name + "'",
 				"battleID: " + battleID);
 			new scenes.Scene()
 				.battle(battleID, analogue.getWorld().session)
