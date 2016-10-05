@@ -22,7 +22,7 @@ function Stat(baseValue, level, enableGrowth, growthRate)
 	this.baseValue = baseValue;
 	this.levelUpTable = [];
 	for (var i = 1; i <= 100; ++i) {
-		var xpNeeded = Math.ceil(i > 1 ? Math.pow(i, 3) / growthRate : 0);
+		var xpNeeded = Math.ceil(i > 1 ? i ** 3 / growthRate : 0);
 		this.levelUpTable[i] = xpNeeded;
 	}
 	this.experience = this.levelUpTable[level];

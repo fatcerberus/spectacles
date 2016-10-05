@@ -130,7 +130,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.resetCounter(Game.defaultMoveRank, true);
 	this.registerCommands();
 	var unitType = this.ai === null ? "player" : "AI";
-	term.log("Created " + unitType + " unit '" + this.name + "'",
+	term.print("Created " + unitType + " unit '" + this.name + "'",
 		"hp: " + this.hp + "/" + this.maxHP,
 		"id: " + this.tag);
 }
@@ -163,12 +163,12 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 			if (!isGuardable) {
 				this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
 			}
-			term.log(this.name + " is immune to " + statusName);
+			term.print(this.name + " is immune to " + statusName);
 		} else if (isOverruled) {
 			if (!isGuardable) {
 				this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 			}
-			term.log(statusName + " overruled by another of " + this.name + "'s statuses");
+			term.print(statusName + " overruled by another of " + this.name + "'s statuses");
 		} else if (this.stance !== BattleStance.Guard || !isGuardable) {
 			var eventData = { unit: this, statusID: statusID, cancel: false };
 			this.battle.raiseEvent('unitAfflicted', eventData);
@@ -182,15 +182,15 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				link(this.statuses).pluck('statusID').each(function(statusID) {
 					this.battlerInfo.statuses.push(statusID);
 				}.bind(this));
-				term.log(this.name + " took on status " + effect.name);
+				term.print(this.name + " took on status " + effect.name);
 			} else {
 				if (!isGuardable) {
 					this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 				}
-				term.log(this.name + "'s " + statusName + " infliction blocked by status/FC");
+				term.print(this.name + "'s " + statusName + " infliction blocked by status/FC");
 			}
 		} else {
-			term.log(this.name + " in GS, " + statusName + " infliction blocked");
+			term.print(this.name + " in GS, " + statusName + " infliction blocked");
 		}
 	}
 };
@@ -244,7 +244,7 @@ BattleUnit.prototype.clearQueue = function()
 {
 	if (this.actionQueue.length > 0) {
 		this.actionQueue = [];
-		term.log("Cleared " + this.name + "'s action queue");
+		term.print("Cleared " + this.name + "'s action queue");
 	}
 };
 
@@ -258,7 +258,7 @@ BattleUnit.prototype.die = function()
 	this.battle.ui.hud.setHP(this, this.hp);
 	this.statuses = [];
 	this.actor.animate('die');
-	term.log(this.fullName + " afflicted with death");
+	term.print(this.fullName + " afflicted with death");
 };
 
 // .endCycle() method
@@ -273,7 +273,7 @@ BattleUnit.prototype.endCycle = function()
 		if (this.ai == null) {
 			this.actor.animate('active');
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-			term.log("Asking player for " + this.name + "'s counterattack");
+			term.print("Asking player for " + this.name + "'s counterattack");
 			chosenMove = this.counterMenu.open();
 		} else {
 			chosenMove = this.ai.getNextMove();
@@ -290,7 +290,7 @@ BattleUnit.prototype.endCycle = function()
 		var stanceName = this.stance == BattleStance.Guard ? "Guard"
 			: this.stance == BattleStance.Counter ? "Counter"
 			: "Attack";
-		term.log(this.name + " is now in " + stanceName + " Stance");
+		term.print(this.name + " is now in " + stanceName + " Stance");
 	}
 };
 
@@ -310,13 +310,13 @@ BattleUnit.prototype.endTargeting = function()
 BattleUnit.prototype.evade = function(actingUnit, action)
 {
 	this.actor.showHealing("miss", CreateColor(192, 192, 192, 255));
-	term.log(this.name + " evaded " + actingUnit.name + "'s attack");
+	term.print(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
 	if (isMelee && this.stance == BattleStance.Guard && isGuardBroken) {
 		this.stance = BattleStance.Counter;
 		this.counterTarget = actingUnit;
-		term.log(this.name + "'s Counter Stance activated");
+		term.print(this.name + "'s Counter Stance activated");
 	}
 };
 
@@ -362,7 +362,7 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 		var skill = this.partyMember.learnSkill(skillID);
 		this.skills.push(skill);
 		this.newSkills.push(skill);
-		term.log(this.name + " learned " + skill.name);
+		term.print(this.name + " learned " + skill.name);
 	}
 };
 
@@ -373,7 +373,7 @@ BattleUnit.prototype.growSkill = function(skillID, experience)
 BattleUnit.prototype.getNextAction = function()
 {
 	if (this.actionQueue.length > 0) {
-		term.log(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
+		term.print(this.name + " has " + this.actionQueue.length + " action(s) pending, shifting queue");
 		return this.actionQueue.shift();
 	} else {
 		return null;
@@ -421,7 +421,7 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
-		term.log(this.name + " healed for " + amount + " HP", "now: " + this.hp);
+		term.print(this.name + " healed for " + amount + " HP", "now: " + this.hp);
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
 	}
@@ -458,7 +458,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	if (!eventData.cancel) {
 		for (var i = 0; i < this.statuses.length; ++i) {
 			if (statusID == this.statuses[i].statusID) {
-				term.log(this.name + " lost status " + this.statuses[i].name);
+				term.print(this.name + " lost status " + this.statuses[i].name);
 				this.statuses.splice(i, 1);
 				--i; continue;
 			}
@@ -517,7 +517,7 @@ BattleUnit.prototype.performAction = function(action, move)
 			}
 			for (var statID in experience) {
 				this.stats[statID].grow(experience[statID]);
-				term.log(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID],
+				term.print(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID],
 					"value: " + this.stats[statID].getValue());
 			}
 		}
@@ -551,7 +551,7 @@ BattleUnit.prototype.queueMove = function(move)
 			this.actionQueue.push(nextActions[i]);
 		}
 		if (this.actionQueue.length > 0) {
-			term.log("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
+			term.print("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
 		}
 	} else {
 		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns());
@@ -608,7 +608,7 @@ BattleUnit.prototype.registerCommands = function()
 			if (statusID in Game.statuses) {
 				this.addStatus(statusID);
 			} else {
-				term.log("Invalid status ID '" + statusID + "'");
+				term.print("Invalid status ID '" + statusID + "'");
 			}
 		},
 		
@@ -616,7 +616,7 @@ BattleUnit.prototype.registerCommands = function()
 			if (statusID in Game.statuses) {
 				this.liftStatus(statusID);
 			} else {
-				term.log("Invalid status ID '" + statusID + "'");
+				term.print("Invalid status ID '" + statusID + "'");
 			}
 		},
 		
@@ -634,14 +634,14 @@ BattleUnit.prototype.registerCommands = function()
 		
 		'inv': function(instruction) {
 			if (arguments.length < 1)
-				return term.log("'" + this.id + " inv': No instruction provided");
+				return term.print("'" + this.id + " inv': No instruction provided");
 			switch (instruction) {
 			case 'add':
 				if (arguments.length < 2)
-					return term.log("'" + this.id + " inv add': Item ID required");
+					return term.print("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				if (!(itemID in Game.items))
-					return term.log("No such item ID '" + itemID + "'");
+					return term.print("No such item ID '" + itemID + "'");
 				var defaultUses = 'uses' in Game.items[itemID] ? Game.items[itemID].uses : 1;
 				var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 				var addCount = 0;
@@ -658,16 +658,16 @@ BattleUnit.prototype.registerCommands = function()
 					this.items.push(usable);
 					addCount = itemCount;
 				}
-				term.log(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
+				term.print(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
 				break;
 			case 'munch':
 				new scenes.Scene().playSound('Munch.wav').run();
 				this.items.length = 0;
-				term.log("maggie ate " + this.name + "'s entire inventory");
+				term.print("maggie ate " + this.name + "'s entire inventory");
 				break;
 			case 'rm':
 				if (arguments.length < 2)
-					return term.log("'" + this.id + " inv add': Item ID required");
+					return term.print("'" + this.id + " inv add': Item ID required");
 				var itemID = arguments[1];
 				var itemCount = 0;
 				link(this.items)
@@ -675,13 +675,13 @@ BattleUnit.prototype.registerCommands = function()
 					.execute(function(usable) { itemCount += usable.usesLeft })
 					.remove();
 				if (itemCount > 0)
-					term.log(itemCount + "x " + Game.items[itemID].name
+					term.print(itemCount + "x " + Game.items[itemID].name
 						+ " deleted from " + this.name + "'s inventory");
 				else
-					term.log("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
+					term.print("No " + Game.items[itemID].name + " in " + this.name + "'s inventory");
 				break;
 			default:
-				return term.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
+				return term.print("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
 			}
 		},
 		
@@ -693,7 +693,7 @@ BattleUnit.prototype.registerCommands = function()
 			flag = flag.toLowerCase();
 			if (flag == 'on') this.allowTargetScan = true;
 			if (flag == 'off') this.allowTargetScan = false;
-			term.log("Target Scan for " + this.name + " is " +
+			term.print("Target Scan for " + this.name + " is " +
 				(this.allowTargetScan ? "ON" : "OFF"));
 		},
 	});
@@ -719,7 +719,7 @@ BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
 	this.cv = rank > 0
 		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 		: 1;
-	term.log(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv,
+	term.print(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv,
 		"rank: " + rank);
 };
 
@@ -752,7 +752,7 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 		this.heal(isFullHeal ? this.maxHP : 1);
 		this.actor.animate('revive');
 		this.resetCounter(Game.reviveRank);
-		term.log(this.name + " brought back from the dead");
+		term.print(this.name + " brought back from the dead");
 	} else {
 		this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 	}
@@ -762,7 +762,7 @@ BattleUnit.prototype.resurrect = function(isFullHeal)
 // Switches the unit into Guard Stance.
 BattleUnit.prototype.setGuard = function()
 {
-	term.log(this.name + " will switch to Guard Stance");
+	term.print(this.name + " will switch to Guard Stance");
 	this.announce("Guard");
 	this.newStance = BattleStance.Guard;
 	this.resetCounter(Game.stanceChangeRank);
@@ -777,7 +777,7 @@ BattleUnit.prototype.setWeapon = function(weaponID)
 	var weaponDef = Game.weapons[weaponID];
 	this.announce("equip " + weaponDef.name);
 	this.weapon = weaponDef;
-	term.log(this.name + " equipped weapon " + weaponDef.name);
+	term.print(this.name + " equipped weapon " + weaponDef.name);
 	this.resetCounter(Game.equipWeaponRank);
 };
 
@@ -824,17 +824,17 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.Counter) {
-			term.log(this.name + " hit from Counter Stance, damage increased");
+			term.print(this.name + " hit from Counter Stance, damage increased");
 			amount = Math.round(amount * Game.bonusMultiplier);
 		}
 		if (this.stance != BattleStance.Attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
-			term.log(this.name + " is in Guard Stance, damage reduced");
+			term.print(this.name + " is in Guard Stance, damage reduced");
 		}
 		var oldHPValue = this.hp;
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
-		term.log(this.name + " took " + amount + " HP damage", "left: " + this.hp);
+		term.print(this.name + " took " + amount + " HP damage", "left: " + this.hp);
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
 			link(tags)
@@ -850,7 +850,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		}
 		this.battle.ui.hud.setHP(this, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
-			term.log(this.name + " dying due to lack of HP");
+			term.print(this.name + " dying due to lack of HP");
 			this.lazarusFlag = true;
 			var eventData = { unit: this, cancel: false };
 			this.battle.raiseEvent('unitDying', eventData);
@@ -861,7 +861,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			if (!this.lazarusFlag) {
 				this.die();
 			} else {
-				term.log(this.name + "'s death suspended by status/FC");
+				term.print(this.name + "'s death suspended by status/FC");
 			}
 		}
 	} else if (amount < 0) {
@@ -888,7 +888,7 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == BattleStance.Guard && isGuardBroken) {
-		term.log(this.name + "'s Guard Stance was broken", "by: " + actingUnit.name);
+		term.print(this.name + "'s Guard Stance was broken", "by: " + actingUnit.name);
 		this.newStance = BattleStance.Attack;
 		this.resetCounter(Game.guardBreakRank);
 	}
@@ -911,11 +911,11 @@ BattleUnit.prototype.tick = function()
 		if (this.stance == BattleStance.Guard) {
 			this.stance = this.newStance = BattleStance.Attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
-			term.log(this.name + "'s Guard Stance has expired");
+			term.print(this.name + "'s Guard Stance has expired");
 		} else if (this.stance == BattleStance.Counter) {
 			this.newStance = BattleStance.Attack;
 		}
-		term.log(this.name + "'s turn is up");
+		term.print(this.name + "'s turn is up");
 		this.actor.animate('active');
 		this.battle.unitReady.invoke(this.id);
 		var eventData = { skipTurn: false };
@@ -926,7 +926,7 @@ BattleUnit.prototype.tick = function()
 		}
 		if (eventData.skipTurn) {
 			this.clearQueue();
-			term.log(this.name + "'s turn was skipped");
+			term.print(this.name + "'s turn was skipped");
 			this.resetCounter(Game.defaultMoveRank);
 			this.battle.resume();
 			return true;
@@ -936,7 +936,7 @@ BattleUnit.prototype.tick = function()
 			var chosenMove = null;
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-				term.log("Asking player for " + this.name + "'s next move");
+				term.print("Asking player for " + this.name + "'s next move");
 				chosenMove = this.attackMenu.open();
 			} else {
 				chosenMove = this.ai.getNextMove();
@@ -957,7 +957,7 @@ BattleUnit.prototype.tick = function()
 		var eventData = { actingUnit: this };
 		this.battle.raiseEvent('endTurn', eventData);
 		this.actor.animate('dormant');
-		term.log("End of " + this.name + "'s turn");
+		term.print("End of " + this.name + "'s turn");
 		this.battle.resume();
 		return true;
 	} else {

@@ -79,7 +79,7 @@ WeaponUsable.prototype.use = function(unit, targets)
 	if (!this.isUsable(unit, unit.stance)) {
 		Abort("WeaponUsable.use(): " + unit.name + " tried to change weapons, which is not currently possible.");
 	}
-	term.log(unit.name + " is equipping " + this.name,
+	term.print(unit.name + " is equipping " + this.name,
 		"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 	link(targets).invoke('setWeapon', this.weaponID);
 	return null;

@@ -27,7 +27,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles)) {
 		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
 	}
-	term.log("Initializing battle context for '" + battleID + "'");
+	term.print("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
@@ -116,9 +116,9 @@ Battle.prototype.addCondition = function(conditionID)
 	if (!eventData.cancel) {
 		var effect = new ConditionContext(eventData.conditionID, this);
 		this.conditions.push(effect);
-		term.log("Installed field condition " + effect.name);
+		term.print("Installed field condition " + effect.name);
 	} else {
-		term.log("FC installation (ID: " + conditionID + ") canceled by existing FC");
+		term.print("FC installation (ID: " + conditionID + ") canceled by existing FC");
 	}
 };
 
@@ -192,18 +192,18 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (system.game.disableBattles) {
-		term.log("Battles disabled, automatic win", "battleID: " + this.battleID);
+		term.print("Battles disabled, automatic win", "battleID: " + this.battleID);
 		this.result = BattleResult.Win;
 		return null;
 	}
-	term.log("");
-	term.log("Starting battle engine", "battleID: " + this.battleID);
+	term.print("");
+	term.print("Starting battle engine", "battleID: " + this.battleID);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
 		var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 		partyMaxMP += mpDonated;
-		term.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+		term.print(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 	}
 	partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 	var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -273,7 +273,7 @@ Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			term.log("Battle condition " + this.conditions[i].name + " lifted");
+			term.print("Battle condition " + this.conditions[i].name + " lifted");
 			this.conditions.splice(i, 1);
 			--i; continue;
 		}
@@ -378,7 +378,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.filterBy('targetHint', 'user')
 		.each(function(effect)
 	{
-		term.log("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
+		term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
@@ -402,7 +402,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
 		var isHit = random.chance(odds);
-		term.log("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%",
+		term.print("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%",
 			isHit ? "hit" : "miss");
 		if (isHit) {
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
@@ -429,7 +429,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 				var targets = effect.targetHint == 'random'
 					? [ random.sample(targetsHit) ]
 					: targetsHit;
-				term.log("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
+				term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
 				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;
@@ -450,7 +450,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
-	term.log("Spawning new enemy '" + enemyClass + "'");
+	term.print("Spawning new enemy '" + enemyClass + "'");
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
@@ -470,8 +470,8 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null) {
 		return;
 	}
-	term.log("");
-	term.log("Beginning CTB cycle #" + (this.timer + 1));
+	term.print("");
+	term.print("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitAlive = function(unit) { return unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -487,14 +487,14 @@ Battle.prototype.tick = function()
 			music.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.Lose;
-			term.log("All active party members have been killed");
+			term.print("All active party members have been killed");
 			return;
 		}
 		if (link(this.enemyUnits).none(isUnitAlive)) {
 			music.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.Win;
-			term.log("All enemies have been killed");
+			term.print("All enemies have been killed");
 			return;
 		}
 	}
@@ -519,12 +519,12 @@ Battle.prototype.update = function() {
 			if (!link(this.session.battlesSeen).contains(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
-					term.log("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					term.print("Calling onFirstStart() for battleID '" + this.battleID + "'");
 					this.parameters.onFirstStart.call(this);
 				 }
 			}
 			if ('onStart' in this.parameters) {
-				term.log("Calling onStart() for battleID '" + this.battleID + "'");
+				term.print("Calling onStart() for battleID '" + this.battleID + "'");
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
@@ -535,7 +535,7 @@ Battle.prototype.update = function() {
 			break;
 	}
 	if (this.result !== null) {
-		term.log("Battle engine shutting down");
+		term.print("Battle engine shutting down");
 		link(this.battleUnits).invoke('dispose');
 		this.ui.dispose();
 		music.pop();

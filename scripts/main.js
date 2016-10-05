@@ -46,11 +46,11 @@ function game()
 	term.define('yap', null, {
 		'on': function() {
 			DBG_DISABLE_TEXTBOXES = false;
-			term.log("Oh, yappy times are here again...");
+			term.print("Oh, yappy times are here again...");
 		}, 
 		'off': function() {
 			DBG_DISABLE_TEXTBOXES = true;
-			term.log("The yappy times are OVER!");
+			term.print("The yappy times are OVER!");
 		}, 
 	});
 

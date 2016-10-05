@@ -58,7 +58,7 @@ Game.moveEffects =
 				var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
 				actor.growSkill(munchData.skill, experience);
 			}
-			term.log(targets[i].fullName + " got eaten by " + actor.name);
+			term.print(targets[i].fullName + " got eaten by " + actor.name);
 			targets[i].die();
 		}
 		actor.heal(actor.maxHP - actor.hp, [], true);

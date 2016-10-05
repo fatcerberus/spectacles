@@ -12,11 +12,11 @@ TestHarness = new (function()
 
 TestHarness.initialize = function()
 {
-	term.log("Initializing Specs Engine test harness");
+	term.print("Initializing Specs Engine test harness");
 	term.define('harness', this, {
 		'run': function(testID) {
 			if (!(testID in this.tests))
-				return term.log("Unknown test ID '" + testID + "'");
+				return term.print("Unknown test ID '" + testID + "'");
 			this.run(testID);
 		}
 	});
@@ -25,7 +25,7 @@ TestHarness.initialize = function()
 	
 	var testScripts = GetFileList('~/scripts/testcases');
 	for (var i = 0; i < testScripts.length; ++i) {
-		term.log("Loading testcases from '" + testScripts[i] + "'");
+		term.print("Loading testcases from '" + testScripts[i] + "'");
 		EvaluateScript('~/scripts/testcases/' + testScripts[i]);
 	}
 };
@@ -36,10 +36,10 @@ TestHarness.addBattle = function(testID, setupData)
 		setup: setupData,
 		run: function() {
 			if (TestHarness.isBattleRunning) {
-				term.log("Unable to run test battle, one is ongoing");
+				term.print("Unable to run test battle, one is ongoing");
 				return;
 			}
-			term.log("Preparing test battle", "battleID: " + this.setup.battleID);
+			term.print("Preparing test battle", "battleID: " + this.setup.battleID);
 			var session = new Session();
 			link(Game.initialParty).each(function(id) {
 				session.party.remove(id);
@@ -61,7 +61,7 @@ TestHarness.addBattle = function(testID, setupData)
 			TestHarness.isBattleRunning = false;
 		}
 	};
-	term.log("Added battle test '" + testID + "'");
+	term.print("Added battle test '" + testID + "'");
 };
 
 TestHarness.addTest = function(testID, func)
@@ -76,11 +76,11 @@ TestHarness.addTest = function(testID, func)
 	term.define(testID, this.tests[testID], {
 		'test': TestHarness.run.bind(TestHarness, testID)
 	});
-	term.log("Added generic test '" + testID + "'");
+	term.print("Added generic test '" + testID + "'");
 };
 
 TestHarness.run = function(testID)
 {
-	term.log("Test harness invoked", "testID: " + testID);
+	term.print("Test harness invoked", "testID: " + testID);
 	this.tests[testID].run(this.tests[testID].setup, testID);
 };

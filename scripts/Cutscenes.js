@@ -33,7 +33,7 @@ scenes.defScenelet('battle',
 			case 'battle':
 				if (!threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.Lose) {
-						term.log("Player lost battle, showing Game Over screen");
+						term.print("Player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -45,7 +45,7 @@ scenes.defScenelet('battle',
 			case 'gameOver':
 				if (!threads.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.retry) {
-						term.log("Player asked to retry last battle");
+						term.print("Player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
