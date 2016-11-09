@@ -41,7 +41,7 @@ function game()
 	analogue.init();
 
 	term.define('specs', global, {
-		'exit': function() { Exit(); }
+		'exit': function() { system.exit(); }
 	});
 	term.define('yap', null, {
 		'on': function() {
@@ -84,7 +84,7 @@ function clone(o)
 				return clones[i].dolly;
 			}
 		}
-		var dolly = o instanceof Array ? []
+		var dolly = Array.isArray(o) ? []
 			: 'clone' in o && typeof o.clone === 'function' ? o.clone()
 			: {};
 		clones.push({ original: o, dolly: dolly });

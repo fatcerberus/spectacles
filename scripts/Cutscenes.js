@@ -516,8 +516,11 @@ scenes.defScenelet('talk',
 		return true;
 	},
 	getInput: function(scene) {
-		if (this.mode != "idle") return;
-		if ((keyboard.isPressed(Key.Z) || joy.P1.isPressed(0)) && this.timeout == Infinity) {
+		if (this.mode != "idle")
+			return;
+		if ((Keyboard.Default.isPressed(Key.Z) || joy.P1.isPressed(0))
+			&& this.timeout == Infinity)
+		{
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
 				if (this.currentPage < this.text.length - 1) {
 					this.mode = "page";
