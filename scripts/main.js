@@ -4,6 +4,7 @@
 ***/
 
 global.events    = require('events');
+global.from      = require('from');
 global.joy       = require('joy');
 global.kh2bar    = require('kh2bar');
 global.link      = require('link');
@@ -77,20 +78,20 @@ function game()
 //     The new, cloned object.
 function clone(o)
 {
-	var clones = arguments.length >= 2 ? arguments[1] : [];
+	var memo = arguments.length >= 2 ? arguments[1] : [];
 	if (typeof o === 'object' && o !== null) {
-		for (var i = 0; i < clones.length; ++i) {
-			if (o === clones[i].original) {
-				return clones[i].dolly;
+		for (var i = 0; i < memo.length; ++i) {
+			if (o === memo[i].original) {
+				return memo[i].dolly;
 			}
 		}
 		var dolly = Array.isArray(o) ? []
 			: 'clone' in o && typeof o.clone === 'function' ? o.clone()
 			: {};
-		clones.push({ original: o, dolly: dolly });
-		if (o instanceof Array || !('clone' in o) || typeof o.clone !== 'function') {
+		memo[memo.length] = { original: o, dolly: dolly };
+		if (Array.isArray(o) || !('clone' in o) || typeof o.clone !== 'function') {
 			for (var p in o) {
-				dolly[p] = clone(o[p], clones);
+				dolly[p] = clone(o[p], memo);
 			}
 		}
 		return dolly;

@@ -42,12 +42,12 @@ BattleActor.prototype.animate = function(animationID)
 		case 'die':
 			this.sprite.direction = 'north';
 			new scenes.Scene()
-				.tween(this, 1.0, 'easeInOutSine', { opacity: 0.1 })
+				.tween(this, 60, 'easeInOutSine', { opacity: 0.1 })
 				.run();
 			break;
 		case 'revive':
 			new scenes.Scene()
-				.tween(this, 1.0, 'easeInOutSine', { opacity: 1.0 })
+				.tween(this, 60, 'easeInOutSine', { opacity: 1.0 })
 				.call(function() { this.sprite.direction = this.isEnemy ? 'east' : 'west'; }.bind(this))
 				.run();
 			break;
@@ -76,7 +76,7 @@ BattleActor.prototype.enter = function(isImmediate)
 	var threadID = null;
 	if (!isImmediate) {
 		var entrance = new scenes.Scene()
-			.tween(this, 1.5, 'linear', { x: newX })
+			.tween(this, 90, 'linear', { x: newX })
 			.run(true);
 	} else {
 		this.x = newX;
@@ -134,8 +134,8 @@ BattleActor.prototype.showDamage = function(amount, color)
 		tweenInfo[yName] = finalY;
 	}
 	data.scene = new scenes.Scene()
-		.tween(data, 0.5, 'easeOutBounce', tweenInfo)
-		.pause(0.25);
+		.tween(data, 30, 'easeOutBounce', tweenInfo)
+		.pause(15);
 	data.scene.run();
 	this.damages.push(data);
 };
@@ -152,8 +152,8 @@ BattleActor.prototype.showHealing = function(amount, color)
 	
 	var data = { amount: amount, color: color, y: 20, alpha: 255 };
 	data.scene = new scenes.Scene()
-		.tween(data, 1.0, 'easeOutExpo', { y: -11 * this.healings.length })
-		.tween(data, 0.5, 'easeInOutSine', { alpha: 0 });
+		.tween(data, 60, 'easeOutExpo', { y: -11 * this.healings.length })
+		.tween(data, 30, 'easeInOutSine', { alpha: 0 });
 	data.scene.run();
 	this.healings.push(data);
 };
@@ -175,8 +175,8 @@ BattleActor.prototype.update = function()
 				tweenInfo[yName] = finalY;
 			}
 			data.scene = new scenes.Scene()
-				.tween(data, 0.5, 'easeOutBounce', tweenInfo)
-				.pause(0.25);
+				.tween(data, 30, 'easeOutBounce', tweenInfo)
+				.pause(15);
 			data.scene.run();
 		}
 		if (!data.scene.isRunning()) {

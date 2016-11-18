@@ -89,9 +89,9 @@ function TargetMenu(unit, battle, usable, moveName)
 		}
 		this.doChangeInfo = new scenes.Scene()
 			.fork()
-				.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
+				.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 			.end()
-			.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
+			.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 			.resync()
 			.call(function() {
 				this.unitToShowInfo = unit;
@@ -103,9 +103,9 @@ function TargetMenu(unit, battle, usable, moveName)
 				}
 			}.bind(this))
 			.fork()
-				.tween(this, 0.25, 'easeOutBack', { infoBoxFadeness: 0.0 })
+				.tween(this, 15, 'easeOutBack', { infoBoxFadeness: 0.0 })
 			.end()	
-			.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 0.0 })
+			.tween(this, 15, 'easeInOutSine', { infoFadeness: 0.0 })
 			.run();
 	};
 }
@@ -118,9 +118,9 @@ TargetMenu.prototype.getInput = function()
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
 			new scenes.Scene()
 				.fork()
-					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
+					.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
-				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
+				.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 				.resync()
 				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();
@@ -129,9 +129,9 @@ TargetMenu.prototype.getInput = function()
 			this.targets = null;
 			new scenes.Scene()
 				.fork()
-					.tween(this, 0.25, 'easeInBack', { infoBoxFadeness: 1.0 })
+					.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
-				.tween(this, 0.25, 'easeInOutSine', { infoFadeness: 1.0 })
+				.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 				.resync()
 				.call(function() { this.isChoiceMade = true; }.bind(this))
 				.run();

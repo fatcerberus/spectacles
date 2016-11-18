@@ -42,7 +42,7 @@ TitleScreen.prototype.show = function()
 	this.transition = new scenes.Scene()
 		.adjustBGM(1.0)
 		.pushBGM(this.themeTrack)
-		.tween(this, 2.0, 'linear', { fadeness: 0.0 })
+		.tween(this, 120, 'linear', { fadeness: 0.0 })
 		.run();
 	threads.join(threads.create(this));
 	music.pop();
@@ -68,7 +68,7 @@ TitleScreen.prototype.update = function()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()
-					.tween(this, 2.0, 'linear', { fadeness: 1.0 })
+					.tween(this, 120, 'linear', { fadeness: 1.0 })
 					.run();
 				this.mode = 'transitionOut';
 			}

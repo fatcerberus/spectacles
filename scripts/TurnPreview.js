@@ -72,7 +72,7 @@ TurnPreview.prototype.ensureEntries = function(unit)
 TurnPreview.prototype.set = function(prediction)
 {
 	var moveEasing = 'easeInOutExpo';
-	var moveTime = 0.25;
+	var moveTime = 15;
 	if (this.lastPrediction !== null) {
 		for (var i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
 			var unit = this.lastPrediction[i].unit;
@@ -110,7 +110,7 @@ TurnPreview.prototype.show = function()
 		this.thread = threads.create(this, 20);
 	}
 	new scenes.Scene()
-		.tween(this, 0.5, 'easeOutExpo', { fadeness: 0.0 })
+		.tween(this, 30, 'easeOutExpo', { fadeness: 0.0 })
 		.run();
 };
 

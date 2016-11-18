@@ -75,9 +75,9 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 	};
 	var thread = threads.create(announcement, 10);
 	new scenes.Scene()
-		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 0.0 })
-		.pause(0.75)
-		.tween(announcement, 0.125, 'easeInOutSine', { fadeness: 1.0 })
+		.tween(announcement, 7, 'easeInOutSine', { fadeness: 0.0 })
+		.pause(46)
+		.tween(announcement, 7, 'easeInOutSine', { fadeness: 1.0 })
 		.run(true);
 	threads.kill(thread);
 };
@@ -138,13 +138,13 @@ BattleScreen.prototype.go = function(title)
 	this.title = title;
 	new scenes.Scene()
 		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
-			.fadeTo(Color.White, 0.25)
-			.fadeTo(Color.Transparent, 0.5)
-			.fadeTo(Color.White, 0.25)
+			.fadeTo(Color.White, 15)
+			.fadeTo(Color.Transparent, 30)
+			.fadeTo(Color.White, 15)
 		.end()
 		.call(this.startRunning.bind(this))
 		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
-			.fadeTo(Color.Transparent, 1.0)
+			.fadeTo(Color.Transparent, 60)
 		.end()
 		.run(true);
 };

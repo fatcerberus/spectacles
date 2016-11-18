@@ -65,13 +65,13 @@ MPGauge.prototype.set = function(value)
 		}
 		this.animation = new scenes.Scene()
 			.fork()
-				.tween(this, 0.25, 'easeInOutSine', { usage: this.reading - value })
+				.tween(this, 15, 'easeInOutSine', { usage: this.reading - value })
 			.end()
 			.fork()
-				.tween(this, 0.25, 'easeInOutSine', { reading: value })
+				.tween(this, 15, 'easeInOutSine', { reading: value })
 			.end()
-			.tween(this.usageColor, 0.1, 'easeInOutSine', this.color)
-			.tween(this.usageColor, 0.5, 'easeInOutSine', CreateColor(0, 0, 0, 0))
+			.tween(this.usageColor, 6, 'easeInOutSine', this.color)
+			.tween(this.usageColor, 30, 'easeInOutSine', CreateColor(0, 0, 0, 0))
 			.run();
 	}
 	this.value = value;

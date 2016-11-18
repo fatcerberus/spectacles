@@ -58,37 +58,37 @@ function MoveMenu(unit, battle, stance)
 	
 	this.chooseMove = new scenes.Scene()
 		.fork()
-			.tween(this.moveCursorColor, 0.125, 'easeInOutSine', this.lockedCursorColor)
+			.tween(this.moveCursorColor, 7, 'easeInOutSine', this.lockedCursorColor)
 		.end()
 		.fork()
-			.tween(this, 0.25, 'easeInBack', { expansion: 0.0 })
+			.tween(this, 15, 'easeInBack', { expansion: 0.0 })
 		.end()
-		.tween(this, 0.25, 'easeInBack', { fadeness: 0.0 });
+		.tween(this, 15, 'easeInBack', { fadeness: 0.0 });
 	
 	this.hideMoveList = new scenes.Scene()
 		.fork()
-			.tween(this.moveCursorColor, 0.25, 'linear', CreateColor(0, 0, 0, 0))
+			.tween(this.moveCursorColor, 15, 'linear', CreateColor(0, 0, 0, 0))
 		.end()
 		.fork()
-			.tween(this.topCursorColor, 0.25, 'easeInOutSine', this.normalCursorColor)
+			.tween(this.topCursorColor, 15, 'easeInOutSine', this.normalCursorColor)
 		.end()
-		.tween(this, 0.25, 'easeInBack', { expansion: 0.0 });
+		.tween(this, 15, 'easeInBack', { expansion: 0.0 });
 	
 	this.showMenu = new scenes.Scene()
 		.fork()	
-			.tween(this.topCursorColor, 0.25, 'easeOutQuad', CreateColor(192, 192, 192, 255))
-			.tween(this.topCursorColor, 0.25, 'easeOutQuad', this.normalCursorColor)
+			.tween(this.topCursorColor, 15, 'easeOutQuad', CreateColor(192, 192, 192, 255))
+			.tween(this.topCursorColor, 15, 'easeOutQuad', this.normalCursorColor)
 		.end()
-		.tween(this, 0.5, 'easeOutBounce', { fadeness: 1.0 });
+		.tween(this, 30, 'easeOutBounce', { fadeness: 1.0 });
 	
 	this.showMoveList = new scenes.Scene()
 		.fork()
-			.tween(this.topCursorColor, 0.25, 'easeInOutSine', this.lockedCursorColor)
+			.tween(this.topCursorColor, 15, 'easeInOutSine', this.lockedCursorColor)
 		.end()
 		.fork()
-			.tween(this.moveCursorColor, 0.25, 'linear', this.normalCursorColor)
+			.tween(this.moveCursorColor, 15, 'linear', this.normalCursorColor)
 		.end()
-		.tween(this, 0.25, 'easeOutExpo', { expansion: 1.0 });
+		.tween(this, 15, 'easeOutExpo', { expansion: 1.0 });
 	
 	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn, isEnabled)
 	{

@@ -111,7 +111,7 @@ scenes.defScenelet('facePerson',
 scenes.defScenelet('focusOnPerson',
 {
 	start: function(scene, person, duration) {
-		duration = duration !== undefined ? duration : 0.25;
+		duration = duration !== undefined ? duration : 15;
 		
 		this.pan = new scenes.Scene()
 			.panTo(GetPersonX(person), GetPersonY(person), duration)
@@ -169,10 +169,10 @@ scenes.defScenelet('marquee',
 		this.fadeness = 0.0;
 		this.scroll = 0.0;
 		this.animation = new scenes.Scene()
-			.tween(this, 0.25, 'linear', { fadeness: 1.0 })
-			.tween(this, 1.0, 'easeOutExpo', { scroll: 0.5 })
-			.tween(this, 1.0, 'easeInExpo', { scroll: 1.0 })
-			.tween(this, 0.25, 'linear', { fadeness: 0.0 })
+			.tween(this, 15, 'linear', { fadeness: 1.0 })
+			.tween(this, 60, 'easeOutExpo', { scroll: 0.5 })
+			.tween(this, 60, 'easeInExpo', { scroll: 1.0 })
+			.tween(this, 15, 'linear', { fadeness: 0.0 })
 			.run();
 	},
 	render: function(scene) {
@@ -192,7 +192,7 @@ scenes.defScenelet('marquee',
 scenes.defScenelet('maskPerson',
 {
 	start: function(scene, name, newMask, duration) {
-		duration = duration !== undefined ? duration : 0.25;
+		duration = duration !== undefined ? duration : 15;
 		
 		this.name = name;
 		this.mask = GetPersonMask(this.name);
@@ -279,7 +279,7 @@ scenes.defScenelet('movePerson',
 scenes.defScenelet('panTo',
 {
 	start: function(scene, x, y, duration) {
-		duration = duration !== undefined ? duration : 0.25;
+		duration = duration !== undefined ? duration : 15;
 		
 		DetachCamera();
 		var targetXY = {
@@ -361,7 +361,7 @@ scenes.defScenelet('talk',
 		this.lineToReveal = 0;
 		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		this.transition = new scenes.Scene()
-			.tween(this, 0.375, 'easeOutBack', { boxVisibility: 1.0 })
+			.tween(this, 20, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
 		while (AreKeysLeft()) {
@@ -500,7 +500,7 @@ scenes.defScenelet('talk',
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / screen.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
 					this.transition = new scenes.Scene()
-						.tween(this, 0.375, 'easeInBack', { boxVisibility: 0.0 })
+						.tween(this, 20, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					this.mode = "fadeout";
 				}

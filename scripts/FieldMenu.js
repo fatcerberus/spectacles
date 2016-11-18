@@ -94,7 +94,7 @@ FieldMenu.prototype.open = function()
 	var thread = threads.create(this, 100);
 	this.selectItem(this.selection);
 	new scenes.Scene()
-		.tween(this, 0.5, 'easeOutQuint', { fadeness: 1.0 })
+		.tween(this, 30, 'easeOutQuint', { fadeness: 1.0 })
 		.run(true);
 	threads.join(thread);
 };
@@ -103,9 +103,9 @@ FieldMenu.prototype.close = function()
 {
 	this.isOpen = false;
 	new scenes.Scene()
-		.fork().tween(this.items[this.selection].highlight, 0.5, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
-		.fork().tween(this.items[this.selection].textColor, 0.5, 'easeInSine', this.itemTextColor).end()
-		.tween(this, 0.5, 'easeInQuint', { fadeness: 0.0 })
+		.fork().tween(this.items[this.selection].highlight, 30, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
+		.fork().tween(this.items[this.selection].textColor, 30, 'easeInSine', this.itemTextColor).end()
+		.tween(this, 30, 'easeInQuint', { fadeness: 0.0 })
 		.run(true);
 };
 
@@ -115,10 +115,10 @@ FieldMenu.prototype.selectItem = function(itemID)
 		this.itemFader.stop();
 	}
 	this.itemFader = new scenes.Scene()
-		.fork().tween(this.items[this.selection].highlight, 0.25, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
-		.fork().tween(this.items[this.selection].textColor, 0.25, 'easeInSine', this.itemTextColor).end()
-		.fork().tween(this.items[itemID].highlight, 0.25, 'easeOutSine', this.highlightColor).end()
-		.fork().tween(this.items[itemID].textColor, 0.25, 'easeOutSine', this.litItemTextColor).end()
+		.fork().tween(this.items[this.selection].highlight, 15, 'easeInSine', CreateColor(0, 0, 0, 0)).end()
+		.fork().tween(this.items[this.selection].textColor, 15, 'easeInSine', this.itemTextColor).end()
+		.fork().tween(this.items[itemID].highlight, 15, 'easeOutSine', this.highlightColor).end()
+		.fork().tween(this.items[itemID].textColor, 15, 'easeOutSine', this.litItemTextColor).end()
 		.resync()
 		.run();
 	this.selection = itemID;

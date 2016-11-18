@@ -146,7 +146,7 @@ Battle.prototype.alliesOf = function(unit)
 //     true if the unit1 and unit2 are of different alignments; false otherwise.
 Battle.prototype.areEnemies = function(unit1, unit2)
 {
-	return link(this.enemiesOf(unit1)).contains(unit2);
+	return from(this.enemiesOf(unit1)).anyIs(unit2);
 };
 
 // .enemiesOf() method

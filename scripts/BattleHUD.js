@@ -110,7 +110,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 BattleHUD.prototype.hide = function()
 {
 	new scenes.Scene()
-		.tween(this, 0.5, 'easeInExpo', { fadeness: 0.0 })
+		.tween(this, 15, 'easeInExpo', { fadeness: 0.0 })
 		.run();
 };
 
@@ -123,12 +123,12 @@ BattleHUD.prototype.highlight = function(unit)
 	if (unit !== null) {
 		this.highlightedUnit = unit;
 		new scenes.Scene()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
-			.tween(this.highlightColor, 0.25, 'easeOutQuad', this.partyHighlightColor)
+			.tween(this.highlightColor, 6, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
+			.tween(this.highlightColor, 15, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
 		new scenes.Scene()
-			.tween(this.highlightColor, 0.1, 'easeInQuad', CreateColor(0, 0, 0, 0))
+			.tween(this.highlightColor, 6, 'easeInQuad', CreateColor(0, 0, 0, 0))
 			.run();
 	}
 };
@@ -183,10 +183,10 @@ BattleHUD.prototype.setHP = function(unit, hp)
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()
 				.fork()
-					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', flashColor)
-					.tween(characterInfo.lightColor, 0.25, 'easeOutQuad', CreateColor(0, 0, 0, 0))
+					.tween(characterInfo.lightColor, 15, 'easeOutQuad', flashColor)
+					.tween(characterInfo.lightColor, 15, 'easeOutQuad', CreateColor(0, 0, 0, 0))
 				.end()
-				.tween(characterInfo, 0.25, 'easeInOutSine', { hp: hp })
+				.tween(characterInfo, 15, 'easeInOutSine', { hp: hp })
 				.run();
 		}
 	}
@@ -230,7 +230,7 @@ BattleHUD.prototype.show = function()
 		this.thread = threads.create(this, 20);
 	}
 	new scenes.Scene()
-		.tween(this, 0.5, 'easeOutExpo', { fadeness: 1.0 })
+		.tween(this, 30, 'easeOutExpo', { fadeness: 1.0 })
 		.run();
 };
 

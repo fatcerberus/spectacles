@@ -44,7 +44,7 @@ GameOverScreen.prototype.show = function()
 	this.transition = new scenes.Scene()
 		.pushBGM("GameOver")
 		.adjustBGM(1.0)
-		.tween(this, 5.0, 'linear', { fadeness: 0.0 })
+		.tween(this, 300, 'linear', { fadeness: 0.0 })
 		.run();
 	return threads.create(this);
 };
@@ -70,7 +70,7 @@ GameOverScreen.prototype.update = function()
 					.fork()
 						.adjustBGM(0.0, 2.0)
 					.end()
-					.tween(this, 2.0, 'linear', { fadeness: 1.0 })
+					.tween(this, 120, 'linear', { fadeness: 1.0 })
 					.run();
 				this.mode = 'transitionOut';
 			}
