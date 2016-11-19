@@ -47,7 +47,7 @@ ItemUsable.prototype.defaultTargets = function(user)
 {
 	var target = user;
 	var allies = user.battle.alliesOf(user);
-	if (this.allowDeadTarget && link(allies).some(function(unit) { return !unit.isAlive(); })) {
+	if (this.allowDeadTarget && from(allies).any(function(unit) { return !unit.isAlive(); })) {
 		target = link(allies)
 			.where(function(unit) { return !unit.isAlive(); })
 			.sample(1)[0];
@@ -118,6 +118,6 @@ ItemUsable.prototype.use = function(unit, targets)
 		"left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };
 	unit.raiseEvent('useItem', eventData);
-	unit.battle.itemUsed.invoke(unit.id, this.itemID, link(targets).pluck('id').toArray());
+	unit.battle.itemUsed.invoke(unit.id, this.itemID, from(targets).get('id').select());
 	return [ eventData.item.action ];
 }

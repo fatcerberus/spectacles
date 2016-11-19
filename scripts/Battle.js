@@ -253,7 +253,7 @@ Battle.prototype.go = function()
 //     conditionID: The ID of the field condition to test for, as defined in the gamedef.
 Battle.prototype.hasCondition = function(conditionID)
 {
-	return link(this.conditions).pluck('conditionID').contains(conditionID);
+	return from(this.conditions).get('conditionID').anyIs(conditionID);
 };
 
 // .isActive() method
@@ -524,7 +524,7 @@ Battle.prototype.update = function() {
 				walkInThreads.push(thread);
 			});
 			this.ui.hud.turnPreview.show();
-			if (!link(this.session.battlesSeen).contains(this.battleID)) {
+			if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
 					term.print("Calling onFirstStart() for battleID '" + this.battleID + "'");
