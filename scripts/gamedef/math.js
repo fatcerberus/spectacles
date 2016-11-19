@@ -100,9 +100,9 @@ Game.math =
 	// Guard Stance-related functions
 	guardStance: {
 		damageTaken: function(baseDamage, tags) {
-			if (link(tags).contains('deathblow')) {
+			if (from(tags).anyIs('deathblow')) {
 				return baseDamage - 1;
-			} else if (link(tags).some([ 'bow', 'omni', 'special', 'zombie' ])) {
+			} else if (from(tags).anyIn([ 'bow', 'omni', 'special', 'zombie' ])) {
 				return baseDamage;
 			} else {
 				return baseDamage / 2;
