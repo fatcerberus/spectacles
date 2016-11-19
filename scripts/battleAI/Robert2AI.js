@@ -272,13 +272,13 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	}
 	var curativeIDs = [ 'tonic', 'powerTonic' ];
 	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.aic.unit.hasStatus('zombie')
-	    && link(targetIDs).contains('robert2') && this.aic.phase <= 4)
+	    && from(targetIDs).anyIs('robert2') && this.aic.phase <= 4)
 	{
 		if (this.zombieHealFixState === null && this.aic.isItemUsable('holyWater')) {
 			this.aic.queueItem('holyWater');
 			this.hasZombieHealedSelf = true;
 		}
-	} else if (userID == 'robert2' && itemID == 'alcohol' && link(targetIDs).contains('robert2')) {
+	} else if (userID == 'robert2' && itemID == 'alcohol' && from(targetIDs).anyIs('robert2')) {
 		this.aic.unit.addStatus('finalStand');
 		new scenes.Scene()
 			.adjustBGM(0.5, 5.0)
@@ -304,8 +304,8 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 			.run(true);
 		this.isAlcoholUsed = true;
-	} else if (userID == 'scott' && link(targetIDs).contains('robert2')) {
-		if (link(curativeIDs).contains(itemID) && this.aic.unit.hasStatus('zombie')
+	} else if (userID == 'scott' && from(targetIDs).anyIs('robert2')) {
+		if (from(curativeIDs).anyIs(itemID) && this.aic.unit.hasStatus('zombie')
 		    && !this.aic.isSkillQueued('electrocute'))
 		{
 			if (this.aic.phase <= 4 && this.zombieHealFixState === null) {
@@ -322,7 +322,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 				}
 			}
 		}
-	} else if (userID == 'scott' && link(targetIDs).contains('scott')) {
+	} else if (userID == 'scott' && from(targetIDs).anyIs('scott')) {
 		if (itemID == 'vaccine' && this.scottImmuneTurnsLeft == 0) {
 			this.isScottZombie = false;
 			this.scottImmuneTurnsLeft = 6;
@@ -332,7 +332,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			} else {
 				this.isScottZombie = false;
 			}
-		} else if (this.aic.phase <= 3 && link(curativeIDs).contains(itemID) && !this.isNecromancyPending
+		} else if (this.aic.phase <= 3 && from(curativeIDs).anyIs(itemID) && !this.isNecromancyPending
 			&& !this.isScottZombie && !this.aic.isSkillQueued('necromancy') && !this.aic.isSkillQueued('electrocute')
 			&& this.zombieHealFixState === null)
 		{
@@ -410,7 +410,7 @@ Robert2AI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 				this.rezombieChance = 1.0;
 			}
 		}
-	} else if (userID == 'scott' && link(targetIDs).contains('scott')) {
+	} else if (userID == 'scott' && from(targetIDs).anyIs('scott')) {
 		if (((skillID == 'flare' || skillID == 'hellfire') && this.nextElementalMove == 'hellfire')
 			|| ((skillID == 'chill' || skillID == 'windchill') && this.nextElementalMove == 'windchill'))
 		{

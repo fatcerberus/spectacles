@@ -71,9 +71,9 @@ Game.conditions =
 		},
 		
 		beginCycle: function(battle, eventData) {
-			var units = link(battle.battleUnits)
+			var units = from(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
-				.toArray();
+				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(vit, [ 'cure' ]);
@@ -96,7 +96,7 @@ Game.conditions =
 		name: "Inferno",
 		
 		initialize: function(battle) {
-			link(battle.battleUnits)
+			from(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
 			{
@@ -108,8 +108,8 @@ Game.conditions =
 		},
 		
 		actionTaken: function(battle, eventData) {
-			link(eventData.action.effects)
-				.filterBy('type', 'damage')
+			from(eventData.action.effects)
+				.where(function(x) { return x.type === 'damage'; })
 				.each(function(effect)
 			{
 				if (effect.element == 'fire') {
@@ -127,9 +127,9 @@ Game.conditions =
 		},
 		
 		beginCycle: function(battle, eventData) {
-			var units = link(battle.battleUnits)
+			var units = from(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
-				.toArray();
+				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
@@ -140,7 +140,7 @@ Game.conditions =
 				term.print("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
-				link(battle.battleUnits)
+				from(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
@@ -168,7 +168,7 @@ Game.conditions =
 		initialize: function(battle) {
 			this.multiplier = 1.0;
 			this.rank = 0;
-			link(battle.battleUnits)
+			from(battle.battleUnits)
 				.where(function(unit) { return unit.isAlive(); })
 				.each(function(unit)
 			{
@@ -185,9 +185,9 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			this.rank = eventData.action.rank;
-			link(eventData.action.effects)
-				.filterBy('type', 'damage')
-				.filterBy('element', 'ice')
+			from(eventData.action.effects)
+				.where(function(x) { return x.type === 'damage'; })
+				.where(function(x) { return x.element === 'ice'; })
 				.each(function(effect)
 			{
 				if (effect.element == 'ice') {
@@ -209,7 +209,7 @@ Game.conditions =
 				term.print("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
-				link(battle.battleUnits)
+				from(battle.battleUnits)
 					.where(function(unit) { return unit.isAlive(); })
 					.each(function(unit)
 				{
