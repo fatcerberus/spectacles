@@ -102,9 +102,9 @@ HeadlessHorseAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 // Allows the Headless Horse to react when someone attacks.
 HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 {
-	if (link(targetIDs).contains('headlessHorse')) {
+	if (from(targetIDs).anyIs('headlessHorse')) {
 		var iceSkills = [ 'chillShot', 'chill', 'windchill' ];
-		if (link(iceSkills).contains(skillID) && (this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('rearing'))) {
+		if (from(iceSkills).anyIs(skillID) && (this.aic.unit.hasStatus('ignite') || this.aic.unit.hasStatus('rearing'))) {
 			this.trampleTarget = userID;
 		}
 	}
@@ -115,7 +115,7 @@ HeadlessHorseAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 HeadlessHorseAI.prototype.onUnitDamaged = function(unit, amount, tags, actingUnit)
 {
 	if (unit === this.aic.unit && actingUnit !== null) {
-		if (link(tags).contains('magic') && link(this.ghosts).contains(actingUnit.id)) {
+		if (from(tags).anyIs('magic') && from(this.ghosts).anyIs(actingUnit.id)) {
 			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}
 		if (!(actingUnit.id in this.damageTaken)) {

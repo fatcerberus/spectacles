@@ -81,6 +81,8 @@ WeaponUsable.prototype.use = function(unit, targets)
 	}
 	term.print(unit.name + " is equipping " + this.name,
 		"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
-	link(targets).invoke('setWeapon', this.weaponID);
+	from(targets).each(function(x) {
+		x.setWeapon(this.weaponID);
+	}.bind(this));
 	return null;
 }

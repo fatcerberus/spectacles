@@ -28,9 +28,7 @@ function Session(difficulty)
 	term.print("Initializing new game session", "diff lv: " + difficulty);
 	this.difficulty = difficulty;
 	this.party = new Party(50);
-	link(Game.initialParty)
-		.each(function(characterID)
-	{
+	from(Game.initialParty).each(function(characterID) {
 		this.party.add(characterID);
 	}.bind(this));
 	this.battlesSeen = [];

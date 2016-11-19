@@ -21,9 +21,9 @@ function TargetMenu(unit, battle, usable, moveName)
 	this.isChoiceMade = false;
 	this.infoBoxFadeness = 1.0;
 	this.infoFadeness = 1.0;
-	this.isTargetScanOn = link(battle.alliesOf(unit))
+	this.isTargetScanOn = from(battle.alliesOf(unit))
 		.where(function(unit) { return unit.isAlive(); })
-		.pluck('allowTargetScan').some(true);
+		.any(function(unit) { return unit.allowTargetScan; });
 	this.isTargetLocked = false;
 	this.isGroupCast = false;
 	this.name = moveName !== null ? moveName

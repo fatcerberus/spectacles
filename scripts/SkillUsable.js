@@ -25,8 +25,8 @@ function SkillUsable(skillID, level)
 	this.skillInfo = Game.skills[skillID];
 	this.experience = this.levelUpTable[level];
 	this.givesExperience = true;
-	this.isGroupCast = link([ 'allEnemies', 'allAllies' ])
-		.contains(this.skillInfo.targetType);
+	this.isGroupCast = from([ 'allEnemies', 'allAllies' ])
+		.anyIs(this.skillInfo.targetType);
 	this.name = this.skillInfo.name;
 	this.skillID = skillID;
 	this.useAiming = true;
@@ -53,7 +53,7 @@ SkillUsable.prototype.defaultTargets = function(user)
 			var target = link(enemies)
 				.where(function(unit) { return unit.isAlive(); })
 				.sample(1)[0];
-			if (this.allowDeadTarget && link(enemies).some(function(unit) { return !unit.isAlive(); })) {
+			if (this.allowDeadTarget && from(enemies).any(function(unit) { return !unit.isAlive(); })) {
 				target = link(enemies)
 					.where(function(unit) { return !unit.isAlive(); })
 					.sample(1)[0];
@@ -62,20 +62,20 @@ SkillUsable.prototype.defaultTargets = function(user)
 		case 'ally':
 			var allies = user.battle.alliesOf(user);
 			var target = user;
-			if (this.allowDeadTarget && link(allies).some(function(unit) { return !unit.isAlive(); })) {
+			if (this.allowDeadTarget && from(allies).any(function(unit) { return !unit.isAlive(); })) {
 				target = link(allies)
 					.where(function(unit) { return !unit.isAlive(); })
 					.sample(1)[0];
 			}
 			return [ target ];
 		case 'allEnemies':
-			return link(user.battle.enemiesOf(user))
+			return from(user.battle.enemiesOf(user))
 				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
-				.toArray();
+				.select();
 		case 'allAllies':
-			return link(user.battle.alliesOf(user))
+			return from(user.battle.alliesOf(user))
 				.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
-				.toArray();
+				.select();
 		default:
 			return user;
 	}

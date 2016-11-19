@@ -340,7 +340,9 @@ Battle.prototype.raiseEvent = function(eventID, data)
 	data = data !== void null ? data : null;
 	
 	var conditions = this.conditions.slice();
-	link(conditions).invoke('invoke', eventID, data);
+	from(conditions).each(function(condition) {
+		condition.invoke(eventID, data);
+	});
 };
 
 // .resume() method
@@ -374,15 +376,17 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	if ('announceAs' in action && action.announceAs != null) {
 		actingUnit.announce(action.announceAs);
 	}
-	link(action.effects)
-		.filterBy('targetHint', 'user')
+	from(action.effects)
+		.where(function(x) { return x.targetHint === 'user'; })
 		.each(function(effect)
 	{
 		term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
-	link(targetUnits).invoke('takeHit', actingUnit, action);
+	from(targetUnits).each(function(unit) {
+		unit.takeHit(actingUnit, action);
+	});
 	if (action.effects === null) {
 		return [];
 	}
@@ -416,10 +420,12 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	}
 	
 	// apply move effects to target(s)
-	link(targetsHit).invoke('beginTargeting', actingUnit);
+	from(targetsHit).each(function(unit) {
+		unit.beginTargeting(actingUnit);
+	});
 	var animContext = {
-		effects: link(action.effects)
-			.filterBy('targetHint', [ 'selected', 'random' ])
+		effects: from(action.effects)
+			.where(function(x) { return from([ 'selected', 'random' ]).anyIs(x.targetHint); })
 			.where(function(effect) { return effect.type != null; })
 			.toArray(),
 		pc: 0,
@@ -440,7 +446,9 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 			.call(animContext, actingUnit, targetsHit, false);
 	}
 	while (animContext.nextEffect());
-	link(targetsHit).invoke('endTargeting');
+	from(targetsHit).each(function(unit) {
+		unit.endTargeting();
+	});
 	return targetsHit;
 };
 
@@ -473,7 +481,7 @@ Battle.prototype.tick = function()
 	term.print("");
 	term.print("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
-	var isUnitAlive = function(unit) { return unit.isAlive(); };
+	var isUnitDead = function(unit) { return !unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
 	link(unitLists).unroll().invoke('beginCycle');
 	link(this.conditions).invoke('beginCycle');
@@ -483,14 +491,14 @@ Battle.prototype.tick = function()
 		link(unitLists).unroll().each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
-		if (link(this.playerUnits).none(isUnitAlive)) {
+		if (from(this.playerUnits).all(isUnitDead)) {
 			music.adjust(0.0, 2.0);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.Lose;
 			term.print("All active party members have been killed");
 			return;
 		}
-		if (link(this.enemyUnits).none(isUnitAlive)) {
+		if (from(this.enemyUnits).all(isUnitDead)) {
 			music.adjust(0.0, 1.0);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.Win;

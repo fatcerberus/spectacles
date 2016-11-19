@@ -109,8 +109,8 @@ ScottTempleAI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	if (this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
-	if (link([ 'tonic', 'powerTonic' ]).contains(itemID) && !link(targetIDs).contains('scottTemple')
-		&& 0.5 > Math.random())
+	if (from([ 'tonic', 'powerTonic' ]).anyIs(itemID) && !from(targetIDs).anyIs('scottTemple')
+		&& random.chance(0.5))
 	{
 		this.aic.queueSkill('electrocute', targetIDs[0]);
 	}
@@ -146,13 +146,13 @@ ScottTempleAI.prototype.onSkillUsed = function(userID, skillID, targetIDs)
 	if (this.aic.unit.hasStatus('offGuard')) {
 		return;
 	}
-	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !link(targetIDs).contains('scottTemple')) {
+	if (skillID == 'rejuvenate' && userID != 'scottTemple' && !from(targetIDs).anyIs('scottTemple')) {
 		if (this.aic.phase <= 1 && !this.aic.isSkillQueued('chargeSlash')) {
 			this.aic.queueSkill('chargeSlash', targetIDs[0]);
 		} else if (this.aic.phase >= 2 && 0.25 > Math.random) {
 			this.aic.queueSkill('necromancy', targetIDs[0]);
 		}
-	} else if (skillID == 'dispel' && link(targetIDs).contains('scottTemple')
+	} else if (skillID == 'dispel' && from(targetIDs).anyIs('scottTemple')
 		&& this.aic.unit.hasStatus('reGen'))
 	{
 		this.aic.queueSkill('electrocute', userID);
