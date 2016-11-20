@@ -253,7 +253,9 @@ Battle.prototype.go = function()
 //     conditionID: The ID of the field condition to test for, as defined in the gamedef.
 Battle.prototype.hasCondition = function(conditionID)
 {
-	return from(this.conditions).get('conditionID').anyIs(conditionID);
+    return from(this.conditions)
+        .map(function(x) { return x.conditionID; })
+        .anyIs(conditionID);
 };
 
 // .isActive() method
@@ -426,8 +428,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	var animContext = {
 		effects: from(action.effects)
 			.where(function(x) { return from([ 'selected', 'random' ]).anyIs(x.targetHint); })
-			.where(function(effect) { return effect.type != null; })
-			.toArray(),
+			.where(function(x) { return x.type != null; })
+			.select(),
 		pc: 0,
 		nextEffect: function() {
 			if (this.pc < this.effects.length) {

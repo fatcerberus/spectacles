@@ -21,7 +21,8 @@ function FieldMenu(session)
 	this.font = GetSystemFont();
 	this.isOpen = false;
 	this.itemFader = null;
-	this.selection = from(this.items).get('id').select()
+	this.selection = from(this.items)
+		.select(function(x) { return x.id; })
 		.indexOf('party');
 }
 

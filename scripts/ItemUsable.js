@@ -118,6 +118,7 @@ ItemUsable.prototype.use = function(unit, targets)
 		"left: " + this.usesLeft);
 	var eventData = { item: clone(this.itemDef) };
 	unit.raiseEvent('useItem', eventData);
-	unit.battle.itemUsed.invoke(unit.id, this.itemID, from(targets).get('id').select());
+	unit.battle.itemUsed.invoke(unit.id, this.itemID,
+        from(targets).select(function(x) { return x.id; }));
 	return [ eventData.item.action ];
 }
