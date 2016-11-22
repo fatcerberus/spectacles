@@ -254,7 +254,7 @@ Battle.prototype.go = function()
 Battle.prototype.hasCondition = function(conditionID)
 {
     return from(this.conditions)
-        .map(function(x) { return x.conditionID; })
+        .mapTo(function(v) { return v.conditionID; })
         .anyIs(conditionID);
 };
 

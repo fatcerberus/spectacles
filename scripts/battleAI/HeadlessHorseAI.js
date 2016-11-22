@@ -62,7 +62,10 @@ HeadlessHorseAI.prototype.strategize = function()
 				var hellfireTurns = this.aic.predictSkillTurns('hellfire');
 				if (!this.aic.unit.hasStatus('ignite')) {
 					this.aic.queueSkill('hellfire', 'headlessHorse');
-					if (link(hellfireTurns).pluck('unit').pluck('id').contains('elysia')) {
+					if (from(hellfireTurns)
+						.mapTo(function(v) { return v.unit.id; })
+						.anyIs('elysia'))
+					{
 						this.aic.queueSkill('spectralDraw', 'elysia');
 					}
 				} else {

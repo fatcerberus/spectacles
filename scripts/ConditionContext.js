@@ -10,9 +10,9 @@
 //     battle:      The battle to which the condition applies.
 function ConditionContext(conditionID, battle)
 {
-	if (!(conditionID in Game.conditions)) {
-		Abort("ConditionContext(): The field condition definition '" + conditionID + "' doesn't exist!");
-	}
+	if (!(conditionID in Game.conditions))
+		throw new ReferenceError("no such field condition '" + conditionID + "'");
+
 	this.battle = battle;
 	this.context = {};
 	this.name = Game.conditions[conditionID].name;

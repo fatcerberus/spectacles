@@ -12,9 +12,9 @@ function Robert1AI(aiContext)
 	this.aic = aiContext;
 	
 	// HP thresholds for phase transitions
-	this.phasePoints = link([ 2000, 1500 ])
-		.map(function(value) { return Math.round(random.normal(value, 50)); })
-		.toArray();
+	this.phasePoints = from([2000, 1500]).select(function (v) {
+		return Math.round(random.normal(v, 50));
+	});
 	
 	// AI state variables
 	this.phase = 0;
@@ -34,10 +34,10 @@ Robert1AI.prototype.dispose = function()
 // Allows Robert to decide what he will do next when his turn arrives.
 Robert1AI.prototype.strategize = function()
 {				
-	var milestone = link(this.phasePoints)
-		.where(function(value) { return value >= this.aic.unit.hp; }.bind(this))
-		.last()[0];
-	var phaseToEnter = 2 + link(this.phasePoints).indexOf(milestone);
+	var milestone = from(this.phasePoints)
+		.where(function(v) { return v >= this.aic.unit.hp; }.bind(this))
+		.last();
+	var phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
 	var lastPhase = this.phase;
 	this.phase = Math.max(phaseToEnter, this.phase);
 	switch (this.phase) {

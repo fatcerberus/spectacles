@@ -26,7 +26,7 @@
 		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
-			link(GetPersonFollowers(person)).each(function(name) {
+			from(GetPersonFollowers(person)).each(function(name) {
 				FollowPerson(name, GetPersonLeader(person), distance);
 			});
 		});
@@ -76,9 +76,9 @@
 		
 		threads.create({
 			render: function() {
-				link(followers)
-					.where(function(info) { return DoesPersonExist(info.name); })
-					.where(function(info) { return info.ghostLevel > 0; })
+				from(followers)
+					.where(function(v) { return DoesPersonExist(v.name); })
+					.where(function(v) { return v.ghostLevel > 0; })
 					.each(function(info)
 				{
 					var x = MapToScreenX('Base', GetPersonX(info.name));
@@ -87,9 +87,9 @@
 				});
 			},
 			update: function() {
-				link(followers)
-					.where(function(info) { return !DoesPersonExist(info.name); })
-					.first(1)
+				from(followers)
+					.where(function(v) { return !DoesPersonExist(v.name); })
+					.take(1)
 					.each(function(info)
 				{
 					++info.ghostLevel;
@@ -150,9 +150,9 @@
 						.run(true);
 					isHippoAround = true;
 				}
-				var ghostCount = link(followers)
+				var ghostCount = from(followers)
 					.where(function(info) { return info.ghostLevel > 0 })
-					.length();
+					.count();
 				return true;
 			}
 		});

@@ -107,7 +107,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	alignment = alignment !== void null ? alignment : 'left';
 
 	if (arguments.length < 4)
-		Abort("DrawTextEx(): 4+ arguments expected (got: " + arguments.length + ")", -1);
+		throw new RangeError("4 arguments required");
 
 	var alignments = {
 		left: function(font, x, text) { return x; },
@@ -115,7 +115,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 		right: function(font, x, text) { return x - font.getStringWidth(text); }
 	};
 	if (!(alignment in alignments))
-		Abort("DrawTextEx(): invalid text alignment mode `" + alignment + "`", -1);
+		throw new TypeError("invalid alignment mode `" + alignment + "`");
 
 	x = alignments[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();

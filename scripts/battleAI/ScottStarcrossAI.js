@@ -68,10 +68,10 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: targets[i] });
 			}
 		}
-		this.tactics = link(this.tactics)
-			.where(function(tactic) { return tactic.unit.isAlive(); })
-			.where(function(tactic) { return tactic.moveIndex < tactic.moves.length; })
-			.toArray();
+		this.tactics = from(this.tactics)
+			.where(function(v) { return v.unit.isAlive(); })
+			.where(function(v) { return v.moveIndex < v.moves.length; })
+			.select();
 		var tactic;
 		do {
 			tactic = random.sample(this.tactics);
