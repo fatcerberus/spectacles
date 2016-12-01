@@ -173,8 +173,8 @@ Battle.prototype.enemiesOf = function(unit)
 //     exists.
 Battle.prototype.findUnit = function(unitID)
 {
-	var unit = link(this.enemyUnits, this.playerUnits)
-		.first(function(unit) { return unit.id == unitID; });
+	var unit = from(this.enemyUnits, this.playerUnits)
+		.first(function(v) { return v.id == unitID; });
 	return unit !== undefined ? unit : null;
 };
 
@@ -304,8 +304,8 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	var forecast = [];
 	for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
 		var bias = 0;
-		link(this.enemyUnits, this.playerUnits)
-			.reject(function(unit) { return unit === actingUnit && turnIndex == 0; })
+		from(this.enemyUnits, this.playerUnits)
+			.where(function(v) { return v !== actingUnit || turnIndex > 0; })
 			.each(function(unit)
 		{
 			++bias;
@@ -379,7 +379,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		actingUnit.announce(action.announceAs);
 	}
 	from(action.effects)
-		.where(function(x) { return x.targetHint === 'user'; })
+		.where(function(v) { return v.targetHint === 'user'; })
 		.each(function(effect)
 	{
 		term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
@@ -490,7 +490,7 @@ Battle.prototype.tick = function()
 	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
-		link(unitLists).unroll().each(function(unit) {
+		from(unitLists).from().each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (from(this.playerUnits).all(isUnitDead)) {
@@ -519,7 +519,7 @@ Battle.prototype.update = function() {
 			var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle) ? "Final Battle: " : "Boss Battle: ";
 			this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
 			var walkInThreads = [];
-			link(this.enemyUnits, this.playerUnits)
+			from(this.enemyUnits, this.playerUnits)
 				.each(function(unit)
 			{
 				var thread = unit.actor.enter();

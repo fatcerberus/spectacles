@@ -50,22 +50,22 @@ SkillUsable.prototype.defaultTargets = function(user)
 	switch (this.skillInfo.targetType) {
 		case 'single':
 			var enemies = user.battle.enemiesOf(user);
-			var target = link(enemies)
+			var target = from(enemies)
 				.where(function(unit) { return unit.isAlive(); })
-				.sample(1)[0];
+				.sample(1).first();
 			if (this.allowDeadTarget && from(enemies).any(function(unit) { return !unit.isAlive(); })) {
-				target = link(enemies)
+				target = from(enemies)
 					.where(function(unit) { return !unit.isAlive(); })
-					.sample(1)[0];
+					.sample(1).first();
 			}
 			return [ target ];
 		case 'ally':
 			var allies = user.battle.alliesOf(user);
 			var target = user;
 			if (this.allowDeadTarget && from(allies).any(function(unit) { return !unit.isAlive(); })) {
-				target = link(allies)
+				target = from(allies)
 					.where(function(unit) { return !unit.isAlive(); })
-					.sample(1)[0];
+					.sample(1).first();
 			}
 			return [ target ];
 		case 'allEnemies':

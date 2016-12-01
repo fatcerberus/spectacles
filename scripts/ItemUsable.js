@@ -48,9 +48,9 @@ ItemUsable.prototype.defaultTargets = function(user)
 	var target = user;
 	var allies = user.battle.alliesOf(user);
 	if (this.allowDeadTarget && from(allies).any(function(unit) { return !unit.isAlive(); })) {
-		target = link(allies)
+		target = from(allies)
 			.where(function(unit) { return !unit.isAlive(); })
-			.sample(1)[0];
+			.sample(1).first();
 	}
 	return [ target ];
 };
