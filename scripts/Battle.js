@@ -485,8 +485,12 @@ Battle.prototype.tick = function()
 	++this.timer;
 	var isUnitDead = function(unit) { return !unit.isAlive(); };
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	link(unitLists).unroll().invoke('beginCycle');
-	link(this.conditions).invoke('beginCycle');
+	from(unitLists).from().each(function(v) {
+		v.beginCycle();
+	});
+	from(this.conditions).each(function(v) {
+		v.beginCycle();
+	});
 	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
@@ -508,7 +512,9 @@ Battle.prototype.tick = function()
 			return;
 		}
 	}
-	link(unitLists).unroll().invoke('endCycle');
+	from(unitLists).from().each(function(v) {
+		v.endCycle();
+	});
 };
 
 // .update() method
@@ -546,7 +552,9 @@ Battle.prototype.update = function() {
 	}
 	if (this.result !== null) {
 		term.print("Battle engine shutting down");
-		link(this.battleUnits).invoke('dispose');
+		from(this.battleUnits).each(function(v) {
+			v.dispose();
+		});
 		this.ui.dispose();
 		music.pop();
 		music.adjust(1.0, 0.0);

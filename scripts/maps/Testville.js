@@ -97,11 +97,11 @@
 					SetPersonMask(info.name, CreateColor(255, 255, 255, 128));
 					var maggieX = GetPersonX('maggie');
 					var maggieY = GetPersonY('maggie');
-					var ignoreList = from(followers)
-						.mapTo(function(v) { return v.name; })
-						.including([ 'robert' ])
-						.select();
-					SetPersonIgnoreList(info.name, ignoreList);
+					SetPersonIgnoreList(info.name,
+						from(followers)
+							.mapTo(function(v) { return v.name; })
+							.including([ 'robert' ])
+							.select());
 					var x, y;
 					var distance = 160 * maggieSize;
 					do {

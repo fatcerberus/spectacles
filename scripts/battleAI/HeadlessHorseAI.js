@@ -149,8 +149,9 @@ HeadlessHorseAI.prototype.onUnitReady = function(unitID)
 HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
 	if (unit === this.aic.unit) {
-		var isPhysical = link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('physical')
-		                 || link(action.effects).filterBy('type', 'damage').pluck('element').contains('earth');
+		var isPhysical = from(action.effects)
+			.where(function(v) { return v.type === 'damage'; })
+			.any(function(v) { return v.damageType === 'physical' || v.element === 'earth'; })
 		if (isPhysical && this.aic.unit.hasStatus('rearing')) {
 			if (this.trampleTarget === null) {
 				this.aic.queueSkill('flameBreath');
@@ -158,7 +159,10 @@ HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 				this.trampleTarget = actingUnit.id;
 			}
 		}
-		var isMagic = link(action.effects).filterBy('type', 'damage').pluck('damageType').contains('magic');
+		var isMagic = from(action.effects)
+			.where(function(v) { return v.type === 'damage'; })
+			.mapTo(function(v) { return v.damageType; })
+			.anyIs('magic');
 		if (isMagic && this.aic.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
 			this.aic.queueSkill('spectralKick', actingUnit.id);
 		}

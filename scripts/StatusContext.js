@@ -10,9 +10,9 @@
 //     unit:     The battler to be subjected to the status's effects.
 function StatusContext(statusID, unit)
 {
-	if (!(statusID in Game.statuses)) {
-		Abort("StatusContext(): The status definition '" + statusID + "' doesn't exist!");
-	}
+	if (!(statusID in Game.statuses))
+		throw new ReferenceError("no such status '" + statusID + "'");
+
 	this.context = {};
 	this.name = Game.statuses[statusID].name;
 	this.statusDef = Game.statuses[statusID];
@@ -57,10 +57,10 @@ StatusContext.prototype.beginCycle = function()
 StatusContext.prototype.invoke = function(eventID, data)
 {
 	data = data !== void null ? data : null;
-	
-	if (!(eventID in this.statusDef)) {
+
+	if (!(eventID in this.statusDef))
 		return;
-	}
+
 	term.print("Invoking " + this.unit.name + "->" + this.name, "evt: " + eventID);
 	this.unit.battle.suspend();
 	this.statusDef[eventID].call(this.context, this.unit, data);
@@ -75,9 +75,9 @@ StatusContext.prototype.invoke = function(eventID, data)
 //     true if the specified status is overruled by this one; false otherwise.
 StatusContext.prototype.overrules = function(statusID)
 {
-	if (!('overrules' in this.statusDef)) {
+	if (!('overrules' in this.statusDef))
 		return false;
-	}
+
 	for (var i = 0; i < this.statusDef.overrules.length; ++i) {
 		if (statusID == this.statusDef.overrules[i]) {
 			return true;
