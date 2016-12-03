@@ -13,7 +13,7 @@ scenes.defScenelet('adjustBGM',
 		music.adjust(volume, duration);
 	},
 	update: function(scene) {
-		return music.isAdjusting();
+		return music.adjusting;
 	}
 });
 

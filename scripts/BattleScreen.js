@@ -121,9 +121,9 @@ BattleScreen.prototype.fadeOut = function(duration)
 		return;
 	}
 	new scenes.Scene()
-		.fadeTo(CreateColor(0, 0, 0, 255), duration)
+		.fadeTo(Color.Black, duration)
 		.call(this.dispose.bind(this))
-		.fadeTo(CreateColor(0, 0, 0, 0), 0.5)
+		.fadeTo(Color.Transparent, 0.5)
 		.run(true);
 };
 

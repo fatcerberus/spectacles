@@ -63,12 +63,11 @@ Game.battles =
 					.talk("Scott", true, 1.0, Infinity,
 						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
 						+ "Not now. Not when I know just what my world would become if I did!")
-					.pause(2.0)
+					.pause(120)
 					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
-					.resync()
 					.run(true);
 				if (scott != null) {
-					scott.addStatus('specsAura');
+					scott.addStatus('specs');
 				}
 			}
 		}
@@ -98,7 +97,7 @@ Game.battles =
 		],
 		onStart: function() {
 			var scottUnit = this.findUnit('starcross');
-			scottUnit.addStatus('specsAura');
+			scottUnit.addStatus('specs');
 		}
 	},
 };

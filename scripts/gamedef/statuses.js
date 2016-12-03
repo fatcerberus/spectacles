@@ -16,7 +16,7 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.type == 'damage'; })
+				.where(function(v) { return v.type == 'damage'; })
 				.each(function(effect)
 			{
 				var oldPower = effect.power;
@@ -128,8 +128,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.targetHint == 'selected'; })
-				.where(function(x) { return x.type == 'damage'; })
+				.where(function(v) { return v.targetHint == 'selected'; })
+				.where(function(v) { return v.type == 'damage'; })
 				.each(function(effect)
 			{
 				var oldPower = effect.power;
@@ -181,9 +181,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.targetHint == 'selected'; })
-				.where(function(x) { return x.type == 'damage'; })
-				.each(function(x)
+				.where(function(v) { return v.targetHint == 'selected'; })
+				.where(function(v) { return v.type == 'damage'; })
+				.each(function(effect)
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
@@ -219,7 +219,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.type === 'damage'; })
+				.where(function(v) { return v.type === 'damage'; })
 				.each(function(effect)
 			{
 				if ('addStatus' in effect && effect.addStatus == 'ignite') {
@@ -295,7 +295,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.type === 'damage'; })
+				.where(function(v) { return v.type === 'damage'; })
 				.each(function(effect)
 			{
 				if ('addStatus' in effect && effect.addStatus == 'frostbite') {
@@ -505,12 +505,12 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Specs Aura status
 	// Restores a tiny amount of HP to the affected unit at the beginning of each
 	// cycle. Similar to ReGen, except the effect is perpetual and less HP is recovered per
 	// cycle.
-	specsAura: {
+	specs: {
 		name: "Specs Aura",
 		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {
@@ -518,7 +518,7 @@ Game.statuses =
 			unit.heal(0.25 * vit, [ 'specs' ]);
 		}
 	},
-	
+
 	// Zombie status
 	// Causes magic and items which restore HP to inflict an equal amount of damage instead.
 	// If the affected unit reaches 0 HP, this status will progress to Skeleton and
@@ -531,6 +531,7 @@ Game.statuses =
 			this.allowDeath = false;
 		},
 		damaged: function(unit, eventData) {
+			// don't allow Specs Aura to kill the afflicted.
 			this.allowDeath = from(eventData.tags).anyIs('zombie')
 				&& !from(eventData.tags).anyIs('specs');
 		},

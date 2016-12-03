@@ -281,7 +281,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 	} else if (userID == 'robert2' && itemID == 'alcohol' && from(targetIDs).anyIs('robert2')) {
 		this.aic.unit.addStatus('finalStand');
 		new scenes.Scene()
-			.adjustBGM(0.5, 5.0)
+			.adjustBGM(0.5, 300)
 			.talk("Scott", true, 2.0, Infinity,
 				"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
 				+ "realize by now that no matter what any of us do, Amanda is the Primus! None of us--nothing can "
@@ -294,11 +294,11 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 				+ "in the end, left with no choice but to try to play with the absurd hand we're dealt.")
 			.talk("Robert", true, 1.0, Infinity, "...")
 			.fork()
-				.adjustBGM(0.0, 5.0)
+				.adjustBGM(0.0, 300)
 			.end()
 			.talk("Scott", true, 2.0, Infinity, "Let the cards fall how they may. I'm not backing down now. I owe myself far too much.")
 			.resync()
-			.pause(1.0)
+			.pause(60)
 			.changeBGM("BasicInstinct")
 			.adjustBGM(1.0)
 			.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")

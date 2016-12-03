@@ -68,7 +68,7 @@ GameOverScreen.prototype.update = function()
 				}
 				this.transition = new scenes.Scene()
 					.fork()
-						.adjustBGM(0.0, 2.0)
+						.adjustBGM(0.0, 120)
 					.end()
 					.tween(this, 120, 'linear', { fadeness: 1.0 })
 					.run();

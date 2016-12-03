@@ -498,14 +498,14 @@ Battle.prototype.tick = function()
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (from(this.playerUnits).all(isUnitDead)) {
-			music.adjust(0.0, 2.0);
+			music.adjust(0.0, 120);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.Lose;
 			term.print("All active party members have been killed");
 			return;
 		}
 		if (from(this.enemyUnits).all(isUnitDead)) {
-			music.adjust(0.0, 1.0);
+			music.adjust(0.0, 60);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.Win;
 			term.print("All enemies have been killed");
@@ -557,7 +557,7 @@ Battle.prototype.update = function() {
 		});
 		this.ui.dispose();
 		music.pop();
-		music.adjust(1.0, 0.0);
+		music.adjust(1.0, 0);
 		term.undefine('battle');
 		return false;
 	}

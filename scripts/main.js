@@ -61,7 +61,7 @@ function game()
 	var manifest = system.game;
 	if (!manifest.disableSplash) {
 		music.push('music/SpectaclesTheme.ogg');
-		ShowLogo('Logos/TitleCard.png', 5.0);
+		ShowLogo('images/Logos/TitleCard.png', 300);
 	}
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
@@ -106,7 +106,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 	alignment = alignment !== void null ? alignment : 'left';
 
 	if (arguments.length < 4)
-		throw new RangeError("4 arguments required");
+		throw new RangeError("requires at least 4 arguments");
 
 	var alignments = {
 		left: function(font, x, text) { return x; },
@@ -129,21 +129,21 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 // Momentarily displays a full-screen logo.
 // Arguments:
 //     imageName: The file name of the image to display.
-//     time:      The amount of time, in seconds, to keep the image on-screen.
+//     time:      The amount of time, in frames, to keep the image on-screen.
 function ShowLogo(filename, time)
 {
-	var image = LoadImage(filename);
+	var image = new Image(filename);
 	var scene = new scenes.Scene()
-		.fadeTo(Color.Black, 0.0)
-		.fadeTo(CreateColor(0, 0, 0, 0), 1.0)
+		.fadeTo(Color.Black, 0)
+		.fadeTo(Color.Transparent, 60)
 		.pause(time)
-		.fadeTo(Color.Black, 1.0)
+		.fadeTo(Color.Black, 60)
 		.run();
 	threads.join(threads.create({
 		update: function() { return scene.isRunning(); },
-		render: function() { image.blit(0, 0); }
+		render: function() { prim.blit(screen, 0, 0, image); }
 	}));
 	new scenes.Scene()
-		.fadeTo(CreateColor(0, 0, 0, 0), 0.0)
+		.fadeTo(Color.Transparent, 0)
 		.run(true);
 }
