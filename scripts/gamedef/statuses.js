@@ -154,7 +154,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (from(eventData.tags).anyIs('earth')) {
-				eventData.amount *= Game.bonusMultiplier ** 2;
+				eventData.amount *= Math.pow(Game.bonusMultiplier, 2);
 			}
 		},
 	},
