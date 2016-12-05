@@ -267,11 +267,11 @@ Robert2AI.prototype.strategize = function(stance, phase)
 // Allows Robert to react when someone in the battle uses an item.
 Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 {
-	if (this.aic.unit.hasStatus('drunk') || this.aic.unit.hasStatus('offGuard')) {
+	if (this.aic.unit.hasStatus('drunk') || this.aic.unit.hasStatus('offGuard'))
 		return;
-	}
+
 	var curativeIDs = [ 'tonic', 'powerTonic' ];
-	if (userID == 'robert2' && (itemID == 'tonic' || itemID == 'powerTonic') && this.aic.unit.hasStatus('zombie')
+	if (userID == 'robert2' && from(curativeIDs).anyIs(itemID) && this.aic.unit.hasStatus('zombie')
 	    && from(targetIDs).anyIs('robert2') && this.aic.phase <= 4)
 	{
 		if (this.zombieHealFixState === null && this.aic.isItemUsable('holyWater')) {
@@ -291,7 +291,7 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 				"You think I haven't come just as far as you? Is that it, Robert? You believe I "
 				+ "chose to be in the position I'm in? No... instead I can only stand here wishing it were so simple.",
 				"None of us chose our lots, Robert, not one. Not Bruce, Lauren, Amanda... not even you or me. All of us, "
-				+ "in the end, left with no choice but to try to play with the absurd hand we're dealt.")
+				+ "in the end, left with no choice but to try to play with the absurd hand we were dealt.")
 			.talk("Robert", true, 1.0, Infinity, "...")
 			.fork()
 				.adjustBGM(0.0, 300)

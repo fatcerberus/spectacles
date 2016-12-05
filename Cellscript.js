@@ -22,7 +22,7 @@ function $default()
 		
 		disableAnimation: false,
 		disableBattles: false,
-		disableSplash: false,
-		disableTitleScreen: false,
+		disableSplash: true,
+		disableTitleScreen: true,
 	}));
 }
