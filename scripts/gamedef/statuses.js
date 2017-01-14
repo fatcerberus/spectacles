@@ -16,8 +16,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(v) { return v.type == 'damage'; })
-				.each(function(effect)
+				.where(v => v.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
@@ -25,7 +25,7 @@ Game.statuses =
 					term.print("Outgoing POW modified by Crackdown to " + effect.power,
 						"was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
@@ -128,9 +128,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(v) { return v.targetHint == 'selected'; })
-				.where(function(v) { return v.type == 'damage'; })
-				.each(function(effect)
+				.where(v => v.targetHint == 'selected')
+				.where(v => v.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(Game.bonusMultiplier * effect.power);
@@ -138,7 +138,7 @@ Game.statuses =
 					term.print("Outgoing POW modified by Drunk to " + effect.power,
 						"was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		aiming: function(unit, eventData) {
 			if (eventData.action.accuracyType == 'devour')
@@ -181,9 +181,9 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(v) { return v.targetHint == 'selected'; })
-				.where(function(v) { return v.type == 'damage'; })
-				.each(function(effect)
+				.where(v => v.targetHint == 'selected')
+				.where(v => v.type == 'damage')
+				.each(effect =>
 			{
 				var oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
@@ -191,7 +191,7 @@ Game.statuses =
 					term.print("Outgoing POW modified by Final Stand to " + effect.power,
 						"was: " + oldPower);
 				}
-			}.bind(this));
+			});
 		},
 		attacked: function(unit, eventData) {
 			if (eventData.stance == BattleStance.Counter) {
@@ -219,19 +219,19 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(v) { return v.type === 'damage'; })
-				.each(function(effect)
+				.where(v => v.type === 'damage')
+				.each(effect =>
 			{
 				if ('addStatus' in effect && effect.addStatus == 'ignite') {
 					delete effect.addStatus;
 				}
-			}.bind(this));
+			});
 			from(eventData.action.effects)
-				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'ignite'; })
-				.each(function(effect)
+				.where(v => v.type == 'addStatus' && v.status == 'ignite')
+				.each(effect =>
 			{
 				effect.type = null;
-			}.bind(this));
+			});
 		},
 		damaged: function(unit, eventData) {
 			if (from(eventData.tags).anyIs('fire') && unit.stance != BattleStance.Guard) {
@@ -295,19 +295,19 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(function(v) { return v.type === 'damage'; })
-				.each(function(effect)
+				.where(v => v.type === 'damage')
+				.each(effect =>
 			{
 				if ('addStatus' in effect && effect.addStatus == 'frostbite') {
 					delete effect.addStatus;
 				}
-			}.bind(this));
+			});
 			from(eventData.action.effects)
-				.where(function(effect) { return effect.type == 'addStatus' && effect.status == 'frostbite'; })
-				.each(function(effect)
+				.where(v => v.type == 'addStatus' && v.status == 'frostbite')
+				.each(effect =>
 			{
 				effect.type = null;
-			}.bind(this));
+			});
 		},
 		damaged: function(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != BattleStance.Guard) {

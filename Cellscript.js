@@ -1,28 +1,35 @@
-function $default()
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2015 Power-Command
+***/
+
+'use strict';
+
+const transpile = require('transpile');
+
+describe("Spectacles: Bruce's Story",
 {
-	install(files("scripts/*.js", true), "scripts");
-	install(files("lib/*.js", true), "lib");
-	install(files("images/*.png", true), "images");
-	install(files("maps/*.rmp", true), "maps");
-	install(files("maps/*.rts", true), "maps");
-	install(files("music/*.ogg", true), "music");
-	install(files("spritesets/*.rss", true), "spritesets");
-	install(files("sounds/*.wav", true), "sounds");
-	install(files("icon.png"));
+	version: 1,
+	author: "Fat Cerberus",
+	summary: "Follow Scott Starcross in his quest to stop the Primus.",
+	resolution: '320x200',
+	main: 'scripts/main.js',
 
-	install(manifest({
-		version: 1,
-		name: "Spectacles: Bruce's Story",
-		author: "Fat Cerberus",
-		summary: "Follow Scott Starcross in his quest to stop the Primus.",
-		resolution: '320x200',
-		main: 'scripts/main.js',
+	logPath: '~/Spectacles Saga/console.log',
+	
+	disableAnimation: false,
+	disableBattles: false,
+	disableSplash: true,
+	disableTitleScreen: true,
+});
 
-		logPath: '~/Spectacles Saga/console.log',
-		
-		disableAnimation: false,
-		disableBattles: false,
-		disableSplash: true,
-		disableTitleScreen: true,
-	}));
-}
+transpile('@/scripts/', files('scripts/*.js', true));
+
+install('@/lib',         files('lib/*.js', true));
+install('@/images/',     files('images/*.png', true));
+install('@/maps/',       files('maps/*.rmp', true));
+install('@/maps/',       files('maps/*.rts', true));
+install('@/music/',      files('music/*.ogg', true));
+install('@/spritesets/', files('spritesets/*.rss', true));
+install('@/sounds/',     files('sounds/*.wav', true));
+install('@/',            files('icon.png'));

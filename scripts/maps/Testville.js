@@ -77,9 +77,9 @@
 		threads.create({
 			render: function() {
 				from(followers)
-					.where(function(v) { return DoesPersonExist(v.name); })
-					.where(function(v) { return v.ghostLevel > 0; })
-					.each(function(info)
+					.where(v => DoesPersonExist(v.name))
+					.where(v => v.ghostLevel > 0)
+					.each(info =>
 				{
 					var x = MapToScreenX('Base', GetPersonX(info.name));
 					var y = MapToScreenY('Base', GetPersonY(info.name));
@@ -88,9 +88,9 @@
 			},
 			update: function() {
 				from(followers)
-					.where(function(v) { return !DoesPersonExist(v.name); })
+					.where(v => !DoesPersonExist(v.name))
 					.take(1)
-					.each(function(info)
+					.each(info =>
 				{
 					++info.ghostLevel;
 					CreatePerson(info.name, info.sprite, false);
@@ -99,7 +99,7 @@
 					var maggieY = GetPersonY('maggie');
 					SetPersonIgnoreList(info.name,
 						from(followers)
-							.mapTo(function(v) { return v.name; })
+							.mapTo(v => v.name)
 							.including([ 'robert' ])
 							.select());
 					var x, y;
@@ -152,7 +152,7 @@
 					isHippoAround = true;
 				}
 				var ghostCount = from(followers)
-					.where(function(info) { return info.ghostLevel > 0 })
+					.where(v => v.ghostLevel > 0)
 					.count();
 				return true;
 			}
