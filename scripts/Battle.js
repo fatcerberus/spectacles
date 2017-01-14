@@ -174,7 +174,7 @@ Battle.prototype.enemiesOf = function(unit)
 Battle.prototype.findUnit = function(unitID)
 {
 	var unit = from(this.enemyUnits, this.playerUnits)
-		.first(function(v) { return v.id == unitID; });
+		.first(v => v.id == unitID);
 	return unit !== undefined ? unit : null;
 };
 

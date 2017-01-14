@@ -24,8 +24,8 @@ describe("Spectacles: Bruce's Story",
 });
 
 transpile('@/scripts/', files('scripts/*.js', true));
+transpile('@/lib/',     files('lib/*.js', true));
 
-install('@/lib',         files('lib/*.js', true));
 install('@/images/',     files('images/*.png', true));
 install('@/maps/',       files('maps/*.rmp', true));
 install('@/maps/',       files('maps/*.rts', true));

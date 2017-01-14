@@ -3,16 +3,16 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-global.events    = require('events');
-global.from      = require('from');
-global.joy       = require('joy');
-global.kh2bar    = require('kh2bar');
-global.music     = require('music');
-global.prim      = require('prim');
-global.random    = require('random');
-global.scenes    = require('scenes');
-global.term      = require('term');
-global.threads   = require('threads');
+global.events  = require('events');
+global.from    = require('from');
+global.joy     = require('joy');
+global.kh2bar  = require('kh2bar');
+global.music   = require('music');
+global.prim    = require('prim');
+global.random  = require('random');
+global.scenes  = require('scenes');
+global.term    = require('term');
+global.threads = require('threads');
 
 var DBG_DISABLE_TEXTBOXES = false;
 var DBG_DISABLE_TRANSITIONS = false;
