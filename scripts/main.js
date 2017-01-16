@@ -41,7 +41,7 @@ function game()
 	analogue.init();
 
 	term.define('specs', global, {
-		'exit': function() { system.exit(); }
+		'exit': function() { system.exit(); },
 	});
 	term.define('yap', null, {
 		'on': function() {

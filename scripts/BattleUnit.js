@@ -157,9 +157,8 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 	
 	if (this.isAlive() && !this.hasStatus(statusID)) {
 		var statusName = Game.statuses[statusID].name;
-		var isOverruled = from(this.statuses).any(function(x) {
-			return x.overrules(statusID);
-		});
+		var isOverruled = from(this.statuses)
+			.any(v => v.overrules(statusID));
 		if (!this.isPartyMember() && from(this.enemyInfo.immunities).anyIs(statusID)) {
 			if (!isGuardable) {
 				this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
@@ -180,9 +179,9 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				var effect = new StatusContext(eventData.statusID, this);
 				this.statuses.push(effect);
 				this.battlerInfo.statuses = [];
-				from(this.statuses).each(function(x) {
-					this.battlerInfo.statuses.push(x.statusID);
-				}.bind(this));
+				from(this.statuses).each(it => {
+					this.battlerInfo.statuses.push(it.statusID);
+				});
 				term.print(this.name + " took on status " + effect.name);
 			} else {
 				if (!isGuardable) {
@@ -387,9 +386,8 @@ BattleUnit.prototype.getNextAction = function()
 //     statusID: The ID of the status to test for, as defined in the gamedef.
 BattleUnit.prototype.hasStatus = function(statusID)
 {
-	return from(this.statuses).any(function(x) {
-		return statusID === x.statusID;
-	});
+	return from(this.statuses)
+		.any(v => v.statusID === statusID);
 };
 
 // .heal() method
@@ -467,21 +465,20 @@ BattleUnit.prototype.liftStatus = function(statusID)
 			}
 		}
 		this.battlerInfo.statuses = [];
-		from(this.statuses).each(function(x) {
-			this.battlerInfo.statuses.push(x.statusID);
-		}.bind(this));
+		from(this.statuses).each(it => {
+			this.battlerInfo.statuses.push(it.statusID);
+		});
 	}
 };
 
 BattleUnit.prototype.liftStatusTags = function(tags)
 {
-	var me = this;
 	var activeStatuses = this.statuses.slice();
 	from(activeStatuses)
-		.where(function(x) { return from(x.statusDef.tags).anyIn(tags); })
-		.each(function(x)
+		.where(v => from(v.statusDef.tags).anyIn(tags))
+		.each(status =>
 	{
-		me.liftStatus(x.statusID);
+		this.liftStatus(status.statusID);
 	});
 };
 
@@ -536,7 +533,7 @@ BattleUnit.prototype.queueMove = function(move)
 	this.moveUsed = move;
 	var alliesInBattle = this.battle.alliesOf(this.moveUsed.targets[0]);
 	var alliesAlive = from(alliesInBattle)
-		.where(function(unit) { return unit.isAlive(); })
+		.where(unit => unit.isAlive())
 		.select();
 	this.moveUsed.targets = this.moveUsed.usable.isGroupCast
 		? this.moveUsed.usable.allowDeadTarget ? alliesInBattle : alliesAlive
@@ -596,9 +593,9 @@ BattleUnit.prototype.refreshInfo = function()
 		this.battlerInfo.stats[statID] = this.stats[statID].getValue();
 	}
 	this.battlerInfo.statuses = [];
-	from(this.statuses).each(function(x) {
-		this.battlerInfo.statuses.push(x.statusID);
-	}.bind(this));
+	from(this.statuses).each(it => {
+		this.battlerInfo.statuses.push(it.statusID);
+	});
 	this.battlerInfo.stance = this.stance;
 };
 
@@ -650,8 +647,8 @@ BattleUnit.prototype.registerCommands = function()
 				var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 				var addCount = 0;
 				from(this.items)
-					.where(function(x) { return x.itemID === itemID; })
-					.each(function(item)
+					.where(item => item.itemID === itemID)
+					.each(item =>
 				{
 					item.usesLeft += itemCount;
 					addCount += itemCount;
@@ -675,8 +672,8 @@ BattleUnit.prototype.registerCommands = function()
 				var itemID = arguments[1];
 				var itemCount = 0;
 				from(this.items)
-					.where(function(x) { return x.itemID === itemID; })
-					.besides(function(x) { itemCount += x.usesLeft })
+					.where(v => v.itemID === itemID)
+					.besides(v => itemCount += v.usesLeft)
 					.remove();
 				if (itemCount > 0)
 					term.print(itemCount + "x " + Game.items[itemID].name
@@ -842,8 +839,8 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
 			from(tags)
-				.where(function(tag) { return tag in Game.elements; })
-				.each(function(tag)
+				.where(tag => tag in Game.elements)
+				.each(tag =>
 			{
 				damageColor = damageColor !== null ? BlendColors(damageColor, Game.elements[tag].color)
 					: Game.elements[tag].color;
