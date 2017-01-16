@@ -41,8 +41,8 @@ TestHarness.addBattle = function(testID, setupData)
 			}
 			term.print("Preparing test battle", "battleID: " + this.setup.battleID);
 			var session = new Session();
-			from(Game.initialParty).each(function(id) {
-				session.party.remove(id);
+			from(Game.initialParty).each(charID => {
+				session.party.remove(charID);
 			});
 			for (var id in this.setup.party) {
 				var memberInfo = this.setup.party[id];

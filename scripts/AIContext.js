@@ -70,7 +70,7 @@ AIContext.prototype.checkPhase = function(allowEvents)
 	var phaseToEnter;
 	if (this.phasePoints !== null) {
 		var milestone = from(this.phasePoints)
-			.last(function(v) { return v >= this.unit.hp; }.bind(this));
+			.last(it => it >= this.unit.hp);
 		phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
 	} else {
 		phaseToEnter = 1;
@@ -100,11 +100,10 @@ AIContext.prototype.definePhases = function(thresholds, sigma)
 	sigma = sigma !== void null ? sigma : 0;
 	
 	term.print("Setting up " + (thresholds.length + 1) + " phases for " + this.unit.name);
-	this.phasePoints = from(thresholds).select(function(v) {
-		return Math.round(random.normal(v, sigma));
-	});
+	this.phasePoints = from(thresholds)
+		.select(it => Math.round(random.normal(it, sigma)));
 	var phaseIndex = 1;
-	from(this.phasePoints).each(function(milestone) {
+	from(this.phasePoints).each(milestone => {
 		++phaseIndex;
 		term.print("Phase " + phaseIndex + " will start at <= " + milestone + " HP");
 	});
@@ -199,8 +198,8 @@ AIContext.prototype.hasStatus = function(statusID)
 AIContext.prototype.isItemQueued = function(itemID)
 {
 	return from(this.moveQueue)
-		.where(function(v) { return v.usable instanceof ItemUsable; })
-		.any(function(v) { return v.usable.itemID == itemID; });
+		.where(move => move.usable instanceof ItemUsable)
+		.any(move => move.usable.itemID == itemID);
 };
 
 // .isItemUsable() method
@@ -210,8 +209,8 @@ AIContext.prototype.isItemQueued = function(itemID)
 AIContext.prototype.isItemUsable = function(itemID)
 {
 	return from(this.unit.items)
-		.where(function(v) { return v.itemID === itemID; })
-		.any(function(v) { return v.isUsable(this, this.unit.stance) }.bind(this));
+		.where(v => v.itemID === itemID)
+		.any(v => v.isUsable(this, this.unit.stance));
 };
 
 // .isSkillQueued() method
@@ -221,8 +220,8 @@ AIContext.prototype.isItemUsable = function(itemID)
 AIContext.prototype.isSkillQueued = function(skillID)
 {
 	return from(this.moveQueue)
-		.where(function(v) { return v.usable instanceof SkillUsable; })
-		.any(function(v) { return v.usable.skillID == skillID; });
+		.where(move => move.usable instanceof SkillUsable)
+		.any(move => move.usable.skillID == skillID);
 };
 
 // .isSkillUsable() method
@@ -242,7 +241,7 @@ AIContext.prototype.isSkillUsable = function(skillID)
 AIContext.prototype.itemsLeft = function(itemID)
 {
 	var itemUsable = from(this.unit.items)
-		.first(function(v) { return v.itemID === itemID; });
+		.first(v => v.itemID === itemID);
 	term.print(this.unit.name + " requested item count for " + itemUsable.name,
 		"left: " + itemUsable.usesLeft);
 	return itemUsable.usesLeft;
