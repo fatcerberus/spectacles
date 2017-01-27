@@ -3,8 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-'use strict';
-
 const transpile = require('transpile');
 
 describe("Spectacles: Bruce's Story",
@@ -16,15 +14,15 @@ describe("Spectacles: Bruce's Story",
 	main: 'scripts/main.js',
 
 	logPath: '~/Spectacles Saga/console.log',
-	
+
 	disableAnimation: false,
 	disableBattles: false,
 	disableSplash: true,
 	disableTitleScreen: true,
 });
 
-transpile('@/scripts/', files('scripts/*.js', true));
-transpile('@/lib/',     files('lib/*.js', true));
+transpile.v1('@/scripts/', files('scripts/*.js', true));
+transpile.v1('@/lib/',     files('lib/*.js', true));
 
 install('@/images/',     files('images/*.png', true));
 install('@/maps/',       files('maps/*.rmp', true));

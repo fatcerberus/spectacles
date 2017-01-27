@@ -51,7 +51,7 @@ ScottStarcrossAI.prototype.dispose = function()
 
 // .strategize() method
 // Allows Scott to decide what he will do next when his turn arrives.
-ScottStarcrossAI.prototype.strategize = function(stance, phase)
+ScottStarcrossAI.prototype.strategize = function(stance, currentPhase)
 {
 	if (this.isOpenerPending) {
 		this.aic.queueSkill('berserkCharge');
@@ -59,11 +59,12 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 	} else {
 		if (this.tactics === null) {
 			var targets = from(this.aic.battle.enemiesOf(this.aic.unit))
-				.shuffle().select();
+				.shuffle()
+				.select();
 			var combos = from(this.combos)
-				.where(function(combo) { return phase >= combo.phase; }.bind(this))
+				.where(it => currentPhase >= it.phase)
 				.random(targets.length)
-				.descending(function(v) { return v.rating; })
+				.descending(it => it.rating)
 				.select();
 			this.tactics = [];
 			for (var i = 0; i < targets.length; ++i) {
@@ -71,8 +72,8 @@ ScottStarcrossAI.prototype.strategize = function(stance, phase)
 			}
 		}
 		this.tactics = from(this.tactics)
-			.where(function(v) { return v.unit.isAlive(); })
-			.where(function(v) { return v.moveIndex < v.moves.length; })
+			.where(it => it.unit.isAlive())
+			.where(it => it.moveIndex < it.moves.length)
 			.select();
 		var tactic;
 		do {

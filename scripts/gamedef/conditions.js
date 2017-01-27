@@ -72,7 +72,7 @@ Game.conditions =
 		
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
-				.where(function(unit) { return unit.isAlive(); })
+				.where(unit => unit.isAlive())
 				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
@@ -97,8 +97,8 @@ Game.conditions =
 		
 		initialize: function(battle) {
 			from(battle.battleUnits)
-				.where(function(unit) { return unit.isAlive(); })
-				.each(function(unit)
+				.where(unit => unit.isAlive())
+				.each(unit =>
 			{
 				if (unit.hasStatus('frostbite')) {
 					term.print(unit.name + "'s Frostbite nullified by Inferno installation");
@@ -109,8 +109,8 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			from(eventData.action.effects)
-				.where(function(x) { return x.type === 'damage'; })
-				.each(function(effect)
+				.where(e => e.type === 'damage')
+				.each(effect =>
 			{
 				if (effect.element == 'fire') {
 					var oldPower = effect.power;
@@ -128,7 +128,7 @@ Game.conditions =
 		
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
-				.where(function(unit) { return unit.isAlive(); })
+				.where(unit => unit.isAlive())
 				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
@@ -141,8 +141,8 @@ Game.conditions =
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
 				from(battle.battleUnits)
-					.where(function(unit) { return unit.isAlive(); })
-					.each(function(unit)
+					.where(unit => unit.isAlive())
+					.each(unit =>
 				{
 					unit.addStatus('zombie', true);
 				});
@@ -169,8 +169,8 @@ Game.conditions =
 			this.multiplier = 1.0;
 			this.rank = 0;
 			from(battle.battleUnits)
-				.where(function(unit) { return unit.isAlive(); })
-				.each(function(unit)
+				.where(unit => unit.isAlive())
+				.each(unit =>
 			{
 				if (unit.hasStatus('frostbite')) {
 					term.print(unit.name + "'s Frostbite overruled by Subzero installation");
@@ -186,9 +186,9 @@ Game.conditions =
 		actionTaken: function(battle, eventData) {
 			this.rank = eventData.action.rank;
 			from(eventData.action.effects)
-				.where(function(x) { return x.type === 'damage'; })
-				.where(function(x) { return x.element === 'ice'; })
-				.each(function(effect)
+				.where(e => e.type === 'damage')
+				.where(e => e.element === 'ice')
+				.each(effect =>
 			{
 				if (effect.element == 'ice') {
 					var oldPower = effect.power;
@@ -210,8 +210,8 @@ Game.conditions =
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
 				from(battle.battleUnits)
-					.where(function(unit) { return unit.isAlive(); })
-					.each(function(unit)
+					.where(unit => unit.isAlive())
+					.each(unit =>
 				{
 					unit.addStatus('zombie', true);
 				});

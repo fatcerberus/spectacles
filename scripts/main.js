@@ -109,9 +109,9 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 		throw new RangeError("requires at least 4 arguments");
 
 	var alignments = {
-		left: function(font, x, text) { return x; },
-		center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
-		right: function(font, x, text) { return x - font.getStringWidth(text); }
+		left:   (font, x, text) => x,
+		center: (font, x, text) => x - font.getStringWidth(text) / 2,
+		right:  (font, x, text) => x - font.getStringWidth(text),
 	};
 	if (!(alignment in alignments))
 		throw new TypeError("invalid alignment mode `" + alignment + "`");

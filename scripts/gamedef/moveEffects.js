@@ -22,7 +22,7 @@ Game.moveEffects =
 	},
 	
 	addStatus: function(actor, targets, effect) {
-		from(targets).each(function(unit) {
+		from(targets).each(unit => {
 			unit.addStatus(effect.status);
 		});
 	},
@@ -68,10 +68,10 @@ Game.moveEffects =
 	
 	fullRecover: function(actor, targets, effect) {
 		from(targets)
-			.where(function(unit) { return !unit.hasStatus('zombie'); })
-			.each(function(unit)
+			.where(t => !t.hasStatus('zombie'))
+			.each(t =>
 		{
-			unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
+			unit.heal(t.maxHP - t.hp, [ 'cure' ]);
 		});
 	},
 	
@@ -106,7 +106,7 @@ Game.moveEffects =
 	},
 	
 	liftStatusTags: function(actor, targets, effect) {
-		from(targets).each(function(unit) {
+		from(targets).each(unit => {
 			unit.liftStatusTags(effect.tags);
 		});
 	},
@@ -120,14 +120,14 @@ Game.moveEffects =
 	},
 	
 	recoverMP: function(actor, targets, effect) {
-		from(targets).each(function(unit) {
+		from(targets).each(unit => {
 			var amount = Math.round(Game.math.mp.capacity(unit.battlerInfo));
 			unit.restoreMP(amount);
 		});
 	},
 	
 	revive: function(actor, targets, effect) {
-		from(targets).each(function(unit) {
+		from(targets).each(unit => {
 			unit.resurrect(effect.healToFull);
 		});
 	}

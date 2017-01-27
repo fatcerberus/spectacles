@@ -7,12 +7,12 @@ RequireScript('Battle.js');
 
 scenes.defScenelet('adjustBGM',
 {
-	start: function(scene, volume, duration) {
+	start(scene, volume, duration) {
 		duration = duration !== undefined ? duration : 0.0;
 		
 		music.adjust(volume, duration);
 	},
-	update: function(scene) {
+	update(scene) {
 		return music.adjusting;
 	}
 });
