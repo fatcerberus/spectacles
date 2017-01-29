@@ -16,7 +16,7 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(v => v.type == 'damage')
+				.where(it => it.type == 'damage')
 				.each(effect =>
 			{
 				var oldPower = effect.power;
@@ -128,8 +128,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(v => v.targetHint == 'selected')
-				.where(v => v.type == 'damage')
+				.where(it => it.targetHint == 'selected')
+				.where(it => it.type == 'damage')
 				.each(effect =>
 			{
 				var oldPower = effect.power;
@@ -181,8 +181,8 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(v => v.targetHint == 'selected')
-				.where(v => v.type == 'damage')
+				.where(it => it.targetHint == 'selected')
+				.where(it => it.type == 'damage')
 				.each(effect =>
 			{
 				var oldPower = effect.power;
@@ -219,7 +219,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(v => v.type === 'damage')
+				.where(it => it.type === 'damage')
 				.each(effect =>
 			{
 				if ('addStatus' in effect && effect.addStatus == 'ignite') {
@@ -227,7 +227,7 @@ Game.statuses =
 				}
 			});
 			from(eventData.action.effects)
-				.where(v => v.type == 'addStatus' && v.status == 'ignite')
+				.where(it => it.type == 'addStatus' && it.status == 'ignite')
 				.each(effect =>
 			{
 				effect.type = null;
@@ -295,7 +295,7 @@ Game.statuses =
 		},
 		attacked: function(unit, eventData) {
 			from(eventData.action.effects)
-				.where(v => v.type === 'damage')
+				.where(it => it.type === 'damage')
 				.each(effect =>
 			{
 				if ('addStatus' in effect && effect.addStatus == 'frostbite') {
@@ -303,7 +303,7 @@ Game.statuses =
 				}
 			});
 			from(eventData.action.effects)
-				.where(v => v.type == 'addStatus' && v.status == 'frostbite')
+				.where(it => it.type == 'addStatus' && it.status == 'frostbite')
 				.each(effect =>
 			{
 				effect.type = null;

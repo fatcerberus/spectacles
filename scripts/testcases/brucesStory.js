@@ -3,6 +3,16 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
+TestHarness.addBattle('horse',
+{
+	battleID: 'headlessHorse',
+	party: {
+		scott: { level: 8, weapon: 'heirloom', items: [ 'tonic' ] },
+		bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic' ] },
+		elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic' ] },
+	}
+});
+
 TestHarness.addBattle('rsb1',
 {
 	battleID: 'rsbBalcony',

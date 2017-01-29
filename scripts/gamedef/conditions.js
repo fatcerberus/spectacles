@@ -72,7 +72,7 @@ Game.conditions =
 		
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
-				.where(unit => unit.isAlive())
+				.where(it => it.isAlive())
 				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
@@ -97,7 +97,7 @@ Game.conditions =
 		
 		initialize: function(battle) {
 			from(battle.battleUnits)
-				.where(unit => unit.isAlive())
+				.where(it => it.isAlive())
 				.each(unit =>
 			{
 				if (unit.hasStatus('frostbite')) {
@@ -109,7 +109,7 @@ Game.conditions =
 		
 		actionTaken: function(battle, eventData) {
 			from(eventData.action.effects)
-				.where(e => e.type === 'damage')
+				.where(it => it.type === 'damage')
 				.each(effect =>
 			{
 				if (effect.element == 'fire') {
@@ -128,7 +128,7 @@ Game.conditions =
 		
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
-				.where(unit => unit.isAlive())
+				.where(it => it.isAlive())
 				.select();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
@@ -141,7 +141,7 @@ Game.conditions =
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
 				from(battle.battleUnits)
-					.where(unit => unit.isAlive())
+					.where(it => it.isAlive())
 					.each(unit =>
 				{
 					unit.addStatus('zombie', true);
@@ -169,7 +169,7 @@ Game.conditions =
 			this.multiplier = 1.0;
 			this.rank = 0;
 			from(battle.battleUnits)
-				.where(unit => unit.isAlive())
+				.where(it => it.isAlive())
 				.each(unit =>
 			{
 				if (unit.hasStatus('frostbite')) {
@@ -186,8 +186,8 @@ Game.conditions =
 		actionTaken: function(battle, eventData) {
 			this.rank = eventData.action.rank;
 			from(eventData.action.effects)
-				.where(e => e.type === 'damage')
-				.where(e => e.element === 'ice')
+				.where(it => it.type === 'damage')
+				.where(it => it.element === 'ice')
 				.each(effect =>
 			{
 				if (effect.element == 'ice') {
@@ -210,7 +210,7 @@ Game.conditions =
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
 				from(battle.battleUnits)
-					.where(unit => unit.isAlive())
+					.where(it => it.isAlive())
 					.each(unit =>
 				{
 					unit.addStatus('zombie', true);

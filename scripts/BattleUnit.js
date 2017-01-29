@@ -87,9 +87,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.weapon = Game.weapons[this.partyMember.weaponID];
 	} else {
-		if (!(basis in Game.enemies)) {
-			Abort("BattleUnit(): Enemy template '" + basis + "' doesn't exist!");
-		}
+		if (!(basis in Game.enemies))
+			throw new ReferenceError(`enemy template '${basis}' doesn't exist!`);
 		this.enemyInfo = Game.enemies[basis];
 		this.baseStats = this.enemyInfo.baseStats;
 		this.affinities = 'damageModifiers' in this.enemyInfo ? this.enemyInfo.damageModifiers : [];

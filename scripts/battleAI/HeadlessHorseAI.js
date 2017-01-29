@@ -63,7 +63,7 @@ HeadlessHorseAI.prototype.strategize = function()
 				if (!this.aic.unit.hasStatus('ignite')) {
 					this.aic.queueSkill('hellfire', 'headlessHorse');
 					if (from(hellfireTurns)
-						.mapTo(function(v) { return v.unit.id; })
+						.mapTo(it => it.unit.id)
 						.anyIs('elysia'))
 					{
 						this.aic.queueSkill('spectralDraw', 'elysia');
@@ -150,8 +150,8 @@ HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 {
 	if (unit === this.aic.unit) {
 		var isPhysical = from(action.effects)
-			.where(function(v) { return v.type === 'damage'; })
-			.any(function(v) { return v.damageType === 'physical' || v.element === 'earth'; })
+			.where(it => it.type === 'damage')
+			.any(it => it.damageType === 'physical' || it.element === 'earth')
 		if (isPhysical && this.aic.unit.hasStatus('rearing')) {
 			if (this.trampleTarget === null) {
 				this.aic.queueSkill('flameBreath');
@@ -160,8 +160,8 @@ HeadlessHorseAI.prototype.onUnitTargeted = function(unit, action, actingUnit)
 			}
 		}
 		var isMagic = from(action.effects)
-			.where(function(v) { return v.type === 'damage'; })
-			.mapTo(function(v) { return v.damageType; })
+			.where(it => it.type === 'damage')
+			.mapTo(it => it.damageType)
 			.anyIs('magic');
 		if (isMagic && this.aic.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID) {
 			this.aic.queueSkill('spectralKick', actingUnit.id);
