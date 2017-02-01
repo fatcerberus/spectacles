@@ -5,8 +5,7 @@
 
 const transpile = require('transpile');
 
-describe("Spectacles: Bruce's Story",
-{
+describe("Spectacles: Bruce's Story", {
 	version: 1,
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus.",
@@ -22,7 +21,7 @@ describe("Spectacles: Bruce's Story",
 });
 
 transpile.v1('@/scripts/', files('scripts/*.js', true));
-transpile.v1('@/lib/',     files('lib/*.js', true));
+transpile.v2('@/lib/',     files('lib/*.js', true));
 
 install('@/images/',     files('images/*.png', true));
 install('@/maps/',       files('maps/*.rmp', true));

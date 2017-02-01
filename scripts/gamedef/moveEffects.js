@@ -68,10 +68,10 @@ Game.moveEffects =
 	
 	fullRecover: function(actor, targets, effect) {
 		from(targets)
-			.where(t => !t.hasStatus('zombie'))
-			.each(t =>
+			.where(it => !it.hasStatus('zombie'))
+			.each(unit =>
 		{
-			unit.heal(t.maxHP - t.hp, [ 'cure' ]);
+			unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
 		});
 	},
 	

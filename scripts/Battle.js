@@ -24,9 +24,9 @@ BattleResult =
 //     battleID: The ID of the battle descriptor to use to set up the fight.
 function Battle(session, battleID)
 {
-	if (!(battleID in Game.battles)) {
-		Abort("Battle(): Battle definition '" + battleID + "' doesn't exist!");
-	}
+	if (!(battleID in Game.battles))
+		throw new ReferenceError(`battle definition '${battleID}' doesn't exist!`);
+
 	term.print("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
 	this.mode = null;
@@ -254,7 +254,7 @@ Battle.prototype.go = function()
 Battle.prototype.hasCondition = function(conditionID)
 {
     return from(this.conditions)
-        .mapTo(function(v) { return v.conditionID; })
+        .mapTo(it => it.conditionID)
         .anyIs(conditionID);
 };
 
@@ -305,8 +305,8 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 	for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
 		var bias = 0;
 		from(this.enemyUnits, this.playerUnits)
-			.where(function(v) { return v !== actingUnit || turnIndex > 0; })
-			.each(function(unit)
+			.where(it => it !== actingUnit || turnIndex > 0)
+			.each(unit =>
 		{
 			++bias;
 			var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
@@ -379,14 +379,14 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		actingUnit.announce(action.announceAs);
 	}
 	from(action.effects)
-		.where(function(v) { return v.targetHint === 'user'; })
-		.each(function(effect)
+		.where(it => it.targetHint === 'user')
+		.each(effect =>
 	{
-		term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
+		term.print(`Applying effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
-	from(targetUnits).each(function(unit) {
+	from(targetUnits).each(unit => {
 		unit.takeHit(actingUnit, action);
 	});
 	if (action.effects === null) {
@@ -427,8 +427,8 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 	});
 	var animContext = {
 		effects: from(action.effects)
-			.where(function(x) { return from([ 'selected', 'random' ]).anyIs(x.targetHint); })
-			.where(function(x) { return x.type != null; })
+			.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
+			.where(it => it.type != null)
 			.select(),
 		pc: 0,
 		nextEffect: function() {
@@ -483,18 +483,18 @@ Battle.prototype.tick = function()
 	term.print("");
 	term.print("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
-	var isUnitDead = function(unit) { return !unit.isAlive(); };
+	var isUnitDead = unit => !unit.isAlive();
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	from(unitLists).from().each(function(v) {
-		v.beginCycle();
+	from(...unitLists).each(unit => {
+		unit.beginCycle();
 	});
-	from(this.conditions).each(function(v) {
-		v.beginCycle();
+	from(this.conditions).each(condition => {
+		condition.beginCycle();
 	});
 	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
-		from(unitLists).from().each(function(unit) {
+		from(...unitLists).each(function(unit) {
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (from(this.playerUnits).all(isUnitDead)) {
@@ -512,8 +512,8 @@ Battle.prototype.tick = function()
 			return;
 		}
 	}
-	from(unitLists).from().each(function(v) {
-		v.endCycle();
+	from(...unitLists).each(unit => {
+		unit.endCycle();
 	});
 };
 
@@ -552,8 +552,8 @@ Battle.prototype.update = function() {
 	}
 	if (this.result !== null) {
 		term.print("Battle engine shutting down");
-		from(this.battleUnits).each(function(v) {
-			v.dispose();
+		from(this.battleUnits).each(unit => {
+			unit.dispose();
 		});
 		this.ui.dispose();
 		music.pop();
