@@ -23,12 +23,12 @@ scenes.defScenelet('adjustBGM',
 //     battleID: The ID of the battle definition to use to initialize the fight.
 scenes.defScenelet('battle',
 {
-	start: function(scene, battleID, session) {
+	start(scene, battleID, session) {
 		this.mode = 'battle';
 		this.battle = new Battle(session, battleID);
 		this.battleThread = this.battle.go();
 	},
-	update: function(scene) {
+	update(scene) {
 		switch (this.mode) {
 			case 'battle':
 				if (!threads.isRunning(this.battleThread)) {
@@ -60,21 +60,21 @@ scenes.defScenelet('battle',
 
 scenes.defScenelet('changeMap',
 {
-	start: function(scene, map) {
+	start(scene, map) {
 		ChangeMap(map);
 	}
 });
 
 scenes.defScenelet('changeBGM',
 {
-	start: function(scene, trackName, fadeTime) {
+	start(scene, trackName, fadeTime) {
 		music.play("music/" + trackName + ".ogg", fadeTime);
 	}
 });
 
 scenes.defScenelet('facePerson',
 {
-	start: function(scene, person, direction) {
+	start(scene, person, direction) {
 		var faceCommand;
 		switch (direction.toLowerCase()) {
 			case "n": case "north":
@@ -110,37 +110,37 @@ scenes.defScenelet('facePerson',
 
 scenes.defScenelet('focusOnPerson',
 {
-	start: function(scene, person, duration) {
+	start(scene, person, duration) {
 		duration = duration !== undefined ? duration : 15;
 		
 		this.pan = new scenes.Scene()
 			.panTo(GetPersonX(person), GetPersonY(person), duration)
 			.run();
 	},
-	update: function(scene) {
+	update(scene) {
 		return this.pan.isRunning();
 	}
 });
 
 scenes.defScenelet('followPerson',
 {
-	start: function(scene, person) {
+	start(scene, person) {
 		this.person = person;
 		this.pan = new scenes.Scene()
 			.focusOnPerson(person)
 			.run();
 	},
-	update: function(scene) {
+	update(scene) {
 		return this.pan.isRunning();
 	},
-	finish: function(scene) {
+	finish(scene) {
 		AttachCamera(this.person);
 	}
 });
 
 scenes.defScenelet('hidePerson',
 {
-	start: function(scene, person) {
+	start(scene, person) {
 		SetPersonVisible(person, false);
 		IgnorePersonObstructions(person, true);
 	}
@@ -148,14 +148,14 @@ scenes.defScenelet('hidePerson',
 
 scenes.defScenelet('killPerson',
 {
-	start: function(scene, person) {
+	start(scene, person) {
 		DestroyPerson(person);
 	}
 });
 
 scenes.defScenelet('marquee',
 {
-	start: function(scene, text, backgroundColor, color) {
+	start(scene, text, backgroundColor, color) {
 		backgroundColor = backgroundColor || Color.Black;
 		color = color || Color.White;
 
@@ -175,7 +175,7 @@ scenes.defScenelet('marquee',
 			.tween(this, 15, 'linear', { fadeness: 0.0 })
 			.run();
 	},
-	render: function(scene) {
+	render(scene) {
 		var boxHeight = this.height * this.fadeness;
 		var boxY = screen.height / 2 - boxHeight / 2;
 		var textX = screen.width - this.scroll * this.windowSize;
@@ -184,14 +184,14 @@ scenes.defScenelet('marquee',
 		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.a));
 		this.font.drawText(screen, textX, textY, this.text, this.color);
 	},
-	update: function(scene) {
+	update(scene) {
 		return this.animation.isRunning();
 	}
 });
 
 scenes.defScenelet('maskPerson',
 {
-	start: function(scene, name, newMask, duration) {
+	start(scene, name, newMask, duration) {
 		duration = duration !== undefined ? duration : 15;
 		
 		this.name = name;
@@ -200,7 +200,7 @@ scenes.defScenelet('maskPerson',
 			.tween(this.mask, duration, 'easeInOutSine', newMask)
 			.run();
 	},
-	update: function(scene) {
+	update(scene) {
 		SetPersonMask(this.name, this.mask);
 		return this.fade.isRunning();
 	}
@@ -208,7 +208,7 @@ scenes.defScenelet('maskPerson',
 
 scenes.defScenelet('movePerson',
 {
-	start: function(scene, person, direction, distance, speed, faceFirst) {
+	start(scene, person, direction, distance, speed, faceFirst) {
 		faceFirst = faceFirst !== undefined ? faceFirst : true;
 		
 		if (!isNaN(speed)) {
@@ -268,17 +268,17 @@ scenes.defScenelet('movePerson',
 		}
 		return true;
 	},
-	update: function(scene) {
+	update(scene) {
 		return !IsCommandQueueEmpty(this.person);
 	},
-	finish: function(scene) {
+	finish(scene) {
 		SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
 	}
 });
 
 scenes.defScenelet('panTo',
 {
-	start: function(scene, x, y, duration) {
+	start(scene, x, y, duration) {
 		duration = duration !== undefined ? duration : 15;
 		
 		DetachCamera();
@@ -292,7 +292,7 @@ scenes.defScenelet('panTo',
 			.tween(this, duration, 'easeOutQuad', targetXY)
 			.run();
 	},
-	update: function(scene) {
+	update(scene) {
 		SetCameraX(this.cameraX);
 		SetCameraY(this.cameraY);
 		return this.pan.isRunning();
@@ -301,21 +301,21 @@ scenes.defScenelet('panTo',
 
 scenes.defScenelet('popBGM',
 {
-	start: function(scene) {
+	start(scene) {
 		music.pop();
 	}
 });
 
 scenes.defScenelet('pushBGM',
 {
-	start: function(scene, trackName) {
+	start(scene, trackName) {
 		music.push("music/" + trackName + ".ogg");
 	}
 });
 
 scenes.defScenelet('setSprite',
 {
-	start: function(scene, name, spriteFile) {
+	start(scene, name, spriteFile) {
 		var spriteset = LoadSpriteset(spriteFile);
 		SetPersonSpriteset(name, spriteset);
 	}
@@ -323,7 +323,7 @@ scenes.defScenelet('setSprite',
 
 scenes.defScenelet('showPerson',
 {
-	start: function(scene, person) {
+	start(scene, person) {
 		SetPersonVisible(person, true);
 		IgnorePersonObstructions(person, false);
 	}
@@ -331,7 +331,7 @@ scenes.defScenelet('showPerson',
 
 scenes.defScenelet('talk',
 {
-	start: function(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
+	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
 		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
 		this.showSpeaker = showSpeaker;
@@ -372,7 +372,7 @@ scenes.defScenelet('talk',
 		}
 		return true;
 	},
-	render: function(scene) {
+	render(scene) {
 		var lineHeight = this.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
 		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
@@ -418,7 +418,7 @@ scenes.defScenelet('talk',
 		}
 		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
 	},
-	update: function(scene) {
+	update(scene) {
 		switch (this.mode) {
 			case "idle":
 				if (this.timeout !== Infinity) {

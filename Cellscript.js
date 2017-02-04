@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-const transpile = require('transpile');
+import transpile from 'transpile';
 
 describe("Spectacles: Bruce's Story", {
 	version: 1,
