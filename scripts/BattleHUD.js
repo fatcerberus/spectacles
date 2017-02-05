@@ -3,8 +3,10 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript('MPGauge.js');
 RequireScript('TurnPreview.js');
+
+const HPGauge = require('kh2Bar').HPGauge;
+const MPGauge = require('gauges').MPGauge;
 
 // BattleHUD() constructor
 // Creates an object representing the in-battle heads-up display (HUD).
@@ -12,10 +14,10 @@ RequireScript('TurnPreview.js');
 //     partyMaxMP: The party's current MP capacity.
 function BattleHUD(partyMaxMP)
 {
-	this.enemyHPGaugeColor = Color.White;
-	this.partyHPGaugeColor = Color.Lime;
+	this.enemyHPGaugeColor = Color.Chartreuse;
+	this.partyHPGaugeColor = Color.White;
 	this.partyHighlightColor = CreateColor(25, 25, 112, 255);
-	this.partyMPGaugeColor = CreateColor(148, 0, 211, 255);
+	this.partyMPGaugeColor = Color.DodgerBlue;
 	
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
@@ -99,7 +101,7 @@ BattleHUD.prototype.dispose = function()
 //     unit:     The battle unit that the gauge belongs to.
 BattleHUD.prototype.createEnemyHPGauge = function(unit)
 {
-	var gauge = new kh2bar.HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
+	var gauge = new HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
 	term.print("Created HP gauge for unit '" + unit.name + "'", "cap: " + unit.maxHP);
@@ -178,7 +180,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 			var gaugeColor =
 				hp / characterInfo.maxHP <= 0.1 ? Color.Red
 				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
-				: Color.Lime;
+				: Color.White;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()
@@ -210,7 +212,7 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 	if (slot < 0 || slot >= this.partyInfo.length) {
 		Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 	}
-	var hpGauge = new kh2bar.HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
+	var hpGauge = new HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
 	hpGauge.show();
 	this.partyInfo[slot] = {
 		unit: unit,

@@ -6,7 +6,6 @@
 global.events  = require('events');
 global.from    = require('from');
 global.joy     = require('joy');
-global.kh2bar  = require('kh2bar');
 global.music   = require('music');
 global.prim    = require('prim');
 global.random  = require('random');
