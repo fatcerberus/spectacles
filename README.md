@@ -21,22 +21,21 @@ Credits
 Building
 ========
 
-*Spectacles: Bruce's Story* was developed in JavaScript for the minisphere game
-engine.  To build the game, you will need to install minisphere 3.3 or later,
-available here:
+*Spectacles: Bruce's Story* was developed in JavaScript for the miniSphere game
+engine.  To build the game, you will need to install miniSphere, available for
+download here:
 
-[minisphere on GitHub]
+[miniSphere on GitHub]
 (https://github.com/fatcerberus/minisphere/releases)
 
 Be sure to install the development tools, not just the engine itself.  After
-installing minisphere, compile the game by executing the following on the
-command line:
+that's done, build and run the game by entering the following at the command
+line:
 
-* `cell -b dist`
-
-Once the game has been compiled, the following command will run it:
-
-* `spherun dist`
+```
+$ cell
+$ spherun dist
+```
 
 Alternatively, you can open `spectacles.ssproj` in Sphere Studio.
 
