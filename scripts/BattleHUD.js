@@ -5,8 +5,8 @@
 
 RequireScript('TurnPreview.js');
 
-const HPGauge = require('kh2Bar').HPGauge;
-const MPGauge = require('gauges').MPGauge;
+const HPGauge = require('battleUI').HPGauge;
+const MPGauge = require('battleUI').MPGauge;
 
 // BattleHUD() constructor
 // Creates an object representing the in-battle heads-up display (HUD).
@@ -14,10 +14,10 @@ const MPGauge = require('gauges').MPGauge;
 //     partyMaxMP: The party's current MP capacity.
 function BattleHUD(partyMaxMP)
 {
-	this.enemyHPGaugeColor = Color.Chartreuse;
-	this.partyHPGaugeColor = Color.White;
+	this.enemyHPGaugeColor = Color.White;
+	this.partyHPGaugeColor = Color.Chartreuse;
 	this.partyHighlightColor = CreateColor(25, 25, 112, 255);
-	this.partyMPGaugeColor = Color.DodgerBlue;
+	this.partyMPGaugeColor = Color.DarkOrchid;
 	
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
@@ -180,7 +180,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 			var gaugeColor =
 				hp / characterInfo.maxHP <= 0.1 ? Color.Red
 				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
-				: Color.White;
+				: Color.Chartreuse;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()
