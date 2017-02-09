@@ -516,7 +516,7 @@ BattleUnit.prototype.performAction = function(action, move)
 			for (var statID in experience) {
 				this.stats[statID].grow(experience[statID]);
 				term.print(this.name + " got " + experience[statID] + " EXP for " + Game.statNames[statID],
-					"value: " + this.stats[statID].getValue());
+					"value: " + this.stats[statID].value);
 			}
 		}
 		this.resetCounter(action.rank);
@@ -589,7 +589,7 @@ BattleUnit.prototype.refreshInfo = function()
 	this.battlerInfo.stats = { maxHP: this.maxHP };
 	for (var statID in this.baseStats) {
 		this.battlerInfo.baseStats[statID] = this.baseStats[statID];
-		this.battlerInfo.stats[statID] = this.stats[statID].getValue();
+		this.battlerInfo.stats[statID] = this.stats[statID].value;
 	}
 	this.battlerInfo.statuses = [];
 	from(this.statuses).each(it => {

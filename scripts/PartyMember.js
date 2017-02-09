@@ -53,7 +53,7 @@ PartyMember.prototype.getInfo = function()
 	info.stats = {};
 	for (var statID in this.characterDef.baseStats) {
 		info.baseStats[statID] = this.characterDef.baseStats[statID];
-		info.stats[statID] = this.stats[statID].getValue();
+		info.stats[statID] = this.stats[statID].value;
 	}
 	return info;
 };
@@ -65,7 +65,7 @@ PartyMember.prototype.getLevel = function()
 	var sum = 0;
 	var count = 0;
 	for (var stat in this.stats) {
-		sum += this.stats[stat].getLevel();
+		sum += this.stats[stat].level;
 		++count;
 	}
 	return Math.floor(sum / count);
