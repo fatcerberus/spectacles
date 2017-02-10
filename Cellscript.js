@@ -7,6 +7,7 @@ import transpile from 'transpile';
 
 describe("Spectacles: Bruce's Story", {
 	version: 1,
+	saveID: 'com.fatcerberus.spectacles',
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus.",
 	resolution: '320x200',

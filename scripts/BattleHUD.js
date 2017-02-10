@@ -14,7 +14,7 @@ const TurnPreview = require('battleUI').TurnPreview;
 function BattleHUD(partyMaxMP)
 {
 	this.enemyHPGaugeColor = Color.White;
-	this.partyHPGaugeColor = Color.Chartreuse;
+	this.partyHPGaugeColor = Color.Lime;
 	this.partyHighlightColor = CreateColor(25, 25, 112, 255);
 	this.partyMPGaugeColor = Color.DarkOrchid;
 	
@@ -179,7 +179,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 			var gaugeColor =
 				hp / characterInfo.maxHP <= 0.1 ? Color.Red
 				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
-				: Color.Chartreuse;
+				: Color.Lime;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()
