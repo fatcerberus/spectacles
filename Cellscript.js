@@ -7,13 +7,13 @@ import transpile from 'transpile';
 
 describe("Spectacles: Bruce's Story", {
 	version: 1,
-	saveID: 'com.fatcerberus.spectacles',
+	saveID: 'fatcerberus-spectacles',
 	author: "Fat Cerberus",
-	summary: "Follow Scott Starcross in his quest to stop the Primus.",
+	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x200',
 	main: 'scripts/main.js',
 
-	logPath: '~/Spectacles Saga/console.log',
+	logPath: '~/consoleLog.txt',
 
 	disableAnimation: false,
 	disableBattles: false,

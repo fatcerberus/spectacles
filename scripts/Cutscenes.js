@@ -181,7 +181,7 @@ scenes.defScenelet('marquee',
 		var textX = screen.width - this.scroll * this.windowSize;
 		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
 		prim.rect(screen, 0, boxY, screen.width, boxHeight, this.background);
-		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.alpha));
+		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.a));
 		this.font.drawText(screen, textX, textY, this.text, this.color);
 	},
 	update(scene) {
