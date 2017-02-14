@@ -15,7 +15,6 @@ function TitleScreen(themeTrack)
 {
 	this.fadeness = 1.0;
 	this.image = LoadImage('TitleScreen.png');
-	this.manifest = system.game;
 	this.themeTrack = themeTrack;
 }
 
@@ -31,12 +30,12 @@ TitleScreen.prototype.render = function()
 // Activates the title screen and waits for the player to choose an action to take.
 TitleScreen.prototype.show = function()
 {
-	if (this.manifest.disableTitleScreen) {
+	if (Sphere.Game.disableTitleScreen) {
 		return new Session();
 	}
 	this.choice = null;
 	this.mode = 'transitionIn';
-	if (this.manifest.disableAnimation) {
+	if (Sphere.Game.disableAnimation) {
 		this.fadeness = 0.0;
 	}
 	this.transition = new scenes.Scene()
@@ -61,7 +60,7 @@ TitleScreen.prototype.update = function()
 			if (!this.transition.isRunning()) {
 				this.mode = 'idle';
 				this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
-				if (this.manifest.disableAnimation) {
+				if (Sphere.Game.disableAnimation) {
 					this.fadeness = 1.0;
 				}
 				this.transition = new scenes.Scene()

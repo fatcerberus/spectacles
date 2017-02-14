@@ -40,7 +40,7 @@ function game()
 	analogue.init();
 
 	term.define('game', global, {
-		'quit': function() { system.exit(); },
+		'quit': function() { Sphere.exit(); },
 	});
 	term.define('yap', null, {
 		'on': function() {
@@ -57,8 +57,7 @@ function game()
 	TestHarness.initialize();
 
 	// show the title screen and start the game!
-	var manifest = system.game;
-	if (!manifest.disableSplash) {
+	if (!Sphere.Game.disableSplash) {
 		music.push('music/SpectaclesTheme.ogg');
 		ShowLogo('images/Logos/TitleCard.png', 300);
 	}

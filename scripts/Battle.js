@@ -191,7 +191,7 @@ Battle.prototype.getLevel = function()
 //     The ID of the thread managing the battle.
 Battle.prototype.go = function()
 {
-	if (system.game.disableBattles) {
+	if (Sphere.Game.disableBattles) {
 		term.print("Battles disabled, automatic win", "battleID: " + this.battleID);
 		this.result = BattleResult.Win;
 		return null;
@@ -477,24 +477,21 @@ Battle.prototype.suspend = function()
 // Executes a single CTB cycle.
 Battle.prototype.tick = function()
 {
-	if (this.suspendCount > 0 || this.result != null) {
+	if (this.suspendCount > 0 || this.result != null)
 		return;
-	}
 	term.print("");
 	term.print("Beginning CTB cycle #" + (this.timer + 1));
 	++this.timer;
 	var isUnitDead = unit => !unit.isAlive();
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
-	from(...unitLists).each(unit => {
-		unit.beginCycle();
-	});
-	from(this.conditions).each(condition => {
-		condition.beginCycle();
-	});
+	from(...unitLists)
+		.each(unit => unit.beginCycle());
+	from(this.conditions)
+		.each(condition => condition.beginCycle());
 	this.raiseEvent('beginCycle');
 	var actionTaken = false;
 	while (!actionTaken) {
-		from(...unitLists).each(function(unit) {
+		from(...unitLists).each(unit => {
 			actionTaken = unit.tick() || actionTaken;
 		});
 		if (from(this.playerUnits).all(isUnitDead)) {
@@ -512,9 +509,8 @@ Battle.prototype.tick = function()
 			return;
 		}
 	}
-	from(...unitLists).each(unit => {
-		unit.endCycle();
-	});
+	from(...unitLists)
+		.each(unit => unit.endCycle());
 };
 
 // .update() method
@@ -552,9 +548,8 @@ Battle.prototype.update = function() {
 	}
 	if (this.result !== null) {
 		term.print("Battle engine shutting down");
-		from(this.battleUnits).each(unit => {
-			unit.dispose();
-		});
+		from(this.battleUnits)
+			.each(unit => unit.dispose());
 		this.ui.dispose();
 		music.pop();
 		music.adjust(1.0, 0);
