@@ -215,7 +215,7 @@ Game.enemies =
 		fullName: "Robert Spellbinder",
 		aiType: Robert2AI,
 		hasLifeBar: true,
-		tier: 3,
+		tier: 4,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 75,

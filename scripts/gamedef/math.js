@@ -37,8 +37,8 @@ Game.math =
 	// Damage output functions
 	damage: {
 		calculate: function(power, level, targetTier, attack, defense) {
-			var multiplier = 1.0 + 4.0 * (level - 1) / 99;
-			return 2.5 * power * multiplier / targetTier * attack / defense;
+			let multiplier = 1.0 + 4.0 * (level - 1) / 99;
+			return 2.5 * power * multiplier * attack / defense;
 		},
 		bow: function(userInfo, targetInfo, power) {
 			return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
