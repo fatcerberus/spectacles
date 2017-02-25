@@ -9,7 +9,7 @@ TestHarness.addBattle('horse',
 	party: {
 		scott: { level: 8, weapon: 'heirloom', items: [ 'tonic' ] },
 		bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic' ] },
-		elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic' ] },
+		maggie: { level: 8, items: [ 'tonic', 'alcohol' ] },
 	}
 });
 

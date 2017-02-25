@@ -42,7 +42,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 80
+						power: 100
 					}
 				]
 			}
@@ -131,7 +131,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 5
+						power: 10,
 					}
 				]
 			}
@@ -455,8 +455,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
-						element: 'ice'
+						power: 15,
+						element: 'ice',
+						addStatus: 'frostbite',
+						statusChance: 15,
 					}
 				],
 			}
@@ -477,8 +479,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
-						element: 'fire'
+						power: 15,
+						element: 'fire',
+						addStatus: 'ignite',
+						statusChance: 15,
 					}
 				],
 			}
@@ -499,8 +503,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
-						element: 'lightning'
+						power: 15,
+						element: 'lightning',
+						addStatus: 'zombie',
+						statusChance: 15,
 					}
 				],
 			}
@@ -521,8 +527,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
-						element: 'earth'
+						power: 15,
+						element: 'earth',
+						addStatus: 'disarray',
+						statusChance: 15,
 					}
 				]
 			}
@@ -534,7 +542,7 @@ Game.skills =
 		name: "Electrocute",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Electrocute",
@@ -545,9 +553,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 25,
 						element: 'lightning',
-						addStatus: 'zombie'
+						addStatus: 'zombie',
+						statusChance: 40,
 					}
 				]
 			}
@@ -557,7 +566,7 @@ Game.skills =
 		name: "Hellfire",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Hellfire",
@@ -568,9 +577,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 25,
 						element: 'fire',
-						addStatus: 'ignite'
+						addStatus: 'ignite',
+						statusChance: 40,
 					}
 				]
 			}
@@ -580,7 +590,7 @@ Game.skills =
 		name: "Upheaval",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Upheaval",
@@ -591,9 +601,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 25,
 						element: 'earth',
-						addStatus: 'disarray'
+						addStatus: 'disarray',
+						statusChance: 40,
 					}
 				]
 			}
@@ -603,7 +614,7 @@ Game.skills =
 		name: "Windchill",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Windchill",
@@ -614,9 +625,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 25,
 						element: 'ice',
-						addStatus: 'frostbite'
+						addStatus: 'frostbite',
+						statusChance: 40,
 					}
 				]
 			}
@@ -628,7 +640,7 @@ Game.skills =
 		name: "Inferno",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 100,
+		baseMPCost: 35,
 		actions: [
 			{
 				announceAs: "Inferno",
@@ -638,7 +650,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 80,
+						power: 40,
 						element: 'fire'
 					},
 					{
@@ -654,7 +666,7 @@ Game.skills =
 		name: "Subzero",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 100,
+		baseMPCost: 35,
 		actions: [
 			{
 				announceAs: "Subzero",
@@ -664,7 +676,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 80,
+						power: 40,
 						element: 'ice'
 					},
 					{
@@ -680,7 +692,7 @@ Game.skills =
 		name: "10.5",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 100,
+		baseMPCost: 35,
 		actions: [
 			{
 				announceAs: "10.5",
@@ -690,7 +702,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 80,
+						power: 40,
 						element: 'earth'
 					},
 					{
@@ -706,7 +718,7 @@ Game.skills =
 		name: "Discharge",
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 100,
+		baseMPCost: 35,
 		actions: [
 			{
 				announceAs: "Discharge",
@@ -716,7 +728,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 80,
+						power: 40,
 						element: 'lightning'
 					},
 					{
@@ -801,7 +813,7 @@ Game.skills =
 		name: "Heal",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 50,
+		baseMPCost: 25,
 		actions: [
 			{
 				announceAs: "Heal",
@@ -812,7 +824,9 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'heal',
 						power: 25,
-						element: 'cure'
+						element: 'cure',
+						addStatus: 'reGen',
+						statusChance: 15,
 					}
 				]
 			}
@@ -863,7 +877,7 @@ Game.skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 100,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -875,7 +889,8 @@ Game.skills =
 						type: 'heal',
 						power: 50,
 						element: 'cure',
-						addStatus: 'reGen'
+						addStatus: 'reGen',
+						statusChance: 40,
 					}
 				]
 			}
@@ -885,7 +900,7 @@ Game.skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 200,
+		baseMPCost: 85,
 		actions: [
 			{
 				announceAs: "Renewal",
@@ -913,7 +928,7 @@ Game.skills =
 		name: "Crackdown",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 200,
+		baseMPCost: 70,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -934,7 +949,7 @@ Game.skills =
 		name: "Curse",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 100,
+		baseMPCost: 70,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -955,7 +970,7 @@ Game.skills =
 		name: "Necromancy",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 25,
+		baseMPCost: 17,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -975,7 +990,7 @@ Game.skills =
 		name: "Protective Aura",
 		category: 'strategy',
 		targetType: 'allAllies',
-		baseMPCost: 200,
+		baseMPCost: 40,
 		allowAsCounter: false,
 		actions: [
 			{

@@ -35,7 +35,7 @@ function Robert2AI(aiContext)
 	
 	// Prepare the AI for use
 	this.aic.setDefaultSkill('quickstrike');
-	this.aic.definePhases([ 3000, 2000, 1000, 500 ], 50);
+	this.aic.definePhases([ 4000, 2500, 1500, 500 ], 50);
 }
 
 // .dispose() method

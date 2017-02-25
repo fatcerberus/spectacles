@@ -69,7 +69,7 @@ Game.items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 20
+					strength: 10
 				}
 			]
 		}
@@ -99,7 +99,7 @@ Game.items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 10
+					strength: 5
 				}
 			]
 		}

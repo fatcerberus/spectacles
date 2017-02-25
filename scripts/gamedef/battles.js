@@ -13,7 +13,7 @@ RequireScript('battleAI/VictorAI.js');
 
 // boss and miniboss battle definitions.
 // random field battles don't have specific definitions as the
-// game composes them ex nihilo on the fly.
+// game composes them on-the-fly, ex nihilo.
 Game.battles =
 {
 	// Headless Horse
