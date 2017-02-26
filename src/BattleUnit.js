@@ -17,16 +17,17 @@ var BattleRow =
 {
 	Front: -1,
 	Middle: 0,
-	Rear: 1,
+	Rear:   1,
 };
 
-// BattleStance enumeration
+// Stance enumeration
 // Specifies a battle unit's current battling stance.
-var BattleStance =
+var Stance =
 {
-	Attack: 0,  // normal attacking stance
-	Guard: 1,   // guard against damage and statuses
-	Counter: 2  // counterattacking stance
+	Attack:  0,  // normal attacking stance
+	Guard:   1,  // guard against damage and statuses
+	Counter: 2,  // counterattacking stance
+	Charge:  3,  // charge up an attack
 };
 
 // BattleUnit() constructor
@@ -55,11 +56,11 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 	this.moveTargets = null;
 	this.mpPool = null;
 	this.newSkills = [];
-	this.newStance = BattleStance.Attack;
+	this.newStance = Stance.Attack;
 	this.partyMember = null;
 	this.row = startingRow;
 	this.skills = [];
-	this.stance = BattleStance.Attack;
+	this.stance = Stance.Attack;
 	this.stats = {};
 	this.statuses = [];
 	this.tag = random.string();
@@ -114,8 +115,8 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		}
 		this.ai = new AIContext(this, battle, this.enemyInfo.aiType);
 	}
-	this.attackMenu = new MoveMenu(this, battle, BattleStance.Attack);
-	this.counterMenu = new MoveMenu(this, battle, BattleStance.Counter);
+	this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
+	this.counterMenu = new MoveMenu(this, battle, Stance.Counter);
 	this.refreshInfo();
 	this.mpPool = mpPool !== void null ? mpPool
 		: new MPPool(this.id + "MP", Math.round(Math.max(Game.math.mp.capacity(this.battlerInfo), 0)));
@@ -168,7 +169,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 			}
 			term.print(statusName + " overruled by another of " + this.name + "'s statuses");
-		} else if (this.stance !== BattleStance.Guard || !isGuardable) {
+		} else if (this.stance !== Stance.Guard || !isGuardable) {
 			var eventData = { unit: this, statusID: statusID, cancel: false };
 			this.battle.raiseEvent('unitAfflicted', eventData);
 			if (!eventData.cancel) {
@@ -267,7 +268,7 @@ BattleUnit.prototype.endCycle = function()
 	if (!this.isAlive()) {
 		return;
 	}
-	if (this.stance == BattleStance.Counter) {
+	if (this.stance == Stance.Counter) {
 		this.cv = 0;
 		if (this.ai == null) {
 			this.actor.animate('active');
@@ -281,13 +282,13 @@ BattleUnit.prototype.endCycle = function()
 		this.queueMove(chosenMove);
 		this.performAction(this.getNextAction(), chosenMove);
 		this.actor.animate('dormant');
-		this.newStance = BattleStance.Attack;
+		this.newStance = Stance.Attack;
 	}
 	if (this.newStance !== this.stance) {
 		this.stance = this.newStance;
 		this.battle.stanceChanged.invoke(this.id, this.stance);
-		var stanceName = this.stance == BattleStance.Guard ? "Guard"
-			: this.stance == BattleStance.Counter ? "Counter"
+		var stanceName = this.stance == Stance.Guard ? "Guard"
+			: this.stance == Stance.Counter ? "Counter"
 			: "Attack";
 		term.print(this.name + " is now in " + stanceName + " Stance");
 	}
@@ -312,8 +313,8 @@ BattleUnit.prototype.evade = function(actingUnit, action)
 	term.print(this.name + " evaded " + actingUnit.name + "'s attack");
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	if (isMelee && this.stance == BattleStance.Guard && isGuardBroken) {
-		this.stance = BattleStance.Counter;
+	if (isMelee && this.stance == Stance.Guard && isGuardBroken) {
+		this.stance = Stance.Counter;
 		this.counterTarget = actingUnit;
 		term.print(this.name + "'s Counter Stance activated");
 	}
@@ -496,7 +497,7 @@ BattleUnit.prototype.performAction = function(action, move)
 	this.raiseEvent('acting', eventData);
 	eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 	if (this.isAlive()) {
-		if (this.stance == BattleStance.Counter) {
+		if (this.stance == Stance.Counter) {
 			action.accuracyRate = 2.0;
 		}
 		var unitsHit = this.battle.runAction(action, this, move.targets, move.usable.useAiming);
@@ -543,6 +544,17 @@ BattleUnit.prototype.queueMove = function(move)
 		this.moveUsed.targets[0] = random.sample(alliesAlive);
 	}
 	var nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
+	if (move.stance == Stance.Charge) {
+		nextActions.splice(0, 0, Game.skills.chargeSlash.actions[0]);
+		from(nextActions)
+			.from(action => action.effects)
+			.where(effect => 'power' in effect)
+			.each(effect =>
+		{
+			effect.power *= 2;
+			effect.statusChance = 100;
+		});
+	}
 	if (nextActions !== null) {
 		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
 		for (var i = 0; i < nextActions.length; ++i) {
@@ -764,7 +776,7 @@ BattleUnit.prototype.setGuard = function()
 {
 	term.print(this.name + " will switch to Guard Stance");
 	this.announce("Guard");
-	this.newStance = BattleStance.Guard;
+	this.newStance = Stance.Guard;
 	this.resetCounter(Game.stanceChangeRank);
 };
 
@@ -823,11 +835,11 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		}
 	}
 	if (amount >= 0) {
-		if (this.lastAttacker !== null && this.lastAttacker.stance == BattleStance.Counter) {
+		if (this.lastAttacker !== null && this.lastAttacker.stance == Stance.Counter) {
 			term.print(this.name + " hit from Counter Stance, damage increased");
 			amount = Math.round(amount * Game.bonusMultiplier);
 		}
-		if (this.stance != BattleStance.Attack && this.lastAttacker !== null) {
+		if (this.stance != Stance.Attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 			term.print(this.name + " is in Guard Stance, damage reduced");
 		}
@@ -884,12 +896,12 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 	this.raiseEvent('attacked', eventData);
 	var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 	var isMelee = 'isMelee' in action ? action.isMelee : false;
-	if (this.stance == BattleStance.Guard && isMelee && isGuardBroken) {
+	if (this.stance == Stance.Guard && isMelee && isGuardBroken) {
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
-	if (this.stance == BattleStance.Guard && isGuardBroken) {
+	if (this.stance == Stance.Guard && isGuardBroken) {
 		term.print(this.name + "'s Guard Stance was broken", "by: " + actingUnit.name);
-		this.newStance = BattleStance.Attack;
+		this.newStance = Stance.Attack;
 		this.resetCounter(Game.guardBreakRank);
 	}
 };
@@ -908,12 +920,12 @@ BattleUnit.prototype.tick = function()
 	--this.cv;
 	if (this.cv == 0) {
 		this.battle.suspend();
-		if (this.stance == BattleStance.Guard) {
-			this.stance = this.newStance = BattleStance.Attack;
+		if (this.stance == Stance.Guard) {
+			this.stance = this.newStance = Stance.Attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
 			term.print(this.name + "'s Guard Stance has expired");
-		} else if (this.stance == BattleStance.Counter) {
-			this.newStance = BattleStance.Attack;
+		} else if (this.stance == Stance.Counter) {
+			this.newStance = Stance.Attack;
 		}
 		term.print(this.name + "'s turn is up");
 		this.actor.animate('active');
@@ -941,7 +953,7 @@ BattleUnit.prototype.tick = function()
 			} else {
 				chosenMove = this.ai.getNextMove();
 			}
-			if (chosenMove.stance != BattleStance.Guard) {
+			if (chosenMove.stance != Stance.Guard) {
 				this.queueMove(chosenMove);
 				action = this.getNextAction();
 			} else {

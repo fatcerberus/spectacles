@@ -42,7 +42,7 @@ LumisquirrelAI.prototype.dispose = function()
 //     stance: The Lumisquirrel's current battling stance.
 LumisquirrelAI.prototype.strategize = function(stance)
 {
-	if (stance !== BattleStance.Counter) {
+	if (stance !== Stance.Counter) {
 		if (this.targetID === null) {
 			this.targetID = from(this.aic.battle.enemiesOf(this.aic.unit))
 				.sample(1).first();

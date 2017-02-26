@@ -119,6 +119,7 @@ Game.skills =
 		category: 'attack',
 		weaponType: 'sword',
 		targetType: 'single',
+		chargeable: false,
 		actions: [
 			{
 				announceAs: "Quickstrike",
@@ -458,7 +459,7 @@ Game.skills =
 						power: 15,
 						element: 'ice',
 						addStatus: 'frostbite',
-						statusChance: 15,
+						statusChance: 0,
 					}
 				],
 			}
@@ -482,7 +483,7 @@ Game.skills =
 						power: 15,
 						element: 'fire',
 						addStatus: 'ignite',
-						statusChance: 15,
+						statusChance: 0,
 					}
 				],
 			}
@@ -506,7 +507,7 @@ Game.skills =
 						power: 15,
 						element: 'lightning',
 						addStatus: 'zombie',
-						statusChance: 15,
+						statusChance: 0,
 					}
 				],
 			}
@@ -530,7 +531,7 @@ Game.skills =
 						power: 15,
 						element: 'earth',
 						addStatus: 'disarray',
-						statusChance: 15,
+						statusChance: 0,
 					}
 				]
 			}
@@ -553,10 +554,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
+						power: 30,
 						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 40,
 					}
 				]
 			}
@@ -577,10 +576,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
+						power: 30,
 						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 40,
 					}
 				]
 			}
@@ -601,10 +598,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
+						power: 30,
 						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 40,
 					}
 				]
 			}
@@ -625,10 +620,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
+						power: 30,
 						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 40,
 					}
 				]
 			}
@@ -826,7 +819,7 @@ Game.skills =
 						power: 25,
 						element: 'cure',
 						addStatus: 'reGen',
-						statusChance: 15,
+						statusChance: 0,
 					}
 				]
 			}
@@ -887,10 +880,8 @@ Game.skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 50,
+						power: 60,
 						element: 'cure',
-						addStatus: 'reGen',
-						statusChance: 40,
 					}
 				]
 			}
@@ -910,7 +901,7 @@ Game.skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 80,
+						power: 100,
 						element: 'cure'
 					},
 					{
@@ -930,6 +921,7 @@ Game.skills =
 		targetType: 'single',
 		baseMPCost: 70,
 		allowAsCounter: false,
+		chargeable: false,
 		actions: [
 			{
 				announceAs: "Crackdown",
@@ -951,6 +943,7 @@ Game.skills =
 		targetType: 'single',
 		baseMPCost: 70,
 		allowAsCounter: false,
+		chargeable: false,
 		actions: [
 			{
 				announceAs: "Curse",
@@ -972,6 +965,7 @@ Game.skills =
 		targetType: 'single',
 		baseMPCost: 17,
 		allowAsCounter: false,
+		chargeable: false,
 		actions: [
 			{
 				announceAs: "Necromancy",
@@ -992,6 +986,7 @@ Game.skills =
 		targetType: 'allAllies',
 		baseMPCost: 40,
 		allowAsCounter: false,
+		chargeable: false,
 		actions: [
 			{
 				announceAs: "Protective Aura",

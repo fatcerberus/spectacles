@@ -149,7 +149,7 @@ Game.math =
 		},
 		usage: function(skill, level, userInfo) {
 			var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-			return baseCost * (level + userInfo.baseStats.mag) / 100;
+			return 2.5 * baseCost * (level + userInfo.baseStats.mag) / 200;
 		}
 	},
 	

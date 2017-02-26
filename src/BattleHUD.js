@@ -3,9 +3,9 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-const HPGauge     = require('battleUI').HPGauge;
-const MPGauge     = require('battleUI').MPGauge;
-const TurnPreview = require('battleUI').TurnPreview;
+const HPGauge     = require('@/scripts/battleEngine').HPGauge;
+const MPGauge     = require('@/scripts/battleEngine').MPGauge;
+const TurnPreview = require('@/scripts/battleEngine').TurnPreview;
 
 // BattleHUD() constructor
 // Creates an object representing the in-battle heads-up display (HUD).

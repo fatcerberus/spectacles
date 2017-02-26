@@ -159,7 +159,7 @@ AIContext.prototype.getNextMove = function()
 		var isMoveUsable;
 		do {
 			candidateMove = this.moveQueue.shift();
-			var isMoveLegal = candidateMove.stance != BattleStance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
+			var isMoveLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 			var isMoveUsable = isMoveLegal && candidateMove.predicate();
 			if (!isMoveUsable) {
 				term.print("Discarding " + this.unit.name + "'s " + candidateMove.usable.name + ", not usable");
@@ -286,7 +286,7 @@ AIContext.prototype.queueGuard = function()
 {
 	this.moveQueue.push({
 		usable: null,
-		stance: BattleStance.Guard,
+		stance: Stance.Guard,
 		predicate: function() { return true; }
 	});
 };
@@ -320,7 +320,7 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 		: itemToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: itemToUse,
-		stance: BattleStance.Attack,
+		stance: Stance.Attack,
 		targets: targets,
 		predicate: function() { return true; }
 	});
@@ -335,11 +335,8 @@ AIContext.prototype.queueItem = function(itemID, unitID)
 //                default target (usually random) will be chosen.
 //     predicate: A function which will be called at the time the move is to be used. The function
 //                should return true to use the skill, or false to cancel it.
-AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
+AIContext.prototype.queueSkill = function(skillID, stance = Stance.Attack, unitID = null, predicate = () => true)
 {
-	unitID = unitID !== void null ? unitID : null;
-	predicate = predicate !== void null ? predicate : function() { return true; };
-	
 	var skillToUse = new SkillUsable(skillID, 100);
 	/*for (var i = 0; i < this.unit.skills.length; ++i) {
 		var skill = this.unit.skills[i];
@@ -357,7 +354,7 @@ AIContext.prototype.queueSkill = function(skillID, unitID, predicate)
 		: skillToUse.defaultTargets(this.unit);
 	this.moveQueue.push({
 		usable: skillToUse,
-		stance: BattleStance.Attack,
+		stance: stance,
 		targets: targets,
 		predicate: predicate
 	});
@@ -373,7 +370,7 @@ AIContext.prototype.queueWeapon = function(weaponID)
 	var weaponUsable = new WeaponUsable(weaponID);
 	this.moveQueue.push({
 		usable: weaponUsable,
-		stance: BattleStance.Attack,
+		stance: Stance.Attack,
 		targets: weaponUsable.defaultTargets(this.unit),
 		predicate: function() { return true; }
 	});

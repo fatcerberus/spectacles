@@ -51,7 +51,7 @@ function MoveMenu(unit, battle, stance)
 	for (var category in drawerTable) {
 		this.drawers.push(drawerTable[category]);
 	}
-	if (stance == BattleStance.Attack) {
+	if (stance == Stance.Attack) {
 		this.drawers = this.drawers.concat([
 			{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 	}
@@ -177,7 +177,7 @@ function MoveMenu(unit, battle, stance)
 	this.updateTurnPreview = function()
 	{
 		var nextMoveOrRank;
-		if (this.stance != BattleStance.Guard) {
+		if (this.stance != Stance.Guard) {
 			if (this.isExpanded) {
 				nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 			} else {
@@ -239,11 +239,14 @@ MoveMenu.prototype.getInput = function()
 		this.isExpanded = false;
 		this.showMoveList.stop();
 		this.hideMoveList.run();
-	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y) && this.stance == BattleStance.Attack) {
-		this.stance = BattleStance.Guard;
+	} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y) && this.stance != Stance.Guard) {
+		this.stance = this.stance == Stance.Attack ? Stance.Charge
+			: Stance.Guard;
 		this.updateTurnPreview();
-		this.showMoveList.stop();
-		this.chooseMove.run();
+		if (this.stance == Stance.Guard) {
+			this.showMoveList.stop();
+			this.chooseMove.run();
+		}
 	} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 		--this.topCursor;
 		if (this.topCursor < 0) {
@@ -284,15 +287,16 @@ MoveMenu.prototype.open = function()
 		this.menuThread = threads.create(this, 10);
 		threads.join(this.menuThread);
 		switch (this.stance) {
-			case BattleStance.Attack:
+			case Stance.Attack:
+			case Stance.Charge:
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
 				break;
-			case BattleStance.Counter:
+			case Stance.Counter:
 				var targetMenu = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name);
 				targetMenu.lockTargets([ this.unit.counterTarget ]);
 				var chosenTargets = targetMenu.open();
 				break;
-			case BattleStance.Guard:
+			case Stance.Guard:
 				var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
 				targetMenu.lockTargets([ this.unit ]);
 				var chosenTargets = targetMenu.open();
@@ -313,8 +317,9 @@ MoveMenu.prototype.open = function()
 MoveMenu.prototype.render = function()
 {
 	var yOrigin = -54 * (1.0 - this.fadeness) + 16;
-	var stanceText = this.stance == BattleStance.Counter ? "CS"
-		: this.stance == BattleStance.Guard ? "GS"
+	var stanceText = this.stance == Stance.Charge ? "PS"
+		: this.stance == Stance.Counter ? "CS"
+		: this.stance == Stance.Guard ? "GS"
 		: "AS";
 	Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
 	OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
@@ -352,6 +357,6 @@ MoveMenu.prototype.render = function()
 // Updates the entity's state for the next frame.
 MoveMenu.prototype.update = function()
 {
-	return (this.stance != BattleStance.Guard && this.selection === null)
+	return (this.stance != Stance.Guard && this.selection === null)
 		|| this.chooseMove.isRunning();
 };

@@ -67,15 +67,15 @@ ItemUsable.prototype.getRank = function()
 // Determines whether the item can be used by a specified battler.
 // Arguments:
 //     unit:   The battle unit for which to check for usability.
-//     stance: Optional. The user's stance. (default: BattleStance.Attack)
+//     stance: Optional. The user's stance. (default: Stance.Attack)
 // Returns:
 //     true if the item can be used; false otherwise.
 ItemUsable.prototype.isUsable = function(user, stance)
 {
-	stance = stance !== void null ? stance : BattleStance.Attack;
+	stance = stance !== void null ? stance : Stance.Attack;
 	
 	return (this.isUnlimited || this.usesLeft > 0)
-		&& stance == BattleStance.Attack;
+		&& stance == Stance.Attack;
 };
 
 // .mpCost() method

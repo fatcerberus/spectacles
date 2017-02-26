@@ -3,30 +3,6 @@
   *           Copyright (C) 2017 Power-Command
 ***/
 
-import from        from 'from';
-import * as random from 'random';
-import term        from 'term';
-
-export
-class Battler
-{
-}
-
-export
-class Encounter
-{
-	constructor(battleID)
-	{
-		this.states = new Map();
-	}
-	
-	tick()
-	{
-		from(this.battlers)
-			
-	}
-}
-
 export
 class Stat
 {

@@ -194,7 +194,7 @@ Game.statuses =
 			});
 		},
 		attacked: function(unit, eventData) {
-			if (eventData.stance == BattleStance.Counter) {
+			if (eventData.stance == Stance.Counter) {
 				this.fatigue *= Game.bonusMultiplier;
 				unit.resetCounter(this.knockback);
 				++this.knockback;
@@ -234,7 +234,7 @@ Game.statuses =
 			});
 		},
 		damaged: function(unit, eventData) {
-			if (from(eventData.tags).anyIs('fire') && unit.stance != BattleStance.Guard) {
+			if (from(eventData.tags).anyIs('fire') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				term.print("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
@@ -310,7 +310,7 @@ Game.statuses =
 			});
 		},
 		damaged: function(unit, eventData) {
-			if (from(eventData.tags).anyIs('ice') && unit.stance != BattleStance.Guard) {
+			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				term.print("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
