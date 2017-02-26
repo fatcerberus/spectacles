@@ -299,8 +299,8 @@ Robert2AI.prototype.onItemUsed = function(userID, itemID, targetIDs)
 			.talk("Scott", true, 2.0, Infinity, "Let the cards fall how they may. I'm not backing down now. I owe myself far too much.")
 			.resync()
 			.pause(60)
-			.changeBGM("BasicInstinct")
-			.adjustBGM(1.0)
+			//.changeBGM("BasicInstinct")
+			//.adjustBGM(1.0)
 			.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 			.run(true);
 		this.isAlcoholUsed = true;

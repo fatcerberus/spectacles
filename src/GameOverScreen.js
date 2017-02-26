@@ -37,7 +37,7 @@ GameOverScreen.prototype.show = function()
 {
 	this.action = null;
 	this.mode = 'transitionIn';
-	if (DBG_DISABLE_TRANSITIONS) {
+	if (Sphere.Game.disableAnimations) {
 		this.fadeness = 0.0;
 	}
 	music.play(null);
@@ -63,7 +63,7 @@ GameOverScreen.prototype.update = function()
 				menu.addItem("Retry Battle", GameOverAction.retry);
 				menu.addItem("Give Up", GameOverAction.quit);
 				this.action = menu.open();
-				if (DBG_DISABLE_TRANSITIONS) {
+				if (Sphere.Game.disableAnimations) {
 					this.fadeness = 1.0;
 				}
 				this.transition = new scenes.Scene()

@@ -116,7 +116,7 @@ BattleScreen.prototype.createActor = function(name, position, row, alignment, al
 //     anything else with the BattleScreen object afterwards.
 BattleScreen.prototype.fadeOut = function(duration)
 {
-	if (DBG_DISABLE_TRANSITIONS) {
+	if (Sphere.Game.disableAnimations) {
 		this.dispose();
 		return;
 	}
@@ -137,13 +137,13 @@ BattleScreen.prototype.go = function(title)
 	
 	this.title = title;
 	new scenes.Scene()
-		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
+		.doIf(() => !Sphere.Game.disableAnimations)
 			.fadeTo(Color.White, 15)
 			.fadeTo(Color.Transparent, 30)
 			.fadeTo(Color.White, 15)
 		.end()
 		.call(this.startRunning.bind(this))
-		.doIf(function() { return !DBG_DISABLE_TRANSITIONS; })
+		.doIf(() => !Sphere.Game.disableAnimations)
 			.fadeTo(Color.Transparent, 60)
 		.end()
 		.run(true);
@@ -168,7 +168,7 @@ BattleScreen.prototype.showTitle = function()
 	if (this.title === null) {
 		return;
 	}
-	if (DBG_DISABLE_TRANSITIONS) {
+	if (Sphere.Game.disableAnimations) {
 		return;
 	}
 	new scenes.Scene()

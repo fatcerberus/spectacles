@@ -35,7 +35,7 @@ TitleScreen.prototype.show = function()
 	}
 	this.choice = null;
 	this.mode = 'transitionIn';
-	if (Sphere.Game.disableAnimation) {
+	if (Sphere.Game.disableAnimations) {
 		this.fadeness = 0.0;
 	}
 	this.transition = new scenes.Scene()
@@ -60,7 +60,7 @@ TitleScreen.prototype.update = function()
 			if (!this.transition.isRunning()) {
 				this.mode = 'idle';
 				this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
-				if (Sphere.Game.disableAnimation) {
+				if (Sphere.Game.disableAnimations) {
 					this.fadeness = 1.0;
 				}
 				this.transition = new scenes.Scene()

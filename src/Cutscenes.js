@@ -367,7 +367,7 @@ scenes.defScenelet('talk',
 		while (AreKeysLeft()) {
 			GetKey();
 		}
-		if (DBG_DISABLE_TEXTBOXES) {
+		if (Sphere.Game.disableTalking) {
 			this.mode = "finish";
 		}
 		return true;
@@ -419,6 +419,9 @@ scenes.defScenelet('talk',
 		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
 	},
 	update(scene) {
+		if (Sphere.Game.disableTalking) {
+			this.mode = "finish";
+		}
 		switch (this.mode) {
 			case "idle":
 				if (this.timeout !== Infinity) {

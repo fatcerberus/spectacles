@@ -289,10 +289,13 @@ MoveMenu.prototype.open = function()
 		switch (this.stance) {
 			case Stance.Attack:
 			case Stance.Charge:
-				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection).open();
+				var name = this.stance == Stance.Charge
+					? "CS " + this.selection.name
+					: this.selection.name;
+				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection, name).open();
 				break;
 			case Stance.Counter:
-				var targetMenu = new TargetMenu(this.unit, this.battle, null, "CS " + this.selection.name);
+				var targetMenu = new TargetMenu(this.unit, this.battle, null, "GS " + this.selection.name);
 				targetMenu.lockTargets([ this.unit.counterTarget ]);
 				var chosenTargets = targetMenu.open();
 				break;
@@ -317,8 +320,8 @@ MoveMenu.prototype.open = function()
 MoveMenu.prototype.render = function()
 {
 	var yOrigin = -54 * (1.0 - this.fadeness) + 16;
-	var stanceText = this.stance == Stance.Charge ? "PS"
-		: this.stance == Stance.Counter ? "CS"
+	var stanceText = this.stance == Stance.Charge ? "CS"
+		: this.stance == Stance.Counter ? "GS"
 		: this.stance == Stance.Guard ? "GS"
 		: "AS";
 	Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));

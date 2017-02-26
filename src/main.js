@@ -13,9 +13,6 @@ global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
 
-var DBG_DISABLE_TEXTBOXES = false;
-var DBG_DISABLE_TRANSITIONS = false;
-
 RequireSystemScript('analogue.js');
 
 RequireScript('Battle.js');
@@ -44,11 +41,11 @@ function game()
 	});
 	term.define('yap', null, {
 		'on': function() {
-			DBG_DISABLE_TEXTBOXES = false;
+			Sphere.Game.disableTalking = false;
 			term.print("Oh, yappy times are here again...");
 		}, 
 		'off': function() {
-			DBG_DISABLE_TEXTBOXES = true;
+			Sphere.Game.disableTalking = true;
 			term.print("The yappy times are OVER!");
 		}, 
 	});
@@ -64,7 +61,8 @@ function game()
 	var session = new TitleScreen('SpectaclesTheme').show();
 	analogue.getWorld().session = session;
 	LucidaClock.initialize();
-	MapEngine('Testville.rmp', screen.frameRate);
+	TestHarness.run('rsb2');
+	//MapEngine('Testville.rmp', screen.frameRate);
 }
 
 // clone() function

@@ -264,7 +264,6 @@ Game.characters =
 			'chill',
 			'lightning',
 			'quake',
-			'heal',
 			'hellfire',
 			'windchill',
 			'electrocute',
