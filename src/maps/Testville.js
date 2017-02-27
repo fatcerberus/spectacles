@@ -8,7 +8,7 @@
 		var font = GetSystemFont();
 		var isHippoAround = false;
 		var maggieSize = 1.0;
-		analogue.world.munchSound = LoadSound('Munch.wav');
+		analogue.world.munchSound = LoadSound('munch.wav');
 		
 		var followers = [
 			{ name: 'Bruce', sprite: 'battlers/Bruce.rss', ghostLevel: 0 },
@@ -43,7 +43,7 @@
 					.talk(name, true, 2.0, Infinity, "Please don't eat me, maggie!")
 					.talk("maggie", true, 2.0, Infinity, "Too late!")
 					.killPerson(name)
-					.playSound('sounds/Munch.wav')
+					.playSound('sounds/munch.wav')
 					.run(true);
 			}
 		});
@@ -270,7 +270,7 @@
 							.resync()
 							.talk("Scott", true, 4.0, 0.0, "No maggie, please don't eaAHHHHHHHHHHHHHHHHH--")
 							.killPerson('scott')
-							.playSound('Munch.wav')
+							.playSound('sounds/munch.wav')
 							.talk("maggie", true, 2.0, Infinity, "Tastes like chicken!")
 							.run(true);
 						AttachInput('maggie');

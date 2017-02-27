@@ -290,12 +290,12 @@ MoveMenu.prototype.open = function()
 			case Stance.Attack:
 			case Stance.Charge:
 				var name = this.stance == Stance.Charge
-					? "CS " + this.selection.name
+					? `CS ${this.selection.name}`
 					: this.selection.name;
 				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection, name).open();
 				break;
 			case Stance.Counter:
-				var targetMenu = new TargetMenu(this.unit, this.battle, null, "GS " + this.selection.name);
+				var targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
 				targetMenu.lockTargets([ this.unit.counterTarget ]);
 				var chosenTargets = targetMenu.open();
 				break;

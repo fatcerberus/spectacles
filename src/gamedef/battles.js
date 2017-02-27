@@ -3,26 +3,24 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-RequireScript('battleAI/HeadlessHorseAI.js');
-RequireScript('battleAI/LumisquirrelAI.js');
-RequireScript('battleAI/Robert1AI.js');
-RequireScript('battleAI/Robert2AI.js');
-RequireScript('battleAI/ScottTempleAI.js');
-RequireScript('battleAI/ScottStarcrossAI.js');
-RequireScript('battleAI/VictorAI.js');
+RequireScript('battleAI/headlessHorse.js');
+RequireScript('battleAI/robertI.js');
+RequireScript('battleAI/robertII.js');
+RequireScript('battleAI/scottTemple.js');
+RequireScript('battleAI/scottStarcross.js');
+RequireScript('battleAI/victor.js');
 
 // boss and miniboss battle definitions.
 // random field battles don't have specific definitions as the
 // game composes them on-the-fly, ex nihilo.
 Game.battles =
 {
-	// Headless Horse
 	headlessHorse: {
 		title: "Headless Horse",
-		bgm: 'ManorBoss',
+		bgm: null,
 		battleLevel: 8,
 		enemies: [
-			'headlessHorse'
+			'headlessHorse',
 		],
 		onStart: function() {
 			new scenes.Scene()
@@ -33,21 +31,10 @@ Game.battles =
 		}
 	},
 	
-	// Robert Spellbinder (Balcony)
-	rsbBalcony: {
-		title: "Robert Spellbinder",
-		bgm: 'BattleForLucida',
-		battleLevel: 45,
-		enemies: [
-			'robert1'
-		]
-	},
-	
-	// Robert Spellbinder (Final)
 	rsbFinal: {
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
-		bgm: 'ThePromise',
+		bgm: 'thePromise',
 		battleLevel: 50,
 		enemies: [
 			'robert2'
@@ -73,8 +60,6 @@ Game.battles =
 		}
 	},
 	
-	// Scott Temple (Boss Battle)
-	// Penultimate Boss of Spectacles III
 	scottTemple: {
 		title: "Scott Victor Temple",
 		isFinalBattle: false,
@@ -85,12 +70,10 @@ Game.battles =
 		]
 	},
 	
-	// Scott Starcross (Final Battle)
-	// Final Boss of Spectacles III: The Last Lucidan
 	scottStarcross: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'DeathComeNearMe',
+		bgm: 'deathComeNearMe',
 		battleLevel: 60,
 		enemies: [
 			'starcross'
@@ -107,30 +90,6 @@ Game.battles =
 // field enemies.
 Game.enemies =
 {
-	// Lumisquirrel
-	lumisquirrel: {
-		name: "Lumisquirrel",
-		aiType: LumisquirrelAI,
-		baseStats: {
-			vit: 30,
-			str: 20,
-			def: 15,
-			foc: 80,
-			mag: 95,
-			agi: 90
-		},
-		damageModifiers: {
-			bow: Game.bonusMultiplier,
-			shuriken: Game.bonusMultiplier,
-			lightning: 1 / Game.bonusMultiplier
-		},
-		immunities: [],
-		munchData: {
-			skill: 'delusion'
-		}
-	},
-	
-	// Headless Horse (Boss)
 	headlessHorse: {
 		name: "H. Horse",
 		fullName: "Headless Horse",
@@ -158,7 +117,6 @@ Game.enemies =
 		}
 	},
 	
-	// Victor Spellbinder (Boss)
 	victor: {
 		name: "Victor",
 		fullName: "Victor Spellbinder",
@@ -181,7 +139,6 @@ Game.enemies =
 		],
 	},
 	
-	// Robert Spellbinder (Balcony)
 	robert1: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",
@@ -209,7 +166,6 @@ Game.enemies =
 		]
 	},
 	
-	// Robert Spellbinder (Final)
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",
@@ -240,7 +196,6 @@ Game.enemies =
 		]
 	},
 	
-	// Scott Temple
 	scottTemple: {
 		name: "Scott T",
 		fullName: "Scott Victor Temple",
@@ -260,7 +215,6 @@ Game.enemies =
 		weapon: 'templeSword'
 	},
 	
-	// Scott Starcross
 	starcross: {
 		name: "Scott",
 		fullName: "Scott Starcross",

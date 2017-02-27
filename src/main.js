@@ -36,9 +36,6 @@ function game()
 {
 	analogue.init();
 
-	term.define('game', global, {
-		'quit': function() { Sphere.exit(); },
-	});
 	term.define('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;
@@ -53,16 +50,8 @@ function game()
 	// set up the beta test harness
 	TestHarness.initialize();
 
-	// show the title screen and start the game!
-	if (!Sphere.Game.disableSplash) {
-		music.push('music/SpectaclesTheme.ogg');
-		ShowLogo('images/Logos/TitleCard.png', 300);
-	}
-	var session = new TitleScreen('SpectaclesTheme').show();
-	analogue.getWorld().session = session;
 	LucidaClock.initialize();
 	TestHarness.run('rsb2');
-	//MapEngine('Testville.rmp', screen.frameRate);
 }
 
 // clone() function
@@ -128,7 +117,7 @@ function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
 //     time:      The amount of time, in frames, to keep the image on-screen.
 function ShowLogo(filename, time)
 {
-	var image = new Image(filename);
+	var image = new Texture(filename);
 	var scene = new scenes.Scene()
 		.fadeTo(Color.Black, 0)
 		.fadeTo(Color.Transparent, 60)

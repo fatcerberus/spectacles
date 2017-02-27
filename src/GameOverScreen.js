@@ -42,7 +42,7 @@ GameOverScreen.prototype.show = function()
 	}
 	music.play(null);
 	this.transition = new scenes.Scene()
-		.pushBGM("GameOver")
+		.pushBGM('gameOver')
 		.adjustBGM(1.0)
 		.tween(this, 300, 'linear', { fadeness: 0.0 })
 		.run();
