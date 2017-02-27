@@ -20,19 +20,22 @@ RequireScript('Cutscenes.js');
 RequireScript('FieldMenu.js');
 RequireScript('GameOverScreen.js');
 RequireScript('inGameClock.js');
-RequireScript('MenuStrip.js');
+RequireScript('menuStrip.js');
 RequireScript('session.js');
 RequireScript('SpriteImage.js');
 RequireScript('StoryManager.js');
 RequireScript('TestHarness.js');
 RequireScript('TitleScreen.js');
 
-EvaluateScript('gamedef/game.js');
+EvaluateScript('gameDef/game.js');
 
-// game() function
-// This is called by Sphere when the game is launched.
 function game()
 {
+	// note: a game() function is needed for now because the engine was originally
+	//       written for Sphere v1.  the goal is to eventually convert the Specs Engine
+	//       entirely to Sphere v2.  that effort is ongoing,  but a full conversion
+	//       is going to take a while.
+
 	analogue.init();
 
 	term.define('yap', null, {

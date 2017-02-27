@@ -3,7 +3,7 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript("MenuStrip.js");
+RequireScript("menuStrip.js");
 
 // GameOverAction enumeration
 // Specifies the action to take following a Game Over event.
