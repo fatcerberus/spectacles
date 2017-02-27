@@ -18,7 +18,7 @@ class Session
 {
 	static fromFile(fileName)
 	{
-		//TODO: implement me!
+		// TODO: implement me!
 	}
 
 	constructor(difficulty = Difficulty.Standard)

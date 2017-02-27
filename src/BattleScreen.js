@@ -18,10 +18,9 @@ function BattleScreen(partyMaxMP)
 	};
 	
 	this.actors = {};
-	for (var type in this.actorTypes) {
+	for (var type in this.actorTypes)
 		this.actors[type] = [];
-	}
-	this.background = LoadImage('TestBattle.png');
+	this.background = new Texture('images/battleBackground.png');
 	this.hud = new BattleHUD(partyMaxMP);
 	
 	this.startRunning = function()
@@ -153,11 +152,10 @@ BattleScreen.prototype.go = function(title)
 // Renders the BattleScreen.
 BattleScreen.prototype.render = function()
 {
-	this.background.blit(0, -56);
+	prim.blit(screen, 0, -56, this.background);
 	for (var type in this.actorTypes) {
-		for (var i = 0; i < this.actors[type].length; ++i) {
+		for (var i = 0; i < this.actors[type].length; ++i)
 			this.actors[type][i].render();
-		}
 	}
 };
 
