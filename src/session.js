@@ -3,7 +3,6 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript('FieldMenu.js');
 RequireScript('Party.js');
 
 const Difficulty =
@@ -26,11 +25,10 @@ class Session
 		term.print("initializing new game session", "diff lv: " + difficulty);
 
 		this.difficulty = difficulty;
-		this.party = new Party(50);
+		this.party = new Party(1);
 		from(Game.initialParty).each(function(characterID) {
 			this.party.add(characterID);
 		}.bind(this));
 		this.battlesSeen = [];
-		this.fieldMenu = new FieldMenu(this);
 	}
 }

@@ -3,7 +3,7 @@
   *           Copyright (C) 2012 Power-Command
 ***/
 
-RequireScript('Battle.js');
+RequireScript('battleEngine/encounter.js');
 
 scenes.defScenelet('adjustBGM',
 {
@@ -58,98 +58,10 @@ scenes.defScenelet('battle',
 	}
 });
 
-scenes.defScenelet('changeMap',
-{
-	start(scene, map) {
-		ChangeMap(map);
-	}
-});
-
 scenes.defScenelet('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
 		music.play("music/" + trackName + ".ogg", fadeTime);
-	}
-});
-
-scenes.defScenelet('facePerson',
-{
-	start(scene, person, direction) {
-		var faceCommand;
-		switch (direction.toLowerCase()) {
-			case "n": case "north":
-				faceCommand = COMMAND_FACE_NORTH;
-				break;
-			case "ne": case "northeast":
-				faceCommand = COMMAND_FACE_NORTHEAST;
-				break;
-			case "e": case "east":
-				faceCommand = COMMAND_FACE_EAST;
-				break;
-			case "se": case "southeast":
-				faceCommand = COMMAND_FACE_SOUTHEAST;
-				break;
-			case "s": case "south":
-				faceCommand = COMMAND_FACE_SOUTH;
-				break;
-			case "sw": case "southwest":
-				faceCommand = COMMAND_FACE_SOUTHWEST;
-				break;
-			case "w": case "west":
-				faceCommand = COMMAND_FACE_WEST;
-				break;
-			case "nw": case "northwest":
-				faceCommand = COMMAND_FACE_NORTHWEST;
-				break;
-			default:
-				faceCommand = COMMAND_WAIT;
-		}
-		QueuePersonCommand(person, faceCommand, false);
-	}
-});
-
-scenes.defScenelet('focusOnPerson',
-{
-	start(scene, person, duration) {
-		duration = duration !== undefined ? duration : 15;
-		
-		this.pan = new scenes.Scene()
-			.panTo(GetPersonX(person), GetPersonY(person), duration)
-			.run();
-	},
-	update(scene) {
-		return this.pan.isRunning();
-	}
-});
-
-scenes.defScenelet('followPerson',
-{
-	start(scene, person) {
-		this.person = person;
-		this.pan = new scenes.Scene()
-			.focusOnPerson(person)
-			.run();
-	},
-	update(scene) {
-		return this.pan.isRunning();
-	},
-	finish(scene) {
-		AttachCamera(this.person);
-	}
-});
-
-scenes.defScenelet('hidePerson',
-{
-	start(scene, person) {
-		SetPersonVisible(person, false);
-		IgnorePersonObstructions(person, true);
-	}
-});
-
-scenes.defScenelet('killPerson',
-{
-	start(scene, person) {
-		DestroyPerson(person);
 	}
 });
 
@@ -189,116 +101,6 @@ scenes.defScenelet('marquee',
 	}
 });
 
-scenes.defScenelet('maskPerson',
-{
-	start(scene, name, newMask, duration) {
-		duration = duration !== undefined ? duration : 15;
-		
-		this.name = name;
-		this.mask = GetPersonMask(this.name);
-		this.fade = new scenes.Scene()
-			.tween(this.mask, duration, 'easeInOutSine', newMask)
-			.run();
-	},
-	update(scene) {
-		SetPersonMask(this.name, this.mask);
-		return this.fade.isRunning();
-	}
-});
-
-scenes.defScenelet('movePerson',
-{
-	start(scene, person, direction, distance, speed, faceFirst) {
-		faceFirst = faceFirst !== undefined ? faceFirst : true;
-		
-		if (!isNaN(speed)) {
-			speedVector = [ speed, speed ];
-		} else {
-			speedVector = speed;
-		}
-		this.person = person;
-		this.oldSpeedVector = [ GetPersonSpeedX(person), GetPersonSpeedY(person) ];
-		if (speedVector != null) {
-			SetPersonSpeedXY(this.person, speedVector[0], speedVector[1]);
-		} else {
-			speedVector = this.oldSpeedVector;
-		}
-		var xMovement;
-		var yMovement;
-		var faceCommand;
-		var stepCount;
-		switch (direction) {
-			case "n": case "north":
-				faceCommand = COMMAND_FACE_NORTH;
-				xMovement = COMMAND_WAIT;
-				yMovement = COMMAND_MOVE_NORTH;
-				stepCount = distance / speedVector[1];
-				break;
-			case "e": case "east":
-				faceCommand = COMMAND_FACE_EAST;
-				xMovement = COMMAND_MOVE_EAST;
-				yMovement = COMMAND_WAIT;
-				stepCount = distance / speedVector[0];
-				break;
-			case "s": case "south":
-				faceCommand = COMMAND_FACE_SOUTH;
-				xMovement = COMMAND_WAIT;
-				yMovement = COMMAND_MOVE_SOUTH;
-				stepCount = distance / speedVector[1];
-				break;
-			case "w": case "west":
-				faceCommand = COMMAND_FACE_WEST;
-				xMovement = COMMAND_MOVE_WEST;
-				yMovement = COMMAND_WAIT;
-				stepCount = distance / speedVector[0];
-				break;
-			default:
-				faceCommand = COMMAND_WAIT;
-				xMovement = COMMAND_WAIT;
-				yMovement = COMMAND_WAIT;
-				stepCount = 0;
-		}
-		if (faceFirst) {
-			QueuePersonCommand(this.person, faceCommand, true);
-		}
-		for (iStep = 0; iStep < stepCount; ++iStep) {
-			QueuePersonCommand(this.person, xMovement, true);
-			QueuePersonCommand(this.person, yMovement, true);
-			QueuePersonCommand(this.person, COMMAND_WAIT, false);
-		}
-		return true;
-	},
-	update(scene) {
-		return !IsCommandQueueEmpty(this.person);
-	},
-	finish(scene) {
-		SetPersonSpeedXY(this.person, this.oldSpeedVector[0], this.oldSpeedVector[1]);
-	}
-});
-
-scenes.defScenelet('panTo',
-{
-	start(scene, x, y, duration) {
-		duration = duration !== undefined ? duration : 15;
-		
-		DetachCamera();
-		var targetXY = {
-			cameraX: x,
-			cameraY: y
-		};
-		this.cameraX = GetCameraX();
-		this.cameraY = GetCameraY();
-		this.pan = new scenes.Scene()
-			.tween(this, duration, 'easeOutQuad', targetXY)
-			.run();
-	},
-	update(scene) {
-		SetCameraX(this.cameraX);
-		SetCameraY(this.cameraY);
-		return this.pan.isRunning();
-	}
-});
-
 scenes.defScenelet('popBGM',
 {
 	start(scene) {
@@ -310,22 +112,6 @@ scenes.defScenelet('pushBGM',
 {
 	start(scene, trackName) {
 		music.push("music/" + trackName + ".ogg");
-	}
-});
-
-scenes.defScenelet('setSprite',
-{
-	start(scene, name, spriteFile) {
-		var spriteset = LoadSpriteset(spriteFile);
-		SetPersonSpriteset(name, spriteset);
-	}
-});
-
-scenes.defScenelet('showPerson',
-{
-	start(scene, person) {
-		SetPersonVisible(person, true);
-		IgnorePersonObstructions(person, false);
 	}
 });
 

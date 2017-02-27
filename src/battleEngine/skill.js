@@ -3,7 +3,7 @@
   *           Copyright (C) 2013 Power-Command
 ***/
 
-RequireScript("Stat.js");
+RequireScript("battleEngine/stat.js");
 
 class SkillUsable
 {

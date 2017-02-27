@@ -5,7 +5,7 @@
 
 // Game object
 // Defines basic gameplay parameters.
-Game =
+const Game =
 {
 	title: "Spectacles: Bruce's Story",
 	
@@ -22,16 +22,15 @@ Game =
 	stanceChangeRank: 5,
 };
 
-EvaluateScript('gamedef/animations.js');
-EvaluateScript('gamedef/battles.js');
-EvaluateScript('gamedef/characters.js');
-EvaluateScript('gamedef/conditions.js');
-EvaluateScript('gamedef/items.js');
-EvaluateScript('gamedef/maps.js');
-EvaluateScript('gamedef/math.js');
-EvaluateScript('gamedef/moveEffects.js');
-EvaluateScript('gamedef/scenes.js');
-EvaluateScript('gamedef/skills.js');
-EvaluateScript('gamedef/statuses.js');
-EvaluateScript('gamedef/stats.js');
-EvaluateScript('gamedef/weapons.js');
+EvaluateScript('gameDef/animations.js');
+EvaluateScript('gameDef/battles.js');
+EvaluateScript('gameDef/characters.js');
+EvaluateScript('gameDef/conditions.js');
+EvaluateScript('gameDef/items.js');
+EvaluateScript('gameDef/maps.js');
+EvaluateScript('gameDef/math.js');
+EvaluateScript('gameDef/moveEffects.js');
+EvaluateScript('gameDef/skills.js');
+EvaluateScript('gameDef/statuses.js');
+EvaluateScript('gameDef/stats.js');
+EvaluateScript('gameDef/weapons.js');

@@ -13,18 +13,14 @@ global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
 
-RequireSystemScript('analogue.js');
-
-RequireScript('Battle.js');
-RequireScript('Cutscenes.js');
-RequireScript('FieldMenu.js');
+RequireScript('battleEngine/encounter.js');
 RequireScript('GameOverScreen.js');
 RequireScript('inGameClock.js');
 RequireScript('menuStrip.js');
+RequireScript('scenelets.js');
 RequireScript('session.js');
 RequireScript('SpriteImage.js');
-RequireScript('StoryManager.js');
-RequireScript('TestHarness.js');
+RequireScript('testHarness.js');
 RequireScript('TitleScreen.js');
 
 EvaluateScript('gameDef/game.js');
@@ -36,7 +32,7 @@ function game()
 	//       entirely to Sphere v2.  that effort is ongoing,  but a full conversion
 	//       is going to take a while.
 
-	analogue.init();
+	TestHarness.initialize();
 
 	term.define('yap', null, {
 		'on': function() {
@@ -48,9 +44,6 @@ function game()
 			term.print("the yappy times are OVER!");
 		}, 
 	});
-
-	// set up the beta test harness
-	TestHarness.initialize();
 
 	InGameClock.initialize();
 	TestHarness.run('rsb2');

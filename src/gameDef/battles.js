@@ -3,12 +3,12 @@
   *           Copyright (c) 2015 Power-Command
 ***/
 
-RequireScript('battleAI/headlessHorse.js');
-RequireScript('battleAI/robertI.js');
-RequireScript('battleAI/robertII.js');
-RequireScript('battleAI/scottTemple.js');
-RequireScript('battleAI/scottStarcross.js');
-RequireScript('battleAI/victor.js');
+RequireScript('cpuBattlerAIs/headlessHorse.js');
+RequireScript('cpuBattlerAIs/robertI.js');
+RequireScript('cpuBattlerAIs/robertII.js');
+RequireScript('cpuBattlerAIs/scottTemple.js');
+RequireScript('cpuBattlerAIs/scottStarcross.js');
+RequireScript('cpuBattlerAIs/victor.js');
 
 // boss and miniboss battle definitions.
 // random field battles don't have specific definitions as the

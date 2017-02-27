@@ -3,9 +3,9 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('ItemUsable.js');
-RequireScript('SkillUsable.js');
-RequireScript('WeaponUsable.js');
+RequireScript('battleEngine/item.js');
+RequireScript('battleEngine/skill.js');
+RequireScript('battleEngine/weapon.js');
 
 // AIContext() constructor
 // Creates an object representing a context for an enemy AI.

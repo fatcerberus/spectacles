@@ -4,15 +4,15 @@
 ***/
 
 RequireScript('BattleScreen.js');
-RequireScript('BattleUnit.js');
-RequireScript('ConditionContext.js');
-RequireScript('MPPool.js');
+RequireScript('battleEngine/battleUnit.js');
+RequireScript('battleEngine/fieldCondition.js');
+RequireScript('battleEngine/mpPool.js');
 
 // BattleResult enumeration
 // Specifies the outcome of a battle.
-BattleResult =
+const BattleResult =
 {
-	Win: 1,
+	Win:  1,
 	Flee: 2,
 	Lose: 3,
 };
@@ -25,7 +25,7 @@ BattleResult =
 function Battle(session, battleID)
 {
 	if (!(battleID in Game.battles))
-		throw new ReferenceError(`battle definition '${battleID}' doesn't exist!`);
+		throw new ReferenceError(`no encounter data for '${battleID}'`);
 
 	term.print("Initializing battle context for '" + battleID + "'");
 	this.battleID = battleID;
@@ -220,13 +220,13 @@ Battle.prototype.go = function()
 	this.conditions = [];
 	for (var i = 0; i < this.parameters.enemies.length; ++i) {
 		var enemyID = this.parameters.enemies[i];
-		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.Middle);
+		var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle);
 		this.battleUnits.push(unit);
 		this.enemyUnits.push(unit);
 	}
 	var i = 0;
 	for (var name in this.session.party.members) {
-		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, BattleRow.Middle, partyMPPool);
+		var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
 		this.battleUnits.push(unit);
 		this.playerUnits.push(unit);
 		++i;

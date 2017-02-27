@@ -3,26 +3,22 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-RequireScript('AIContext.js');
-RequireScript('ItemUsable.js');
+RequireScript('battleEngine/aiContext.js');
+RequireScript('battleEngine/item.js');
 RequireScript('MoveMenu.js');
-RequireScript('MPPool.js');
-RequireScript('SkillUsable.js');
-RequireScript('Stat.js');
-RequireScript('StatusContext.js');
+RequireScript('battleEngine/mpPool.js');
+RequireScript('battleEngine/skill.js');
+RequireScript('battleEngine/stat.js');
+RequireScript('battleEngine/statusEffect.js');
 
-// BattleRow enumeration
-// Specifies a battler's relative distance from its opponents.
-var BattleRow =
+const Row =
 {
-	Front: -1,
+	Front:  -1,
 	Middle: 0,
 	Rear:   1,
 };
 
-// Stance enumeration
-// Specifies a battle unit's current battling stance.
-var Stance =
+const Stance =
 {
 	Attack:  0,  // normal attacking stance
 	Guard:   1,  // guard against damage and statuses
