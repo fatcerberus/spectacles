@@ -67,7 +67,7 @@ BattleScreen.prototype.announceAction = function(actionName, alignment, bannerCo
 			var boxColor = CreateColor(this.color.red, this.color.green, this.color.blue, this.color.alpha * (1.0 - this.fadeness));
 			Rectangle(x, y, width, height, boxColor);
 			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64 * (1.0 - this.fadeness)));
-			DrawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
+			drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 		},
 		update: function() {
 			return true;

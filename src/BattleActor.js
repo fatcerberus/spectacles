@@ -102,7 +102,7 @@ BattleActor.prototype.render = function()
 			var y = this.y + this.damages[i][yName];
 			var color = this.damages[i].color !== null ? this.damages[i].color
 				: CreateColor(255, 255, 255, 255);
-			DrawTextEx(this.messageFont, x, y, text[i2], color, 1);
+			drawTextEx(this.messageFont, x, y, text[i2], color, 1);
 			x += this.messageFont.getStringWidth(text[i2]);
 		}
 	}
@@ -111,7 +111,7 @@ BattleActor.prototype.render = function()
 		var color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
 		var textColor = BlendColors(color, color);
 		textColor.alpha *= this.healings[i].alpha / 255;
-		DrawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
+		drawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
 	}
 };
 

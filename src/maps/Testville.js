@@ -83,7 +83,7 @@
 				{
 					var x = MapToScreenX('Base', GetPersonX(info.name));
 					var y = MapToScreenY('Base', GetPersonY(info.name));
-					DrawTextEx(font, x, y, "Lv." + info.ghostLevel, CreateColor(255, 255, 255, 128), 1, 'center');
+					drawTextEx(font, x, y, "Lv." + info.ghostLevel, CreateColor(255, 255, 255, 128), 1, 'center');
 				});
 			},
 			update: function() {

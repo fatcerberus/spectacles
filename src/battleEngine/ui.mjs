@@ -283,7 +283,7 @@ class TurnPreview
 		SetClippingRectangle(0, y, 160, 16);
 		Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.125));
-		DrawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
+		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
 		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
 		for (var id in this.entries) {
@@ -292,7 +292,7 @@ class TurnPreview
 				var turnBox = entry.turnBoxes[i];
 				Rectangle(turnBox.x, y, 16, 16, entry.color);
 				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
-				DrawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
+				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
 			}
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());

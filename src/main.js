@@ -19,7 +19,7 @@ RequireScript('Battle.js');
 RequireScript('Cutscenes.js');
 RequireScript('FieldMenu.js');
 RequireScript('GameOverScreen.js');
-RequireScript('LucidaClock.js');
+RequireScript('inGameClock.js');
 RequireScript('MenuStrip.js');
 RequireScript('Scrambler.js');
 RequireScript('Session.js');
@@ -39,27 +39,21 @@ function game()
 	term.define('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;
-			term.print("Oh, yappy times are here again...");
+			term.print("oh, yappy times are here again...");
 		}, 
 		'off': function() {
 			Sphere.Game.disableTalking = true;
-			term.print("The yappy times are OVER!");
+			term.print("the yappy times are OVER!");
 		}, 
 	});
 
 	// set up the beta test harness
 	TestHarness.initialize();
 
-	LucidaClock.initialize();
+	InGameClock.initialize();
 	TestHarness.run('rsb2');
 }
 
-// clone() function
-// Creates a deep copy of an object, preserving circular references.
-// Arguments:
-//     o: The object to clone.
-// Returns:
-//     The new, cloned object.
 function clone(o)
 {
 	var memo = arguments.length >= 2 ? arguments[1] : [];
@@ -84,51 +78,19 @@ function clone(o)
 	}
 }
 
-function DrawTextEx(font, x, y, text, color, shadowDistance, alignment)
+function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadowDistance = 0, alignment = 'left')
 {
-	color = color !== void null ? color : CreateColor(255, 255, 255, 255);
-	shadowDistance = shadowDistance !== void null ? shadowDistance : 0;
-	alignment = alignment !== void null ? alignment : 'left';
-
-	if (arguments.length < 4)
-		throw new RangeError("requires at least 4 arguments");
-
-	var alignments = {
+	const Align = {
 		left:   (font, x, text) => x,
 		center: (font, x, text) => x - font.getStringWidth(text) / 2,
 		right:  (font, x, text) => x - font.getStringWidth(text),
 	};
-	if (!(alignment in alignments))
-		throw new TypeError("invalid alignment mode `" + alignment + "`");
 
-	x = alignments[alignment](font, x, text);
+	x = Align[alignment](font, x, text);
 	var oldColorMask = font.getColorMask();
 	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 	font.drawText(x + shadowDistance, y + shadowDistance, text);
 	font.setColorMask(color);
 	font.drawText(x, y, text);
 	font.setColorMask(oldColorMask);
-}
-
-// ShowLogo() function
-// Momentarily displays a full-screen logo.
-// Arguments:
-//     imageName: The file name of the image to display.
-//     time:      The amount of time, in frames, to keep the image on-screen.
-function ShowLogo(filename, time)
-{
-	var image = new Texture(filename);
-	var scene = new scenes.Scene()
-		.fadeTo(Color.Black, 0)
-		.fadeTo(Color.Transparent, 60)
-		.pause(time)
-		.fadeTo(Color.Black, 60)
-		.run();
-	threads.join(threads.create({
-		update: function() { return scene.isRunning(); },
-		render: function() { prim.blit(screen, 0, 0, image); }
-	}));
-	new scenes.Scene()
-		.fadeTo(Color.Transparent, 0)
-		.run(true);
 }

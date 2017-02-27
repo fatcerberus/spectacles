@@ -64,13 +64,13 @@ FieldMenu.prototype.getInput = function()
 
 FieldMenu.prototype.render = function()
 {
-	var time = LucidaClock.getTime();
+	var time = InGameClock.getTime();
 	
 	// draw game progress log
 	var y = -(1.0 - this.fadeness) * 208;
 	Rectangle(0, y, 320, 224, CreateColor(0, 0, 0, 192));
 	OutlinedRectangle(0, y, 320, 224, CreateColor(0, 0, 0, 64));
-	DrawTextEx(this.font, 160, y + 16, time.toString(), CreateColor(0, 64, 255, 255), 1, 'center');
+	drawTextEx(this.font, 160, y + 16, time.toString(), CreateColor(0, 64, 255, 255), 1, 'center');
 	
 	// draw main menu items
 	y = 240 - this.fadeness * 16;
@@ -84,7 +84,7 @@ FieldMenu.prototype.render = function()
 		GradientRectangle(x, y, width, 8, color2, color2, this.items[i].highlight, this.items[i].highlight);
 		GradientRectangle(x, y + 8, width, 8, this.items[i].highlight, this.items[i].highlight, color2, color2);
 		OutlinedRectangle(x, y, width, 16, CreateColor(0, 0, 0, 128));
-		DrawTextEx(this.font, x + width / 2, y + 2, this.items[i].name, this.items[i].textColor, 1, 'center');
+		drawTextEx(this.font, x + width / 2, y + 2, this.items[i].name, this.items[i].textColor, 1, 'center');
 		x += width;
 	}
 };
