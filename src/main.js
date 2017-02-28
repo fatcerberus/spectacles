@@ -74,7 +74,8 @@ function clone(o)
 
 function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadowDistance = 0, alignment = 'left')
 {
-	const Align = {
+	const Align =
+	{
 		left:   (font, x, text) => x,
 		center: (font, x, text) => x - font.getStringWidth(text) / 2,
 		right:  (font, x, text) => x - font.getStringWidth(text),

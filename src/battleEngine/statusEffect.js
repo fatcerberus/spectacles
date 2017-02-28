@@ -15,7 +15,7 @@ class StatusEffect
 		this.statusDef = Game.statuses[statusID];
 		this.statusID = statusID;
 		this.unit = unit;
-		term.print(`initialize status context ${unit.name}->${this.name}`);
+		term.print(`initialize status effect ${unit.name}->${this.name}`);
 		if ('overrules' in this.statusDef) {
 			for (var i = 0; i < this.statusDef.overrules.length; ++i)
 				this.unit.liftStatus(this.statusDef.overrules[i]);

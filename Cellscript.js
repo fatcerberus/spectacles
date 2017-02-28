@@ -27,8 +27,6 @@ transpile('@/scripts', files('src/*.js', true));
 transpile('@/scripts', files('src/*.mjs', true));
 
 install('@/images',     files('images/*.png', true));
-install('@/maps',       files('maps/*.rmp', true));
-install('@/maps',       files('maps/*.rts', true));
 install('@/music',      files('music/*.ogg', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds',     files('sounds/*.wav', true));

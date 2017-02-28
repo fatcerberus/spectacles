@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('BattleScreen.js');
+RequireScript('battleEngine/battleScreen.js');
 RequireScript('battleEngine/battleUnit.js');
 RequireScript('battleEngine/fieldCondition.js');
 RequireScript('battleEngine/mpPool.js');
@@ -27,7 +27,7 @@ function Battle(session, battleID)
 	if (!(battleID in Game.battles))
 		throw new ReferenceError(`no encounter data for '${battleID}'`);
 
-	term.print("Initializing battle context for '" + battleID + "'");
+	term.print(`initialize battle context for '${battleID}'`);
 	this.battleID = battleID;
 	this.mode = null;
 	this.parameters = Game.battles[battleID];
@@ -108,17 +108,16 @@ function Battle(session, battleID)
 //     conditionID: The ID of the field condition, as defined in the gamedef.
 Battle.prototype.addCondition = function(conditionID)
 {
-	if (this.hasCondition(conditionID)) {
-		return;
-	}
+	if (this.hasCondition(conditionID))
+		return;  // nop if already installed
 	var eventData = { conditionID: conditionID, cancel: false };
 	this.raiseEvent('conditionInstalled', eventData);
 	if (!eventData.cancel) {
 		var effect = new FieldCondition(eventData.conditionID, this);
 		this.conditions.push(effect);
-		term.print("Installed field condition " + effect.name);
+		term.print(`install field condition ${effect.name}`);
 	} else {
-		term.print("FC installation (ID: " + conditionID + ") canceled by existing FC");
+		term.print(`cancel FC '${conditionID}' per existing FC`);
 	}
 };
 
@@ -130,11 +129,10 @@ Battle.prototype.addCondition = function(conditionID)
 //     An array containing references to all units allied with the one specified.
 Battle.prototype.alliesOf = function(unit)
 {
-	if (unit.isPartyMember()) {
+	if (unit.isPartyMember())
 		return this.playerUnits;
-	} else {
+	else
 		return this.enemyUnits;
-	}
 };
 
 // .areEnemies() method
@@ -192,12 +190,12 @@ Battle.prototype.getLevel = function()
 Battle.prototype.go = function()
 {
 	if (Sphere.Game.disableBattles) {
-		term.print("Battles disabled, automatic win", "battleID: " + this.battleID);
+		term.print("battles disabled, automatic win", `battleID: ${this.battleID}`);
 		this.result = BattleResult.Win;
 		return null;
 	}
 	term.print("");
-	term.print("Starting battle engine", "battleID: " + this.battleID);
+	term.print("start battle engine", `battleID: ${this.battleID}`);
 	var partyMaxMP = 0;
 	for (id in this.session.party.members) {
 		var battlerInfo = this.session.party.members[id].getInfo();
@@ -277,9 +275,9 @@ Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			term.print(`field condition ${this.conditions[i].name} lifted`);
-			this.conditions.splice(i, 1);
-			--i; continue;
+			term.print(`lift field condition ${this.conditions[i].name}`);
+			this.conditions.splice(i--, 1);
+			continue;
 		}
 	}
 };
@@ -304,7 +302,7 @@ Battle.prototype.predictTurns = function(actingUnit = null, nextActions = null)
 	for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
 		var bias = 0;
 		from(this.enemyUnits, this.playerUnits)
-			.where(it => it !== actingUnit || turnIndex > 0)
+			.where(i => i !== actingUnit || turnIndex > 0)
 			.each(unit =>
 		{
 			++bias;

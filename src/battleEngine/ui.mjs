@@ -333,7 +333,7 @@ class TurnPreview
 	show()
 	{
 		if (this.thread === null) {
-			term.print("Activating in-battle turn preview");
+			term.print("activate battle screen turn preview");
 			this.thread = threads.create(this, 20);
 		}
 		new scenes.Scene()

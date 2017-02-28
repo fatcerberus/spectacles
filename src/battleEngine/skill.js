@@ -10,7 +10,7 @@ class SkillUsable
 	constructor(skillID, level = 1)
 	{
 		if (!(skillID in Game.skills)) {
-			Abort("SkillUsable(): The skill definition '" + skillID + "' doesn't exist.");
+			throw new ReferenceError(`no skill definition for '${skillID}'`);
 		}
 		this.levelUpTable = [];
 		for (var i = 1; i <= 100; ++i) {
@@ -85,8 +85,7 @@ class SkillUsable
 	{
 		amount = Math.max(Math.round(amount), 0);
 		this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
-		term.print("Skill " + this.name + " gained " + amount + " EXP",
-			"lv: " + this.getLevel());
+		term.print(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.getLevel()}`);
 	}
 
 	isUsable(user, stance)
@@ -118,14 +117,11 @@ class SkillUsable
 
 	use(unit, targets)
 	{
-		if (!this.isUsable(unit, unit.stance)) {
-			Abort("SkillUsable.use(): " + unit.name + " tried to use " + this.name + ", which was unusable (this is usually due to insufficient MP).");
-		}
-		term.print(unit.name + " is using " + this.name,
-			"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
-		if (unit.weapon != null && this.skillInfo.weaponType != null) {
-			term.print("weapon is " + unit.weapon.name, "lv: " + unit.weapon.level);
-		}
+		if (!this.isUsable(unit, unit.stance))
+			throw new Error(`${unit.name} tried to use unusable skill ${this.name}`);
+		term.print(`${unit.name} is using ${this.name}`, `targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
+		if (unit.weapon != null && this.skillInfo.weaponType != null)
+			term.print(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);
 		unit.mpPool.use(this.mpCost(unit));
 		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
 		var targetInfos = [];
