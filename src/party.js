@@ -20,7 +20,7 @@ class Party
 	{
 		var newMember = new PartyMember(characterID, level);
 		this.members[characterID] = newMember;
-		term.print("add PC " + newMember.name + " to party");
+		term.print(`add PC ${newMember.name} to party`);
 	}
 
 	getLevel()
@@ -46,12 +46,10 @@ class Party
 
 	remove(characterID)
 	{
-		for (var id in this.members) {
-			if (id === characterID) {
-				term.print("remove PC " + this.members[id].name + " from party");
-				delete this.members[id];
-			}
-		}
+		from.Object(this.members)
+			.where((v, k) => k === characterID)
+			.besides(v => term.print(`remove PC ${v.name} from party`))
+			.remove();
 	}
 }
 
@@ -73,25 +71,23 @@ class PartyMember
 		
 		var character = Game.characters[this.characterID];
 		this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
-		for (var statID in character.baseStats) {
+		for (var statID in character.baseStats)
 			this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
-		}
-		term.print("create new PC " + this.name, "lvl: " + this.getLevel());
-		for (var i = 0; i < character.skills.length; ++i) {
+		term.print(`create new PC ${this.name}`, `lvl: ${this.getLevel()}`);
+		for (var i = 0; i < character.skills.length; ++i)
 			this.learnSkill(character.skills[i]);
-		}
 	}
 
 	getInfo()
 	{
-		var info = {
+		let info = {
 			characterID: this.characterID,
 			level: this.getLevel(),
 			tier: 1
-		}
+		};
 		info.baseStats = {};
 		info.stats = {};
-		for (var statID in this.characterDef.baseStats) {
+		for (let statID in this.characterDef.baseStats) {
 			info.baseStats[statID] = this.characterDef.baseStats[statID];
 			info.stats[statID] = this.stats[statID].value;
 		}
@@ -100,9 +96,9 @@ class PartyMember
 
 	getLevel()
 	{
-		var sum = 0;
-		var count = 0;
-		for (var stat in this.stats) {
+		let sum = 0;
+		let count = 0;
+		for (let stat in this.stats) {
 			sum += this.stats[stat].level;
 			++count;
 		}
@@ -116,10 +112,10 @@ class PartyMember
 
 	learnSkill(skillID)
 	{
-		var skill = new SkillUsable(skillID, 100);
+		let skill = new SkillUsable(skillID, 100);
 		this.skillList.push(skill);
 		this.refreshSkills();
-		term.print("PC " + this.name + " learned skill " + skill.name);
+		term.print(`PC ${this.name} learned skill ${skill.name}`);
 		return skill;
 	}
 
@@ -129,9 +125,8 @@ class PartyMember
 		this.usableSkills = [];
 		for (var i = 0; i < this.skillList.length; ++i) {
 			var skillInfo = this.skillList[i].skillInfo;
-			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType) {
+			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType)
 				continue;
-			}
 			this.usableSkills.push(this.skillList[i]);
 		}
 	}

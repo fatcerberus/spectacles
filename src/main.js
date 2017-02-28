@@ -52,19 +52,17 @@ function clone(o)
 {
 	var memo = arguments.length >= 2 ? arguments[1] : [];
 	if (typeof o === 'object' && o !== null) {
-		for (var i = 0; i < memo.length; ++i) {
-			if (o === memo[i].original) {
+		for (let i = 0; i < memo.length; ++i) {
+			if (o === memo[i].original)
 				return memo[i].dolly;
-			}
 		}
-		var dolly = Array.isArray(o) ? []
+		let dolly = Array.isArray(o) ? []
 			: 'clone' in o && typeof o.clone === 'function' ? o.clone()
 			: {};
 		memo[memo.length] = { original: o, dolly: dolly };
 		if (Array.isArray(o) || !('clone' in o) || typeof o.clone !== 'function') {
-			for (var p in o) {
+			for (let p in o)
 				dolly[p] = clone(o[p], memo);
-			}
 		}
 		return dolly;
 	} else {
@@ -82,7 +80,7 @@ function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadow
 	};
 
 	x = Align[alignment](font, x, text);
-	var oldColorMask = font.getColorMask();
+	let oldColorMask = font.getColorMask();
 	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 	font.drawText(x + shadowDistance, y + shadowDistance, text);
 	font.setColorMask(color);
