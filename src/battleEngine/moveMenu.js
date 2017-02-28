@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('targetMenu.js');
+RequireScript('battleEngine/targetMenu.js');
 
 // MoveMenu() constructor
 // Creates an object representing a move-choosing menu.

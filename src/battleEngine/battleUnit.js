@@ -5,7 +5,7 @@
 
 RequireScript('battleEngine/aiContext.js');
 RequireScript('battleEngine/item.js');
-RequireScript('moveMenu.js');
+RequireScript('battleEngine/moveMenu.js');
 RequireScript('battleEngine/mpPool.js');
 RequireScript('battleEngine/skill.js');
 RequireScript('battleEngine/stat.js');
@@ -20,10 +20,11 @@ const Row =
 
 const Stance =
 {
-	Attack:  0,  // normal attacking stance
-	Guard:   1,  // guard against damage and statuses
-	Counter: 2,  // counterattacking stance
-	Charge:  3,  // charge up an attack
+	Attack:  0,
+	Guard:   1,
+	Counter: 2,
+	Charge:  3,
+	Hippo:   4,
 };
 
 // BattleUnit() constructor

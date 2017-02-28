@@ -3,6 +3,8 @@
   *           Copyright (c) 2012 Power-Command
 ***/
 
+RequireScript('battleEngine/spriteImage.js');
+
 // BattleActor() constructor
 // Creates an object representing a battle screen actor.
 // Arguments:

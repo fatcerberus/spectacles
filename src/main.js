@@ -14,14 +14,13 @@ global.term    = require('term');
 global.threads = require('threads');
 
 RequireScript('battleEngine/encounter.js');
-RequireScript('GameOverScreen.js');
+RequireScript('gameOverScreen.js');
 RequireScript('inGameClock.js');
 RequireScript('menuStrip.js');
 RequireScript('scenelets.js');
 RequireScript('session.js');
-RequireScript('spriteImage.js');
 RequireScript('testHarness.js');
-RequireScript('TitleScreen.js');
+RequireScript('titleScreen.js');
 
 EvaluateScript('gameDef/game.js');
 
