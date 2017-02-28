@@ -194,7 +194,7 @@ class AIContext
 		this.moveQueue.push({
 			usable: null,
 			stance: Stance.Guard,
-			predicate: function() { return true; }
+			predicate: () => true,
 		});
 	}
 
@@ -217,7 +217,7 @@ class AIContext
 			usable: itemToUse,
 			stance: Stance.Attack,
 			targets: targets,
-			predicate: function() { return true; }
+			predicate: () => true,
 		});
 		term.print(`${this.unit.name} queued use of item ${itemToUse.name}`);
 	}
@@ -255,7 +255,7 @@ class AIContext
 			usable: weaponUsable,
 			stance: Stance.Attack,
 			targets: weaponUsable.defaultTargets(this.unit),
-			predicate: function() { return true; }
+			predicate: () => true,
 		});
 		var weaponDef = Game.weapons[weaponID];
 		term.print(`${this.unit.name} queued weapon change to ${weaponDef.name}`);
