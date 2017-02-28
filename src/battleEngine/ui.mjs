@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2017 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 import * as prim from 'prim';

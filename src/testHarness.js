@@ -1,18 +1,18 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2015 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 class TestHarness
 {
 	static initialize()
 	{
-		term.print("initializing Specs Engine test harness");
+		term.print("initialize Specs Engine test harness");
 		
 		term.define('harness', this, {
 			'run': function(testID) {
 				if (!(testID in this.tests))
-					return term.print("Unknown test ID '" + testID + "'");
+					return term.print(`unknown test ID '${testID}'`);
 				this.run(testID);
 			}
 		});
@@ -21,8 +21,8 @@ class TestHarness
 		
 		var testScripts = GetFileList('~/scripts/testcases');
 		for (var i = 0; i < testScripts.length; ++i) {
-			term.print("loading testcases from '" + testScripts[i] + "'");
-			EvaluateScript('~/scripts/testcases/' + testScripts[i]);
+			term.print(`load testcases from '${testScripts[i]}'`);
+			EvaluateScript(`~/scripts/testcases/${testScripts[i]}`);
 		}
 	}
 
@@ -32,10 +32,10 @@ class TestHarness
 			setup: setupData,
 			run: function() {
 				if (TestHarness.isBattleRunning) {
-					term.print("cannot run test battle, one is ongoing");
+					term.print("cannot start test battle, one is ongoing");
 					return;
 				}
-				term.print("running test battle", "battleID: " + this.setup.battleID);
+				term.print("initiate test battle", `battleID: ${this.setup.battleID}`);
 				var session = new Session();
 				from(Game.initialParty).each(charID => {
 					session.party.remove(charID);
@@ -57,7 +57,7 @@ class TestHarness
 				TestHarness.isBattleRunning = false;
 			}
 		};
-		term.print("added battle test '" + testID + "'");
+		term.print(`add battle test '${testID}'`);
 	}
 
 	static addTest(testID, func)
@@ -72,12 +72,12 @@ class TestHarness
 		term.define(testID, this.tests[testID], {
 			'test': TestHarness.run.bind(TestHarness, testID)
 		});
-		term.print("added generic test '" + testID + "'");
+		term.print(`add generic test '${testID}'`);
 	}
 
 	static run(testID)
 	{
-		term.print("test harness invoked", "testID: " + testID);
+		term.print("test harness invoked", `testID: ${testID}`);
 		this.tests[testID].run(this.tests[testID].setup, testID);
 	}
 }

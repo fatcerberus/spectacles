@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2013 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 Game.statNames =

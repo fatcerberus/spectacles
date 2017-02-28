@@ -1,15 +1,13 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 RequireScript('battleEngine/encounter.js');
 
 scenes.defScenelet('adjustBGM',
 {
-	start(scene, volume, duration) {
-		duration = duration !== undefined ? duration : 0.0;
-		
+	start(scene, volume, duration = 0.0) {
 		music.adjust(volume, duration);
 	},
 	update(scene) {
@@ -33,7 +31,7 @@ scenes.defScenelet('battle',
 			case 'battle':
 				if (!threads.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.Lose) {
-						term.print("Player lost battle, showing Game Over screen");
+						term.print("player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -44,8 +42,8 @@ scenes.defScenelet('battle',
 				break;
 			case 'gameOver':
 				if (!threads.isRunning(this.gameOverThread)) {
-					if (this.gameOver.action === GameOverAction.retry) {
-						term.print("Player asked to retry last battle");
+					if (this.gameOver.action === GameOverAction.Retry) {
+						term.print("player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {

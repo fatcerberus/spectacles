@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2015 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 global.events  = require('events');
@@ -19,7 +19,7 @@ RequireScript('inGameClock.js');
 RequireScript('menuStrip.js');
 RequireScript('scenelets.js');
 RequireScript('session.js');
-RequireScript('SpriteImage.js');
+RequireScript('spriteImage.js');
 RequireScript('testHarness.js');
 RequireScript('TitleScreen.js');
 
@@ -27,10 +27,10 @@ EvaluateScript('gameDef/game.js');
 
 function game()
 {
-	// note: a game() function is needed for now because the engine was originally
-	//       written for Sphere v1.  the goal is to eventually convert the Specs Engine
-	//       entirely to Sphere v2.  that effort is ongoing,  but a full conversion
-	//       is going to take a while.
+	// note: a game() function is needed for now because the engine was
+	//       originally written for Sphere v1.  the goal is to eventually
+	//       convert the Specs Engine entirely to Sphere v2.  that effort
+	//       is ongoing,  but a full conversion will take a while.
 
 	TestHarness.initialize();
 

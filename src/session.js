@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 RequireScript('Party.js');
@@ -22,7 +22,7 @@ class Session
 
 	constructor(difficulty = Difficulty.Standard)
 	{
-		term.print("initializing new game session", "diff lv: " + difficulty);
+		term.print("initialize new game session", `diff lv: ${difficulty}`);
 
 		this.difficulty = difficulty;
 		this.party = new Party(1);

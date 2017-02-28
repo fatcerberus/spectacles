@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2012 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 const DayMask      = Color.Transparent;
@@ -11,7 +11,7 @@ class InGameClock
 {
 	static initialize()
 	{
-		term.print("initializing in-game clock", `time: ${this.getTime()}`);
+		term.print("initialize in-game clock", `time: ${this.getTime()}`);
 
 		this.currentMask = Color.Transparent
 		threads.create(this, 1);

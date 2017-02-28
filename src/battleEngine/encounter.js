@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (C) 2013 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 RequireScript('BattleScreen.js');
@@ -114,7 +114,7 @@ Battle.prototype.addCondition = function(conditionID)
 	var eventData = { conditionID: conditionID, cancel: false };
 	this.raiseEvent('conditionInstalled', eventData);
 	if (!eventData.cancel) {
-		var effect = new ConditionContext(eventData.conditionID, this);
+		var effect = new FieldCondition(eventData.conditionID, this);
 		this.conditions.push(effect);
 		term.print("Installed field condition " + effect.name);
 	} else {

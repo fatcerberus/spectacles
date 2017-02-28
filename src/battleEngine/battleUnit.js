@@ -1,11 +1,11 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2013 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 RequireScript('battleEngine/aiContext.js');
 RequireScript('battleEngine/item.js');
-RequireScript('MoveMenu.js');
+RequireScript('moveMenu.js');
 RequireScript('battleEngine/mpPool.js');
 RequireScript('battleEngine/skill.js');
 RequireScript('battleEngine/stat.js');
@@ -172,7 +172,7 @@ BattleUnit.prototype.addStatus = function(statusID, isGuardable)
 				this.raiseEvent('afflicted', eventData);
 			}
 			if (!eventData.cancel) {
-				var effect = new StatusContext(eventData.statusID, this);
+				var effect = new StatusEffect(eventData.statusID, this);
 				this.statuses.push(effect);
 				this.battlerInfo.statuses = [];
 				from(this.statuses).each(it => {
