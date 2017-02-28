@@ -419,7 +419,7 @@ BattleUnit.prototype.heal = function(amount, tags, isPriority)
 		this.actor.showHealing(amount);
 		this.battle.ui.hud.setHP(this, this.hp);
 		this.battle.unitHealed.invoke(this, amount);
-		term.print(this.name + " healed for " + amount + " HP", "now: " + this.hp);
+		term.print(`heal ${this.name} for ${amount} HP`, `now: ${this.hp}`);
 	} else if (amount < 0) {
 		this.takeDamage(-amount, [], true);
 	}
@@ -456,7 +456,7 @@ BattleUnit.prototype.liftStatus = function(statusID)
 	if (!eventData.cancel) {
 		for (var i = 0; i < this.statuses.length; ++i) {
 			if (statusID == this.statuses[i].statusID) {
-				term.print(this.name + " lost status " + this.statuses[i].name);
+				term.print(`lift status ${this.statuses[i].name} from ${this.name}`);
 				this.statuses.splice(i, 1);
 				--i; continue;
 			}
@@ -554,12 +554,10 @@ BattleUnit.prototype.queueMove = function(move)
 	}
 	if (nextActions !== null) {
 		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
-		for (var i = 0; i < nextActions.length; ++i) {
+		for (var i = 0; i < nextActions.length; ++i)
 			this.actionQueue.push(nextActions[i]);
-		}
-		if (this.actionQueue.length > 0) {
-			term.print("Queued " + this.actionQueue.length + " action(s) for " + this.moveUsed.usable.name);
-		}
+		if (this.actionQueue.length > 0)
+			term.print(`queue ${this.actionQueue.length} action(s) for ${this.moveUsed.usable.name}`);
 	} else {
 		this.battle.ui.hud.turnPreview.set(this.battle.predictTurns());
 	}
@@ -720,16 +718,13 @@ BattleUnit.prototype.registerCommands = function()
 // Remarks:
 //     Rank 0 is treated as a special case; passing 0 or less for rank will always give the unit
 //     its next turn immediately.
-BattleUnit.prototype.resetCounter = function(rank, isFirstTurn)
+BattleUnit.prototype.resetCounter = function(rank, isFirstTurn = false)
 {
-	isFirstTurn = isFirstTurn !== void null ? isFirstTurn : false;
-	
-	var divisor = isFirstTurn ? 1.0 : this.turnRatio;
+	let divisor = isFirstTurn ? 1.0 : this.turnRatio;
 	this.cv = rank > 0
 		? Math.max(Math.round(Game.math.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 		: 1;
-	term.print(this.name + "'s CV " + (isFirstTurn ? "initialized" : "reset") + " to " + this.cv,
-		"rank: " + rank);
+	term.print(`set CV for ${this.name} to ${this.cv}`, `rank: ${rank}`);
 };
 
 // .restoreMP() method
@@ -833,17 +828,17 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 	}
 	if (amount >= 0) {
 		if (this.lastAttacker !== null && this.lastAttacker.stance == Stance.Counter) {
-			term.print(this.name + " hit from Counter Stance, damage increased");
+			term.print(`${this.name} attacked from Counter Stance, boost damage`);
 			amount = Math.round(amount * Game.bonusMultiplier);
 		}
 		if (this.stance != Stance.Attack && this.lastAttacker !== null) {
 			amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
-			term.print(this.name + " is in Guard Stance, damage reduced");
+			term.print(`${this.name} hit in Guard Stance, reduce damage`);
 		}
 		var oldHPValue = this.hp;
 		this.hp = Math.max(this.hp - amount, 0);
 		this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
-		term.print(this.name + " took " + amount + " HP damage", "left: " + this.hp);
+		term.print(`damage ${this.name} for ${amount} HP`, `left: ${this.hp}`);
 		if (oldHPValue > 0 || this.lazarusFlag) {
 			var damageColor = null;
 			from(tags)
@@ -859,7 +854,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 		}
 		this.battle.ui.hud.setHP(this, this.hp);
 		if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
-			term.print(this.name + " dying due to lack of HP");
+			term.print(`${this.name} dying due to lack of HP`);
 			this.lazarusFlag = true;
 			var eventData = { unit: this, cancel: false };
 			this.battle.raiseEvent('unitDying', eventData);
@@ -870,7 +865,7 @@ BattleUnit.prototype.takeDamage = function(amount, tags, isPriority)
 			if (!this.lazarusFlag) {
 				this.die();
 			} else {
-				term.print(this.name + "'s death suspended by status/FC");
+				term.print(`suspend KO for ${this.name} per status/FC`);
 			}
 		}
 	} else if (amount < 0) {
@@ -897,7 +892,7 @@ BattleUnit.prototype.takeHit = function(actingUnit, action)
 		action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 	}
 	if (this.stance == Stance.Guard && isGuardBroken) {
-		term.print(this.name + "'s Guard Stance was broken", "by: " + actingUnit.name);
+		term.print(`${this.name}'s Guard Stance broken`, `by: ${actingUnit.name}`);
 		this.newStance = Stance.Attack;
 		this.resetCounter(Game.guardBreakRank);
 	}
@@ -920,11 +915,11 @@ BattleUnit.prototype.tick = function()
 		if (this.stance == Stance.Guard) {
 			this.stance = this.newStance = Stance.Attack;
 			this.battle.stanceChanged.invoke(this.id, this.stance);
-			term.print(this.name + "'s Guard Stance has expired");
+			term.print(`${this.name}'s Guard Stance expired`);
 		} else if (this.stance == Stance.Counter) {
 			this.newStance = Stance.Attack;
 		}
-		term.print(this.name + "'s turn is up");
+		term.print(`${this.name}'s turn is up`);
 		this.actor.animate('active');
 		this.battle.unitReady.invoke(this.id);
 		var eventData = { skipTurn: false };
@@ -935,7 +930,7 @@ BattleUnit.prototype.tick = function()
 		}
 		if (eventData.skipTurn) {
 			this.clearQueue();
-			term.print(this.name + "'s turn was skipped");
+			term.print(`skip ${this.name}'s turn per status/FC`);
 			this.resetCounter(Game.defaultMoveRank);
 			this.battle.resume();
 			return true;
@@ -945,7 +940,7 @@ BattleUnit.prototype.tick = function()
 			var chosenMove = null;
 			if (this.ai == null) {
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-				term.print("Asking player for " + this.name + "'s next move");
+				term.print(`ask player for ${this.name}'s next move`);
 				chosenMove = this.attackMenu.open();
 			} else {
 				chosenMove = this.ai.getNextMove();
@@ -966,7 +961,7 @@ BattleUnit.prototype.tick = function()
 		var eventData = { actingUnit: this };
 		this.battle.raiseEvent('endTurn', eventData);
 		this.actor.animate('dormant');
-		term.print("End of " + this.name + "'s turn");
+		term.print(`end of ${this.name}'s turn`);
 		this.battle.resume();
 		return true;
 	} else {

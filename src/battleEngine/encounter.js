@@ -272,12 +272,12 @@ Battle.prototype.isActive = function()
 // .liftCondition() method
 // Removes a field condition from play.
 // Arguments:
-//     conditionID: The ID of the battle condition, as defined in the gamedef.
+//     conditionID: The ID of the field condition, as defined in the gamedef.
 Battle.prototype.liftCondition = function(conditionID)
 {
 	for (var i = 0; i < this.conditions.length; ++i) {
 		if (conditionID == this.conditions[i].conditionID) {
-			term.print("Battle condition " + this.conditions[i].name + " lifted");
+			term.print(`field condition ${this.conditions[i].name} lifted`);
 			this.conditions.splice(i, 1);
 			--i; continue;
 		}
@@ -298,11 +298,8 @@ Battle.prototype.liftCondition = function(conditionID)
 //                        represents the unit's next turn.
 //         remainingTime: The predicted number of battle engine ticks before the turn comes up.
 //
-Battle.prototype.predictTurns = function(actingUnit, nextActions)
+Battle.prototype.predictTurns = function(actingUnit = null, nextActions = null)
 {
-	actingUnit = actingUnit !== void null ? actingUnit : null;
-	nextActions = nextActions !== void null ? nextActions : null;
-	
 	var forecast = [];
 	for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
 		var bias = 0;
@@ -331,18 +328,16 @@ Battle.prototype.predictTurns = function(actingUnit, nextActions)
 };
 
 // .raiseEvent() method
-// Triggers a battle event, passing it on to all active battle conditions for processing.
+// Triggers a battle event, passing it on to all active field conditions for processing.
 // Arguments:
-//     eventID: The event ID. Only battle conditions with a corresponding event handler will receive it.
+//     eventID: The event ID. Only field conditions with a corresponding event handler will receive it.
 //     data:    An object containing data for the event.
 // Remarks:
 //     Event handlers can change the objects referenced in the data object, for example to change the effects of
 //     an action performed by a battler. If you pass in any objects from the gamedef, they should be cloned first to prevent
 //     the event from modifying the original definition.
-Battle.prototype.raiseEvent = function(eventID, data)
+Battle.prototype.raiseEvent = function(eventID, data = null)
 {
-	data = data !== void null ? data : null;
-	
 	var conditions = this.conditions.slice();
 	from(conditions).each(function(condition) {
 		condition.invoke(eventID, data);
@@ -384,7 +379,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		.where(it => it.targetHint === 'user')
 		.each(effect =>
 	{
-		term.print(`Applying effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
+		term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 		var effectHandler = Game.moveEffects[effect.type];
 		effectHandler(actingUnit, [ actingUnit ], effect);
 	});
@@ -410,7 +405,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 		}
 		var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
 		var isHit = random.chance(odds);
-		term.print("Odds of hitting " + targetUnits[i].name + " are ~" + Math.round(odds * 100) + "%",
+		term.print(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 			isHit ? "hit" : "miss");
 		if (isHit) {
 			this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
@@ -439,7 +434,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 				var targets = effect.targetHint == 'random'
 					? [ random.sample(targetsHit) ]
 					: targetsHit;
-				term.print("Applying effect '" + effect.type + "'", "retarg: " + effect.targetHint);
+				term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 				Game.moveEffects[effect.type](actingUnit, targets, effect);
 			}
 			return this.pc < this.effects.length;
@@ -462,7 +457,7 @@ Battle.prototype.runAction = function(action, actingUnit, targetUnits, useAiming
 //     enemyClass: The class name of the enemy to be spawned.
 Battle.prototype.spawnEnemy = function(enemyClass)
 {
-	term.print("Spawning new enemy '" + enemyClass + "'");
+	term.print(`spawn new enemy '${enemyClass}'`);
 	var newUnit = new BattleUnit(this, enemyClass);
 	this.battleUnits.push(newUnit);
 	this.enemyUnits.push(newUnit);
@@ -482,7 +477,7 @@ Battle.prototype.tick = function()
 	if (this.suspendCount > 0 || this.result != null)
 		return;
 	term.print("");
-	term.print("Beginning CTB cycle #" + (this.timer + 1));
+	term.print(`begin CTB turn cycle #${this.timer + 1}`);
 	++this.timer;
 	var isUnitDead = unit => !unit.isAlive();
 	var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -500,14 +495,14 @@ Battle.prototype.tick = function()
 			music.adjust(0.0, 120);
 			this.ui.fadeOut(2.0);
 			this.result = BattleResult.Lose;
-			term.print("All active party members have been killed");
+			term.print("all player characters have been KO'd");
 			return;
 		}
 		if (from(this.enemyUnits).all(isUnitDead)) {
 			music.adjust(0.0, 60);
 			this.ui.fadeOut(1.0);
 			this.result = BattleResult.Win;
-			term.print("All enemies have been killed");
+			term.print("all enemies have been KO'd");
 			return;
 		}
 	}
@@ -533,12 +528,12 @@ Battle.prototype.update = function() {
 			if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 				this.session.battlesSeen.push(this.battleID);
 				 if ('onFirstStart' in this.parameters) {
-					term.print("Calling onFirstStart() for battleID '" + this.battleID + "'");
+					term.print(`call onFirstStart() for battleID '${this.battleID}'`);
 					this.parameters.onFirstStart.call(this);
 				 }
 			}
 			if ('onStart' in this.parameters) {
-				term.print("Calling onStart() for battleID '" + this.battleID + "'");
+				term.print(`call onStart() for battleID '${this.battleID}'`);
 				this.parameters.onStart.call(this);
 			}
 			this.ui.showTitle();
@@ -549,7 +544,7 @@ Battle.prototype.update = function() {
 			break;
 	}
 	if (this.result !== null) {
-		term.print("Battle engine shutting down");
+		term.print("shut down battle engine");
 		from(this.battleUnits)
 			.each(unit => unit.dispose());
 		this.ui.dispose();
