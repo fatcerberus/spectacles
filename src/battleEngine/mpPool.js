@@ -11,7 +11,7 @@ class MPPool
 		this.availableMP = Math.min(availableMP, capacity);
 		this.capacity = capacity;
 		term.print(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
-			`avail: ${this.availableMP}`);
+			`now: ${this.availableMP}`);
 		
 		// handler function signature:
 		//     function(pool, mpLeft)

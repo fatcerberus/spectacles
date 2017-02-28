@@ -108,15 +108,13 @@ class AIContext
 				candidateMove = this.moveQueue.shift();
 				var isMoveLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 				var isMoveUsable = isMoveLegal && candidateMove.predicate();
-				if (!isMoveUsable) {
+				if (!isMoveUsable)
 					term.print(`discard ${this.unit.name}'s ${candidateMove.usable.name}, not usable`);
-				}
 			} while (!isMoveUsable && this.moveQueue.length > 0);
-			if (isMoveUsable) {
+			if (isMoveUsable)
 				moveToUse = candidateMove;
-			} else if (this.defaultSkillID !== null) {
+			else if (this.defaultSkillID !== null)
 				this.queueSkill(this.defaultSkillID);
-			}
 		} while (moveToUse === null);
 		++this.turnsTaken;
 		return moveToUse;
@@ -142,8 +140,8 @@ class AIContext
 	isItemUsable(itemID)
 	{
 		return from(this.unit.items)
-			.where(v => v.itemID === itemID)
-			.any(v => v.isUsable(this, this.unit.stance));
+			.where(i => i.itemID === itemID)
+			.any(i => i.isUsable(this, this.unit.stance));
 	}
 
 	isSkillQueued(skillID)

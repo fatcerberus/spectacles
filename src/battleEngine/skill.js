@@ -88,13 +88,12 @@ class SkillUsable
 		term.print(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.getLevel()}`);
 	}
 
-	isUsable(user, stance)
+	isUsable(user, stance = Stance.Attack)
 	{
 		var userWeaponType = user.weapon != null ? user.weapon.type : null;
 		var skillWeaponType = this.skillInfo.weaponType;
-		if (skillWeaponType != null && userWeaponType != skillWeaponType) {
+		if (skillWeaponType != null && userWeaponType != skillWeaponType)
 			return false;
-		}
 		var canCharge = ('chargeable' in this.skillInfo ? this.skillInfo.chargeable : true)
 			&& this.skillInfo.actions.length == 1;
 		var isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
@@ -125,9 +124,8 @@ class SkillUsable
 		unit.mpPool.use(this.mpCost(unit));
 		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
 		var targetInfos = [];
-		for (var i = 0; i < targets.length; ++i) {
+		for (var i = 0; i < targets.length; ++i)
 			targetInfos.push(targets[i].battlerInfo);
-		}
 		var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 		this.grow(experience);
 		var eventData = { skill: clone(this.skillInfo) };
