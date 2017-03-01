@@ -9,12 +9,12 @@ class SkillUsable
 {
 	constructor(skillID, level = 1)
 	{
-		if (!(skillID in Game.skills)) {
+		if (!(skillID in Game.skills))
 			throw new ReferenceError(`no skill definition for '${skillID}'`);
-		}
+
 		this.levelUpTable = [];
 		for (var i = 1; i <= 100; ++i) {
-			var xpNeeded = Math.ceil(i > 1 ? Math.pow(i, 3) : 0);
+			var xpNeeded = Math.ceil(i > 1 ? i ** 3 : 0);
 			this.levelUpTable[i] = xpNeeded;
 		}
 		this.skillInfo = Game.skills[skillID];
@@ -36,30 +36,30 @@ class SkillUsable
 			case 'single':
 				var enemies = user.battle.enemiesOf(user);
 				var target = from(enemies)
-					.where(function(unit) { return unit.isAlive(); })
+					.where(i => i.isAlive())
 					.sample(1).first();
-				if (this.allowDeadTarget && from(enemies).any(function(unit) { return !unit.isAlive(); })) {
+				if (this.allowDeadTarget && from(enemies).any(i => !i.isAlive())) {
 					target = from(enemies)
-						.where(function(unit) { return !unit.isAlive(); })
+						.where(i => !i.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'ally':
 				var allies = user.battle.alliesOf(user);
 				var target = user;
-				if (this.allowDeadTarget && from(allies).any(function(unit) { return !unit.isAlive(); })) {
+				if (this.allowDeadTarget && from(allies).any(i => !i.isAlive())) {
 					target = from(allies)
-						.where(function(unit) { return !unit.isAlive(); })
+						.where(i => !i.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'allEnemies':
 				return from(user.battle.enemiesOf(user))
-					.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
+					.where(i => i.isAlive() || this.allowDeadUnits)
 					.select();
 			case 'allAllies':
 				return from(user.battle.alliesOf(user))
-					.where(function(unit) { return unit.isAlive() || this.allowDeadUnits }.bind(this))
+					.where(i => i.isAlive() || this.allowDeadUnits)
 					.select();
 			default:
 				return user;
@@ -69,9 +69,8 @@ class SkillUsable
 	getLevel()
 	{
 		for (var level = 100; level >= 2; --level) {
-			if (this.experience >= this.levelUpTable[level]) {
+			if (this.experience >= this.levelUpTable[level])
 				return level;
-			}
 		}
 		return 1;
 	}
@@ -128,10 +127,10 @@ class SkillUsable
 			targetInfos.push(targets[i].battlerInfo);
 		var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 		this.grow(experience);
-		var eventData = { skill: clone(this.skillInfo) };
+		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
 		unit.battle.skillUsed.invoke(unit.id, this.skillID,
-			from(targets).select(function(x) { return x.id; }));
+			from(targets).select(i => i.id));
 		return eventData.skill.actions;
 	}
 }

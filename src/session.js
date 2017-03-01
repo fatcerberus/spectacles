@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('Party.js');
+RequireScript('party.js');
 
 const Difficulty =
 {

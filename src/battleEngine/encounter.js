@@ -35,7 +35,7 @@ function Battle(session, battleID)
 	this.session = session;
 	this.suspendCount = 0;
 	this.timer = 0;
-	this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.getLevel();
+	this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.level;
 
 	// .itemUsed event
 	// Occurs when an item is used by a battle unit.

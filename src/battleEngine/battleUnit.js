@@ -70,7 +70,7 @@ function BattleUnit(battle, basis, position, startingRow, mpPool)
 		this.character = Game.characters[this.partyMember.characterID];
 		this.baseStats = this.character.baseStats;
 		this.tier = 1;
-		this.maxHP = Math.round(Math.max(Game.math.hp(this.character, this.partyMember.getLevel(), this.tier), 1));
+		this.maxHP = Math.round(Math.max(Game.math.hp(this.character, this.partyMember.level, this.tier), 1));
 		this.hp = this.maxHP;
 		this.name = this.partyMember.name;
 		this.fullName = this.partyMember.fullName;
@@ -327,7 +327,7 @@ BattleUnit.prototype.getHealth = function()
 BattleUnit.prototype.getLevel = function()
 {
 	if (this.partyMember != null) {
-		return this.partyMember.getLevel();
+		return this.partyMember.level;
 	} else {
 		return this.battle.getLevel();
 	}
