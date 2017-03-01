@@ -48,9 +48,8 @@ function game()
 	TestHarness.run('rsb2');
 }
 
-function clone(o)
+function clone(o, memo = [])
 {
-	var memo = arguments.length >= 2 ? arguments[1] : [];
 	if (typeof o === 'object' && o !== null) {
 		for (let i = 0; i < memo.length; ++i) {
 			if (o === memo[i].original)

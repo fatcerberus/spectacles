@@ -58,12 +58,12 @@ class InGameClock
 	
 	static getTime()
 	{
-		var realTime = new Date();
-		var currentTime = 3600 * realTime.getHours() + 60 * realTime.getMinutes() + realTime.getSeconds();
+		let realTime = new Date();
+		let currentTime = 3600 * realTime.getHours() + 60 * realTime.getMinutes() + realTime.getSeconds();
 		currentTime = (currentTime * 10) % 86400;
-		var hour = Math.floor(currentTime / 3600);
-		var minute = Math.floor((currentTime / 60) % 60);
-		var second = currentTime % 60;
+		let hour = Math.floor(currentTime / 3600);
+		let minute = Math.floor((currentTime / 60) % 60);
+		let second = currentTime % 60;
 		return new InGameTime(hour, minute, second);
 	}
 }
@@ -79,9 +79,9 @@ class InGameTime
 	
 	toString()
 	{
-		var hourText = ("0" + this.hour).slice(-2);
-		var minuteText = ("0" + this.minute).slice(-2);
-		var secondText = ("0" + this.second).slice(-2);
+		let hourText = ("0" + this.hour).slice(-2);
+		let minuteText = ("0" + this.minute).slice(-2);
+		let secondText = ("0" + this.second).slice(-2);
 		return `${hourText}:${minuteText}`;
 	}
 }
