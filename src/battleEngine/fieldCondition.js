@@ -17,7 +17,7 @@ class FieldCondition
 		this.conditionID = conditionID;
 		term.print(`initialize FC context ${this.name}`);
 		if ('overrules' in this.conditionDef) {
-			for (var i = 0; i < this.conditionDef.overrules.length; ++i)
+			for (let i = 0; i < this.conditionDef.overrules.length; ++i)
 				this.battle.liftCondition(this.conditionDef.overrules[i]);
 		}
 		if ('initialize' in this.conditionDef)

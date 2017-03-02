@@ -13,7 +13,7 @@ class SkillUsable
 			throw new ReferenceError(`no skill definition for '${skillID}'`);
 
 		this.levelUpTable = [];
-		for (var i = 1; i <= 100; ++i) {
+		for (let i = 1; i <= 100; ++i) {
 			var xpNeeded = Math.ceil(i > 1 ? i ** 3 : 0);
 			this.levelUpTable[i] = xpNeeded;
 		}
@@ -68,7 +68,7 @@ class SkillUsable
 
 	getLevel()
 	{
-		for (var level = 100; level >= 2; --level) {
+		for (let level = 100; level >= 2; --level) {
 			if (this.experience >= this.levelUpTable[level])
 				return level;
 		}
@@ -123,7 +123,7 @@ class SkillUsable
 		unit.mpPool.use(this.mpCost(unit));
 		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
 		var targetInfos = [];
-		for (var i = 0; i < targets.length; ++i)
+		for (let i = 0; i < targets.length; ++i)
 			targetInfos.push(targets[i].battlerInfo);
 		var experience = Game.math.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 		this.grow(experience);

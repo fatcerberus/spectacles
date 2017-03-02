@@ -24,6 +24,15 @@ class Battle
 		if (!(battleID in Game.battles))
 			throw new ReferenceError(`no encounter data for '${battleID}'`);
 
+		this.itemUsed = new events.Delegate();
+		this.skillUsed = new events.Delegate();
+		this.stanceChanged = new events.Delegate();
+		this.unitDamaged = new events.Delegate();
+		this.unitHealed = new events.Delegate();
+		this.unitKilled = new events.Delegate();
+		this.unitReady = new events.Delegate();
+		this.unitTargeted = new events.Delegate();
+
 		term.print(`initialize battle context for '${battleID}'`);
 		this.battleID = battleID;
 		this.mode = null;
@@ -33,70 +42,6 @@ class Battle
 		this.suspendCount = 0;
 		this.timer = 0;
 		this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.level;
-
-		// .itemUsed event
-		// Occurs when an item is used by a battle unit.
-		// Arguments (for event handler):
-		//     userID:     The ID of the unit that used the item.
-		//     itemID:     The ID of the item used.
-		//     targetIDs:  An array with the IDs of the units, if any, that the item was used on, or
-		//                 null in the case of a non-targeted item.
-		this.itemUsed = new events.Delegate();
-
-		// .skillUsed event
-		// Occurs when a skill is used by a battle unit.
-		// Arguments (for event handler):
-		//     userID:     The ID of the unit that used the skill.
-		//     itemID:     The ID of the skill used.
-		//     targetIDs:  An array with the IDs of the units, if any, that the skill was used on, or
-		//                 null in the case of a non-targeted skill.
-		this.skillUsed = new events.Delegate();
-
-		// .stanceChanged event
-		// Occurs when a unit changes stance.
-		// Arguments (for event handler):
-		//     unitID: The ID of the unit changing stance.
-		//     stance: The unit's new stance.
-		this.stanceChanged = new events.Delegate();
-
-		// .unitDamaged event
-		// Occurs when a unit in the battle is damaged.
-		// Arguments (for event handler):
-		//     unit:       The unit taking damage.
-		//     amount:     The amount of damage taken.
-		//     actingUnit: The unit responsible for inflicting the damage. In the case of residual
-		//                 (e.g. status-induced) damage, this will be null.
-		this.unitDamaged = new events.Delegate();
-
-		// .unitHealed event
-		// Occurs when a unit in the battle recovers HP.
-		// Arguments (for event handler):
-		//     unit:     The unit recovering HP.
-		//     amount:   The number of hit points recovered.
-		this.unitHealed = new events.Delegate();
-
-		// .unitKilled event
-		// Occurs when a unit falls in battle.
-		// Arguments (for event handler):
-		//     unitID: The ID of the downed unit.
-		this.unitKilled = new events.Delegate();
-
-		// .unitReady event
-		// Occurs when a unit is about to take its turn.
-		// Arguments (for event handler):
-		//     unitID: The ID of the unit whose turn is up.
-		this.unitReady = new events.Delegate();
-
-		// .unitTargeted event
-		// Occurs when a unit in the battle is successfully targeted by an action.
-		// Arguments (for event handler):
-		//     unit:       The BattleUnit targeted by the action.
-		//     action:     The action being performed.
-		//     actingUnit: The BattleUnit performing the action.
-		// Remarks:
-		//     If, after accuracy is taken into account, the action would result in
-		//     a miss, this event will not be raised.
-		this.unitTargeted = new events.Delegate();
 	}
 
 	update() {
@@ -223,14 +168,14 @@ class Battle
 		this.playerUnits = [];
 		this.enemyUnits = [];
 		this.conditions = [];
-		for (var i = 0; i < this.parameters.enemies.length; ++i) {
+		for (let i = 0; i < this.parameters.enemies.length; ++i) {
 			var enemyID = this.parameters.enemies[i];
 			var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle);
 			this.battleUnits.push(unit);
 			this.enemyUnits.push(unit);
 		}
 		var i = 0;
-		for (var name in this.session.party.members) {
+		for (let name in this.session.party.members) {
 			var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
 			this.battleUnits.push(unit);
 			this.playerUnits.push(unit);
@@ -268,7 +213,7 @@ class Battle
 
 	liftCondition(conditionID)
 	{
-		for (var i = 0; i < this.conditions.length; ++i) {
+		for (let i = 0; i < this.conditions.length; ++i) {
 			if (conditionID == this.conditions[i].conditionID) {
 				term.print(`lift field condition ${this.conditions[i].name}`);
 				this.conditions.splice(i--, 1);
@@ -280,7 +225,7 @@ class Battle
 	predictTurns(actingUnit = null, nextActions = null)
 	{
 		var forecast = [];
-		for (var turnIndex = 0; turnIndex < 8; ++turnIndex) {
+		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			var bias = 0;
 			from(this.enemyUnits, this.playerUnits)
 				.where(i => i !== actingUnit || turnIndex > 0)
@@ -308,7 +253,7 @@ class Battle
 
 	raiseEvent(eventID, data = null)
 	{
-		var conditions = this.conditions.slice();
+		var conditions = [ ...this.conditions ];
 		from(conditions).each(function(condition) {
 			condition.invoke(eventID, data);
 		});
@@ -348,7 +293,7 @@ class Battle
 		}
 		var targetsHit = [];
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
-		for (var i = 0; i < targetUnits.length; ++i) {
+		for (let i = 0; i < targetUnits.length; ++i) {
 			var baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
 			var aimRate = 1.0;
 			if (useAiming) {

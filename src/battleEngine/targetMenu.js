@@ -66,7 +66,7 @@ function TargetMenu(unit, battle, usable, moveName)
 			position = position > 2 ? 0 :
 				position < 0 ? 2 :
 				position;
-			for (var i = 0; i < candidates.length; ++i) {
+			for (let i = 0; i < candidates.length; ++i) {
 				if (position == candidates[i].actor.position
 					&& (candidates[i].isAlive() || this.allowDeadUnits))
 				{
@@ -97,7 +97,7 @@ function TargetMenu(unit, battle, usable, moveName)
 				this.unitToShowInfo = unit;
 				if (this.unitToShowInfo !== null) {
 					this.statusNames = !this.unitToShowInfo.isAlive() ? [ "Knocked Out" ] : [];
-					for (var i = 0; i < this.unitToShowInfo.statuses.length; ++i) {
+					for (let i = 0; i < this.unitToShowInfo.statuses.length; ++i) {
 						this.statusNames.push(this.unitToShowInfo.statuses[i].name);
 					}
 				}
@@ -202,7 +202,7 @@ TargetMenu.prototype.open = function()
 TargetMenu.prototype.render = function()
 {
 	if (this.targets !== null) {
-		for (var i = 0; i < this.targets.length; ++i) {
+		for (let i = 0; i < this.targets.length; ++i) {
 			this.drawCursor(this.targets[i]);
 		}
 	}
@@ -218,7 +218,7 @@ TargetMenu.prototype.render = function()
 			var statusColor = this.statusNames.length == 0 ?
 				CreateColor(96, 192, 96, textAlpha) :
 				CreateColor(192, 192, 96, textAlpha);
-			for (var i = 0; i < this.statusNames.length; ++i) {
+			for (let i = 0; i < this.statusNames.length; ++i) {
 				drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], CreateColor(192, 192, 96, textAlpha), 1, 'center');
 			}
 			this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);

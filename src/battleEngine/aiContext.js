@@ -11,8 +11,6 @@ class AIContext
 {
 	constructor(unit, battle, aiType)
 	{
-		// handler function signature:
-		//     function(aiContext, newPhase, lastPhase)
 		this.phaseChanged = new events.Delegate();
 
 		term.print(`initialize AI context for ${unit.fullName}`);
@@ -47,9 +45,9 @@ class AIContext
 			phaseToEnter = 1;
 		}
 		var lastPhase = this.phase;
-		this.phase = Math.max(phaseToEnter, this.phase);
+		this.phase = Math.max(phaseToEnter, this.phase);  // ratcheting
 		if (allowEvents && this.phase > lastPhase) {
-			term.print(`${this.unit.name} is entering Phase ${this.phase}`,
+			term.print(`${this.unit.name} is entering phase ${this.phase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
 			this.phaseChanged.invoke(this, this.phase, lastPhase);
 		}
@@ -59,12 +57,10 @@ class AIContext
 	{
 		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
-			.select(it => Math.round(random.normal(it, sigma)));
+			.select(i => Math.round(random.normal(i, sigma)));
 		var phaseIndex = 1;
-		from(this.phasePoints).each(milestone => {
-			++phaseIndex;
-			term.print(`phase ${phaseIndex} will start at <= ${milestone} HP`);
-		});
+		from(this.phasePoints).each(milestone =>
+			term.print(`phase ${++phaseIndex} will start at <= ${milestone} HP`));
 		this.phase = 0;
 	}
 
@@ -74,25 +70,24 @@ class AIContext
 		do {
 			if (this.moveQueue.length == 0) {
 				term.print(`defer to AI for ${this.unit.name}'s next move`);
-				var enemyList = this.battle.enemiesOf(this.unit);
+				let enemyList = this.battle.enemiesOf(this.unit);
 				this.enemies = [];
-				for (var i = 0; i < enemyList.length; ++i) {
+				for (let i = 0; i < enemyList.length; ++i) {
 					var enemy = enemyList[i];
 					this.enemies.push(enemy);
 					this.enemies[enemy.id] = enemy;
 				}
-				var allyList = this.battle.alliesOf(this.unit);
+				let allyList = this.battle.alliesOf(this.unit);
 				this.allies = [];
-				for (var i = 0; i < allyList.length; ++i) {
+				for (let i = 0; i < allyList.length; ++i) {
 					var ally = allyList[i];
 					this.allies.push(ally);
 					this.allies[ally.id] = ally;
 				}
 				this.targets = null;
 				this.checkPhase();
-				if (this.moveQueue.length == 0) {
+				if (this.moveQueue.length == 0)
 					this.strategy.strategize(this.unit.stance, this.phase);
-				}
 				if (this.moveQueue.length == 0) {
 					term.print(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {
@@ -103,15 +98,15 @@ class AIContext
 				}
 			}
 			var candidateMove;
-			var isMoveUsable;
+			var isUsable;
 			do {
 				candidateMove = this.moveQueue.shift();
-				var isMoveLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
-				var isMoveUsable = isMoveLegal && candidateMove.predicate();
-				if (!isMoveUsable)
+				let isLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
+				isUsable = isLegal && candidateMove.predicate();
+				if (!isUsable)
 					term.print(`discard ${this.unit.name}'s ${candidateMove.usable.name}, not usable`);
-			} while (!isMoveUsable && this.moveQueue.length > 0);
-			if (isMoveUsable)
+			} while (!isUsable && this.moveQueue.length > 0);
+			if (isUsable)
 				moveToUse = candidateMove;
 			else if (this.defaultSkillID !== null)
 				this.queueSkill(this.defaultSkillID);
@@ -133,8 +128,8 @@ class AIContext
 	isItemQueued(itemID)
 	{
 		return from(this.moveQueue)
-			.where(move => move.usable instanceof ItemUsable)
-			.any(move => move.usable.itemID == itemID);
+			.where(i => i.usable instanceof ItemUsable)
+			.any(i => i.usable.itemID == itemID);
 	}
 
 	isItemUsable(itemID)
@@ -147,8 +142,8 @@ class AIContext
 	isSkillQueued(skillID)
 	{
 		return from(this.moveQueue)
-			.where(move => move.usable instanceof SkillUsable)
-			.any(move => move.usable.skillID == skillID);
+			.where(i => i.usable instanceof SkillUsable)
+			.any(i => i.usable.skillID == skillID);
 	}
 
 	isSkillUsable(skillID)
@@ -159,17 +154,18 @@ class AIContext
 
 	itemsLeft(itemID)
 	{
-		var itemUsable = from(this.unit.items)
-			.first(v => v.itemID === itemID);
-		term.print(`${this.unit.name} requested item count for ${itemUsable.name}`,
-			`left: ${itemUsable.usesLeft}`);
-		return itemUsable.usesLeft;
+		let item = from(this.unit.items)
+			.where(i => i.itemID === itemID)
+			.besides(i => term.print(`${this.unit.name} requested item count for ${i.name}`, `left: ${i.usesLeft}`))
+			.first();
+		return item.usesLeft;
 	}
 
 	predictItemTurns(itemID)
 	{
 		if (!(itemID in Game.items))
-			throw new ReferenceError(`no such item '${itemID}'`);
+			throw new ReferenceError(`no item definition for '${itemID}'`);
+
 		var itemRank = 'rank' in Game.items[itemID] ? Game.items[itemID].rank : Game.defaultItemRank;
 		var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
 		term.print(`${this.unit.name} considering ${Game.items[itemID].name}`,
@@ -180,7 +176,8 @@ class AIContext
 	predictSkillTurns(skillID)
 	{
 		if (!(skillID in Game.skills))
-			throw new ReferenceError(`no such skill '${skillID}'`);
+			throw new ReferenceError(`no skill definition for '${skillID}'`);
+
 		var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
 		term.print(`${this.unit.name} considering ${Game.skills[skillID].name}`,
 			`next: ${forecast[0].unit.name}`);
@@ -198,23 +195,19 @@ class AIContext
 
 	queueItem(itemID, unitID = null)
 	{
-		var itemToUse = null;
-		for (var i = 0; i < this.unit.items.length; ++i) {
-			var item = this.unit.items[i];
-			if (item.itemID == itemID && item.isUsable(this.unit, this.unit.stance)) {
-				itemToUse = item;
-				break;
-			}
-		}
-		if (itemToUse == null)
+		let itemToUse = from(this.unit.items)
+			.where(i => i.itemID === itemID)
+			.where(i => i.isUsable(this.unit, this.unit.stance))
+			.first();
+		if (itemToUse === undefined)
 			throw new Error(`${this.unit.name} tried to use an item '${itemID}' not owned`);
-		var targets = this.targets !== null ? this.targets
+		let targets = this.targets !== null ? this.targets
 			: unitID !== null ? [ this.battle.findUnit(unitID) ]
 			: itemToUse.defaultTargets(this.unit);
 		this.moveQueue.push({
 			usable: itemToUse,
 			stance: Stance.Attack,
-			targets: targets,
+			targets,
 			predicate: () => true,
 		});
 		term.print(`${this.unit.name} queued use of item ${itemToUse.name}`);
@@ -222,19 +215,9 @@ class AIContext
 
 	queueSkill(skillID, stance = Stance.Attack, unitID = null, predicate = () => true)
 	{
-		var skillToUse = new SkillUsable(skillID, 100);
-		/*for (var i = 0; i < this.unit.skills.length; ++i) {
-			var skill = this.unit.skills[i];
-			if (skill.skillID == skillID) {
-				skillToUse = skill;
-				break;
-			}
-		}
-		if (skillToUse == null) {
-			Abort("AIContext.queueItem(): AI unit " + this.unit.name + " tried to use an unknown or unusable skill");
-		}*/
-		var targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;
-		var targets = this.targets !== null ? this.targets
+		let skillToUse = new SkillUsable(skillID, 100);
+		let targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;
+		let targets = this.targets !== null ? this.targets
 			: targetUnit !== null ? [ targetUnit ]
 			: skillToUse.defaultTargets(this.unit);
 		this.moveQueue.push({

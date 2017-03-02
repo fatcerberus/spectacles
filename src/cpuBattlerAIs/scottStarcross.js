@@ -67,7 +67,7 @@ ScottStarcrossAI.prototype.strategize = function(stance, currentPhase)
 				.descending(it => it.rating)
 				.select();
 			this.tactics = [];
-			for (var i = 0; i < targets.length; ++i) {
+			for (let i = 0; i < targets.length; ++i) {
 				this.tactics.push({ moves: combos[i].moves, moveIndex: 0, unit: targets[i] });
 			}
 		}

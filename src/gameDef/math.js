@@ -81,7 +81,7 @@ Game.math =
 		skill: function(skillInfo, userInfo, targetsInfo) {
 			var levelSum = 0;
 			var statSum = 0;
-			for (var i = 0; i < targetsInfo.length; ++i) {
+			for (let i = 0; i < targetsInfo.length; ++i) {
 				levelSum += targetsInfo[i].level;
 				statSum += targetsInfo[i].baseStatAverage;
 			}
@@ -144,7 +144,7 @@ Game.math =
 	
 	skillRank: function(skill) {
 		var rankTotal = 0;
-		for (var i = 0; i < skill.actions.length; ++i) {
+		for (let i = 0; i < skill.actions.length; ++i) {
 			rankTotal += skill.actions[i].rank;
 		}
 		return rankTotal;

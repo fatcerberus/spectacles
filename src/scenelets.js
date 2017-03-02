@@ -3,13 +3,14 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('battleEngine/encounter.js');
+RequireScript('battleEngine/battle.js');
 
 scenes.defScenelet('adjustBGM',
 {
 	start(scene, volume, duration = 0.0) {
 		music.adjust(volume, duration);
 	},
+
 	update(scene) {
 		return music.adjusting;
 	}
@@ -26,6 +27,7 @@ scenes.defScenelet('battle',
 		this.battle = new Battle(session, battleID);
 		this.battleThread = this.battle.go();
 	},
+
 	update(scene) {
 		switch (this.mode) {
 			case 'battle':
@@ -85,6 +87,7 @@ scenes.defScenelet('marquee',
 			.tween(this, 15, 'linear', { fadeness: 0.0 })
 			.run();
 	},
+
 	render(scene) {
 		var boxHeight = this.height * this.fadeness;
 		var boxY = screen.height / 2 - boxHeight / 2;
@@ -94,6 +97,7 @@ scenes.defScenelet('marquee',
 		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.a));
 		this.font.drawText(screen, textX, textY, this.text, this.color);
 	},
+
 	update(scene) {
 		return this.animation.isRunning();
 	}
@@ -130,7 +134,7 @@ scenes.defScenelet('talk',
 			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
 			var page = this.text.push([]) - 1;
-			for (var iLine = 0; iLine < wrappedText.length; ++iLine) {
+			for (let iLine = 0; iLine < wrappedText.length; ++iLine) {
 				this.text[page].push(wrappedText[iLine]);
 			}
 		}
@@ -156,6 +160,7 @@ scenes.defScenelet('talk',
 		}
 		return true;
 	},
+
 	render(scene) {
 		var lineHeight = this.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
@@ -174,7 +179,7 @@ scenes.defScenelet('talk',
 			textX = speakerTextWidth + 5;
 		}
 		textAreaWidth -= textX;
-		for (var iLine = Math.min(this.lineToReveal - this.topLine + 1, lineCount - this.topLine, 3) - 1; iLine >= 0; --iLine) {
+		for (let iLine = Math.min(this.lineToReveal - this.topLine + 1, lineCount - this.topLine, 3) - 1; iLine >= 0; --iLine) {
 			var trueLine = this.topLine + iLine;
 			var textY = iLine * lineHeight - this.scrollOffset * lineHeight;
 			var lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
@@ -202,6 +207,7 @@ scenes.defScenelet('talk',
 		}
 		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
 	},
+
 	update(scene) {
 		if (Sphere.Game.disableTalking) {
 			this.mode = "finish";
@@ -302,6 +308,7 @@ scenes.defScenelet('talk',
 		}
 		return true;
 	},
+
 	getInput: function(scene) {
 		if (this.mode != "idle")
 			return;

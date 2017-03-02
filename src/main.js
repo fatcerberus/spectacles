@@ -13,7 +13,7 @@ global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
 
-RequireScript('battleEngine/encounter.js');
+RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
 RequireScript('inGameClock.js');
 RequireScript('menuStrip.js');
@@ -38,6 +38,7 @@ function game()
 			Sphere.Game.disableTalking = false;
 			term.print("oh, yappy times are here again...");
 		}, 
+
 		'off': function() {
 			Sphere.Game.disableTalking = true;
 			term.print("the yappy times are OVER!");

@@ -69,13 +69,11 @@ class BattleUnit
 			this.fullName = this.partyMember.fullName;
 			this.allowTargetScan = this.partyMember.isTargetScanOn;
 			var skills = this.partyMember.getUsableSkills();
-			for (var i = 0; i < skills.length; ++i) {
+			for (let i = 0; i < skills.length; ++i)
 				this.skills.push(skills[i]);
-			}
 			this.items = clone(this.partyMember.items);
-			for (var statID in this.baseStats) {
+			for (let statID in this.baseStats)
 				this.stats[statID] = this.partyMember.stats[statID];
-			}
 			this.weapon = Game.weapons[this.partyMember.weaponID];
 		} else {
 			if (!(basis in Game.enemies))
@@ -86,12 +84,12 @@ class BattleUnit
 			this.id = basis;
 			this.name = this.enemyInfo.name;
 			this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
-			for (var statID in this.baseStats) {
+			for (let statID in this.baseStats) {
 				this.stats[statID] = new Stat(this.baseStats[statID], battle.getLevel(), false);
 			}
 			this.items = [];
 			if ('items' in this.enemyInfo) {
-				for (var i = 0; i < this.enemyInfo.items.length; ++i) {
+				for (let i = 0; i < this.enemyInfo.items.length; ++i) {
 					this.items.push(new ItemUsable(this.enemyInfo.items[i]));
 				}
 			}
@@ -185,7 +183,7 @@ class BattleUnit
 			return;
 		}
 		this.refreshInfo();
-		for (var i = 0; i < this.statuses.length; ++i) {
+		for (let i = 0; i < this.statuses.length; ++i) {
 			this.statuses[i].beginCycle();
 		}
 		var eventData = { battlerInfo: this.battlerInfo };
@@ -193,7 +191,7 @@ class BattleUnit
 		var baseStatSum = 0;
 		var statSum = 0;
 		var numStats = 0;
-		for (var statID in this.baseStats) {
+		for (let statID in this.baseStats) {
 			++numStats;
 			this.battlerInfo.stats[statID] = Math.round(this.battlerInfo.stats[statID]);
 			statSum += this.battlerInfo.stats[statID];
@@ -298,7 +296,7 @@ class BattleUnit
 			return;
 
 		var hasSkill = false;
-		for (var i = 0; i < this.skills.length; ++i) {
+		for (let i = 0; i < this.skills.length; ++i) {
 			if (skillID == this.skills[i].skillID) {
 				hasSkill = true;
 				this.skills[i].grow(experience);
@@ -380,7 +378,7 @@ class BattleUnit
 			this.raiseEvent('cured', eventData);
 		}
 		if (!eventData.cancel) {
-			for (var i = 0; i < this.statuses.length; ++i) {
+			for (let i = 0; i < this.statuses.length; ++i) {
 				if (statusID == this.statuses[i].statusID) {
 					term.print(`lift status ${this.statuses[i].name} from ${this.name}`);
 					this.statuses.splice(i, 1);
@@ -396,7 +394,7 @@ class BattleUnit
 
 	liftStatusTags(tags)
 	{
-		var activeStatuses = this.statuses.slice();
+		var activeStatuses = [ ...this.statuses ];
 		from(activeStatuses)
 			.where(v => from(v.statusDef.tags).anyIn(tags))
 			.each(status =>
@@ -408,7 +406,7 @@ class BattleUnit
 	performAction(action, move)
 	{
 		var eventData = { action: action, targetsInfo: [] };
-		for (var i = 0; i < move.targets.length; ++i) {
+		for (let i = 0; i < move.targets.length; ++i) {
 			eventData.targetsInfo.push(move.targets[i].battlerInfo);
 		}
 		this.raiseEvent('acting', eventData);
@@ -421,9 +419,9 @@ class BattleUnit
 			if (move.usable.givesExperience && unitsHit.length > 0) {
 				var allEnemies = this.battle.enemiesOf(this);
 				var experience = {};
-				for (var i = 0; i < unitsHit.length; ++i) {
+				for (let i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-						for (var statID in unitsHit[i].baseStats) {
+						for (let statID in unitsHit[i].baseStats) {
 							if (!(statID in experience)) {
 								experience[statID] = 0;
 							}
@@ -431,7 +429,7 @@ class BattleUnit
 						}
 					}
 				}
-				for (var statID in experience) {
+				for (let statID in experience) {
 					this.stats[statID].grow(experience[statID]);
 					term.print(`${this.name} got ${experience[statID]} EXP for ${Game.statNames[statID]}`,
 						`value: ${this.stats[statID].value}`);
@@ -470,7 +468,7 @@ class BattleUnit
 		}
 		if (nextActions !== null) {
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
-			for (var i = 0; i < nextActions.length; ++i)
+			for (let i = 0; i < nextActions.length; ++i)
 				this.actionQueue.push(nextActions[i]);
 			if (this.actionQueue.length > 0)
 				term.print(`queue ${this.actionQueue.length} action(s) for ${this.moveUsed.usable.name}`);
@@ -486,7 +484,7 @@ class BattleUnit
 		// the gamedef, they should be cloned first to prevent the event from inadvertantly
 		// modifying the original definition.
 		
-		var statuses = this.statuses.slice();
+		var statuses = [ ...this.statuses ];
 		from(statuses).each(status => {
 			status.invoke(eventID, data);
 		});
@@ -502,7 +500,7 @@ class BattleUnit
 		this.battlerInfo.tier = this.tier;
 		this.battlerInfo.baseStats = {};
 		this.battlerInfo.stats = { maxHP: this.maxHP };
-		for (var statID in this.baseStats) {
+		for (let statID in this.baseStats) {
 			this.battlerInfo.baseStats[statID] = this.baseStats[statID];
 			this.battlerInfo.stats[statID] = this.stats[statID].value;
 		}
@@ -667,7 +665,7 @@ class BattleUnit
 		
 		amount = Math.round(amount);
 		var multiplier = 1.0;
-		for (var i = 0; i < tags.length; ++i) {
+		for (let i = 0; i < tags.length; ++i) {
 			if (tags[i] in this.affinities) {
 				multiplier *= this.affinities[tags[i]];
 			}
@@ -760,8 +758,7 @@ class BattleUnit
 	{
 		if (!this.isAlive())
 			return false;
-		--this.cv;
-		if (this.cv == 0) {
+		if (--this.cv == 0) {
 			this.battle.suspend();
 			if (this.stance == Stance.Guard) {
 				this.stance = this.newStance = Stance.Attack;
@@ -832,7 +829,7 @@ class BattleUnit
 				? this.actionQueue.concat(nextActions)
 				: this.actionQueue;
 			var timeLeft = this.cv;
-			for (var i = 1; i <= turnIndex; ++i) {
+			for (let i = 1; i <= turnIndex; ++i) {
 				var rank = assumedRank;
 				if (i <= nextActions.length) {
 					rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank

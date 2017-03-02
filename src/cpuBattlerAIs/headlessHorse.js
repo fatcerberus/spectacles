@@ -20,7 +20,7 @@ function HeadlessHorseAI(aiContext)
 
 	// HP thresholds for phase transitions
 	this.phasePoints = [ 500 ];  // (starting with P2)
-	for (var i = 0; i < this.phasePoints.length; ++i) {
+	for (let i = 0; i < this.phasePoints.length; ++i) {
 		this.phasePoints[i] = Math.round(this.phasePoints[i] + 100 * (0.5 - Math.random()));
 	}
 	

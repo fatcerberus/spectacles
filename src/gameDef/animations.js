@@ -21,7 +21,7 @@ Game.animations =
 	},
 	
 	tripleShot: function(user, targets, doesMiss) {
-		for (var i = 0; i < 3; ++i) {
+		for (let i = 0; i < 3; ++i) {
 			this.nextEffect();
 		}
 	},

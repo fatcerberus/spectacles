@@ -29,7 +29,7 @@ Game.moveEffects =
 	
 	damage: function(actor, targets, effect) {
 		var userInfo = actor.battlerInfo;
-		for (var i = 0; i < targets.length; ++i) {
+		for (let i = 0; i < targets.length; ++i) {
 			var targetInfo = targets[i].battlerInfo;
 			var damageTags = [ effect.damageType ];
 			if ('element' in effect) {
@@ -54,7 +54,7 @@ Game.moveEffects =
 	},
 	
 	devour: function(actor, targets, effect) {
-		for (var i = 0; i < targets.length; ++i) {
+		for (let i = 0; i < targets.length; ++i) {
 			if (!targets[i].isPartyMember()) {
 				var munchData = targets[i].enemyInfo.munchData;
 				var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
@@ -77,7 +77,7 @@ Game.moveEffects =
 	
 	heal: function(actor, targets, effect) {
 		var userInfo = actor.battlerInfo;
-		for (var i = 0; i < targets.length; ++i) {
+		for (let i = 0; i < targets.length; ++i) {
 			var targetInfo = targets[i].battlerInfo;
 			var healing = Math.max(Math.round(Game.math.healing(userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(healing / 10);
@@ -92,14 +92,14 @@ Game.moveEffects =
 	},
 	
 	instaKill: function(actor, targets, effect) {
-		for (var i = 0; i < targets.length; ++i) {
+		for (let i = 0; i < targets.length; ++i) {
 			targets[i].takeDamage(Math.max(targets[i].hp, 1), [ effect.damageType, 'deathblow' ]);
 		}
 	},
 	
 	liftStatus: function(actor, targets, effect) {
-		for (var i = 0; i < targets.length; ++i) {
-			for (var i2 = 0; i2 < effect.statuses.length; ++i2) {
+		for (let i = 0; i < targets.length; ++i) {
+			for (let i2 = 0; i2 < effect.statuses.length; ++i2) {
 				targets[i].liftStatus(effect.statuses[i2]);
 			}
 		}
@@ -112,7 +112,7 @@ Game.moveEffects =
 	},
 	
 	recoverHP: function(actor, targets, effect) {
-		for (var i = 0; i < targets.length; ++i) {
+		for (let i = 0; i < targets.length; ++i) {
 			var vitality = targets[i].battlerInfo.stats.vit;
 			targets[i].heal(effect.strength * vitality, [ 'cure' ]);
 		}

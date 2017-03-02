@@ -16,7 +16,7 @@ class BattleScreen
 		};
 
 		this.actors = {};
-		for (var type in this.actorTypes)
+		for (let type in this.actorTypes)
 			this.actors[type] = [];
 		this.background = new Texture('images/battleBackground.png');
 		this.hud = new BattleHUD(partyMaxMP);

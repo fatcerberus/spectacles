@@ -69,10 +69,10 @@ class PartyMember
 
 		var character = Game.characters[this.characterID];
 		this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
-		for (var statID in character.baseStats)
+		for (let statID in character.baseStats)
 			this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
 		term.print(`create new PC ${this.name}`, `lvl: ${this.level}`);
-		for (var i = 0; i < character.skills.length; ++i)
+		for (let i = 0; i < character.skills.length; ++i)
 			this.learnSkill(character.skills[i]);
 	}
 
@@ -120,7 +120,7 @@ class PartyMember
 	{
 		var heldWeaponType = this.weaponID !== null ? Game.weapons[this.weaponID].type : null;
 		this.usableSkills = [];
-		for (var i = 0; i < this.skillList.length; ++i) {
+		for (let i = 0; i < this.skillList.length; ++i) {
 			var skillInfo = this.skillList[i].skillInfo;
 			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType)
 				continue;

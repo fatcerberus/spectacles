@@ -20,7 +20,7 @@ class TestHarness
 		this.isBattleRunning = false;
 		
 		var testScripts = GetFileList('~/scripts/testCases');
-		for (var i = 0; i < testScripts.length; ++i) {
+		for (let i = 0; i < testScripts.length; ++i) {
 			term.print(`load test cases from '${testScripts[i]}'`);
 			EvaluateScript(`~/scripts/testCases/${testScripts[i]}`);
 		}
@@ -40,13 +40,13 @@ class TestHarness
 				from(Game.initialParty).each(charID => {
 					session.party.remove(charID);
 				});
-				for (var id in this.setup.party) {
+				for (let id in this.setup.party) {
 					var memberInfo = this.setup.party[id];
 					session.party.add(id, memberInfo.level);
 					if ('weapon' in memberInfo) {
 						session.party.members[id].setWeapon(memberInfo.weapon);
 					}
-					for (var iItem = 0; iItem < memberInfo.items.length; ++iItem) {
+					for (let iItem = 0; iItem < memberInfo.items.length; ++iItem) {
 						session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
 					}
 				}

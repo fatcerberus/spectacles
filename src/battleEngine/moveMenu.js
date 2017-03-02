@@ -48,7 +48,7 @@ function MoveMenu(unit, battle, stance)
 		drawerTable[category].contents.push(skill);
 	});
 	this.drawers = [];
-	for (var category in drawerTable) {
+	for (let category in drawerTable) {
 		this.drawers.push(drawerTable[category]);
 	}
 	if (stance == Stance.Attack) {
@@ -204,7 +204,7 @@ MoveMenu.prototype.getInput = function()
 		if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
 			var usables = this.drawers[this.topCursor].contents;
 			this.moveMenu = [];
-			for (var i = 0; i < usables.length; ++i) {
+			for (let i = 0; i < usables.length; ++i) {
 				var menuItem = {
 					name: usables[i].name,
 					idColor: CreateColor(192, 192, 192, 255),
@@ -214,8 +214,8 @@ MoveMenu.prototype.getInput = function()
 					usable: usables[i]
 				};
 				var actions = menuItem.usable.peekActions();
-				for (var i2 = 0; i2 < actions.length; ++i2) {
-					for (var i3 = 0; i3 < actions[i2].effects.length; ++i3) {
+				for (let i2 = 0; i2 < actions.length; ++i2) {
+					for (let i3 = 0; i3 < actions[i2].effects.length; ++i3) {
 						if ('element' in actions[i2].effects[i3]) {
 							menuItem.idColor = Game.elements[actions[i2].effects[i3].element].color;
 						}
@@ -334,7 +334,7 @@ MoveMenu.prototype.render = function()
 	var litTextColor = CreateColor(255, 255, 255, 255);
 	var dimTextColor = CreateColor(192, 192, 192, 255);
 	Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 192 * this.fadeness));
-	for (var i = 0; i < this.drawers.length; ++i) {
+	for (let i = 0; i < this.drawers.length; ++i) {
 		var x = Math.floor(i * itemWidth);
 		var width = Math.floor((i + 1) * itemWidth) - x;
 		this.drawTopItem(x, yOrigin + 16, width, this.drawers[i], i == this.topCursor);
@@ -346,7 +346,7 @@ MoveMenu.prototype.render = function()
 		var y = yOrigin + 34 - height * (1.0 - this.expansion);
 		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
 		itemY = y;
-		for (var i = 0; i < this.moveMenu.length; ++i) {
+		for (let i = 0; i < this.moveMenu.length; ++i) {
 			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.isRunning());
 			itemY += 18;
 		}

@@ -17,7 +17,7 @@ class StatusEffect
 		this.unit = unit;
 		term.print(`initialize status effect ${unit.name}->${this.name}`);
 		if ('overrules' in this.statusDef) {
-			for (var i = 0; i < this.statusDef.overrules.length; ++i)
+			for (let i = 0; i < this.statusDef.overrules.length; ++i)
 				this.unit.liftStatus(this.statusDef.overrules[i]);
 		}
 		if ('initialize' in this.statusDef)
@@ -50,7 +50,7 @@ class StatusEffect
 	{
 		if (!('overrules' in this.statusDef))
 			return false;
-		for (var i = 0; i < this.statusDef.overrules.length; ++i) {
+		for (let i = 0; i < this.statusDef.overrules.length; ++i) {
 			if (statusID == this.statusDef.overrules[i])
 				return true;
 		}

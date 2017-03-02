@@ -15,7 +15,7 @@ class MenuStrip
 		this.selectedItem = 0;
 		this.title = title;
 		if (items != null) {
-			for (var i = 0; i < items.length; ++i)
+			for (let i = 0; i < items.length; ++i)
 				this.addItem(items[i]);
 		}
 	}
@@ -70,7 +70,7 @@ class MenuStrip
 		var normalItemColor = CreateColor(255, 192, 0, this.openness * 255);
 		var litItemColor = CreateColor(128, 128, 64, this.openness * 255);
 		var itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
-		for (var i = -1; i <= this.menuItems.length; ++i) {
+		for (let i = -1; i <= this.menuItems.length; ++i) {
 			var itemIndex = i;
 			if (i >= this.menuItems.length) {
 				itemIndex = i % this.menuItems.length;

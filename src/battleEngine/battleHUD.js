@@ -142,7 +142,7 @@ BattleHUD.prototype.render = function()
 	var itemY = y;
 	this.drawElementBox(260, itemY, 60, 60);
 	this.mpGauge.draw(261, itemY + 1, 58);
-	for (var i = 0; i < this.partyInfo.length; ++i) {
+	for (let i = 0; i < this.partyInfo.length; ++i) {
 		var itemX = 160;
 		var itemY = y + i * 20;
 		if (this.partyInfo[i] !== null) {
@@ -151,7 +151,7 @@ BattleHUD.prototype.render = function()
 			this.drawElementBox(itemX, itemY, 100, 20);
 		}
 	}
-	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
+	for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
 		var itemX = 160;
 		var itemY = y + this.partyInfo.length * 20 + i * 20;
@@ -172,7 +172,7 @@ BattleHUD.prototype.render = function()
 //     hp:   The number of hit points to change the display to.
 BattleHUD.prototype.setHP = function(unit, hp)
 {
-	for (var i = 0; i < this.partyInfo.length; ++i) {
+	for (let i = 0; i < this.partyInfo.length; ++i) {
 		var characterInfo = this.partyInfo[i];
 		if (characterInfo !== null && characterInfo.unit == unit && hp != characterInfo.hp) {
 			characterInfo.hpGauge.set(hp);
@@ -191,7 +191,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 				.run();
 		}
 	}
-	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
+	for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 		var gaugeInfo = this.hpGaugesInfo[i];
 		if (gaugeInfo.owner == unit) {
 			gaugeInfo.gauge.set(hp);
@@ -239,12 +239,12 @@ BattleHUD.prototype.show = function()
 // Advances the BattleHUD's internal state by one frame.
 BattleHUD.prototype.update = function()
 {
-	for (var i = 0; i < this.partyInfo.length; ++i) {
+	for (let i = 0; i < this.partyInfo.length; ++i) {
 		if (this.partyInfo[i] !== null) {
 			this.partyInfo[i].hpGauge.update();
 		}
 	}
-	for (var i = 0; i < this.hpGaugesInfo.length; ++i) {
+	for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 		this.hpGaugesInfo[i].gauge.update();
 	}
 	return true;

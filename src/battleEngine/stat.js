@@ -9,7 +9,7 @@ class Stat
 	{
 		this.baseValue = baseValue;
 		this.levelUpTable = [];
-		for (var i = 1; i <= 100; ++i) {
+		for (let i = 1; i <= 100; ++i) {
 			var xpNeeded = Math.ceil(i > 1 ? i ** 3 / growthRate : 0);
 			this.levelUpTable[i] = xpNeeded;
 		}
@@ -19,7 +19,7 @@ class Stat
 
 	get level()
 	{
-		for (var level = 100; level >= 2; --level) {
+		for (let level = 100; level >= 2; --level) {
 			if (this.experience >= this.levelUpTable[level])
 				return level;
 		}

@@ -96,7 +96,7 @@ class HPGauge
 			: Math.ceil(width / (this.maxSectors - 1));
 		var slotX;
 		var slotY = y + height - slotYSize;
-		for (var i = 0; i < numReserves; ++i) {
+		for (let i = 0; i < numReserves; ++i) {
 			var color;
 			if (i < numReservesFilled) {
 				color = fillColor;
@@ -269,7 +269,7 @@ class TurnPreview
 				name: unit.name,
 				turnBoxes: []
 			};
-			for (var i = 0; i < 8; ++i) {
+			for (let i = 0; i < 8; ++i) {
 				entry.turnBoxes[i] = { x: 160, tween: null };
 			}
 			this.entries[unit.tag] = entry;
@@ -286,9 +286,9 @@ class TurnPreview
 		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
 		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
-		for (var id in this.entries) {
+		for (let id in this.entries) {
 			var entry = this.entries[id];
-			for (var i = 0; i < entry.turnBoxes.length; ++i) {
+			for (let i = 0; i < entry.turnBoxes.length; ++i) {
 				var turnBox = entry.turnBoxes[i];
 				Rectangle(turnBox.x, y, 16, 16, entry.color);
 				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
@@ -303,7 +303,7 @@ class TurnPreview
 		var moveEasing = 'easeInOutExpo';
 		var moveTime = 15;
 		if (this.lastPrediction !== null) {
-			for (var i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
+			for (let i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
 				var unit = this.lastPrediction[i].unit;
 				var turnIndex = this.lastPrediction[i].turnIndex;
 				var turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
@@ -316,7 +316,7 @@ class TurnPreview
 			}
 		}
 		this.lastPrediction = prediction;
-		for (var i = 0; i < Math.min(prediction.length, 7); ++i) {
+		for (let i = 0; i < Math.min(prediction.length, 7); ++i) {
 			var unit = prediction[i].unit;
 			var turnIndex = prediction[i].turnIndex;
 			this.ensureEntries(unit);

@@ -255,7 +255,7 @@ Game.statuses =
 		tags: [ 'ailment', 'undead' ],
 		overrules: [ 'zombie' ],
 		aiming: function(unit, eventData) {
-			for (var i = 0; i < eventData.action.effects.length; ++i) {
+			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				var effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
@@ -266,7 +266,7 @@ Game.statuses =
 			}
 		},
 		attacked: function(unit, eventData) {
-			for (var i = 0; i < eventData.action.effects.length; ++i) {
+			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				var effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
