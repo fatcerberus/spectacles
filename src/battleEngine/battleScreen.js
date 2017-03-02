@@ -54,10 +54,8 @@ class BattleScreen
 		}
 	}
 
-	announceAction(actionName, alignment, bannerColor)
+	announceAction(actionName, alignment, bannerColor = Color.Gray)
 	{
-		if (bannerColor === undefined)
-			bannerColor = alignment == 'enemy' ? CreateColor(128, 32, 32, 192) : CreateColor(64, 64, 192, 192);
 		let announcement = {
 			screen: this,
 			text: actionName,
@@ -71,9 +69,9 @@ class BattleScreen
 				var x = GetScreenWidth() / 2 - width / 2;
 				var y = 112;
 				var textY = y + height / 2 - this.font.getHeight() / 2;
-				var boxColor = CreateColor(this.color.red, this.color.green, this.color.blue, this.color.alpha * (1.0 - this.fadeness));
-				Rectangle(x, y, width, height, boxColor);
-				OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 64 * (1.0 - this.fadeness)));
+				var boxColor = this.color.fade(1.0 - this.fadeness);
+				prim.rect(screen, x, y, width, height, boxColor);
+				prim.lineRect(screen, x, y, width, height, 1, Color.Black.fade(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
 			update: function() {

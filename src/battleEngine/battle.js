@@ -8,8 +8,6 @@ RequireScript('battleEngine/battleUnit.js');
 RequireScript('battleEngine/fieldCondition.js');
 RequireScript('battleEngine/mpPool.js');
 
-// BattleResult enumeration
-// Specifies the outcome of a battle.
 const BattleResult =
 {
 	Win:  1,
@@ -213,13 +211,10 @@ class Battle
 
 	liftCondition(conditionID)
 	{
-		for (let i = 0; i < this.conditions.length; ++i) {
-			if (conditionID == this.conditions[i].conditionID) {
-				term.print(`lift field condition ${this.conditions[i].name}`);
-				this.conditions.splice(i--, 1);
-				continue;
-			}
-		}
+		from(this.conditions)
+			.where(i => i.conditionID === conditionID)
+			.besides(i => term.print(`lift field condition ${this.conditions[i].name}`))
+			.remove();
 	}
 
 	predictTurns(actingUnit = null, nextActions = null)

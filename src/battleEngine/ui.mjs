@@ -207,8 +207,8 @@ class MPGauge
 			var outerUsageColor = this.usageColor;
 			var innerUsageColor = Color.mix(this.usageColor, Color.Black.fade(this.usageColor.a));
 			var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
-			prim.circle(screen, x + size / 2, y + size / 2, maxRadius * (this.reading + this.usage) / this.capacity, innerUsageColor, outerUsageColor);
-			prim.circle(screen, x + size / 2, y + size / 2, maxRadius * this.reading / this.capacity, innerFillColor, outerFillColor);
+			prim.circle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
+			prim.circle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
 			drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, Color.White, Math.round(this.reading), 'right');
 			drawText(this.textFont, x + size - 20, y + size / 2 - 4, 1, new Color(1, 0.75, 0), "MP");
 		}
