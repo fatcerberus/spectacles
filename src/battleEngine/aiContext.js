@@ -18,7 +18,7 @@ class AIContext
 		this.data = {};
 		this.defaultSkillID = null;
 		this.moveQueue = [];
-		this.phase = 0;
+		this.currentPhase = 0;
 		this.phasePoints = null;
 		this.targets = null;
 		this.turnsTaken = 0;
@@ -36,20 +36,18 @@ class AIContext
 
 	checkPhase(allowEvents = true)
 	{
-		var phaseToEnter;
+		let phaseToEnter = 1;
 		if (this.phasePoints !== null) {
-			var milestone = from(this.phasePoints)
-				.last(it => it >= this.unit.hp);
+			let milestone = from(this.phasePoints)
+				.last(v => v >= this.unit.hp);
 			phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
-		} else {
-			phaseToEnter = 1;
 		}
-		var lastPhase = this.phase;
-		this.phase = Math.max(phaseToEnter, this.phase);  // ratcheting
-		if (allowEvents && this.phase > lastPhase) {
-			term.print(`${this.unit.name} is entering phase ${this.phase}`,
+		let lastPhase = this.currentPhase;
+		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
+		if (allowEvents && this.currentPhase > lastPhase) {
+			term.print(`${this.unit.name} is entering phase ${this.currentPhase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
-			this.phaseChanged.invoke(this, this.phase, lastPhase);
+			this.phaseChanged.invoke(this, this.currentPhase, lastPhase);
 		}
 	}
 
@@ -61,7 +59,8 @@ class AIContext
 		var phaseIndex = 1;
 		from(this.phasePoints).each(milestone =>
 			term.print(`phase ${++phaseIndex} will start at <= ${milestone} HP`));
-		this.phase = 0;
+		this.currentPhase = 0;
+		this.lastPhase = 0;
 	}
 
 	getNextMove()
@@ -87,7 +86,7 @@ class AIContext
 				this.targets = null;
 				this.checkPhase();
 				if (this.moveQueue.length == 0)
-					this.strategy.strategize(this.unit.stance, this.phase);
+					this.strategy.strategize(this.unit.stance, this.currentPhase);
 				if (this.moveQueue.length == 0) {
 					term.print(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {

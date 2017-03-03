@@ -16,7 +16,7 @@ class InGameClock
 		this.currentMask = Color.Transparent
 		threads.create(this, 1);
 	}
-	
+
 	static update()
 	{
 		var now = this.getTime();
@@ -50,12 +50,12 @@ class InGameClock
 		}
 		return true;
 	}
-	
+
 	static render()
 	{
 		prim.fill(screen, this.currentMask);
 	}
-	
+
 	static getTime()
 	{
 		let realTime = new Date();
@@ -76,7 +76,7 @@ class InGameTime
 		this.minute = minute;
 		this.second = second;
 	}
-	
+
 	toString()
 	{
 		let hourText = ("0" + this.hour).slice(-2);
