@@ -462,9 +462,8 @@ class BattleUnit
 		// modifying the original definition.
 		
 		var statuses = [ ...this.statuses ];
-		from(statuses).each(status => {
-			status.invoke(eventID, data);
-		});
+		from(statuses)
+			.each(v => v.invoke(eventID, data));
 	}
 
 	refreshInfo()

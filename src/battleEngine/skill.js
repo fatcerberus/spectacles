@@ -36,30 +36,30 @@ class SkillUsable
 			case 'single':
 				var enemies = user.battle.enemiesOf(user);
 				var target = from(enemies)
-					.where(i => i.isAlive())
+					.where(v => v.isAlive())
 					.sample(1).first();
-				if (this.allowDeadTarget && from(enemies).any(i => !i.isAlive())) {
+				if (this.allowDeadTarget && from(enemies).any(v => !v.isAlive())) {
 					target = from(enemies)
-						.where(i => !i.isAlive())
+						.where(v => !v.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'ally':
 				var allies = user.battle.alliesOf(user);
 				var target = user;
-				if (this.allowDeadTarget && from(allies).any(i => !i.isAlive())) {
+				if (this.allowDeadTarget && from(allies).any(v => !v.isAlive())) {
 					target = from(allies)
-						.where(i => !i.isAlive())
+						.where(v => !v.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'allEnemies':
 				return from(user.battle.enemiesOf(user))
-					.where(i => i.isAlive() || this.allowDeadUnits)
+					.where(v => v.isAlive() || this.allowDeadUnits)
 					.select();
 			case 'allAllies':
 				return from(user.battle.alliesOf(user))
-					.where(i => i.isAlive() || this.allowDeadUnits)
+					.where(v => v.isAlive() || this.allowDeadUnits)
 					.select();
 			default:
 				return user;
@@ -130,7 +130,7 @@ class SkillUsable
 		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
 		unit.battle.skillUsed.invoke(unit.id, this.skillID,
-			from(targets).select(i => i.id));
+			from(targets).select(v => v.id));
 		return eventData.skill.actions;
 	}
 }

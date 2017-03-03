@@ -212,8 +212,8 @@ class Battle
 	liftCondition(conditionID)
 	{
 		from(this.conditions)
-			.where(i => i.conditionID === conditionID)
-			.besides(i => term.print(`lift field condition ${this.conditions[i].name}`))
+			.where(v => v.conditionID === conditionID)
+			.besides(v => term.print(`lift field condition ${v.name}`))
 			.remove();
 	}
 
@@ -221,13 +221,13 @@ class Battle
 	{
 		var forecast = [];
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
-			var bias = 0;
+			let bias = 0;
 			from(this.enemyUnits, this.playerUnits)
-				.where(i => i !== actingUnit || turnIndex > 0)
+				.where(v => v !== actingUnit || turnIndex > 0)
 				.each(unit =>
 			{
 				++bias;
-				var timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
+				let timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
 					actingUnit === unit ? nextActions : null);
 				forecast.push({
 					bias: bias,
@@ -238,8 +238,8 @@ class Battle
 			});
 		}
 		forecast.sort(function(a, b) {
-			var sortOrder = a.remainingTime - b.remainingTime;
-			var biasOrder = a.bias - b.bias;
+			let sortOrder = a.remainingTime - b.remainingTime;
+			let biasOrder = a.bias - b.bias;
 			return sortOrder !== 0 ? sortOrder : biasOrder;
 		});
 		forecast = forecast.slice(0, 10);
@@ -249,17 +249,15 @@ class Battle
 	raiseEvent(eventID, data = null)
 	{
 		var conditions = [ ...this.conditions ];
-		from(conditions).each(function(condition) {
-			condition.invoke(eventID, data);
-		});
+		from(conditions)
+			.each(v => v.invoke(eventID, data));
 	}
 
 	resume()
 	{
 		--this.suspendCount;
-		if (this.suspendCount < 0) {
+		if (this.suspendCount < 0)
 			this.suspendCount = 0;
-		}
 	}
 
 	runAction(action, actingUnit, targetUnits, useAiming)
@@ -269,23 +267,20 @@ class Battle
 		var eventData = { action: action, targets: targetUnits };
 		this.raiseEvent('actionTaken', eventData);
 		targetUnits = eventData.targets;
-		if ('announceAs' in action && action.announceAs != null) {
+		if ('announceAs' in action && action.announceAs != null)
 			actingUnit.announce(action.announceAs);
-		}
 		from(action.effects)
 			.where(it => it.targetHint === 'user')
 			.each(effect =>
 		{
 			term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
-			var effectHandler = Game.moveEffects[effect.type];
+			let effectHandler = Game.moveEffects[effect.type];
 			effectHandler(actingUnit, [ actingUnit ], effect);
 		});
-		from(targetUnits).each(unit => {
-			unit.takeHit(actingUnit, action);
-		});
-		if (action.effects === null) {
+		from(targetUnits)
+			.each(v => v.takeHit(actingUnit, action));
+		if (action.effects === null)
 			return [];
-		}
 		var targetsHit = [];
 		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (let i = 0; i < targetUnits.length; ++i) {
@@ -311,14 +306,12 @@ class Battle
 				targetUnits[i].evade(actingUnit, action);
 			}
 		}
-		if (targetsHit.length == 0) {
+		if (targetsHit.length == 0)
 			return [];
-		}
-		
+
 		// apply move effects to target(s)
-		from(targetsHit).each(function(unit) {
-			unit.beginTargeting(actingUnit);
-		});
+		from(targetsHit)
+			.each(v => v.beginTargeting(actingUnit));
 		var animContext = {
 			effects: from(action.effects)
 				.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
@@ -342,9 +335,8 @@ class Battle
 				.call(animContext, actingUnit, targetsHit, false);
 		}
 		while (animContext.nextEffect());
-		from(targetsHit).each(function(unit) {
-			unit.endTargeting();
-		});
+		from(targetsHit)
+			.each(v => v.endTargeting());
 		return targetsHit;
 	}
 

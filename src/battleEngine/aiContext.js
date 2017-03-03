@@ -57,7 +57,7 @@ class AIContext
 	{
 		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
-			.select(i => Math.round(random.normal(i, sigma)));
+			.select(v => Math.round(random.normal(v, sigma)));
 		var phaseIndex = 1;
 		from(this.phasePoints).each(milestone =>
 			term.print(`phase ${++phaseIndex} will start at <= ${milestone} HP`));
@@ -128,22 +128,22 @@ class AIContext
 	isItemQueued(itemID)
 	{
 		return from(this.moveQueue)
-			.where(i => i.usable instanceof ItemUsable)
-			.any(i => i.usable.itemID == itemID);
+			.where(v => v.usable instanceof ItemUsable)
+			.any(v => v.usable.itemID == itemID);
 	}
 
 	isItemUsable(itemID)
 	{
 		return from(this.unit.items)
-			.where(i => i.itemID === itemID)
-			.any(i => i.isUsable(this, this.unit.stance));
+			.where(v => v.itemID === itemID)
+			.any(v => v.isUsable(this, this.unit.stance));
 	}
 
 	isSkillQueued(skillID)
 	{
 		return from(this.moveQueue)
-			.where(i => i.usable instanceof SkillUsable)
-			.any(i => i.usable.skillID == skillID);
+			.where(v => v.usable instanceof SkillUsable)
+			.any(v => v.usable.skillID == skillID);
 	}
 
 	isSkillUsable(skillID)
@@ -155,8 +155,8 @@ class AIContext
 	itemsLeft(itemID)
 	{
 		let item = from(this.unit.items)
-			.where(i => i.itemID === itemID)
-			.besides(i => term.print(`${this.unit.name} requested item count for ${i.name}`, `left: ${i.usesLeft}`))
+			.where(v => v.itemID === itemID)
+			.besides(v => term.print(`${this.unit.name} requested item count for ${v.name}`, `left: ${v.usesLeft}`))
 			.first();
 		return item.usesLeft;
 	}
@@ -196,8 +196,8 @@ class AIContext
 	queueItem(itemID, unitID = null)
 	{
 		let itemToUse = from(this.unit.items)
-			.where(i => i.itemID === itemID)
-			.where(i => i.isUsable(this.unit, this.unit.stance))
+			.where(v => v.itemID === itemID)
+			.where(v => v.isUsable(this.unit, this.unit.stance))
 			.first();
 		if (itemToUse === undefined)
 			throw new Error(`${this.unit.name} tried to use an item '${itemID}' not owned`);
