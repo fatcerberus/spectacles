@@ -256,7 +256,7 @@ class Battle
 	{
 		this.aiList.push(ai);
 	}
-	
+
 	resume()
 	{
 		if (--this.suspendCount < 0)
@@ -301,7 +301,7 @@ class Battle
 			term.print(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
-				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id); 
+				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
 				targetsHit.push(targetUnits[i]);
 			} else {
 				targetUnits[i].evade(actingUnit, action);
@@ -353,7 +353,7 @@ class Battle
 	{
 		++this.suspendCount;
 	}
-	
+
 	tick()
 	{
 		if (this.suspendCount > 0 || this.result != null)
@@ -391,7 +391,7 @@ class Battle
 		from(...unitLists)
 			.each(unit => unit.endCycle());
 	}
-	
+
 	unregisterAI(ai)
 	{
 		from(this.aiList)

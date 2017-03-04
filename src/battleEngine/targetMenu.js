@@ -34,7 +34,7 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 	this.unitToShowInfo = null;
 	this.usable = usable;
 	this.allowDeadUnits = usable !== null ? usable.allowDeadTarget : false;
-	
+
 	this.drawCursor = function(unit)
 	{
 		var width = this.cursorFont.getStringWidth(this.name) + 10;
@@ -44,13 +44,13 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 		OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
 		drawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, CreateColor(255, 255, 255, 255), 1, 'center');
 	};
-	
+
 	this.drawInfoBox = function(x, y, width, height, alpha)
 	{
 		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha * (1.0 - this.infoBoxFadeness)));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32 * (1.0 - this.infoBoxFadeness)));
 	};
-	
+
 	this.moveCursor = function(direction)
 	{
 		if (this.isGroupCast || this.targets == null)
@@ -77,7 +77,7 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 			this.updateInfo();
 		}
 	};
-	
+
 	this.updateInfo = function()
 	{
 		var unit = this.targets.length == 1 ? this.targets[0] : null;
@@ -101,7 +101,7 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 			}.bind(this))
 			.fork()
 				.tween(this, 15, 'easeOutBack', { infoBoxFadeness: 0.0 })
-			.end()	
+			.end()
 			.tween(this, 15, 'easeInOutSine', { infoFadeness: 0.0 })
 			.run();
 	};

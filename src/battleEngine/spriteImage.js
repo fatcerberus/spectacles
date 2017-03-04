@@ -42,23 +42,23 @@ class SpriteImage
 		this.spriteset.images[this.spriteset.directions[this.directionID].frames[this.frameID].index]
 			.blitMask(x + this.xOff, y + this.yOff, CreateColor(255, 255, 255, alpha));
 	}
-	
+
 	reset()
 	{
 		this.frameID = 0;
 		this.elapsedFrames = 0;
 	}
-	
+
 	resume()
 	{
 		this.stopped = false;
 	}
-	
+
 	stop()
 	{
 		this.stopped = true;
 	}
-	
+
 	update()
 	{
 		if (this.stopped)

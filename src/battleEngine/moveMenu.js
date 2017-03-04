@@ -18,7 +18,7 @@ function MoveMenu(unit, battle, stance)
 	this.normalCursorColor = CreateColor(0, 72, 144, 255);
 	this.textColor = CreateColor(255, 255, 255, 255);
 	this.usageTextColor = CreateColor(255, 192, 0, 255);
-	
+
 	this.battle = battle;
 	this.drawers = null;
 	this.expansion = 0.0;
@@ -55,7 +55,7 @@ function MoveMenu(unit, battle, stance)
 		this.drawers = this.drawers.concat([
 			{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 	}
-	
+
 	this.chooseMove = new scenes.Scene()
 		.fork()
 			.tween(this.moveCursorColor, 7, 'easeInOutSine', this.lockedCursorColor)
@@ -64,7 +64,7 @@ function MoveMenu(unit, battle, stance)
 			.tween(this, 15, 'easeInBack', { expansion: 0.0 })
 		.end()
 		.tween(this, 15, 'easeInBack', { fadeness: 0.0 });
-	
+
 	this.hideMoveList = new scenes.Scene()
 		.fork()
 			.tween(this.moveCursorColor, 15, 'linear', CreateColor(0, 0, 0, 0))
@@ -73,14 +73,14 @@ function MoveMenu(unit, battle, stance)
 			.tween(this.topCursorColor, 15, 'easeInOutSine', this.normalCursorColor)
 		.end()
 		.tween(this, 15, 'easeInBack', { expansion: 0.0 });
-	
+
 	this.showMenu = new scenes.Scene()
-		.fork()	
+		.fork()
 			.tween(this.topCursorColor, 15, 'easeOutQuad', CreateColor(192, 192, 192, 255))
 			.tween(this.topCursorColor, 15, 'easeOutQuad', this.normalCursorColor)
 		.end()
 		.tween(this, 30, 'easeOutBounce', { fadeness: 1.0 });
-	
+
 	this.showMoveList = new scenes.Scene()
 		.fork()
 			.tween(this.topCursorColor, 15, 'easeInOutSine', this.lockedCursorColor)
@@ -89,7 +89,7 @@ function MoveMenu(unit, battle, stance)
 			.tween(this.moveCursorColor, 15, 'linear', this.normalCursorColor)
 		.end()
 		.tween(this, 15, 'easeOutExpo', { expansion: 1.0 });
-	
+
 	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn, isEnabled = true)
 	{
 		var color;
@@ -106,7 +106,7 @@ function MoveMenu(unit, battle, stance)
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
 	};
-	
+
 	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor, isEnabled = true)
 	{
 		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha));
@@ -115,7 +115,7 @@ function MoveMenu(unit, battle, stance)
 			this.drawCursor(x, y, width, height, cursorColor, isLockedIn, isEnabled);
 		}
 	};
-	
+
 	this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 	{
 		var alpha = 255 * this.fadeness * this.expansion;
@@ -140,7 +140,7 @@ function MoveMenu(unit, battle, stance)
 			this.drawText(this.font, x + 149, y + 3, isEnabled, usageTextColor, "x");
 		}
 	};
-	
+
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
 	{
 		const Align =
@@ -149,7 +149,7 @@ function MoveMenu(unit, battle, stance)
 			center: (font, x, text) => x - font.getStringWidth(text) / 2,
 			right:  (font, x, text) => x - font.getStringWidth(text),
 		};
-		
+
 		if (!(alignment in Align))
 			throw new Error(`invalid text alignment '${alignment}'.`);
 		x = Align[alignment](font, x, text);
@@ -158,7 +158,7 @@ function MoveMenu(unit, battle, stance)
 		font.setColorMask(color);
 		font.drawText(x, y, text);
 	};
-	
+
 	this.drawTopItem = function(x, y, width, item, isSelected)
 	{
 		var isEnabled = item.contents.length > 0;
@@ -167,7 +167,7 @@ function MoveMenu(unit, battle, stance)
 		textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
 		this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
 	};
-	
+
 	this.updateTurnPreview = function()
 	{
 		var nextMoveOrRank;

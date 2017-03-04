@@ -17,7 +17,7 @@ function BattleHUD(partyMaxMP)
 	this.partyHPGaugeColor = Color.Lime;
 	this.partyHighlightColor = CreateColor(25, 25, 112, 255);
 	this.partyMPGaugeColor = Color.DarkOrchid;
-	
+
 	this.fadeness = 0.0;
 	this.font = GetSystemFont();
 	this.highlightColor = CreateColor(0, 0, 0, 0);
@@ -27,13 +27,13 @@ function BattleHUD(partyMaxMP)
 	this.partyInfo = [ null, null, null ];
 	this.thread = null;
 	this.turnPreview = new TurnPreview();
-	
+
 	this.drawElementBox = function(x, y, width, height)
 	{
 		Rectangle(x, y, width, height, CreateColor(0, 0, 0, 192));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
 	};
-	
+
 	this.drawHighlight = function(x, y, width, height, color)
 	{
 		var outerColor = color;
@@ -43,7 +43,7 @@ function BattleHUD(partyMaxMP)
 		GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha / 2));
 	};
-	
+
 	this.drawPartyElement = function(x, y, memberInfo, isHighlighted)
 	{
 		this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
@@ -64,7 +64,7 @@ function BattleHUD(partyMaxMP)
 		Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
 		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
-	
+
 	this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
 	{
 		const Align =
@@ -73,7 +73,7 @@ function BattleHUD(partyMaxMP)
 			center: (font, x, text) => x - font.getStringWidth(text) / 2,
 			right:  (font, x, text) => x - font.getStringWidth(text),
 		};
-		
+
 		if (!(alignment in Align))
 			throw new Error(`invalid text alignment '${alignment}'.`);
 		x = Align[alignment](font, x, text);
@@ -178,7 +178,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 				hp / characterInfo.maxHP <= 0.1 ? Color.Red
 				: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
 				: Color.Lime;
-			characterInfo.hpGauge.changeColor(gaugeColor, 0.5); 
+			characterInfo.hpGauge.changeColor(gaugeColor, 0.5);
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 			new scenes.Scene()
 				.fork()

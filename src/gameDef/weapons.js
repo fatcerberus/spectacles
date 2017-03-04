@@ -45,7 +45,7 @@ Game.weapons =
 			'chargeSlash'
 		]
 	},
-	
+
 	// Guns
 	arsenRifle: {
 		name: "Arsen's Rifle",
@@ -57,7 +57,7 @@ Game.weapons =
 			'shootout'
 		]
 	},
-	
+
 	// Bows
 	fireAndIce: {
 		name: "Fire & Ice",
@@ -69,7 +69,7 @@ Game.weapons =
 			'chillShot'
 		]
 	},
-	
+
 	powerBow: {
 		name: "Power Bow",
 		type: 'bow',
@@ -82,7 +82,7 @@ Game.weapons =
 			'seismicShot'
 		]
 	},
-	
+
 	// Shuriken
 	risingSun: {
 		name: "Rising Sun",
@@ -93,7 +93,7 @@ Game.weapons =
 			'starVolley'
 		]
 	},
-	
+
 	// Staves
 	luckyStaff: {
 		name: "Lucky Staff",

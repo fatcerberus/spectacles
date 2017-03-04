@@ -8,7 +8,7 @@ class TestHarness
 	static initialize()
 	{
 		term.print("initialize Specs Engine test harness");
-		
+
 		term.define('harness', this, {
 			'run': function(testID) {
 				if (!(testID in this.tests))
@@ -18,7 +18,7 @@ class TestHarness
 		});
 		this.tests = {};
 		this.isBattleRunning = false;
-		
+
 		var testScripts = GetFileList('~/scripts/testCases');
 		for (let i = 0; i < testScripts.length; ++i) {
 			term.print(`load test cases from '${testScripts[i]}'`);

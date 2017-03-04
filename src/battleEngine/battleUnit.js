@@ -460,7 +460,7 @@ class BattleUnit
 		// change the effects of an action taken by a battler.  if you pass in any objects from
 		// the gamedef, they should be cloned first to prevent the event from inadvertantly
 		// modifying the original definition.
-		
+
 		var statuses = [ ...this.statuses ];
 		from(statuses)
 			.each(v => v.invoke(eventID, data));
@@ -488,33 +488,33 @@ class BattleUnit
 	registerCommands()
 	{
 		term.define(this.id, this, {
-			
+
 			'add': function(statusID) {
 				if (statusID in Game.statuses)
 					this.addStatus(statusID);
 				else
 					term.print(`invalid status ID '${statusID}'`);
 			},
-			
+
 			'lift': function(statusID) {
 				if (statusID in Game.statuses)
 					this.liftStatus(statusID);
 				else
 					term.print(`invalid status ID '${statusID}'`);
 			},
-			
+
 			'damage': function(amount) {
 				tags = [].slice.call(arguments, 1);
 				amount = Math.max(parseInt(amount), 0);
 				this.takeDamage(amount, tags);
 			},
-			
+
 			'heal': function(amount) {
 				tags = [].slice.call(arguments, 1);
 				amount = Math.max(parseInt(amount), 0);
 				this.heal(amount, tags);
 			},
-			
+
 			'inv': function(instruction) {
 				if (arguments.length < 1)
 					return term.print("'" + this.id + " inv': No instruction provided");
@@ -567,11 +567,11 @@ class BattleUnit
 					return term.print("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
 				}
 			},
-			
+
 			'revive': function() {
 				this.resurrect();
 			},
-			
+
 			'scan': function(flag) {
 				flag = flag.toLowerCase();
 				if (flag == 'on') this.allowTargetScan = true;

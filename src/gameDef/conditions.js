@@ -10,11 +10,11 @@ Game.conditions =
 	blackout:
 	{
 		name: "Blackout",
-		
+
 		initialize: function(battle) {
 			this.actionsLeft = 10;
 		},
-		
+
 		actionTaken: function(battle, eventData) {
 			if (eventData.targets.length == 1 && random.chance(0.5)) {
 				var target = eventData.targets[0];
@@ -30,18 +30,18 @@ Game.conditions =
 			}
 		}
 	},
-	
+
 	// General Disarray field condition
 	// Randomizes the move rank of any skill or item used. Wears off after
 	// 15 actions have been taken.
 	generalDisarray:
 	{
 		name: "G. Disarray",
-		
+
 		initialize: function(battle) {
 			this.actionsLeft = 15;
 		},
-		
+
 		actionTaken: function(battle, eventData) {
 			var oldRank = eventData.action.rank
 			eventData.action.rank = random.discrete(1, 5);
@@ -58,18 +58,18 @@ Game.conditions =
 			}
 		}
 	},
-	
+
 	// Healing Aura field condition
 	// Restores a small amount of health to a random battler at the beginning of
 	// each cycle. Wears off after 25 healings.
 	healingAura:
 	{
 		name: "Healing Aura",
-		
+
 		initialize: function(battle) {
 			this.cyclesLeft = 25;
 		},
-		
+
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
 				.where(it => it.isAlive())
@@ -86,7 +86,7 @@ Game.conditions =
 			}
 		}
 	},
-	
+
 	// Inferno field condition
 	// Inflicts a small amount of Fire damage on all battlers at the beginning of a
 	// cycle and boosts any Fire attacks performed. Residual damage from Inferno diminishes
@@ -94,7 +94,7 @@ Game.conditions =
 	inferno:
 	{
 		name: "Inferno",
-		
+
 		initialize: function(battle) {
 			from(battle.battleUnits)
 				.where(it => it.isAlive())
@@ -106,7 +106,7 @@ Game.conditions =
 				}
 			});
 		},
-		
+
 		actionTaken: function(battle, eventData) {
 			from(eventData.action.effects)
 				.where(it => it.type === 'damage')
@@ -125,7 +125,7 @@ Game.conditions =
 				}
 			});
 		},
-		
+
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
 				.where(it => it.isAlive())
@@ -134,7 +134,7 @@ Game.conditions =
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
-		
+
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'subzero') {
 				term.print("Inferno canceled by Subzero installation, both suppressed");
@@ -148,7 +148,7 @@ Game.conditions =
 				});
 			}
 		},
-		
+
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
@@ -156,7 +156,7 @@ Game.conditions =
 			}
 		}
 	},
-	
+
 	// Subzero field condition
 	// Inflicts a small amount of Ice damage on a battler at the end of his turn.
 	// The effect intensifies over time per battler, maxing out at double its original
@@ -164,7 +164,7 @@ Game.conditions =
 	subzero:
 	{
 		name: "Subzero",
-		
+
 		initialize: function(battle) {
 			this.multiplier = 1.0;
 			this.rank = 0;
@@ -182,7 +182,7 @@ Game.conditions =
 				}
 			});
 		},
-		
+
 		actionTaken: function(battle, eventData) {
 			this.rank = eventData.action.rank;
 			from(eventData.action.effects)
@@ -203,7 +203,7 @@ Game.conditions =
 				}
 			});
 		},
-		
+
 		conditionInstalled: function(battle, eventData) {
 			if (eventData.conditionID == 'inferno') {
 				term.print("Subzero canceled by Inferno installation, both suppressed");
@@ -217,7 +217,7 @@ Game.conditions =
 				});
 			}
 		},
-		
+
 		endTurn: function(battle, eventData) {
 			var unit = eventData.actingUnit;
 			if (unit.isAlive() && this.rank != 0) {
@@ -228,7 +228,7 @@ Game.conditions =
 			}
 			this.rank = 0;
 		},
-		
+
 		unitAfflicted: function(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
@@ -239,18 +239,18 @@ Game.conditions =
 			}
 		}
 	},
-	
+
 	// Thunderstorm field condition
 	// Sometimes drops a lightning bolt on a unit at the end of their turn, dealing a small amount
 	// of lightning damage and inflicting Zombie status. Wears off after 10 strikes.
 	thunderstorm:
 	{
 		name: "Thunderstorm",
-		
+
 		initialize: function(battle) {
 			this.strikesLeft = 10;
 		},
-		
+
 		endTurn: function(battle, eventData) {
 			if (random.chance(0.5)) {
 				var unit = eventData.actingUnit;

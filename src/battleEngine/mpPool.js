@@ -12,7 +12,7 @@ class MPPool
 		this.capacity = capacity;
 		term.print(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
 			`now: ${this.availableMP}`);
-		
+
 		// handler function signature:
 		//     function(pool, mpLeft)
 		this.gainedMP = new events.Delegate();

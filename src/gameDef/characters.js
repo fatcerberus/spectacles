@@ -35,7 +35,7 @@ Game.characters =
 			'curse'
 		]
 	},
-	
+
 	// Bruce Arsen
 	bruce: {
 		name: "Bruce",
@@ -64,7 +64,7 @@ Game.characters =
 			'protectiveAura'
 		]
 	},
-	
+
 	// Elysia Ilapse
 	elysia: {
 		name: "Elysia",
@@ -103,7 +103,7 @@ Game.characters =
 			'lazarus'
 		]
 	},
-	
+
 	// Justin Ilapse
 	// Father of Elysia Ilapse. Justin has good intentions, but doesn't always know the right
 	// way to act on them and often makes poor decisions as a result. In battle, he plays the
@@ -136,7 +136,7 @@ Game.characters =
 			'curse'
 		]
 	},
-	
+
 	// Katelyn Hippofoood
 	// Doesn't actually exist.
 	katelyn: {
@@ -159,7 +159,7 @@ Game.characters =
 			'omni'
 		],
 	},
-	
+
 	// Lauren Adora
 	// Scott's love interest and one of the three initial party members. She tends keep to herself
 	// (except where maggie is involved) and often keeps quiet about things she really should
@@ -185,7 +185,7 @@ Game.characters =
 			'quake'
 		],
 	},
-	
+
 	// maggie
 	// An overweight hunger-pig and former leader of the neo-Hippos. She has renounced her role in the
 	// group due to disagreement over their methods, particularly her sister's stubborn persecution of
@@ -207,7 +207,7 @@ Game.characters =
 			'flameBreath'
 		]
 	},
-	
+
 	// Robert Spellbinder
 	robert: {
 		name: "Robert",
@@ -239,7 +239,7 @@ Game.characters =
 			'crackdown'
 		]
 	},
-	
+
 	// Scott Starcross
 	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
 	// naive to a fault. In battle, Scott wields a balanced set of sword techniques,

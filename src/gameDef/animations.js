@@ -12,14 +12,14 @@ Game.animations =
 	//     user:     The BattleUnit performing the move.
 	//     targets:  The BattleUnit(s) targeted by the move.
 	//     doesMiss: true if the move was determined to have missed, false otherwise.
-	
+
 	munch: function(user, targets, doesMiss) {
 		new scenes.Scene()
 			.playSound('sounds/Munch.wav')
 			.run();
 		this.nextEffect();
 	},
-	
+
 	tripleShot: function(user, targets, doesMiss) {
 		for (let i = 0; i < 3; ++i) {
 			this.nextEffect();

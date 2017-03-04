@@ -26,14 +26,14 @@ class Robert2AI extends BattleAI
 		this.turnCount = {};
 		this.zombieHealAlertLevel = 0.0;
 		this.zombieHealFixState = null;
-		
+
 		// Prepare the AI for use
 		this.setDefaultSkill('quickstrike');
 		this.definePhases([ 4000, 2500, 1500, 500 ], 50);
 	}
 
 	strategize(stance, phase)
-	{				
+	{
 		switch (phase) {
 			case 1:
 				var magicks = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
@@ -248,7 +248,7 @@ class Robert2AI extends BattleAI
 			return;
 
 		term.print(userID, itemID, targetIDs);
-		
+
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (userID == 'robert2' && from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
 			&& from(targetIDs).anyIs('robert2') && this.phase <= 4)

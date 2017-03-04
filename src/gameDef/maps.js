@@ -67,13 +67,13 @@ Game.maps =
 				.run(true);
 		}
 	},
-	
+
 	testville: {
 		bgm: 'LucidaByNight',
 		encounterRate: 0.005,
 		battleBGM: 'CreepFight',
 		canvasColor: CreateColor(0, 96, 0, 255),
-		
+
 		onEnter: function() {
 		}
 	}

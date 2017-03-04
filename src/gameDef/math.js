@@ -32,7 +32,7 @@ Game.math =
 			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
 		}
 	},
-	
+
 	damage: {
 		calculate: function(power, level, targetTier, attack, defense) {
 			let multiplier = 1.0 + 4.0 * (level - 1) / 99;
@@ -76,7 +76,7 @@ Game.math =
 				userInfo.stats.str, targetInfo.stats.def);
 		}
 	},
-	
+
 	experience: {
 		skill: function(skillInfo, userInfo, targetsInfo) {
 			var levelSum = 0;
@@ -93,7 +93,7 @@ Game.math =
 			return enemyUnitInfo.level * enemyUnitInfo.baseStats[statID];
 		}
 	},
-	
+
 	guardStance: {
 		damageTaken: function(baseDamage, tags) {
 			if (from(tags).anyIs('deathblow')) {
@@ -105,13 +105,13 @@ Game.math =
 			}
 		}
 	},
-	
+
 	healing: function(userInfo, targetInfo, power) {
 		return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
 			Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
 			Game.math.statValue(0, targetInfo.level));
 	},
-	
+
 	hp: function(unitInfo, level, tier) {
 		var statAverage = Math.round((unitInfo.baseStats.vit * 10
 			+ unitInfo.baseStats.str
@@ -121,7 +121,7 @@ Game.math =
 			+ unitInfo.baseStats.agi) / 15);
 		return 25 * tier * Game.math.statValue(statAverage, level);
 	},
-	
+
 	mp: {
 		capacity: function(unitInfo) {
 			var statAverage = Math.round((unitInfo.baseStats.mag * 10
@@ -137,11 +137,11 @@ Game.math =
 			return 2.5 * baseCost * (level + userInfo.baseStats.mag) / 200;
 		}
 	},
-	
+
 	retreatChance: function(enemyUnitsInfo) {
 		return 1.0;
 	},
-	
+
 	skillRank: function(skill) {
 		var rankTotal = 0;
 		for (let i = 0; i < skill.actions.length; ++i) {
@@ -149,11 +149,11 @@ Game.math =
 		}
 		return rankTotal;
 	},
-	
+
 	statValue: function(baseStat, level) {
 		return Math.round((50 + 0.5 * baseStat) * (10 + level) / 110);
 	},
-	
+
 	timeUntilNextTurn: function(unitInfo, rank) {
 		return rank * 10000 / unitInfo.stats.agi;
 	}

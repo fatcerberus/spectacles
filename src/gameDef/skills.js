@@ -160,7 +160,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Bow & Arrow techniques
 	archery: {
 		name: "Archery",
@@ -318,7 +318,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Gun techniques
 	potshot: {
 		name: "Potshot",
@@ -394,7 +394,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Shuriken (throwing star) techniques
 	starToss: {
 		name: "Star Toss",
@@ -439,7 +439,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Rank 2 magic - damage only, 25 POW
 	chill: {
 		name: "Chill",
@@ -537,7 +537,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Rank 3 magic - damage + status
 	electrocute: {
 		name: "Electrocute",
@@ -627,7 +627,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Rank 4 magic - damage + field condition, group-cast
 	inferno: {
 		name: "Inferno",
@@ -733,7 +733,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Omni - Rank 4 non-elemental magic
 	omni: {
 		name: "Omni",
@@ -757,7 +757,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Curative/healing magicks
 	convalesce: {
 		name: "Convalesce",
@@ -913,7 +913,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Status-inducing techniques
 	crackdown: {
 		name: "Crackdown",
@@ -1001,7 +1001,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Physical-contact techniques
 	fatSlam: {
 		name: "Fat Slam",
@@ -1069,7 +1069,7 @@ Game.skills =
 			}
 		]
 	},
-	
+
 	// Enemy techniques
 	bite: {
 		name: "Bite",

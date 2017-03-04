@@ -37,12 +37,12 @@ function game()
 		'on': function() {
 			Sphere.Game.disableTalking = false;
 			term.print("oh, yappy times are here again...");
-		}, 
+		},
 
 		'off': function() {
 			Sphere.Game.disableTalking = true;
 			term.print("the yappy times are OVER!");
-		}, 
+		},
 	});
 
 	InGameClock.initialize();

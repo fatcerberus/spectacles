@@ -20,13 +20,13 @@ Game.moveEffects =
 	addCondition: function(actor, targets, effect) {
 		actor.battle.addCondition(effect.condition);
 	},
-	
+
 	addStatus: function(actor, targets, effect) {
 		from(targets).each(unit => {
 			unit.addStatus(effect.status);
 		});
 	},
-	
+
 	damage: function(actor, targets, effect) {
 		var userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
@@ -52,7 +52,7 @@ Game.moveEffects =
 			}
 		}
 	},
-	
+
 	devour: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			if (!targets[i].isPartyMember()) {
@@ -65,7 +65,7 @@ Game.moveEffects =
 		}
 		actor.heal(actor.maxHP - actor.hp, [], true);
 	},
-	
+
 	fullRecover: function(actor, targets, effect) {
 		from(targets)
 			.where(it => !it.hasStatus('zombie'))
@@ -74,7 +74,7 @@ Game.moveEffects =
 			unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
 		});
 	},
-	
+
 	heal: function(actor, targets, effect) {
 		var userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
@@ -90,13 +90,13 @@ Game.moveEffects =
 			}
 		}
 	},
-	
+
 	instaKill: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			targets[i].takeDamage(Math.max(targets[i].hp, 1), [ effect.damageType, 'deathblow' ]);
 		}
 	},
-	
+
 	liftStatus: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			for (let i2 = 0; i2 < effect.statuses.length; ++i2) {
@@ -104,27 +104,27 @@ Game.moveEffects =
 			}
 		}
 	},
-	
+
 	liftStatusTags: function(actor, targets, effect) {
 		from(targets).each(unit => {
 			unit.liftStatusTags(effect.tags);
 		});
 	},
-	
+
 	recoverHP: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			var vitality = targets[i].battlerInfo.stats.vit;
 			targets[i].heal(effect.strength * vitality, [ 'cure' ]);
 		}
 	},
-	
+
 	recoverMP: function(actor, targets, effect) {
 		from(targets).each(unit => {
 			var amount = Math.round(Game.math.mp.capacity(unit.battlerInfo));
 			unit.restoreMP(amount);
 		});
 	},
-	
+
 	revive: function(actor, targets, effect) {
 		from(targets).each(unit => {
 			unit.resurrect(effect.healToFull);

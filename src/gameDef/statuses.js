@@ -42,7 +42,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Curse status
 	// Prevents the affected unit from taking on beneficial statuses such as ReGen and Protect.
 	// Wears off after 5 turns.
@@ -70,7 +70,7 @@ Game.statuses =
 			--this.turnsLeft;
 		}
 	},
-	
+
 	// Delusion status
 	// ...
 	delusion: {
@@ -78,7 +78,7 @@ Game.statuses =
 		tags: [ 'ailment', 'acute' ],
 		//TODO: implement Delusion status
 	},
-	
+
 	// Disarray status
 	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
 	// Expires after 3 actions.
@@ -104,7 +104,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Drunk status
 	// Increases attack power, but reduces the affected unit's speed and accuracy and
 	// creates a weakness to Earth damage. Also ups the success rate of eaty moves
@@ -158,7 +158,7 @@ Game.statuses =
 			}
 		},
 	},
-	
+
 	// Fear status
 	// Causes the affected unit to automatically Guard or use healing items instead
 	// of attacking.
@@ -167,7 +167,7 @@ Game.statuses =
 		tags: [ 'ailment' ],
 		//TODO: implement Fear status
 	},
-	
+
 	// Final Stand status
 	// Progressively weakens and causes knockback delay to the affected unit when an
 	// attack is countered.
@@ -206,7 +206,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Frostbite status
 	// Inflicts a small amount of Ice damage at the end of the affected unit's turn.
 	// The effect progressively worsens, up to double its original severity.
@@ -246,7 +246,7 @@ Game.statuses =
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
 		}
 	},
-	
+
 	// Ghost status
 	// Prevents the affected unit from being hit with physical or projectile attacks
 	// from a non-Ghost and vice versa.
@@ -277,7 +277,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Ignite status
 	// Inflicts a small amount of Fire damage on the affected unit once per cycle. The
 	// effect progressively diminishes, ultimately settling at half of its initial severity.
@@ -317,7 +317,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Immune status
 	// Grants the affected unit full immunity to most negative status afflictions.
 	// Wears off after 5 turns.
@@ -344,7 +344,7 @@ Game.statuses =
 			--this.turnsLeft;
 		}
 	},
-	
+
 	// Off Guard status
 	// Imbued as part of several two-turn attacks such as Charge Slash. If the unit
 	// is attacked while Off Guard, the damage from the attack will be increased.
@@ -360,7 +360,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Protect status
 	// Reduces damage from attacks. Each time the Protected unit is damaged by an attack,
 	// the effectiveness of Protect is reduced.
@@ -382,7 +382,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// ReGen status
 	// Restores a small amount of HP to the affected unit at the beginning of each
 	// cycle. Wears off after 10 cycles.
@@ -404,7 +404,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	rearing: {
 		name: "Rearing",
 		category: [ 'special' ],
@@ -422,7 +422,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	// Skeleton status
 	// The affected unit is still able to battle at 0 HP, but with reduced STR and MAG stats.
 	// Taking physical or slash damage, or being hit with an HP restorative, while in this state will
@@ -460,7 +460,7 @@ Game.statuses =
 			eventData.cancel = true;
 		}
 	},
-	
+
 	sniper: {
 		name: "Sniper",
 		tags: [ 'special' ],
@@ -476,7 +476,7 @@ Game.statuses =
 			}
 		}
 	},
-	
+
 	sleep: {
 		name: "Sleep",
 		tags: [ 'acute' ],

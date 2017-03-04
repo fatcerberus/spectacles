@@ -255,7 +255,7 @@ class TurnPreview
 		this.lastPrediction = null;
 		this.thread = null;
 	}
-	
+
 	dispose()
 	{
 		threads.kill(this.thread);

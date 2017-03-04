@@ -9,16 +9,6 @@ RequireScript('battleEngine/weapon.js');
 
 class BattleAI
 {
-	on_itemUsed      (userID, targetIDs, itemID) {}
-	on_skillUsed     (userID, targetIDs, skillID) {}
-	on_stanceChanged (userID, stance) {}
-	on_phaseChanged  (phase, lastPhase) {}
-	on_unitDamaged   (unitID, amount, tags, attacker) {}
-	on_unitHealed    (unitID, amount, tags) {}
-	on_unitKilled    (unitID) {}
-	on_unitReady     (unitID) {}
-	on_unitTargeted  (targetID, action, unitID) {}
-
 	constructor(unit, battle)
 	{
 		term.print(`initialize AI for ${unit.fullName}`);
@@ -259,4 +249,14 @@ class BattleAI
 			this.on_phaseChanged(this.currentPhase, lastPhase);
 		}
 	}
+
+	on_itemUsed      (userID, targetIDs, itemID) {}
+	on_skillUsed     (userID, targetIDs, skillID) {}
+	on_stanceChanged (userID, stance) {}
+	on_phaseChanged  (phase, lastPhase) {}
+	on_unitDamaged   (unitID, amount, tags, attacker) {}
+	on_unitHealed    (unitID, amount, tags) {}
+	on_unitKilled    (unitID) {}
+	on_unitReady     (unitID) {}
+	on_unitTargeted  (targetID, action, unitID) {}
 }
