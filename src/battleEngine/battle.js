@@ -22,16 +22,8 @@ class Battle
 		if (!(battleID in Game.battles))
 			throw new ReferenceError(`no encounter data for '${battleID}'`);
 
-		this.itemUsed = new events.Delegate();
-		this.skillUsed = new events.Delegate();
-		this.stanceChanged = new events.Delegate();
-		this.unitDamaged = new events.Delegate();
-		this.unitHealed = new events.Delegate();
-		this.unitKilled = new events.Delegate();
-		this.unitReady = new events.Delegate();
-		this.unitTargeted = new events.Delegate();
-
 		term.print(`initialize battle context for '${battleID}'`);
+		this.aiList = [];
 		this.battleID = battleID;
 		this.mode = null;
 		this.parameters = Game.battles[battleID];
@@ -217,6 +209,13 @@ class Battle
 			.remove();
 	}
 
+	notifyAIs(eventName, ...args)
+	{
+		from(this.aiList)
+			.besides(v => term.print(`notify ${v.unit.name}'s AI '${eventName}'`))
+			.each(v => v[`on_${eventName}`](...args));
+	}
+
 	predictTurns(actingUnit = null, nextActions = null)
 	{
 		var forecast = [];
@@ -253,18 +252,20 @@ class Battle
 			.each(v => v.invoke(eventID, data));
 	}
 
+	registerAI(ai)
+	{
+		this.aiList.push(ai);
+	}
+	
 	resume()
 	{
-		--this.suspendCount;
-		if (this.suspendCount < 0)
+		if (--this.suspendCount < 0)
 			this.suspendCount = 0;
 	}
 
-	runAction(action, actingUnit, targetUnits, useAiming)
+	runAction(action, actingUnit, targetUnits, useAiming = true)
 	{
-		useAiming = useAiming !== void null ? useAiming : true;
-		
-		var eventData = { action: action, targets: targetUnits };
+		let eventData = { action: action, targets: targetUnits };
 		this.raiseEvent('actionTaken', eventData);
 		targetUnits = eventData.targets;
 		if ('announceAs' in action && action.announceAs != null)
@@ -281,13 +282,13 @@ class Battle
 			.each(v => v.takeHit(actingUnit, action));
 		if (action.effects === null)
 			return [];
-		var targetsHit = [];
-		var accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
+		let targetsHit = [];
+		let accuracyRate = 'accuracyRate' in action ? action.accuracyRate : 1.0;
 		for (let i = 0; i < targetUnits.length; ++i) {
-			var baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
-			var aimRate = 1.0;
+			let baseOdds = 'accuracyType' in action ? Game.math.accuracy[action.accuracyType](actingUnit.battlerInfo, targetUnits[i].battlerInfo) : 1.0;
+			let aimRate = 1.0;
 			if (useAiming) {
-				var eventData = {
+				let eventData = {
 					action: clone(action),
 					aimRate: 1.0,
 					targetInfo: clone(targetUnits[i].battlerInfo)
@@ -295,12 +296,12 @@ class Battle
 				actingUnit.raiseEvent('aiming', eventData);
 				aimRate = eventData.aimRate;
 			}
-			var odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-			var isHit = random.chance(odds);
+			let odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
+			let isHit = random.chance(odds);
 			term.print(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
-				this.unitTargeted.invoke(targetUnits[i], action, actingUnit);
+				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id); 
 				targetsHit.push(targetUnits[i]);
 			} else {
 				targetUnits[i].evade(actingUnit, action);
@@ -312,7 +313,7 @@ class Battle
 		// apply move effects to target(s)
 		from(targetsHit)
 			.each(v => v.beginTargeting(actingUnit));
-		var animContext = {
+		let animContext = {
 			effects: from(action.effects)
 				.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
 				.where(it => it.type != null)
@@ -320,8 +321,8 @@ class Battle
 			pc: 0,
 			nextEffect: function() {
 				if (this.pc < this.effects.length) {
-					var effect = this.effects[this.pc++];
-					var targets = effect.targetHint == 'random'
+					let effect = this.effects[this.pc++];
+					let targets = effect.targetHint == 'random'
 						? [ random.sample(targetsHit) ]
 						: targetsHit;
 					term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
@@ -352,7 +353,7 @@ class Battle
 	{
 		++this.suspendCount;
 	}
-
+	
 	tick()
 	{
 		if (this.suspendCount > 0 || this.result != null)
@@ -389,5 +390,12 @@ class Battle
 		}
 		from(...unitLists)
 			.each(unit => unit.endCycle());
+	}
+	
+	unregisterAI(ai)
+	{
+		from(this.aiList)
+			.where(v => v === ai)
+			.remove();
 	}
 }

@@ -11,11 +11,8 @@
 //     usable:    Optional. If specified and not null, the Usable move whose target is being determined.
 //     moveName:  Optional. The move name displayed while selecting a target. If not specified or null,
 //                the move name will be taken from the Usable.
-function TargetMenu(unit, battle, usable, moveName)
+function TargetMenu(unit, battle, usable = null, moveName = null)
 {
-	usable = usable !== void null ? usable : null;
-	moveName = moveName !== void null ? moveName : null;
-	
 	this.battle = battle;
 	this.doChangeInfo = null;
 	this.isChoiceMade = false;

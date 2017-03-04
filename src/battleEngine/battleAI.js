@@ -7,13 +7,21 @@ RequireScript('battleEngine/item.js');
 RequireScript('battleEngine/skill.js');
 RequireScript('battleEngine/weapon.js');
 
-class AIContext
+class BattleAI
 {
-	constructor(unit, battle, aiType)
-	{
-		this.phaseChanged = new events.Delegate();
+	on_itemUsed      (userID, targetIDs, itemID) {}
+	on_skillUsed     (userID, targetIDs, skillID) {}
+	on_stanceChanged (userID, stance) {}
+	on_phaseChanged  (phase, lastPhase) {}
+	on_unitDamaged   (unitID, amount, tags, attacker) {}
+	on_unitHealed    (unitID, amount, tags) {}
+	on_unitKilled    (unitID) {}
+	on_unitReady     (unitID) {}
+	on_unitTargeted  (targetID, action, unitID) {}
 
-		term.print(`initialize AI context for ${unit.fullName}`);
+	constructor(unit, battle)
+	{
+		term.print(`initialize AI for ${unit.fullName}`);
 		this.battle = battle;
 		this.data = {};
 		this.defaultSkillID = null;
@@ -23,32 +31,6 @@ class AIContext
 		this.targets = null;
 		this.turnsTaken = 0;
 		this.unit = unit;
-
-		this.strategy = new aiType(this);
-	}
-
-	dispose()
-	{
-		term.print(`shut down AI for ${this.unit.fullName}`);
-		if ('dispose' in this.strategy)
-			this.strategy.dispose();
-	}
-
-	checkPhase(allowEvents = true)
-	{
-		let phaseToEnter = 1;
-		if (this.phasePoints !== null) {
-			let milestone = from(this.phasePoints)
-				.last(v => v >= this.unit.hp);
-			phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
-		}
-		let lastPhase = this.currentPhase;
-		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
-		if (allowEvents && this.currentPhase > lastPhase) {
-			term.print(`${this.unit.name} is entering phase ${this.currentPhase}`,
-				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
-			this.phaseChanged.invoke(this, this.currentPhase, lastPhase);
-		}
 	}
 
 	definePhases(thresholds, sigma = 0)
@@ -56,9 +38,9 @@ class AIContext
 		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
 			.select(v => Math.round(random.normal(v, sigma)));
-		var phaseIndex = 1;
-		from(this.phasePoints).each(milestone =>
-			term.print(`phase ${++phaseIndex} will start at <= ${milestone} HP`));
+		let phase = 1;
+		from(this.phasePoints)
+			.each(v => term.print(`phase ${++phase} will start at <= ${v} HP`));
 		this.currentPhase = 0;
 		this.lastPhase = 0;
 	}
@@ -84,9 +66,9 @@ class AIContext
 					this.allies[ally.id] = ally;
 				}
 				this.targets = null;
-				this.checkPhase();
+				this.updatePhase();
 				if (this.moveQueue.length == 0)
-					this.strategy.strategize(this.unit.stance, this.currentPhase);
+					this.strategize(this.unit.stance, this.currentPhase);
 				if (this.moveQueue.length == 0) {
 					term.print(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {
@@ -251,5 +233,30 @@ class AIContext
 	{
 		var unit = this.battle.findUnit(targetID);
 		this.targets = unit !== null ? [ unit ] : null;
+	}
+
+	strategize()
+	{
+		if (this.defaultSkillID !== null)
+			this.queueSkill(this.defaultSkillID);
+		else
+			throw new Error("AI has no strategy");
+	}
+
+	updatePhase(allowEvents = true)
+	{
+		let phaseToEnter = 1;
+		if (this.phasePoints !== null) {
+			let milestone = from(this.phasePoints)
+				.last(v => v >= this.unit.hp);
+			phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
+		}
+		let lastPhase = this.currentPhase;
+		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
+		if (allowEvents && this.currentPhase > lastPhase) {
+			term.print(`${this.unit.name} is entering phase ${this.currentPhase}`,
+				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
+			this.on_phaseChanged(this.currentPhase, lastPhase);
+		}
 	}
 }

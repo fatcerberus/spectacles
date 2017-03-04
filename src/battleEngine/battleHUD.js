@@ -65,20 +65,18 @@ function BattleHUD(partyMaxMP)
 		OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
 	}
 	
-	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
+	this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
 	{
-		var alignments = {
-			left: function(font, x, text) { return x; },
-			center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
-			right: function(font, x, text) { return x - font.getStringWidth(text); }
+		const Align =
+		{
+			left:   (font, x, text) => x,
+			center: (font, x, text) => x - font.getStringWidth(text) / 2,
+			right:  (font, x, text) => x - font.getStringWidth(text),
 		};
 		
-		alignment = alignment !== void null ? alignment : 'left';
-		
-		if (!(alignment in alignments)) {
-			Abort("BattleHUD.drawText(): Invalid text alignment '" + alignment + "'.");
-		}
-		x = alignments[alignment](font, x, text);
+		if (!(alignment in Align))
+			throw new Error(`invalid text alignment '${alignment}'.`);
+		x = Align[alignment](font, x, text);
 		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 		font.drawText(x + shadowDistance, y + shadowDistance, text);
 		font.setColorMask(color);

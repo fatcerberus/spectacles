@@ -90,10 +90,8 @@ function MoveMenu(unit, battle, stance)
 		.end()
 		.tween(this, 15, 'easeOutExpo', { expansion: 1.0 });
 	
-	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn, isEnabled)
+	this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn, isEnabled = true)
 	{
-		isEnabled = isEnabled !== void null ? isEnabled : null;
-		
 		var color;
 		var color2;
 		color = isEnabled ? cursorColor : CreateColor(96, 96, 96, cursorColor.alpha);
@@ -109,10 +107,8 @@ function MoveMenu(unit, battle, stance)
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
 	};
 	
-	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor, isEnabled)
+	this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor, isEnabled = true)
 	{
-		isEnabled = isEnabled !== void null ? isEnabled : true;
-		
 		Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha));
 		OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 24));
 		if (isSelected) {
@@ -145,20 +141,18 @@ function MoveMenu(unit, battle, stance)
 		}
 	};
 	
-	this.drawText = function(font, x, y, shadowDistance, color, text, alignment)
+	this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
 	{
-		var aligners = {
-			left: function(font, x, text) { return x; },
-			center: function(font, x, text) { return x - font.getStringWidth(text) / 2; },
-			right: function(font, x, text) { return x - font.getStringWidth(text); }
+		const Align =
+		{
+			left:   (font, x, text) => x,
+			center: (font, x, text) => x - font.getStringWidth(text) / 2,
+			right:  (font, x, text) => x - font.getStringWidth(text),
 		};
 		
-		alignment = alignment !== void null ? alignment : 'left';
-		
-		if (!(alignment in aligners)) {
-			Abort("MoveMenu.drawText(): Invalid text alignment '" + alignment + "'.");
-		}
-		x = aligners[alignment](font, x, text);
+		if (!(alignment in Align))
+			throw new Error(`invalid text alignment '${alignment}'.`);
+		x = Align[alignment](font, x, text);
 		font.setColorMask(CreateColor(0, 0, 0, color.alpha));
 		font.drawText(x + shadowDistance, y + shadowDistance, text);
 		font.setColorMask(color);

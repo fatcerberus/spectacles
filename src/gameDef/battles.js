@@ -48,7 +48,7 @@ Game.enemies =
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",
-		aiType: Robert2AI,
+		aiClass: Robert2AI,
 		hasLifeBar: true,
 		tier: 4,
 		turnRatio: 1.0,

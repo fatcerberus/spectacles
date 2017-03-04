@@ -3,7 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('battleEngine/aiContext.js');
 RequireScript('battleEngine/item.js');
 RequireScript('battleEngine/moveMenu.js');
 RequireScript('battleEngine/mpPool.js');
@@ -98,7 +97,8 @@ class BattleUnit
 			this.weapon = Game.weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			this.ai = new AIContext(this, battle, this.enemyInfo.aiType);
+			this.ai = Reflect.construct(this.enemyInfo.aiClass, [ this, battle ]);
+			this.battle.registerAI(this.ai);
 		}
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
 		this.counterMenu = new MoveMenu(this, battle, Stance.Counter);
@@ -120,9 +120,8 @@ class BattleUnit
 
 	dispose()
 	{
-		if (this.ai !== null) {
-			this.ai.dispose();
-		}
+		if (this.ai !== null)
+			this.battle.unregisterAI(this.ai);
 		term.undefine(this.id);
 	}
 
@@ -210,7 +209,7 @@ class BattleUnit
 
 	die()
 	{
-		this.battle.unitKilled.invoke(this.id);
+		this.battle.notifyAIs('unitKilled', this.id);
 		this.lazarusFlag = false;
 		this.hp = 0;
 		this.battle.ui.hud.setHP(this, this.hp);
@@ -242,7 +241,7 @@ class BattleUnit
 		}
 		if (this.newStance !== this.stance) {
 			this.stance = this.newStance;
-			this.battle.stanceChanged.invoke(this.id, this.stance);
+			this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 			let stanceName = this.stance == Stance.Guard ? "Guard"
 				: this.stance == Stance.Counter ? "Counter"
 				: "Attack";
@@ -318,12 +317,13 @@ class BattleUnit
 			.any(v => v.statusID === statusID);
 	}
 
-	heal(amount, tags, isPriority = false)
+	heal(amount, tags = [], isPriority = false)
 	{
 		if (!isPriority) {
 			let eventData = {
 				unit: this,
-				amount: Math.round(amount), tags: tags,
+				amount: Math.round(amount),
+				tags: tags,
 				cancel: false
 			};
 			this.battle.raiseEvent('unitHealed', eventData);
@@ -338,7 +338,7 @@ class BattleUnit
 			this.hp = Math.min(this.hp + amount, this.maxHP);
 			this.actor.showHealing(amount);
 			this.battle.ui.hud.setHP(this, this.hp);
-			this.battle.unitHealed.invoke(this, amount);
+			this.battle.notifyAIs('unitHealed', this, amount, tags);
 			term.print(`heal ${this.name} for ${amount} HP`, `now: ${this.hp}`);
 		} else if (amount < 0) {
 			this.takeDamage(-amount, [], true);
@@ -632,11 +632,8 @@ class BattleUnit
 		this.resetCounter(Game.equipWeaponRank);
 	}
 
-	takeDamage(amount, tags, isPriority)
+	takeDamage(amount, tags = [], isPriority = false)
 	{
-		tags = tags !== void null ? tags : [];
-		isPriority = isPriority !== void null ? isPriority : false;
-		
 		amount = Math.round(amount);
 		var multiplier = 1.0;
 		for (let i = 0; i < tags.length; ++i) {
@@ -672,7 +669,7 @@ class BattleUnit
 			}
 			var oldHPValue = this.hp;
 			this.hp = Math.max(this.hp - amount, 0);
-			this.battle.unitDamaged.invoke(this, amount, tags, this.lastAttacker);
+			this.battle.notifyAIs('unitDamaged', this, amount, tags, this.lastAttacker);
 			term.print(`damage ${this.name} for ${amount} HP`, `left: ${this.hp}`);
 			if (oldHPValue > 0 || this.lazarusFlag) {
 				var damageColor = null;
@@ -736,14 +733,14 @@ class BattleUnit
 			this.battle.suspend();
 			if (this.stance == Stance.Guard) {
 				this.stance = this.newStance = Stance.Attack;
-				this.battle.stanceChanged.invoke(this.id, this.stance);
+				this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				term.print(`${this.name}'s Guard Stance expired`);
 			} else if (this.stance == Stance.Counter) {
 				this.newStance = Stance.Attack;
 			}
 			term.print(`${this.name}'s turn is up`);
 			this.actor.animate('active');
-			this.battle.unitReady.invoke(this.id);
+			this.battle.notifyAIs('unitReady', this.id);
 			var eventData = { skipTurn: false };
 			this.raiseEvent('beginTurn', eventData);
 			if (!this.isAlive()) {

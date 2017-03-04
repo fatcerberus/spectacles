@@ -137,11 +137,8 @@ class MenuStrip
 		}
 	}
 
-	addItem(text, tag)
+	addItem(text, tag = text)
 	{
-		if (tag === void null) {
-			tag = text;
-		}
 		this.menuItems.push({
 			text: text,
 			tag: tag
