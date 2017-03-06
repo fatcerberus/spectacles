@@ -14,9 +14,9 @@ class MenuStrip
 		this.menuThread = null;
 		this.selectedItem = 0;
 		this.title = title;
-		if (items != null) {
-			for (let i = 0; i < items.length; ++i)
-				this.addItem(items[i]);
+		if (items !== null) {
+			from(items)
+				.each(v => this.addItem(v));
 		}
 	}
 

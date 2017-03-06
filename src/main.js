@@ -13,6 +13,8 @@ global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
 
+RequireScript('thread.js');
+
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
 RequireScript('inGameClock.js');
@@ -45,7 +47,7 @@ function game()
 		},
 	});
 
-	InGameClock.initialize();
+	let dayNight = new DayNightEngine();
 	TestHarness.run('rsb2');
 }
 

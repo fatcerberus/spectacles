@@ -3,60 +3,26 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+// note: don't run more than one day/night engine at a time.  doing so
+//       will cause multiple day/night masks to be applied to the screen,
+//       which won't look too nice. :o)
+
 const DayMask      = Color.Transparent;
 const TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625);
 const NightMask    = new Color(0, 0, 0.125, 0.5625);
 
-class InGameClock
+class DayNightEngine extends Thread
 {
-	static initialize()
+	constructor()
 	{
-		term.print("initialize in-game clock", `time: ${this.getTime()}`);
+		super(1);
 
-		this.currentMask = Color.Transparent
-		threads.create(this, 1);
+		term.print("initialize day/night engine", `time: ${this.now()}`);
+		this.currentMask = Color.Transparent;
+		this.start();
 	}
 
-	static update()
-	{
-		var now = this.getTime();
-		var toMask;
-		var fromMask;
-		var alpha;
-		if (now.hour < 5 || now.hour >= 19) {
-			this.currentMask = NightMask;
-		} else if (now.hour >= 7 && now.hour < 17) {
-			this.currentMask = DayMask;
-		} else if (now.hour >= 5 && now.hour < 6) {
-			fromMask = NightMask;
-			toMask = TwilightMask;
-			alpha = now.minute / 60;
-			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 6 && now.hour < 7) {
-			fromMask = TwilightMask;
-			toMask = DayMask;
-			alpha = now.minute / 60;
-			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 17 && now.hour < 18) {
-			fromMask = DayMask;
-			toMask = TwilightMask;
-			alpha = now.minute / 60;
-			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 18 && now.hour < 19) {
-			fromMask = TwilightMask;
-			toMask = NightMask;
-			alpha = now.minute / 60;
-			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
-		}
-		return true;
-	}
-
-	static render()
-	{
-		prim.fill(screen, this.currentMask);
-	}
-
-	static getTime()
+	now()
 	{
 		let realTime = new Date();
 		let currentTime = 3600 * realTime.getHours() + 60 * realTime.getMinutes() + realTime.getSeconds();
@@ -65,6 +31,41 @@ class InGameClock
 		let minute = Math.floor((currentTime / 60) % 60);
 		let second = currentTime % 60;
 		return new InGameTime(hour, minute, second);
+	}
+
+	on_update()
+	{
+		let now = this.now();
+		if (now.hour < 5 || now.hour >= 19) {
+			this.currentMask = NightMask;
+		} else if (now.hour >= 7 && now.hour < 17) {
+			this.currentMask = DayMask;
+		} else if (now.hour >= 5 && now.hour < 6) {
+			let fromMask = NightMask;
+			let toMask = TwilightMask;
+			let alpha = now.minute / 60;
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
+		} else if (now.hour >= 6 && now.hour < 7) {
+			let fromMask = TwilightMask;
+			let toMask = DayMask;
+			let alpha = now.minute / 60;
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
+		} else if (now.hour >= 17 && now.hour < 18) {
+			let fromMask = DayMask;
+			let toMask = TwilightMask;
+			let alpha = now.minute / 60;
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
+		} else if (now.hour >= 18 && now.hour < 19) {
+			let fromMask = TwilightMask;
+			let toMask = NightMask;
+			let alpha = now.minute / 60;
+			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
+		}
+	}
+
+	on_render()
+	{
+		prim.fill(screen, this.currentMask);
 	}
 }
 

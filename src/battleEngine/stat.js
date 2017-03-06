@@ -10,8 +10,8 @@ class Stat
 		this.baseValue = baseValue;
 		this.levelUpTable = [];
 		for (let i = 1; i <= 100; ++i) {
-			var xpNeeded = Math.ceil(i > 1 ? i ** 3 / growthRate : 0);
-			this.levelUpTable[i] = xpNeeded;
+			let expNeeded = i > 1 ? Math.ceil(i ** 3 / growthRate) : 0;
+			this.levelUpTable[i] = expNeeded;
 		}
 		this.experience = this.levelUpTable[level];
 		this.isGrowable = enableGrowth;

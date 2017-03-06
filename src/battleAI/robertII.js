@@ -10,8 +10,8 @@ class Robert2AI extends BattleAI
 	constructor(unit, battle)
 	{
 		super(unit, battle);
-		super.definePhases([ 4000, 2500, 1500, 500 ], 50);
-		super.setDefaultSkill('swordSlash');
+		this.definePhases([ 4000, 2500, 1500, 500 ], 50);
+		this.setDefaultSkill('swordSlash');
 
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
