@@ -216,7 +216,7 @@ class BattleAI
 	setDefaultSkill(skillID)
 	{
 		this.defaultSkillID = skillID;
-		term.print(`${this.unit.name}'s default skill is ${Game.skills[skillID].name}`);
+		term.print(`default skill for ${this.unit.name} is ${Game.skills[skillID].name}`);
 	}
 
 	setTarget(targetID)

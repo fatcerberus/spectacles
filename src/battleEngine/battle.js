@@ -37,14 +37,15 @@ class Battle
 	update() {
 		switch (this.mode) {
 			case 'setup':
-				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle) ? "Final Battle: " : "Boss Battle: ";
+				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
+					? "Final Battle: " : "Boss Battle: ";
 				this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
-				var walkInThreads = [];
+				let walkInThreads = [];
 				from(this.enemyUnits, this.playerUnits)
 					.each(function(unit)
 				{
-					var thread = unit.actor.enter();
-					walkInThreads.push(thread);
+					let threadID = unit.actor.enter();
+					walkInThreads.push(threadID);
 				});
 				this.ui.hud.turnPreview.show();
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
@@ -212,7 +213,7 @@ class Battle
 	notifyAIs(eventName, ...args)
 	{
 		from(this.aiList)
-			.besides(v => term.print(`notify ${v.unit.name}'s AI '${eventName}'`))
+			.besides(v => term.print(`notify AI battler ${v.unit.name} '${eventName}'`))
 			.each(v => v[`on_${eventName}`](...args));
 	}
 

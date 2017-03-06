@@ -10,8 +10,9 @@ class Robert2AI extends BattleAI
 	constructor(unit, battle)
 	{
 		super(unit, battle);
+		super.definePhases([ 4000, 2500, 1500, 500 ], 50);
+		super.setDefaultSkill('swordSlash');
 
-		// AI state variables
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
 		this.isAlcoholUsed = false;
@@ -23,20 +24,15 @@ class Robert2AI extends BattleAI
 		this.nextElementalMove = null;
 		this.scottStance = Stance.Attack;
 		this.scottImmuneTurnsLeft = 0;
-		this.turnCount = {};
 		this.zombieHealAlertLevel = 0.0;
 		this.zombieHealFixState = null;
-
-		// Prepare the AI for use
-		this.setDefaultSkill('quickstrike');
-		this.definePhases([ 4000, 2500, 1500, 500 ], 50);
 	}
 
 	strategize(stance, phase)
 	{
 		switch (phase) {
 			case 1:
-				var magicks = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
+				let magicks = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
 				if (this.doChargeSlashNext) {
 					this.queueSkill('chargeSlash');
 					this.doChargeSlashNext = false;
@@ -51,21 +47,19 @@ class Robert2AI extends BattleAI
 							this.doChargeSlashNext = true;
 							this.isComboStarted = false;
 						} else {
-							var skillID = random.sample(magicks);
-							if (this.isSkillUsable(skillID)) {
+							let skillID = random.sample(magicks);
+							if (this.isSkillUsable(skillID))
 								this.queueSkill(skillID);
-							} else {
+							else
 								this.queueSkill('swordSlash');
-							}
 						}
 					}
 				} else {
-					var skillID = random.sample(magicks);
-					if (this.isSkillUsable(skillID)) {
+					let skillID = random.sample(magicks);
+					if (this.isSkillUsable(skillID))
 						this.queueSkill(skillID);
-					} else {
+					else
 						this.queueSkill('swordSlash');
-					}
 				}
 				break;
 			case 2:
@@ -116,18 +110,16 @@ class Robert2AI extends BattleAI
 						? random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ])
 						: 'chargeSlash';
 					this.queueSkill(skillToUse);
-					if (skillToUse == 'upheaval') {
+					if (skillToUse == 'upheaval')
 						this.queueSkill('quake');
-					}
 					this.isComboStarted = false;
 					this.isStatusHealPending = skillToUse == 'upheaval';
 					this.wasHolyWaterUsed = false;
 				} else {
 					var skillToUse = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillToUse);
-					if (skillToUse == 'upheaval') {
+					if (skillToUse == 'upheaval')
 						this.queueSkill('quake');
-					}
 					this.isStatusHealPending = skillToUse == 'upheavel';
 					this.wasHolyWaterUsed = false;
 				}
@@ -175,9 +167,8 @@ class Robert2AI extends BattleAI
 							var skillToUse = random.chance(0.5) ? 'upheaval' : 'swordSlash';
 							if (this.isSkillUsable(skillToUse)) {
 								this.queueSkill(skillToUse);
-								if (skillToUse == 'upheaval') {
+								if (skillToUse == 'upheaval')
 									this.queueSkill('quake');
-								}
 								this.doChargeSlashNext = skillID == 'swordSlash';
 								this.isComboStarted = false;
 							} else {
@@ -190,9 +181,8 @@ class Robert2AI extends BattleAI
 				} else {
 					var skillID = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillID);
-					if (skillID == 'upheaval') {
+					if (skillID == 'upheaval')
 						this.queueSkill('quake');
-					}
 				}
 				break;
 			case 4:
@@ -200,16 +190,14 @@ class Robert2AI extends BattleAI
 				var finisherID = this.isSkillUsable(skillID) ? skillID : 'swordSlash';
 				var qsTurns = this.predictSkillTurns('quickstrike');
 				this.queueSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : finisherID);
-				if (this.isSkillQueued(finisherID) && this.scottStance == Stance.Guard) {
+				if (this.isSkillQueued(finisherID) && this.scottStance == Stance.Guard)
 					this.queueSkill('chargeSlash');
-				}
 				break;
 			case 5:
 				if (this.isAlcoholPending) {
 					if (this.unit.hasStatus('zombie')) {
-						if (this.isSkillUsable('omni')) {
+						if (this.isSkillUsable('omni'))
 							this.queueSkill('omni');
-						}
 						this.queueSkill('chargeSlash');
 						this.isAlcoholPending = false;
 						this.isDesperate = true;
@@ -289,9 +277,8 @@ class Robert2AI extends BattleAI
 			{
 				if (this.phase <= 4 && this.zombieHealFixState === null) {
 					this.zombieHealFixState = 'fixStatus';
-					if (this.zombieHealAlertLevel > 1.0 || !this.isItemUsable('vaccine') && !this.isItemUsable('holyWater')) {
+					if (this.zombieHealAlertLevel > 1.0 || !this.isItemUsable('vaccine') && !this.isItemUsable('holyWater'))
 						this.zombieHealFixState = 'retaliate';
-					}
 				} else if (this.phase == 5 && !this.hasMovesQueued()) {
 					if ((this.isItemUsable('powerTonic') || this.isItemUsable('tonic'))
 						&& this.unit.mpPool.availableMP >= 300)
@@ -350,9 +337,8 @@ class Robert2AI extends BattleAI
 				break;
 			case 5:
 				this.queueSkill('desperationSlash');
-				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine')) {
+				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine'))
 					this.queueItem('vaccine');
-				}
 				this.isAlcoholPending = true;
 				this.isDesperate = false;
 				this.isComboStarted = false;
@@ -362,9 +348,9 @@ class Robert2AI extends BattleAI
 
 	on_skillUsed(userID, skillID, targetIDs)
 	{
-		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard')) {
+		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
-		}
+
 		if (userID == 'robert2') {
 			if (skillID == this.nextElementalMove) {
 				this.nextElementalMove = null;
@@ -389,34 +375,30 @@ class Robert2AI extends BattleAI
 
 	on_stanceChanged(unitID, stance)
 	{
-		if (this.unit.hasStatus('drunk')) {
+		if (this.unit.hasStatus('drunk'))
 			return;
-		}
-		if (unitID == 'scott') {
+
+		if (unitID == 'scott')
 			this.scottStance = stance;
-		}
 	};
 
 	on_unitReady(unitID)
 	{
-		if (this.unit.hasStatus('drunk')) {
+		if (this.unit.hasStatus('drunk'))
 			return;
-		}
-		if (this.zombieHealFixState === null) {
+
+		if (this.zombieHealFixState === null)
 			this.zombieHealAlertLevel = Math.max(0.0, this.zombieHealAlertLevel - 0.1);
-		}
-		this.turnCount[unitID] = !(unitID in this.turnCount) ? 1 : this.turnCount[unitID] + 1;
 		if (unitID == 'robert2' && !this.hasMovesQueued()) {
 			if (this.isNecromancyPending && this.scottImmuneTurnsLeft <= 0) {
-				if (!this.isScottZombie) {
+				if (!this.isScottZombie)
 					this.queueSkill('necromancy');
-				}
 				this.isNecromancyPending = false;
 			} else if (this.unit.mpPool.availableMP < 0.25 * this.unit.mpPool.capacity && this.isItemUsable('redBull') && this.phase <= 4) {
 				this.queueItem('redBull');
 			} else if (this.isNecroTonicItemPending) {
 				if (this.isItemUsable(this.necroTonicItem)) {
-					var itemTarget = this.isScottZombie ? 'scott' : 'robert2';
+					let itemTarget = this.isScottZombie ? 'scott' : 'robert2';
 					this.queueItem(this.necroTonicItem, itemTarget);
 				}
 				this.isNecroTonicItemPending = false;
@@ -424,7 +406,7 @@ class Robert2AI extends BattleAI
 			} else if (this.zombieHealFixState !== null) {
 				switch (this.zombieHealFixState) {
 					case 'fixStatus':
-						var itemID = (this.zombieHealAlertLevel > 0.0 || !this.isItemUsable('holyWater')) && this.isItemUsable('vaccine')
+						let itemID = (this.zombieHealAlertLevel > 0.0 || !this.isItemUsable('holyWater')) && this.isItemUsable('vaccine')
 							? 'vaccine' : 'holyWater';
 						this.queueItem(itemID);
 						this.zombieHealFixState = 'retaliate';
@@ -442,15 +424,14 @@ class Robert2AI extends BattleAI
 									this.queueSkill('flare');
 									this.queueSkill('windchill');
 								} else {
-									var firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill'
+									let firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill'
 									this.queueSkill(firstMoveID);
 									this.queueSkill(this.nextElementalMove);
 								}
 								break;
 							default:
-								if (this.isItemUsable('redBull')) {
+								if (this.isItemUsable('redBull'))
 									this.queueItem('redBull');
-								}
 								this.queueSkill('omni');
 								break;
 						}
@@ -463,9 +444,8 @@ class Robert2AI extends BattleAI
 				}
 			}
 		} else if (unitID == 'scott') {
-			if (this.scottImmuneTurnsLeft > 0) {
+			if (this.scottImmuneTurnsLeft > 0)
 				--this.scottImmuneTurnsLeft;
-			}
 			this.necromancyChance = Math.max(this.necromancyChance - 0.05, 0.0);
 		}
 	}
