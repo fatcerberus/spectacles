@@ -1157,6 +1157,31 @@ Game.skills =
 			}
 		]
 	},
+	flareUp: {
+		name: "Flare Up",
+		category: 'attack',
+		targetType: 'allEnemies',
+		actions: [
+			{
+				rank: 2,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'user',
+						type: 'addStatus',
+						status: 'ignite',
+					},
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 15,
+						element: 'fire',
+					},
+				],
+			}
+		],
+	},
 	rearingKick: {
 		name: "Rearing Kick",
 		category: 'attack',

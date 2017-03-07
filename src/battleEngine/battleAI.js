@@ -143,7 +143,7 @@ class BattleAI
 	{
 		let item = from(this.unit.items)
 			.where(v => v.itemID === itemID)
-			.besides(v => term.print(`${this.unit.name} requested item count for ${v.name}`, `left: ${v.usesLeft}`))
+			.besides(v => term.print(`${this.unit.name} counting remaining ${v.name}`, `left: ${v.usesLeft}`))
 			.first();
 		return item.usesLeft;
 	}

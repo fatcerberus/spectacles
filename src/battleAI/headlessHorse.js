@@ -10,7 +10,7 @@ class HeadlessHorseAI extends BattleAI
 	constructor(unit, battle)
 	{
 		super(unit, battle);
-		this.definePhases([ 250 ], 10);
+		this.definePhases([ 500 ], 10);
 		this.defaultSkill = 'flare';
 	}
 
@@ -22,6 +22,7 @@ class HeadlessHorseAI extends BattleAI
 	{
 		switch (newPhase) {
 			case 1:
+				this.queueSkill('trample', Stance.Attack, 'maggie');
 				this.queueSkill('flareUp');
 				break;
 		}

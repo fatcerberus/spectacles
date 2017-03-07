@@ -51,12 +51,12 @@ class Battle
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 					this.session.battlesSeen.push(this.battleID);
 					 if ('onFirstStart' in this.parameters) {
-						term.print(`call onFirstStart() for battleID '${this.battleID}'`);
+						term.print(`call onFirstStart() for battle '${this.battleID}'`);
 						this.parameters.onFirstStart.call(this);
 					 }
 				}
 				if ('onStart' in this.parameters) {
-					term.print(`call onStart() for battleID '${this.battleID}'`);
+					term.print(`call onStart() for battle '${this.battleID}'`);
 					this.parameters.onStart.call(this);
 				}
 				this.ui.showTitle();

@@ -156,7 +156,7 @@ class BattleUnit
 					term.print(`status ${statusName} for ${this.name} blocked per status/FC`);
 				}
 			} else {
-				term.print(`status ${statusName} for ${this.name} blocked per GS`);
+				term.print(`status ${statusName} for ${this.name} blocked by Guard`);
 			}
 		}
 	}
@@ -223,7 +223,7 @@ class BattleUnit
 		if (!this.isAlive())
 			return;
 
-		if (this.stance == Stance.Counter) {
+		if (this.stance === Stance.Counter) {
 			this.cv = 0;
 			if (this.ai == null) {
 				this.actor.animate('active');
@@ -242,8 +242,8 @@ class BattleUnit
 		if (this.newStance !== this.stance) {
 			this.stance = this.newStance;
 			this.battle.notifyAIs('stanceChanged', this.id, this.stance);
-			let stanceName = this.stance == Stance.Guard ? "Guard"
-				: this.stance == Stance.Counter ? "Counter"
+			let stanceName = this.stance === Stance.Guard ? "Guard"
+				: this.stance === Stance.Counter ? "Counter"
 				: "Attack";
 			term.print(`${this.name} now in ${stanceName} Stance`);
 		}
@@ -260,7 +260,7 @@ class BattleUnit
 		term.print(`${this.name} evaded ${actingUnit.name}'s attack`);
 		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 		let isMelee = 'isMelee' in action ? action.isMelee : false;
-		if (isMelee && this.stance == Stance.Guard && isGuardBroken) {
+		if (isMelee && this.stance === Stance.Guard && isGuardBroken) {
 			this.stance = Stance.Counter;
 			this.counterTarget = actingUnit;
 			term.print(`${this.name}'s Counter Stance activated`);
@@ -390,7 +390,7 @@ class BattleUnit
 		this.raiseEvent('acting', eventData);
 		eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 		if (this.isAlive()) {
-			if (this.stance == Stance.Counter)
+			if (this.stance === Stance.Counter)
 				action.accuracyRate = 2.0;
 			let unitsHit = this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
@@ -432,7 +432,7 @@ class BattleUnit
 			this.moveUsed.targets[0] = random.sample(alliesAlive);
 		}
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
-		if (move.stance == Stance.Charge) {
+		if (move.stance === Stance.Charge) {
 			nextActions.splice(0, 0, Game.skills.chargeSlash.actions[0]);
 			from(nextActions)
 				.from(action => action.effects)
@@ -659,7 +659,7 @@ class BattleUnit
 			}
 		}
 		if (amount >= 0) {
-			if (this.lastAttacker !== null && this.lastAttacker.stance == Stance.Counter) {
+			if (this.lastAttacker !== null && this.lastAttacker.stance === Stance.Counter) {
 				term.print(`${this.name} attacked from Counter Stance, boost damage`);
 				amount = Math.round(amount * Game.bonusMultiplier);
 			}
@@ -715,10 +715,10 @@ class BattleUnit
 		this.raiseEvent('attacked', eventData);
 		var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 		var isMelee = 'isMelee' in action ? action.isMelee : false;
-		if (this.stance == Stance.Guard && isMelee && isGuardBroken) {
+		if (this.stance === Stance.Guard && isMelee && isGuardBroken) {
 			action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 		}
-		if (this.stance == Stance.Guard && isGuardBroken) {
+		if (this.stance === Stance.Guard && isGuardBroken) {
 			term.print(`${this.name}'s Guard Stance broken`, `by: ${actingUnit.name}`);
 			this.newStance = Stance.Attack;
 			this.resetCounter(Game.guardBreakRank);
@@ -731,11 +731,11 @@ class BattleUnit
 			return false;
 		if (--this.cv == 0) {
 			this.battle.suspend();
-			if (this.stance == Stance.Guard) {
+			if (this.stance === Stance.Guard) {
 				this.stance = this.newStance = Stance.Attack;
 				this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				term.print(`${this.name}'s Guard Stance expired`);
-			} else if (this.stance == Stance.Counter) {
+			} else if (this.stance === Stance.Counter) {
 				this.newStance = Stance.Attack;
 			}
 			term.print(`${this.name}'s turn is up`);

@@ -8,19 +8,8 @@ TestHarness.addBattle('horse',
 	battleID: 'headlessHorse',
 	party: {
 		scott: { level: 8, weapon: 'heirloom', items: [ 'tonic' ] },
-		bruce: { level: 8, weapon: 'arsenRifle', items: [ 'tonic' ] },
+		elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'lazarusPotion' ] },
 		maggie: { level: 8, items: [ 'tonic', 'alcohol' ] },
-	}
-});
-
-TestHarness.addBattle('rsb1',
-{
-	battleID: 'rsbBalcony',
-	party: {
-		scott: {
-			level: 45, weapon: 'templeSword',
-			items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ]
-		},
 	}
 });
 
