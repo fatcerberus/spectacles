@@ -3,6 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+RequireScript('battleAI/headlessHorse.js');
 RequireScript('battleAI/robertII.js');
 
 // boss and miniboss battle definitions.

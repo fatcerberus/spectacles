@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2012 Power-Command
+  *           Copyright (c) 2017 Power-Command
 ***/
 
 RequireScript('battleEngine/battleAI.js');
@@ -11,7 +11,7 @@ class Robert2AI extends BattleAI
 	{
 		super(unit, battle);
 		this.definePhases([ 4000, 2500, 1500, 500 ], 50);
-		this.setDefaultSkill('swordSlash');
+		this.defaultSkill = 'swordSlash';
 
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
@@ -28,9 +28,9 @@ class Robert2AI extends BattleAI
 		this.zombieHealFixState = null;
 	}
 
-	strategize(stance, phase)
+	strategize()
 	{
-		switch (phase) {
+		switch (this.phase) {
 			case 1:
 				let magicks = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
 				if (this.doChargeSlashNext) {

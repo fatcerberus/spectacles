@@ -23,6 +23,22 @@ class BattleAI
 		this.unit = unit;
 	}
 
+	get defaultSkill()
+	{
+		return this.defaultSkillID;
+	}
+	
+	get phase()
+	{
+		return this.currentPhase;
+	}
+	
+	set defaultSkill(value)
+	{
+		term.print(`default skill for ${this.unit.name} is ${Game.skills[value].name}`);
+		this.defaultSkillID = value;
+	}
+
 	definePhases(thresholds, sigma = 0)
 	{
 		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
@@ -58,7 +74,7 @@ class BattleAI
 				this.targets = null;
 				this.updatePhase();
 				if (this.moveQueue.length == 0)
-					this.strategize(this.unit.stance, this.currentPhase);
+					this.strategize();
 				if (this.moveQueue.length == 0) {
 					term.print(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {
@@ -213,12 +229,6 @@ class BattleAI
 		term.print(`${this.unit.name} queued weapon change to ${weaponDef.name}`);
 	}
 
-	setDefaultSkill(skillID)
-	{
-		this.defaultSkillID = skillID;
-		term.print(`default skill for ${this.unit.name} is ${Game.skills[skillID].name}`);
-	}
-
 	setTarget(targetID)
 	{
 		var unit = this.battle.findUnit(targetID);
@@ -233,7 +243,7 @@ class BattleAI
 			throw new Error("AI has no strategy");
 	}
 
-	updatePhase(allowEvents = true)
+	updatePhase()
 	{
 		let phaseToEnter = 1;
 		if (this.phasePoints !== null) {
@@ -243,7 +253,7 @@ class BattleAI
 		}
 		let lastPhase = this.currentPhase;
 		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
-		if (allowEvents && this.currentPhase > lastPhase) {
+		if (this.currentPhase > lastPhase) {
 			term.print(`${this.unit.name} is entering phase ${this.currentPhase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
 			this.on_phaseChanged(this.currentPhase, lastPhase);
