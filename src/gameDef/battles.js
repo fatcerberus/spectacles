@@ -18,6 +18,18 @@ Game.battles =
 		enemies: [
 			'headlessHorse',
 		],
+		onStart() {
+			let horseUnit = this.findUnit('headlessHorse');
+			horseUnit.addStatus('zombie');
+			new scenes.Scene()
+				.talk("T. PIG", true, 1.0, Infinity,
+					"Keep your guard up if you expect to beat this thing.  It won't hesitate to roast " +
+					"you alive... and then I'll have to put you out of your misery...")
+				.talk("Lauren", true, 1.0, Infinity, "Yeah, because I totally always wanted to get " +
+					"burnt to a crisp by a fire-breathing horse and then get eaten by a pig.  Awesome.")
+				.talk("Scott", true, 1.0, Infinity, "Stupid pig")
+				.run(true);
+		}
 	},
 	rsbFinal: {
 		title: "Robert Spellbinder",
@@ -27,9 +39,10 @@ Game.battles =
 		enemies: [
 			'robert2'
 		],
-		onStart: function() {
-			var scott = this.findUnit('scott');
-			if (scott != null) {
+		onStart() {
+			let scottUnit = this.findUnit('scott');
+			if (scottUnit !== null) {
+				scottUnit.addStatus('specsAura');
 				new scenes.Scene()
 					.talk("Robert", true, 1.0, Infinity,
 						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
@@ -41,11 +54,8 @@ Game.battles =
 					.pause(120)
 					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
 					.run(true);
-				if (scott != null) {
-					scott.addStatus('specs');
-				}
 			}
-		}
+		},
 	},
 };
 

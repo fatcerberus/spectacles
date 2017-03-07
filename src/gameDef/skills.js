@@ -1163,6 +1163,7 @@ Game.skills =
 		targetType: 'allEnemies',
 		actions: [
 			{
+				announceAs: "Flare Up",
 				rank: 2,
 				preserveGuard: true,
 				effects: [
@@ -1220,24 +1221,23 @@ Game.skills =
 			}
 		]
 	},
-	spectralDraw: {
-		name: "Spectral Draw",
+	spectralReversion: {
+		name: "Spectral Reversion",
 		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 25,
+		targetType: 'ally',
+		baseMPCost: 50,
 		actions: [
 			{
-				announceAs: "Spectral Draw",
 				rank: 3,
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'ghost'
-					}
-				]
-			}
-		]
+						status: 'ghost',
+					},
+				],
+			},
+		],
 	},
 	spectralKick: {
 		name: "Spectral Kick",
@@ -1245,26 +1245,14 @@ Game.skills =
 		targetType: 'single',
 		actions: [
 			{
-				announceAs: "Rear Up",
-				rank: 1,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'user',
-						type: 'addStatus',
-						status: 'rearing'
-					}
-				]
-			},
-			{
 				announceAs: "Spectral Kick",
-				rank: 2,
+				rank: 3,
 				accuracyType: 'physical',
 				isMelee: true,
 				effects: [
 					{
 						targetHint: 'user',
-						type: 'addStatus',
+						type: 'liftStatus',
 						status: 'ghost'
 					},
 					{

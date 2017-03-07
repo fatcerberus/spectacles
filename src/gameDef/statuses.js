@@ -405,24 +405,6 @@ Game.statuses =
 		}
 	},
 
-	rearing: {
-		name: "Rearing",
-		category: [ 'special' ],
-		beginTurn: function(unit, eventData) {
-			unit.liftStatus('rearing');
-		},
-		damaged: function(unit, eventData) {
-			if (from(eventData.tags).anyIn([ 'physical', 'earth' ])) {
-				unit.clearQueue();
-				unit.liftStatus('rearing');
-				unit.resetCounter(5);
-			}
-			if (!from(eventData.tags).anyIn([ 'special', 'magic' ])) {
-				eventData.damage *= 2;
-			}
-		}
-	},
-
 	// Skeleton status
 	// The affected unit is still able to battle at 0 HP, but with reduced STR and MAG stats.
 	// Taking physical or slash damage, or being hit with an HP restorative, while in this state will
@@ -510,7 +492,7 @@ Game.statuses =
 	// Restores a tiny amount of HP to the affected unit at the beginning of each
 	// cycle. Similar to ReGen, except the effect is perpetual and less HP is recovered per
 	// cycle.
-	specs: {
+	specsAura: {
 		name: "Specs Aura",
 		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {

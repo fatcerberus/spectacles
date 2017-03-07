@@ -260,8 +260,8 @@ class BattleAI
 		}
 	}
 
-	on_itemUsed      (userID, targetIDs, itemID) {}
-	on_skillUsed     (userID, targetIDs, skillID) {}
+	on_itemUsed      (userID, itemID, targetIDs) {}
+	on_skillUsed     (userID, skillID, targetIDs) {}
 	on_stanceChanged (userID, stance) {}
 	on_phaseChanged  (phase, lastPhase) {}
 	on_unitDamaged   (unitID, amount, tags, attacker) {}
