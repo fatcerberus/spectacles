@@ -19,18 +19,20 @@ Game.battles =
 			'headlessHorse',
 		],
 		onStart() {
-			let horseUnit = this.findUnit('headlessHorse');
-			horseUnit.addStatus('zombie');
+			let theHorse = this.findUnit('headlessHorse');
+			theHorse.addStatus('zombie');
 			new scenes.Scene()
-				.talk("T. PIG", true, 1.0, Infinity,
-					"Keep your guard up if you expect to beat this thing.  It won't hesitate to roast " +
-					"you alive... and then I'll have to put you out of your misery...")
+				.talk("the pig", true, 1.0, Infinity,
+					"Keep your guard up if you want to beat this thing.  It won't hesitate to roast " +
+					"you alive--and then I'd have to eat you!")
 				.talk("Lauren", true, 1.0, Infinity, "Yeah, because I totally always wanted to get " +
-					"burnt to a crisp by a fire-breathing horse and then get eaten by a pig.  Awesome.")
+					"burnt to a crisp by a fire-breathing horse BEFORE GETTING EATEN BY A FREAKING PIG.  " +
+					"Awesome.")
 				.talk("Scott", true, 1.0, Infinity, "Stupid pig")
 				.run(true);
 		}
 	},
+
 	rsbFinal: {
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
@@ -45,11 +47,11 @@ Game.battles =
 				scottUnit.addStatus('specsAura');
 				new scenes.Scene()
 					.talk("Robert", true, 1.0, Infinity,
-						"Bruce's death changed nothing. If anything, it's made you far too reckless. Look around, "
-						+ "Scott! Where are your friends? Did they abandon you in your most desperate hour, or are you truly so "
-						+ "brazen as to face me alone?")
+						"Bruce's death changed nothing.  Hell, if anything, it's made you far too reckless. Look around, "
+						+ "Scott!  Where are your friends?  Did they abandon you in your most desperate hour, or are you truly "
+						+ "so brazen as to face me alone?")
 					.talk("Scott", true, 1.0, Infinity,
-						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow. "
+						"I owe Bruce my life, Robert! To let his story end here... that's something I won't allow.  "
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(120)
 					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
@@ -87,6 +89,7 @@ Game.enemies =
 			skill: 'flameBreath',
 		},
 	},
+
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",

@@ -1228,6 +1228,7 @@ Game.skills =
 		baseMPCost: 50,
 		actions: [
 			{
+				announceAs: "Spectral Reversion",
 				rank: 3,
 				effects: [
 					{

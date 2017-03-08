@@ -13,7 +13,7 @@ Game.math =
 			return 1.0;
 		},
 		devour: function(userInfo, targetInfo) {
-			return (100 - targetInfo.health) / 100 / targetInfo.tier
+			return (100 - targetInfo.health * targetInfo.tier) / 100
 				* userInfo.stats.agi / targetInfo.stats.agi;
 		},
 		gun: function(userInfo, targetInfo) {

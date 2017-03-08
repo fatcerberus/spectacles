@@ -14,11 +14,6 @@ class HeadlessHorseAI extends BattleAI
 		this.defaultSkill = 'flare';
 	}
 
-	strategize()
-	{
-		
-	}
-
 	on_phaseChanged(newPhase, lastPhase)
 	{
 		switch (newPhase) {
@@ -35,7 +30,8 @@ class HeadlessHorseAI extends BattleAI
 
 	on_skillUsed(userID, skillID, targetIDs)
 	{
-		if (from(targetIDs).anyIs('headlessHorse') && this.unit.hasStatus('ignite')
+		if (from(targetIDs).anyIs('headlessHorse')
+		    && this.unit.hasStatus('ignite')
 		    && skillID === 'chill')
 		{
 			if (this.unit.hasStatus('ghost'))
