@@ -19,10 +19,11 @@ class TestHarness
 		this.tests = {};
 		this.isBattleRunning = false;
 
-		var testScripts = GetFileList('~/scripts/testCases');
-		for (let i = 0; i < testScripts.length; ++i) {
-			term.print(`load test cases from '${testScripts[i]}'`);
-			EvaluateScript(`~/scripts/testCases/${testScripts[i]}`);
+		let fileNames = from(GetFileList('~/scripts/testCases'))
+			.where(fileName => fileName.endsWith('.js'));
+		for (let fileName of fileNames) {
+			term.print(`load test cases from '${fileName}'`);
+			EvaluateScript(`~/scripts/testCases/${fileName}`);
 		}
 	}
 
