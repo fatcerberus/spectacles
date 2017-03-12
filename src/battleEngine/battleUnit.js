@@ -85,7 +85,8 @@ class BattleUnit
 				this.stats[statID] = new Stat(this.baseStats[statID], battle.getLevel(), false);
 			if ('items' in this.enemyInfo) {
 				this.items = from(this.enemyInfo.items)
-					.select(v => new ItemUsable(v));
+					.select(v => new ItemUsable(v))
+					.toArray();
 			}
 			else {
 				this.items = [];
@@ -148,7 +149,8 @@ class BattleUnit
 					let effect = new StatusEffect(eventData.statusID, this);
 					this.statuses.push(effect);
 					this.battlerInfo.statuses = from(this.statuses)
-						.select(v => v.statusID);
+						.select(v => v.statusID)
+						.toArray();
 					term.print(`status ${effect.name} installed on ${this.name}`);
 				} else {
 					if (!isGuardable)
@@ -370,7 +372,8 @@ class BattleUnit
 				.besides(i => term.print(`lift status effect ${this.name}->${i.name}`))
 				.remove();
 			this.battlerInfo.statuses = from(this.statuses)
-				.select(i => i.statusID)
+				.select(v => v.statusID)
+				.toArray();
 		}
 	}
 
@@ -385,7 +388,8 @@ class BattleUnit
 	performAction(action, move)
 	{
 		let targetsInfo = from(move.targets)
-			.select(v => v.battlerInfo);
+			.select(v => v.battlerInfo)
+			.toArray();
 		let eventData = { action, targetsInfo };
 		this.raiseEvent('acting', eventData);
 		eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
@@ -422,7 +426,7 @@ class BattleUnit
 		let alliesInBattle = this.battle.alliesOf(this.moveUsed.targets[0]);
 		let alliesAlive = from(alliesInBattle)
 			.where(v => v.isAlive())
-			.select();
+			.toArray();
 		this.moveUsed.targets = this.moveUsed.usable.isGroupCast
 			? this.moveUsed.usable.allowDeadTarget ? alliesInBattle : alliesAlive
 			: this.moveUsed.targets;
@@ -481,7 +485,8 @@ class BattleUnit
 			this.battlerInfo.stats[statID] = this.stats[statID].value;
 		}
 		this.battlerInfo.statuses = from(this.statuses)
-			.select(v => v.statusID);
+			.select(v => v.statusID)
+			.toArray();
 		this.battlerInfo.stance = this.stance;
 	}
 
@@ -672,15 +677,15 @@ class BattleUnit
 			this.battle.notifyAIs('unitDamaged', this, amount, tags, this.lastAttacker);
 			term.print(`damage ${this.name} for ${amount} HP`, `left: ${this.hp}`);
 			if (oldHPValue > 0 || this.lazarusFlag) {
-				var damageColor = null;
-				from(tags)
-					.where(tag => tag in Game.elements)
-					.each(tag =>
-				{
-					damageColor = damageColor !== null ? BlendColors(damageColor, Game.elements[tag].color)
+				let elementTags = from(tags).where(v => v in Game.elements);
+				let damageColor = null;
+				for (let tag of elementTags) {
+					damageColor = damageColor !== null
+						? BlendColors(damageColor, Game.elements[tag].color)
 						: Game.elements[tag].color;
-				});
-				damageColor = damageColor !== null ? BlendColorsWeighted(damageColor, CreateColor(255, 255, 255, 255), 33, 66)
+				}
+				damageColor = damageColor !== null
+					? BlendColorsWeighted(damageColor, CreateColor(255, 255, 255, 255), 33, 66)
 					: CreateColor(255, 255, 255, 255);
 				this.actor.showDamage(amount, damageColor);
 			}

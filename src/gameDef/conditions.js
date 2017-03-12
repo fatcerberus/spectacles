@@ -73,7 +73,7 @@ Game.conditions =
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
 				.where(it => it.isAlive())
-				.select();
+				.toArray();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(vit, [ 'cure' ]);
@@ -129,7 +129,7 @@ Game.conditions =
 		beginCycle: function(battle, eventData) {
 			var units = from(battle.battleUnits)
 				.where(it => it.isAlive())
-				.select();
+				.toArray();
 			var unit = random.sample(units);
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);

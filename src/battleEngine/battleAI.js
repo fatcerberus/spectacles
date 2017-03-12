@@ -43,10 +43,11 @@ class BattleAI
 	{
 		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
-			.select(v => Math.round(random.normal(v, sigma)));
+			.select(v => Math.round(random.normal(v, sigma)))
+			.toArray();
 		let phase = 1;
-		from(this.phasePoints)
-			.each(v => term.print(`phase ${++phase} will start at <= ${v} HP`));
+		for (let milestone of this.phasePoints)
+			term.print(`phase ${++phase} will start at <= ${milestone} HP`);
 		this.currentPhase = 0;
 		this.lastPhase = 0;
 	}

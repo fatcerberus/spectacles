@@ -38,9 +38,8 @@ class TestHarness
 				}
 				term.print("initiate test battle", `battleID: ${this.setup.battleID}`);
 				var session = new Session();
-				from(Game.initialParty).each(charID => {
-					session.party.remove(charID);
-				});
+				for (let characterID of Game.initialParty)
+					session.party.remove(characterID);
 				for (let id in this.setup.party) {
 					var memberInfo = this.setup.party[id];
 					session.party.add(id, memberInfo.level);

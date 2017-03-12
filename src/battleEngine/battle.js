@@ -318,7 +318,7 @@ class Battle
 			effects: from(action.effects)
 				.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
 				.where(it => it.type != null)
-				.select(),
+				.toArray(),
 			pc: 0,
 			nextEffect: function() {
 				if (this.pc < this.effects.length) {

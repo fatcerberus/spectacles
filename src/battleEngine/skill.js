@@ -56,11 +56,11 @@ class SkillUsable
 			case 'allEnemies':
 				return from(user.battle.enemiesOf(user))
 					.where(v => v.isAlive() || this.allowDeadUnits)
-					.select();
+					.toArray();
 			case 'allAllies':
 				return from(user.battle.alliesOf(user))
 					.where(v => v.isAlive() || this.allowDeadUnits)
-					.select();
+					.toArray();
 			default:
 				return user;
 		}
@@ -129,7 +129,7 @@ class SkillUsable
 		this.grow(experience);
 		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
-		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, from(targets).select(v => v.id));
+		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, from(targets).select(v => v.id).toArray());
 		return eventData.skill.actions;
 	}
 }

@@ -76,7 +76,7 @@ class ItemUsable
 			`left: ${this.usesLeft}`);
 		var eventData = { item: clone(this.itemDef) };
 		unit.raiseEvent('useItem', eventData);
-		unit.battle.notifyAIs('itemUsed', unit.id, this.itemID, from(targets).select(v => v.id));
+		unit.battle.notifyAIs('itemUsed', unit.id, this.itemID, from(targets).select(v => v.id).toArray());
 		return [ eventData.item.action ];
 	}
 }
