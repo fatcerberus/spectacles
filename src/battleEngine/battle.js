@@ -193,7 +193,7 @@ class Battle
 	hasCondition(conditionID)
 	{
 		return from(this.conditions)
-			.mapTo(it => it.conditionID)
+			.select(it => it.conditionID)
 			.anyIs(conditionID);
 	}
 

@@ -7,15 +7,17 @@
 //       will cause multiple day/night masks to be applied to the screen,
 //       which won't look too nice. :o)
 
+const Threaded = require('threads').Threaded;
+
 const DayMask      = Color.Transparent;
 const TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625);
 const NightMask    = new Color(0, 0, 0.125, 0.5625);
 
-class DayNightEngine extends Thread
+class DayNightEngine extends Threaded
 {
 	constructor()
 	{
-		super(1);
+		super({ priority: 1 });
 
 		term.print("initialize day/night engine", `time: ${this.now()}`);
 		this.currentMask = Color.Transparent;
