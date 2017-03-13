@@ -40,7 +40,7 @@ class BattleActor
 					var yName = 'y' + i2.toString();
 					tweenInfo[yName] = finalY;
 				}
-				data.scene = new scenes.Scene()
+				data.scene = new Scene()
 					.tween(data, 30, 'easeOutBounce', tweenInfo)
 					.pause(15);
 				data.scene.run();
@@ -91,18 +91,18 @@ class BattleActor
 		switch (animationID) {
 			case 'die':
 				this.sprite.direction = 'north';
-				new scenes.Scene()
+				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 0.1 })
 					.run();
 				break;
 			case 'revive':
-				new scenes.Scene()
+				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 1.0 })
 					.call(function() { this.sprite.direction = this.isEnemy ? 'east' : 'west'; }.bind(this))
 					.run();
 				break;
 			case 'sleep':
-				new scenes.Scene()
+				new Scene()
 					.talk("maggie", 2.0, this.name + " fell asleep! Hey, does that mean I get to eat him now?")
 					.run(true);
 				break;
@@ -116,7 +116,7 @@ class BattleActor
 		var newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
 		var threadID = null;
 		if (!isImmediate) {
-			var entrance = new scenes.Scene()
+			var entrance = new Scene()
 				.tween(this, 90, 'linear', { x: newX })
 				.run(true);
 		} else {
@@ -137,7 +137,7 @@ class BattleActor
 			data[yName] = finalY - (20 - i * 5);
 			tweenInfo[yName] = finalY;
 		}
-		data.scene = new scenes.Scene()
+		data.scene = new Scene()
 			.tween(data, 30, 'easeOutBounce', tweenInfo)
 			.pause(15);
 		data.scene.run();
@@ -147,7 +147,7 @@ class BattleActor
 	showHealing(amount, color = null)
 	{
 		var data = { amount: amount, color: color, y: 20, alpha: 255 };
-		data.scene = new scenes.Scene()
+		data.scene = new Scene()
 			.tween(data, 60, 'easeOutExpo', { y: -11 * this.healings.length })
 			.tween(data, 30, 'easeInOutSine', { alpha: 0 });
 		data.scene.run();

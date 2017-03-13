@@ -56,7 +56,7 @@ function MoveMenu(unit, battle, stance)
 			{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 	}
 
-	this.chooseMove = new scenes.Scene()
+	this.chooseMove = new Scene()
 		.fork()
 			.tween(this.moveCursorColor, 7, 'easeInOutSine', this.lockedCursorColor)
 		.end()
@@ -65,7 +65,7 @@ function MoveMenu(unit, battle, stance)
 		.end()
 		.tween(this, 15, 'easeInBack', { fadeness: 0.0 });
 
-	this.hideMoveList = new scenes.Scene()
+	this.hideMoveList = new Scene()
 		.fork()
 			.tween(this.moveCursorColor, 15, 'linear', CreateColor(0, 0, 0, 0))
 		.end()
@@ -74,14 +74,14 @@ function MoveMenu(unit, battle, stance)
 		.end()
 		.tween(this, 15, 'easeInBack', { expansion: 0.0 });
 
-	this.showMenu = new scenes.Scene()
+	this.showMenu = new Scene()
 		.fork()
 			.tween(this.topCursorColor, 15, 'easeOutQuad', CreateColor(192, 192, 192, 255))
 			.tween(this.topCursorColor, 15, 'easeOutQuad', this.normalCursorColor)
 		.end()
 		.tween(this, 30, 'easeOutBounce', { fadeness: 1.0 });
 
-	this.showMoveList = new scenes.Scene()
+	this.showMoveList = new Scene()
 		.fork()
 			.tween(this.topCursorColor, 15, 'easeInOutSine', this.lockedCursorColor)
 		.end()

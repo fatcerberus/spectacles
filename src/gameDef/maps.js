@@ -7,7 +7,7 @@ Game.maps =
 {
 	main: {
 		onEnter: function() {
-			new scenes.Scene()
+			new Scene()
 				.fadeTo(Color.Black, 0)
 				.playBGM('BruceTellsHisStory')
 				.pause(60)

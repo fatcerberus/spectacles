@@ -21,7 +21,7 @@ Game.battles =
 		onStart() {
 			let theHorse = this.findUnit('headlessHorse');
 			theHorse.addStatus('zombie');
-			new scenes.Scene()
+			new Scene()
 				.talk("the pig", true, 1.0, Infinity,
 					"Keep your guard up if you want to beat this thing.  It won't hesitate to roast " +
 					"you alive--and then I'd have to eat you!")
@@ -45,7 +45,7 @@ Game.battles =
 			let scottUnit = this.findUnit('scott');
 			if (scottUnit !== null) {
 				scottUnit.addStatus('specsAura');
-				new scenes.Scene()
+				new Scene()
 					.talk("Robert", true, 1.0, Infinity,
 						"Bruce's death changed nothing.  Hell, if anything, it's made you far too reckless. Look around, "
 						+ "Scott!  Where are your friends?  Did they abandon you in your most desperate hour, or are you truly "

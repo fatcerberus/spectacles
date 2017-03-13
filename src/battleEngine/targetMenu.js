@@ -84,7 +84,7 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 		if (this.doChangeInfo != null) {
 			this.doChangeInfo.stop();
 		}
-		this.doChangeInfo = new scenes.Scene()
+		this.doChangeInfo = new Scene()
 			.fork()
 				.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 			.end()
@@ -113,7 +113,7 @@ TargetMenu.prototype.getInput = function()
 {
 	switch (AreKeysLeft() ? GetKey() : null) {
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
-			new scenes.Scene()
+			new Scene()
 				.fork()
 					.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()
@@ -124,7 +124,7 @@ TargetMenu.prototype.getInput = function()
 			break;
 		case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
 			this.targets = null;
-			new scenes.Scene()
+			new Scene()
 				.fork()
 					.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
 				.end()

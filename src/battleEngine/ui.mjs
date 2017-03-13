@@ -4,6 +4,7 @@
 ***/
 
 import * as prim from 'prim';
+import { Scene } from 'scenes';
 
 export
 class HPGauge
@@ -222,7 +223,7 @@ class MPGauge
 			if (this.animation != null) {
 				this.animation.stop();
 			}
-			this.animation = new scenes.Scene()
+			this.animation = new Scene()
 				.fork()
 					.tween(this, 15, 'easeInOutSine', { usage: this.reading - value })
 				.end()
@@ -310,7 +311,7 @@ class TurnPreview
 				if (turnBox.tween !== null) {
 					turnBox.tween.stop();
 				}
-				turnBox.tween = new scenes.Scene()
+				turnBox.tween = new Scene()
 					.tween(turnBox, moveTime, moveEasing, { x: 160 });
 				turnBox.tween.run();
 			}
@@ -324,7 +325,7 @@ class TurnPreview
 			if (turnBox.tween !== null) {
 				turnBox.tween.stop();
 			}
-			turnBox.tween = new scenes.Scene()
+			turnBox.tween = new Scene()
 				.tween(turnBox, moveTime, moveEasing, { x: 48 + i * 16 });
 			turnBox.tween.run();
 		}
@@ -336,7 +337,7 @@ class TurnPreview
 			term.print("activate battle screen turn preview");
 			this.thread = threads.create(this, 20);
 		}
-		new scenes.Scene()
+		new Scene()
 			.tween(this, 30, 'easeOutExpo', { fadeness: 0.0 })
 			.run();
 	}

@@ -108,7 +108,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 // Hides the HUD.
 BattleHUD.prototype.hide = function()
 {
-	new scenes.Scene()
+	new Scene()
 		.tween(this, 15, 'easeInExpo', { fadeness: 0.0 })
 		.run();
 };
@@ -121,12 +121,12 @@ BattleHUD.prototype.highlight = function(unit)
 {
 	if (unit !== null) {
 		this.highlightedUnit = unit;
-		new scenes.Scene()
+		new Scene()
 			.tween(this.highlightColor, 6, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
 			.tween(this.highlightColor, 15, 'easeOutQuad', this.partyHighlightColor)
 			.run();
 	} else {
-		new scenes.Scene()
+		new Scene()
 			.tween(this.highlightColor, 6, 'easeInQuad', CreateColor(0, 0, 0, 0))
 			.run();
 	}
@@ -180,7 +180,7 @@ BattleHUD.prototype.setHP = function(unit, hp)
 				: Color.Lime;
 			characterInfo.hpGauge.changeColor(gaugeColor, 0.5);
 			var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
-			new scenes.Scene()
+			new Scene()
 				.fork()
 					.tween(characterInfo.lightColor, 15, 'easeOutQuad', flashColor)
 					.tween(characterInfo.lightColor, 15, 'easeOutQuad', CreateColor(0, 0, 0, 0))
@@ -228,7 +228,7 @@ BattleHUD.prototype.show = function()
 		term.print("activate battle screen HUD");
 		this.thread = threads.create(this, 20);
 	}
-	new scenes.Scene()
+	new Scene()
 		.tween(this, 30, 'easeOutExpo', { fadeness: 1.0 })
 		.run();
 };

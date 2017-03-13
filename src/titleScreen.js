@@ -25,7 +25,7 @@ class TitleScreen
 		if (Sphere.Game.disableAnimations) {
 			this.fadeness = 0.0;
 		}
-		this.transition = new scenes.Scene()
+		this.transition = new Scene()
 			.adjustBGM(1.0)
 			.pushBGM(this.themeTrack)
 			.tween(this, 120, 'linear', { fadeness: 0.0 })
@@ -48,7 +48,7 @@ class TitleScreen
 					if (Sphere.Game.disableAnimations) {
 						this.fadeness = 1.0;
 					}
-					this.transition = new scenes.Scene()
+					this.transition = new Scene()
 						.fork()
 							.adjustBGM(0.0, 120)
 						.end()

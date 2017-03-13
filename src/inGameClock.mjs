@@ -3,6 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import * as prim  from 'prim';
 import { Thread } from 'threads';
 
 // note: don't run more than one day/night engine at a time.  doing so

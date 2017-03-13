@@ -549,7 +549,7 @@ class BattleUnit
 					term.print(addCount + "x " + Game.items[itemID].name + " added to " + this.name + "'s inventory");
 					break;
 				case 'munch':
-					new scenes.Scene().playSound('Munch.wav').run();
+					new Scene().playSound('Munch.wav').run();
 					this.items.length = 0;
 					term.print("maggie ate " + this.name + "'s entire inventory");
 					break;

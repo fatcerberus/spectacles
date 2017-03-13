@@ -3,18 +3,18 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-global.events  = require('events');
+const { DayNightEngine }     = require('@/scripts/inGameClock');
+const { Delegate }           = require('events');
+const { defScenelet, Scene } = require('scenes');
+const { Thread }             = require('threads');
+
 global.from    = require('from');
 global.joy     = require('joy');
 global.music   = require('music');
 global.prim    = require('prim');
 global.random  = require('random');
-global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
-
-const { DayNightEngine } = require('@/scripts/inGameClock');
-const { Thread }         = require('threads');
 
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');

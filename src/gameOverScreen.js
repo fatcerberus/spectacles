@@ -28,7 +28,7 @@ class GameOverScreen
 			this.fadeness = 0.0;
 		}
 		music.play(null);
-		this.transition = new scenes.Scene()
+		this.transition = new Scene()
 			.pushBGM('gameOver')
 			.adjustBGM(1.0)
 			.tween(this, 300, 'linear', { fadeness: 0.0 })
@@ -51,7 +51,7 @@ class GameOverScreen
 					if (Sphere.Game.disableAnimations) {
 						this.fadeness = 1.0;
 					}
-					this.transition = new scenes.Scene()
+					this.transition = new Scene()
 						.fork()
 							.adjustBGM(0.0, 120)
 						.end()

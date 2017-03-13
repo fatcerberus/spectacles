@@ -15,8 +15,8 @@ class MPPool
 
 		// handler function signature:
 		//     function(pool, mpLeft)
-		this.gainedMP = new events.Delegate();
-		this.lostMP = new events.Delegate();
+		this.gainedMP = new Delegate();
+		this.lostMP = new Delegate();
 	}
 
 	restore(amount)

@@ -51,7 +51,7 @@ class TestHarness
 					}
 				}
 				TestHarness.isBattleRunning = true;
-				new scenes.Scene()
+				new Scene()
 					.battle(this.setup.battleID, session)
 					.run(true);
 				TestHarness.isBattleRunning = false;

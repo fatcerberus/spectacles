@@ -79,7 +79,7 @@ class BattleScreen
 			}
 		};
 		let thread = threads.create(announcement, 10);
-		new scenes.Scene()
+		new Scene()
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 0.0 })
 			.pause(46)
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 1.0 })
@@ -103,7 +103,7 @@ class BattleScreen
 			this.dispose();
 			return;
 		}
-		new scenes.Scene()
+		new Scene()
 			.fadeTo(Color.Black, duration)
 			.call(this.dispose.bind(this))
 			.fadeTo(Color.Transparent, 0.5)
@@ -113,7 +113,7 @@ class BattleScreen
 	go(title = null)
 	{
 		this.title = title;
-		new scenes.Scene()
+		new Scene()
 			.doIf(() => !Sphere.Game.disableAnimations)
 				.fadeTo(Color.White, 15)
 				.fadeTo(Color.Transparent, 30)
@@ -130,7 +130,7 @@ class BattleScreen
 	{
 		if (this.title === null || Sphere.Game.disableAnimations)
 			return;
-		new scenes.Scene()
+		new Scene()
 			.marquee(this.title, Color.Black.fade(0.5))
 			.run(true);
 	}

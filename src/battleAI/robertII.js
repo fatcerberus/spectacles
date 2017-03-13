@@ -247,7 +247,7 @@ class Robert2AI extends BattleAI
 			}
 		} else if (userID == 'robert2' && itemID == 'alcohol' && from(targetIDs).anyIs('robert2')) {
 			this.unit.addStatus('finalStand');
-			new scenes.Scene()
+			new Scene()
 				.adjustBGM(0.5, 300)
 				.talk("Scott", true, 2.0, Infinity,
 					"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "

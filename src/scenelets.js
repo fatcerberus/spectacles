@@ -5,7 +5,7 @@
 
 RequireScript('battleEngine/battle.js');
 
-scenes.defScenelet('adjustBGM',
+defScenelet('adjustBGM',
 {
 	start(scene, volume, duration = 0.0) {
 		music.adjust(volume, duration);
@@ -20,7 +20,7 @@ scenes.defScenelet('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-scenes.defScenelet('battle',
+defScenelet('battle',
 {
 	start(scene, battleID, session) {
 		this.mode = 'battle';
@@ -58,14 +58,14 @@ scenes.defScenelet('battle',
 	}
 });
 
-scenes.defScenelet('changeBGM',
+defScenelet('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
 		music.play("music/" + trackName + ".ogg", fadeTime);
 	}
 });
 
-scenes.defScenelet('marquee',
+defScenelet('marquee',
 {
 	start(scene, text, backgroundColor, color) {
 		backgroundColor = backgroundColor || Color.Black;
@@ -80,7 +80,7 @@ scenes.defScenelet('marquee',
 		this.textHeight = this.font.height;
 		this.fadeness = 0.0;
 		this.scroll = 0.0;
-		this.animation = new scenes.Scene()
+		this.animation = new Scene()
 			.tween(this, 15, 'linear', { fadeness: 1.0 })
 			.tween(this, 60, 'easeOutExpo', { scroll: 0.5 })
 			.tween(this, 60, 'easeInExpo', { scroll: 1.0 })
@@ -103,21 +103,21 @@ scenes.defScenelet('marquee',
 	}
 });
 
-scenes.defScenelet('popBGM',
+defScenelet('popBGM',
 {
 	start(scene) {
 		music.pop();
 	}
 });
 
-scenes.defScenelet('pushBGM',
+defScenelet('pushBGM',
 {
 	start(scene, trackName) {
 		music.push("music/" + trackName + ".ogg");
 	}
 });
 
-scenes.defScenelet('talk',
+defScenelet('talk',
 {
 	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
@@ -148,7 +148,7 @@ scenes.defScenelet('talk',
 		this.topLine = 0;
 		this.lineToReveal = 0;
 		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
-		this.transition = new scenes.Scene()
+		this.transition = new Scene()
 			.tween(this, 20, 'easeOutBack', { boxVisibility: 1.0 })
 			.run();
 		this.mode = "fadein";
@@ -292,7 +292,7 @@ scenes.defScenelet('talk',
 			case "hidetext":
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / screen.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
-					this.transition = new scenes.Scene()
+					this.transition = new Scene()
 						.tween(this, 20, 'easeInBack', { boxVisibility: 0.0 })
 						.run();
 					this.mode = "fadeout";
