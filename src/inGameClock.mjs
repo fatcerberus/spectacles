@@ -3,17 +3,18 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { Thread } from 'threads';
+
 // note: don't run more than one day/night engine at a time.  doing so
 //       will cause multiple day/night masks to be applied to the screen,
 //       which won't look too nice. :o)
-
-const Threaded = require('threads').Threaded;
 
 const DayMask      = Color.Transparent;
 const TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625);
 const NightMask    = new Color(0, 0, 0.125, 0.5625);
 
-class DayNightEngine extends Threaded
+export
+class DayNightEngine extends Thread
 {
 	constructor()
 	{
@@ -71,6 +72,7 @@ class DayNightEngine extends Threaded
 	}
 }
 
+export
 class InGameTime
 {
 	constructor(hour, minute, second)

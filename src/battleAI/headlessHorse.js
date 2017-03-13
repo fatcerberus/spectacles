@@ -10,7 +10,7 @@ class HeadlessHorseAI extends BattleAI
 	constructor(unit, battle)
 	{
 		super(unit, battle);
-		this.definePhases([ 500 ], 10);
+		this.definePhases([ 400 ], 75);
 		this.defaultSkill = 'flare';
 	}
 

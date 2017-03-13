@@ -13,9 +13,11 @@ global.scenes  = require('scenes');
 global.term    = require('term');
 global.threads = require('threads');
 
+const { DayNightEngine } = require('@/scripts/inGameClock');
+const { Thread }         = require('threads');
+
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
-RequireScript('inGameClock.js');
 RequireScript('menuStrip.js');
 RequireScript('scenelets.js');
 RequireScript('session.js');
