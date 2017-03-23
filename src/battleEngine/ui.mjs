@@ -69,9 +69,8 @@ class HPGauge
 			barInUse = this.sectorSize;
 		}
 		var barFilled = this.reading % this.sectorSize;
-		if (barFilled == 0 && this.reading > 0) {
+		if (barFilled == 0 && this.reading > 0)
 			barFilled = barInUse;
-		}
 		var barDamaged = Math.min(damageShown, this.sectorSize - barFilled);
 		var barHeight = Math.ceil(height * 0.5 + 0.5);
 		var widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
@@ -93,7 +92,7 @@ class HPGauge
 		drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 		var slotYSize = height - barHeight + 1;
 		var slotXSize = this.maxSectors === 'auto'
-			? Math.round(slotYSize * 1.25)
+			? Math.round(slotYSize * 1)
 			: Math.ceil(width / (this.maxSectors - 1));
 		var slotX;
 		var slotY = y + height - slotYSize;

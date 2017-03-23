@@ -81,7 +81,7 @@ class PartyMember
 		let count = from(this.stats).count();
 		let sum = 0;
 		from(this.stats).each(stat => {
-			sum += stat.level;
+			sum += stat.level
 		});
 		return Math.floor(sum / count);
 	}

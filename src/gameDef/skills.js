@@ -76,7 +76,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 50
+						power: 50,
 					}
 				]
 			}
@@ -154,7 +154,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 15
+						power: 15,
 					}
 				]
 			}
@@ -170,14 +170,14 @@ Game.skills =
 		actions: [
 			{
 				announceAs: "Archery",
-				rank: 1,
+				rank: 2,
 				accuracyType: 'bow',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 15
+						power: 15,
 					}
 				],
 			}
@@ -456,10 +456,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 15,
+						power: 20,
 						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 0,
 					}
 				],
 			}
@@ -480,10 +478,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 15,
+						power: 20,
 						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 0,
 					}
 				],
 			}
@@ -504,10 +500,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 15,
+						power: 20,
 						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 0,
 					}
 				],
 			}
@@ -528,10 +522,8 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 15,
+						power: 20,
 						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 0,
 					}
 				]
 			}
@@ -554,8 +546,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 30,
+						power: 50,
 						element: 'lightning',
+						addStatus: 'zombie',
+						statusChance: 0,
 					}
 				]
 			}
@@ -576,8 +570,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 30,
+						power: 50,
 						element: 'fire',
+						addStatus: 'ignite',
+						statusChance: 0,
 					}
 				]
 			}
@@ -598,8 +594,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 30,
+						power: 50,
 						element: 'earth',
+						addStatus: 'disarray',
+						statusChance: 0,
 					}
 				]
 			}
@@ -620,8 +618,10 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 30,
+						power: 50,
 						element: 'ice',
+						addStatus: 'frostbite',
+						statusChance: 0,
 					}
 				]
 			}

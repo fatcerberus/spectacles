@@ -8,7 +8,7 @@ TestHarness.addBattle('horse',
 	battleID: 'headlessHorse',
 	party: {
 		scott: { level: 8, weapon: 'heirloom', items: [ 'tonic' ] },
-		elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'lazarusPotion' ] },
+		elysia: { level: 8, weapon: 'fireAndIce', items: [ 'tonic', 'powerTonic', 'lazarusPotion' ] },
 		maggie: { level: 8, items: [ 'tonic', 'alcohol' ] },
 	}
 });

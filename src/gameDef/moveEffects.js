@@ -113,8 +113,9 @@ Game.moveEffects =
 
 	recoverHP: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
-			var vitality = targets[i].battlerInfo.stats.vit;
-			targets[i].heal(effect.strength * vitality, [ 'cure' ]);
+			var unitInfo = targets[i].battlerInfo;
+			var cap = Game.math.hp(unitInfo, unitInfo.level, 1);
+			targets[i].heal(effect.strength * cap / 100, [ 'cure' ]);
 		}
 	},
 

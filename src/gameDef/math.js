@@ -7,7 +7,7 @@ Game.math =
 {
 	accuracy: {
 		bow: function(userInfo, targetInfo) {
-			return userInfo.stats.foc / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
+			return userInfo.stats.foc / targetInfo.stats.agi;
 		},
 		breath: function(userInfo, targetInfo) {
 			return 1.0;
@@ -26,20 +26,19 @@ Game.math =
 			return 1.0;
 		},
 		shuriken: function(userInfo, targetInfo) {
-			return userInfo.level / userInfo.weapon.level;
+			return 1.0;
 		},
 		sword: function(userInfo, targetInfo) {
-			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi * userInfo.level / userInfo.weapon.level;
+			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi;
 		}
 	},
 
 	damage: {
 		calculate: function(power, level, targetTier, attack, defense) {
-			let multiplier = 1.0 + 4.0 * (level - 1) / 99;
-			return 2.5 * power * multiplier * attack / defense;
+			return (power / 5) * level * attack / defense;
 		},
 		bow: function(userInfo, targetInfo, power) {
-			return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.str,
 				Game.math.statValue(0, targetInfo.level));
 		},
@@ -54,7 +53,7 @@ Game.math =
 				targetInfo.stats.foc);
 		},
 		gun: function(userInfo, targetInfo, power) {
-			return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
 				Game.math.statValue(100, userInfo.level),
 				targetInfo.stats.def);
 		},
@@ -68,7 +67,7 @@ Game.math =
 				targetInfo.stats.str, userInfo.stats.str);
 		},
 		shuriken: function(userInfo, targetInfo, power) {
-			return Game.math.damage.calculate(power, userInfo.weapon.level, targetInfo.tier,
+			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.foc, targetInfo.stats.def);
 		},
 		sword: function(userInfo, targetInfo, power) {
@@ -119,7 +118,8 @@ Game.math =
 			+ unitInfo.baseStats.foc
 			+ unitInfo.baseStats.mag
 			+ unitInfo.baseStats.agi) / 15);
-		return 25 * tier * Game.math.statValue(statAverage, level);
+		statAverage = Game.math.statValue(statAverage, level);
+		return tier**1.5 * statAverage**2;
 	},
 
 	mp: {
