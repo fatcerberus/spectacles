@@ -9,10 +9,10 @@ const Game =
 {
 	title: "Spectacles: Bruce's Story",
 
-	bossHPPerBar: 500,
+	bossHPPerBar: 1000,
 	partyHPPerBar: 250,
 
-	bonusMultiplier: 2.0,
+	bonusMultiplier: 1.5,
 	defaultBattleBGM: 'CreepFight',
 	defaultMoveRank: 2,
 	defaultItemRank: 2,

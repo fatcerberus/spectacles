@@ -437,13 +437,24 @@ class BattleUnit
 		}
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 		if (move.stance === Stance.Charge) {
-			nextActions.splice(0, 0, Game.skills.chargeSlash.actions[0]);
+			nextActions.splice(0, 0, {
+				announceAs: "Charge Stance",
+				rank: 1,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'user',
+						type: 'addStatus',
+						status: 'offGuard'
+					}
+				]
+			});
 			from(nextActions)
 				.from(action => action.effects)
 				.where(effect => 'power' in effect)
 				.each(effect =>
 			{
-				effect.power *= 2;
+				effect.power *= 1.5;
 				effect.statusChance = 100;
 			});
 		}
@@ -623,7 +634,7 @@ class BattleUnit
 	setGuard()
 	{
 		term.print(this.name + " will switch to Guard Stance");
-		this.announce("Guard");
+		this.announce("Guard Stance");
 		this.newStance = Stance.Guard;
 		this.resetCounter(Game.stanceChangeRank);
 	}

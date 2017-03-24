@@ -181,7 +181,10 @@ function MoveMenu(unit, battle, stance)
 		} else {
 			nextMoveOrRank = Game.stanceChangeRank;
 		}
-		var prediction = this.battle.predictTurns(this.unit, isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : nextMoveOrRank);
+		let nextActions = isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : [ nextMoveOrRank ];
+		if (this.stance == Stance.Charge)
+			nextActions = [ 1 ].concat(nextActions);
+		let prediction = this.battle.predictTurns(this.unit, nextActions);
 		this.battle.ui.hud.turnPreview.set(prediction);
 	};
 }

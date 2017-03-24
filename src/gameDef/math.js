@@ -35,7 +35,7 @@ Game.math =
 
 	damage: {
 		calculate: function(power, level, targetTier, attack, defense) {
-			return (power / 5) * level * attack / defense;
+			return power * Math.sqrt(level) * attack / defense;
 		},
 		bow: function(userInfo, targetInfo, power) {
 			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -119,7 +119,7 @@ Game.math =
 			+ unitInfo.baseStats.mag
 			+ unitInfo.baseStats.agi) / 15);
 		statAverage = Game.math.statValue(statAverage, level);
-		return tier**1.5 * statAverage**2;
+		return 25 * tier**2 * statAverage;
 	},
 
 	mp: {
