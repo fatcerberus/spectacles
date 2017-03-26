@@ -30,6 +30,8 @@ Game.battles =
 					"Awesome.")
 				.talk("Scott", true, 1.0, Infinity, "Stupid pig")
 				.run(true);
+			let themaggie = this.findUnit('maggie');
+			themaggie.turnIntoAHippo();
 		}
 	},
 

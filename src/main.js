@@ -58,7 +58,7 @@ function game()
 	});
 
 	let dayNight = new DayNightEngine();
-	TestHarness.run('rsb2');
+	TestHarness.run('horse');
 }
 
 function clone(o, memo = [])

@@ -614,7 +614,7 @@ class BattleUnit
 		amount = Math.round(amount);
 		this.mpPool.restore(amount);
 		var color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
-		this.actor.showHealing(`${amount}MP", color);
+		this.actor.showHealing(`${amount}MP`, color);
 	}
 
 	resurrect(isFullHeal = false)
@@ -682,8 +682,11 @@ class BattleUnit
 				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 				term.print(`${this.name} hit in Guard Stance, reduce damage`);
 			}
-			var oldHPValue = this.hp;
-			this.hp = Math.max(this.hp - amount, 0);
+			let oldHPValue = this.hp;
+			if (this.stance !== Stance.Hippo || amount < this.hp)
+				this.hp = Math.max(this.hp - amount, 0);
+			else
+				this.hp = 1;
 			this.battle.notifyAIs('unitDamaged', this, amount, tags, this.lastAttacker);
 			term.print(`damage ${this.name} for ${amount} HP`, `left: ${this.hp}`);
 			if (oldHPValue > 0 || this.lazarusFlag) {
@@ -827,5 +830,11 @@ class BattleUnit
 		} else {
 			return Infinity;
 		}
+	}
+	
+	turnIntoAHippo()
+	{
+		this.actor.animate('hippo');
+		this.stance = Stance.Hippo;
 	}
 }

@@ -20,7 +20,7 @@ class BattleActor
 		this.opacity = 1.0;
 		this.position = isEnemy ? position : 2 - position;
 		this.row = row;
-		this.sprite = new SpriteImage('battlers/' + name + '.rss');
+		this.sprite = new SpriteImage(`battlers/${name}.rss`);
 		this.sprite.direction = isEnemy ? 'east' : 'west';
 		this.x = isEnemy ? -32 : 320;
 		this.y = 168 - position * 32;
@@ -94,6 +94,10 @@ class BattleActor
 				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 0.1 })
 					.run();
+				break;
+			case 'hippo':
+				this.sprite = new SpriteImage('battlers/maggie_hippo.rss');
+				this.sprite.direction = this.isEnemy ? 'east' : 'west';
 				break;
 			case 'revive':
 				new Scene()
