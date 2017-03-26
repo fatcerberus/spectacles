@@ -11,7 +11,7 @@ class Robert2AI extends BattleAI
 	{
 		super(unit, battle);
 
-		this.definePhases([ 3000, 2000, 1000, 500 ], 50);
+		this.definePhases([ 9000, 6000, 3000, 1000 ], 50);
 		this.defaultSkill = 'swordSlash';
 
 		this.hasZombieHealedSelf = false;
@@ -82,7 +82,7 @@ class Robert2AI extends BattleAI
 					}
 					this.wasHolyWaterUsed = true;
 				} else if (this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
-					var skillID = this.unit.hasStatus('frostbite') ? 'flare' : 'chill';
+					var skillID = this.unit.hasStatus('frostbite') ? 'ignite' : 'frostbite';
 					var spellTurns = this.predictSkillTurns(skillID);
 					var isTonicUsable = (!this.unit.hasStatus('zombie') || this.wasHolyWaterUsed || !this.hasZombieHealedSelf)
 						&& this.isItemUsable('tonic');
@@ -92,13 +92,13 @@ class Robert2AI extends BattleAI
 							this.queueItem('tonic');
 						} else {
 							this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove
-								: skillID == 'chill' ? 'flare' : 'chill');
+								: skillID == 'chill' ? 'ignite' : 'frostbite');
 						}
 					} else if (!this.wasTonicUsed && isTonicUsable) {
 						this.queueItem('tonic');
 					} else {
 						this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove
-							: skillID == 'chill' ? 'flare' : 'chill');
+							: skillID == 'chill' ? 'ignite' : 'frostbite');
 					}
 					this.isStatusHealPending = false;
 					this.wasHolyWaterUsed = false;
@@ -112,7 +112,7 @@ class Robert2AI extends BattleAI
 						: 'chargeSlash';
 					this.queueSkill(skillToUse);
 					if (skillToUse == 'upheaval')
-						this.queueSkill('quake');
+						this.queueSkill('disarray');
 					this.isComboStarted = false;
 					this.isStatusHealPending = skillToUse == 'upheaval';
 					this.wasHolyWaterUsed = false;
@@ -120,7 +120,7 @@ class Robert2AI extends BattleAI
 					var skillToUse = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillToUse);
 					if (skillToUse == 'upheaval')
-						this.queueSkill('quake');
+						this.queueSkill('disarray');
 					this.isStatusHealPending = skillToUse == 'upheavel';
 					this.wasHolyWaterUsed = false;
 				}
@@ -139,13 +139,13 @@ class Robert2AI extends BattleAI
 				} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
 					--this.elementalsTillRevenge;
 					if (this.elementalsTillRevenge <= 0) {
-						this.queueSkill('lightning');
+						this.queueSkill('zombie');
 						this.necroTonicItem = 'powerTonic';
 					} else {
 						if (this.unit.hasStatus('ignite')) {
-							this.queueSkill('chill', Stance.Attack, 'robert2');
+							this.queueSkill('frostbite', Stance.Attack, 'robert2');
 						} else if (this.unit.hasStatus('frostbite')) {
-							this.queueSkill('flare', Stance.Attack, 'robert2');
+							this.queueSkill('ignite', Stance.Attack, 'robert2');
 						}
 					}
 				} else if (random.chance(0.5) || this.isComboStarted) {
@@ -157,7 +157,7 @@ class Robert2AI extends BattleAI
 						} else {
 							this.queueSkill(this.nextElementalMove !== null
 								? this.nextElementalMove
-								: random.sample([ 'flare', 'chill' ]));
+								: random.sample([ 'ignite', 'frostbite' ]));
 						}
 					} else {
 						this.isComboStarted = true;
@@ -169,7 +169,7 @@ class Robert2AI extends BattleAI
 							if (this.isSkillUsable(skillToUse)) {
 								this.queueSkill(skillToUse);
 								if (skillToUse == 'upheaval')
-									this.queueSkill('quake');
+									this.queueSkill('disarray');
 								this.doChargeSlashNext = skillID == 'swordSlash';
 								this.isComboStarted = false;
 							} else {
@@ -183,7 +183,7 @@ class Robert2AI extends BattleAI
 					var skillID = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillID);
 					if (skillID == 'upheaval')
-						this.queueSkill('quake');
+						this.queueSkill('disarray');
 				}
 				break;
 			case 4:
@@ -301,7 +301,7 @@ class Robert2AI extends BattleAI
 			{
 				this.necromancyChance += 0.25;
 				if (random.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
-					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'lightning');
+					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'zombie');
 					this.necromancyChance = 0.0;
 				}
 			}
@@ -318,7 +318,7 @@ class Robert2AI extends BattleAI
 				this.isNecromancyPending = true;
 				break;
 			case 2:
-				this.queueSkill('upheaval');
+				this.queueSkill('upheaval', Stance.Charge);
 				this.isComboStarted = false;
 				this.isStatusHealPending = true;
 				this.wasHolyWaterUsed = false;
@@ -326,7 +326,7 @@ class Robert2AI extends BattleAI
 				break;
 			case 3:
 				this.queueSkill('protectiveAura');
-				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'lightning', Stance.Charge);
+				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'zombie', Stance.Charge);
 				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
 				this.doChargeSlashNext = false;
 				this.elementalsTillRevenge = 2;
@@ -355,19 +355,19 @@ class Robert2AI extends BattleAI
 		if (userID == 'robert2') {
 			if (skillID == this.nextElementalMove) {
 				this.nextElementalMove = null;
-			} else if (skillID == 'flare') {
+			} else if (skillID == 'ignite') {
 				this.nextElementalMove = 'windchill';
-			} else if (skillID == 'chill') {
+			} else if (skillID == 'frostbite') {
 				this.nextElementalMove = 'hellfire';
-			} else if (skillID == 'necromancy' || skillID == 'lightning') {
-				this.isScottZombie = (skillID == 'necromancy' || skillID == 'lightning' && this.scottStance != Stance.Guard)
+			} else if (skillID == 'necromancy' || skillID == 'zombie') {
+				this.isScottZombie = (skillID == 'necromancy' || skillID == 'zombie' && this.scottStance != Stance.Guard)
 					&& this.scottImmuneTurnsLeft <= 0;
 				this.isNecroTonicItemPending = this.isScottZombie && this.necroTonicItem !== null
 					&& this.isItemUsable(this.necroTonicItem);
 			}
 		} else if (userID == 'scott' && from(targetIDs).anyIs('scott')) {
-			if (((skillID == 'flare' || skillID == 'hellfire') && this.nextElementalMove == 'hellfire')
-				|| ((skillID == 'chill' || skillID == 'windchill') && this.nextElementalMove == 'windchill'))
+			if (((skillID == 'ignite' || skillID == 'hellfire') && this.nextElementalMove == 'hellfire')
+				|| ((skillID == 'frostbite' || skillID == 'windchill') && this.nextElementalMove == 'windchill'))
 			{
 				this.nextElementalMove = null;
 			}
@@ -415,15 +415,15 @@ class Robert2AI extends BattleAI
 					case 'retaliate':
 						switch (Math.ceil(this.zombieHealAlertLevel)) {
 							case 0.0:
-								if (this.isSkillUsable('lightning')) {
-									this.queueSkill('lightning');
+								if (this.isSkillUsable('zombie')) {
+									this.queueSkill('zombie');
 									this.necroTonicItem = 'tonic';
 								}
 								break;
 							case 1.0:
 								if (this.nextElementalMove === null) {
-									this.queueSkill('flare');
-									this.queueSkill('windchill');
+									this.queueSkill('ignite');
+									this.queueSkill('windchill', Stance.Charge);
 								} else {
 									let firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill'
 									this.queueSkill(firstMoveID);

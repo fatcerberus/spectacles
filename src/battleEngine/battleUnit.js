@@ -454,7 +454,7 @@ class BattleUnit
 				.where(effect => 'power' in effect)
 				.each(effect =>
 			{
-				effect.power *= 1.5;
+				effect.power *= Game.bonusMultiplier;
 				effect.statusChance = 100;
 			});
 		}
@@ -592,8 +592,7 @@ class BattleUnit
 				flag = flag.toLowerCase();
 				if (flag == 'on') this.allowTargetScan = true;
 				if (flag == 'off') this.allowTargetScan = false;
-				term.print("Target Scan for " + this.name + " is " +
-					(this.allowTargetScan ? "ON" : "OFF"));
+				term.print(`Target Scan for ${this.name} is ${this.allowTargetScan ? "ON" : "OFF"}`);
 			},
 		});
 	}
@@ -615,7 +614,7 @@ class BattleUnit
 		amount = Math.round(amount);
 		this.mpPool.restore(amount);
 		var color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
-		this.actor.showHealing(amount + "MP", color);
+		this.actor.showHealing(`${amount}MP", color);
 	}
 
 	resurrect(isFullHeal = false)
@@ -625,7 +624,7 @@ class BattleUnit
 			this.heal(isFullHeal ? this.maxHP : 1);
 			this.actor.animate('revive');
 			this.resetCounter(Game.reviveRank);
-			term.print(this.name + " brought back from the dead");
+			term.print(`${this.name} brought back from the dead`);
 		} else {
 			this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
 		}
@@ -633,7 +632,7 @@ class BattleUnit
 
 	setGuard()
 	{
-		term.print(this.name + " will switch to Guard Stance");
+		term.print(`${this.name} will switch to Guard Stance`);
 		this.announce("Guard Stance");
 		this.newStance = Stance.Guard;
 		this.resetCounter(Game.stanceChangeRank);
@@ -642,9 +641,9 @@ class BattleUnit
 	setWeapon(weaponID)
 	{
 		var weaponDef = Game.weapons[weaponID];
-		this.announce("equip " + weaponDef.name);
+		this.announce(`equip ${weaponDef.name}`);
 		this.weapon = weaponDef;
-		term.print(this.name + " equipped weapon " + weaponDef.name);
+		term.print(`${this.name} equipped weapon ${weaponDef.name}`);
 		this.resetCounter(Game.equipWeaponRank);
 	}
 

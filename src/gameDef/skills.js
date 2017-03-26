@@ -440,12 +440,12 @@ Game.skills =
 		]
 	},
 
-	// Rank 2 magic - damage only, 25 POW
+	// standard Tier 1 magic
 	chill: {
 		name: "Chill",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Chill",
@@ -467,7 +467,7 @@ Game.skills =
 		name: "Flare",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Flare",
@@ -489,7 +489,7 @@ Game.skills =
 		name: "Lightning",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Lightning",
@@ -511,7 +511,7 @@ Game.skills =
 		name: "Quake",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Quake",
@@ -530,12 +530,110 @@ Game.skills =
 		]
 	},
 
-	// Rank 3 magic - damage + status
+	// special Tier 1 magic (inflict status)
+	frostbite: {
+		name: "Frostbite",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Frostbite",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 5,
+						element: 'ice',
+						addStatus: 'frostbite',
+						statusChance: 100,
+					}
+				],
+			}
+		]
+	},
+	ignite: {
+		name: "Ignite",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Ignite",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 5,
+						element: 'fire',
+						addStatus: 'ignite',
+						statusChance: 100,
+					}
+				],
+			}
+		]
+	},
+	zombie: {
+		name: "Zombify",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Zombify",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 5,
+						element: 'lightning',
+						addStatus: 'zombie',
+						statusChance: 100,
+					}
+				],
+			}
+		]
+	},
+	disarray: {
+		name: "Tremor",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Tremor",
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 5,
+						element: 'earth',
+						addStatus: 'disarray',
+						statusChance: 100,
+					}
+				]
+			}
+		]
+	},
+
+	// second-tier magic
 	electrocute: {
 		name: "Electrocute",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 20,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Electrocute",
@@ -559,7 +657,7 @@ Game.skills =
 		name: "Hellfire",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 20,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Hellfire",
@@ -583,7 +681,7 @@ Game.skills =
 		name: "Upheaval",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 20,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Upheaval",
@@ -607,7 +705,7 @@ Game.skills =
 		name: "Windchill",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 20,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Windchill",
@@ -919,7 +1017,7 @@ Game.skills =
 		name: "Crackdown",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 70,
+		baseMPCost: 50,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [
@@ -963,7 +1061,7 @@ Game.skills =
 		name: "Necromancy",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 17,
+		baseMPCost: 10,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [

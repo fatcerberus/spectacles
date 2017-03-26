@@ -35,7 +35,7 @@ Game.math =
 
 	damage: {
 		calculate: function(power, level, targetTier, attack, defense) {
-			return power * Math.sqrt(level) * attack / defense;
+			return power * level**0.5 * attack / defense;
 		},
 		bow: function(userInfo, targetInfo, power) {
 			return Game.math.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -112,7 +112,7 @@ Game.math =
 	},
 
 	hp: function(unitInfo, level, tier) {
-		var statAverage = Math.round((unitInfo.baseStats.vit * 10
+		let statAverage = Math.round((unitInfo.baseStats.vit * 10
 			+ unitInfo.baseStats.str
 			+ unitInfo.baseStats.def
 			+ unitInfo.baseStats.foc
@@ -124,17 +124,18 @@ Game.math =
 
 	mp: {
 		capacity: function(unitInfo) {
-			var statAverage = Math.round((unitInfo.baseStats.mag * 10
+			let statAverage = Math.round((unitInfo.baseStats.mag * 10
 				+ unitInfo.baseStats.vit
 				+ unitInfo.baseStats.str
 				+ unitInfo.baseStats.def
 				+ unitInfo.baseStats.foc
 				+ unitInfo.baseStats.agi) / 15);
-			return 10 * unitInfo.tier * Game.math.statValue(statAverage, unitInfo.level);
+			statAverage = Game.math.statValue(statAverage, unitInfo.level);
+			return 10 * unitInfo.tier * statAverage;
 		},
 		usage: function(skill, level, userInfo) {
 			var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-			return 2.5 * baseCost * (level + userInfo.baseStats.mag) / 200;
+			return baseCost * level**0.5 * userInfo.baseStats.mag / 100;
 		}
 	},
 

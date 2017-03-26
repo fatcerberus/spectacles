@@ -35,6 +35,16 @@ function game()
 
 	TestHarness.initialize();
 
+	term.define('bgm', null, {
+		override(track) { music.override(`music/${track}.ogg`); },
+		play(track) { music.play(`music/${track}.ogg`); },
+		pop() { music.pop(); },
+		push(track) { music.push(`music/${track}.ogg`); },
+		reset() { music.reset(); },
+		stop() { music.play(null); },
+		volume(value) { music.adjust(value / 100); },
+	});
+	
 	term.define('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;

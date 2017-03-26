@@ -82,7 +82,8 @@ Game.enemies =
 			agi: 80,
 		},
 		damageModifiers: {
-			'fire': -1.0,
+			'fire':  -1.0,
+			'earth': Game.bonusMultiplier,
 		},
 		immunities: [],
 		munchData: {

@@ -268,6 +268,10 @@ Game.characters =
 			'windchill',
 			'electrocute',
 			'upheaval',
+			'ignite',
+			'frostbite',
+			'zombie',
+			'disarray',
 			'necromancy',
 			'crackdown'
 		]
