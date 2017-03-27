@@ -22,15 +22,15 @@ Game.statuses =
 				var oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
 				if (effect.power != oldPower) {
-					term.print("Outgoing POW modified by Crackdown to " + effect.power,
-						"was: " + oldPower);
+					term.print(`outgoing POW modified by Crackdown to ${effect.power}`,
+						`was: ${oldPower}`);
 				}
 			});
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
 			this.multiplier = eventData.skill.category == this.lastSkillType
-				? this.multiplier / Math.sqrt(Game.bonusMultiplier)
+				? this.multiplier / Game.bonusMultiplier
 				: 1.0;
 			this.lastSkillType = eventData.skill.category;
 			if (this.multiplier != oldMultiplier) {
@@ -123,10 +123,10 @@ Game.statuses =
 			'unitHealed',
 			'unitTargeted'
 		],
-		initialize: function(unit) {
-			this.turnsLeft = 10 - Math.round(5 * unit.battlerInfo.baseStats.vit / 100) + 1;
+		initialize(unit) {
+			this.turnsLeft = 5;
 		},
-		acting: function(unit, eventData) {
+		acting(unit, eventData) {
 			from(eventData.action.effects)
 				.where(it => it.targetHint == 'selected')
 				.where(it => it.type == 'damage')
@@ -140,22 +140,17 @@ Game.statuses =
 				}
 			});
 		},
-		aiming: function(unit, eventData) {
-			if (eventData.action.accuracyType == 'devour')
-				eventData.aimRate *= 2.0;
-			else
-				eventData.aimRate /= Math.sqrt(Game.bonusMultiplier);
+		aiming(unit, eventData) {
+			eventData.aimRate /= Game.bonusMultiplier;
 		},
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			--this.turnsLeft;
-			if (this.turnsLeft <= 0) {
+			if (this.turnsLeft <= 0)
 				unit.liftStatus('drunk');
-			}
 		},
-		damaged: function(unit, eventData) {
-			if (from(eventData.tags).anyIs('earth')) {
-				eventData.amount *= Math.pow(Game.bonusMultiplier, 2);
-			}
+		damaged(unit, eventData) {
+			if (from(eventData.tags).anyIs('earth'))
+				eventData.amount *= Game.bonusMultiplier;
 		},
 	},
 
@@ -355,9 +350,8 @@ Game.statuses =
 			unit.liftStatus('offGuard');
 		},
 		damaged: function(unit, eventData) {
-			if (eventData.actingUnit !== null) {
-				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
-			}
+			if (eventData.actingUnit !== null)
+				eventData.amount *= Game.bonusMultiplier;
 		}
 	},
 
@@ -451,7 +445,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			if (!from(eventData.tags).anyIn([ 'special', 'zombie' ])) {
-				eventData.amount *= Math.sqrt(Game.bonusMultiplier);
+				eventData.amount *= Game.bonusMultiplier;
 				unit.clearQueue();
 				unit.liftStatus('sniper');
 				unit.resetCounter(1);

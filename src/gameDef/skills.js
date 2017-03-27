@@ -850,7 +850,12 @@ Game.skills =
 						damageType: 'magic',
 						power: 100,
 						element: 'omni'
-					}
+					},
+					{
+						targetHint: 'user',
+						type: 'addStatus',
+						status: 'offGuard'
+					},
 				]
 			}
 		]

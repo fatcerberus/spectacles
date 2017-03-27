@@ -438,7 +438,7 @@ class BattleUnit
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 		if (move.stance === Stance.Charge) {
 			nextActions.splice(0, 0, {
-				announceAs: "Charge Stance",
+				announceAs: "Charge",
 				rank: 1,
 				preserveGuard: true,
 				effects: [
@@ -633,7 +633,7 @@ class BattleUnit
 	setGuard()
 	{
 		term.print(`${this.name} will switch to Guard Stance`);
-		this.announce("Guard Stance");
+		this.announce("Guard");
 		this.newStance = Stance.Guard;
 		this.resetCounter(Game.stanceChangeRank);
 	}
