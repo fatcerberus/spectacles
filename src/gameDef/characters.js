@@ -224,7 +224,6 @@ Game.characters =
 		skills: [
 			'swordSlash',
 			'quickstrike',
-			'chargeSlash',
 			'flare',
 			'chill',
 			'lightning',
@@ -259,7 +258,6 @@ Game.characters =
 		skills: [
 			'swordSlash',
 			'quickstrike',
-			'chargeSlash',
 			'flare',
 			'chill',
 			'lightning',
@@ -270,8 +268,8 @@ Game.characters =
 			'upheaval',
 			'ignite',
 			'frostbite',
-			'zombie',
-			'disarray',
+			'bolt',
+			'tremor',
 			'necromancy',
 			'crackdown'
 		]

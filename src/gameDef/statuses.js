@@ -141,7 +141,10 @@ Game.statuses =
 			});
 		},
 		aiming(unit, eventData) {
-			eventData.aimRate /= Game.bonusMultiplier;
+			if (eventData.action.accuracyType === 'devour')
+				eventData.aimRate *= Game.bonusMultiplier;
+			else
+				eventData.aimRate /= Game.bonusMultiplier;
 		},
 		beginTurn(unit, eventData) {
 			--this.turnsLeft;

@@ -8,6 +8,7 @@ Game.items =
 	alcohol: {
 		name: "Alcohol",
 		tags: [ 'drink', 'curative' ],
+		uses: 1,
 		action: {
 			announceAs: "Alcohol",
 			effects: [
@@ -31,7 +32,7 @@ Game.items =
 	holyWater: {
 		name: "Holy Water",
 		tags: [ 'remedy' ],
-		uses: 3,
+		uses: 5,
 		action: {
 			announceAs: "Holy Water",
 			effects: [
@@ -47,7 +48,7 @@ Game.items =
 		name: "Lazarus Potion",
 		tags: [ 'drink', 'curative' ],
 		allowDeadTarget: true,
-		uses: 1,
+		uses: 3,
 		action: {
 			announceAs: "Lazarus Potion",
 			effects: [
@@ -69,7 +70,7 @@ Game.items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 66,
+					strength: 70,
 				}
 			]
 		}
@@ -77,7 +78,7 @@ Game.items =
 	redBull: {
 		name: "Red Bull",
 		tags: [ 'drink', 'curative' ],
-		uses: 2,
+		uses: 5,
 		action: {
 			announceAs: "Red Bull",
 			effects: [
@@ -99,7 +100,7 @@ Game.items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 33,
+					strength: 35,
 				}
 			]
 		}

@@ -436,6 +436,17 @@ class BattleUnit
 			this.moveUsed.targets[0] = random.sample(alliesAlive);
 		}
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
+		if (move.stance === Stance.Counter || move.stance === Stance.Charge) {
+			from(nextActions)
+				.from(action => action.effects)
+				.where(effect => 'power' in effect)
+				.each(effect =>
+			{
+				effect.power *= Game.bonusMultiplier;
+				effect.statusChance = 100;
+				term.print(`stance is Counter/Charge, boost attack`, `pow: ${effect.power}`);
+			});
+		}
 		if (move.stance === Stance.Charge) {
 			nextActions.splice(0, 0, {
 				announceAs: "Charge",
@@ -448,14 +459,6 @@ class BattleUnit
 						status: 'offGuard'
 					}
 				]
-			});
-			from(nextActions)
-				.from(action => action.effects)
-				.where(effect => 'power' in effect)
-				.each(effect =>
-			{
-				effect.power *= Game.bonusMultiplier;
-				effect.statusChance = 100;
 			});
 		}
 		if (nextActions !== null) {
@@ -674,10 +677,6 @@ class BattleUnit
 			}
 		}
 		if (amount >= 0) {
-			if (this.lastAttacker !== null && this.lastAttacker.stance === Stance.Counter) {
-				term.print(`${this.name} attacked from Counter Stance, boost damage`);
-				amount = Math.round(amount * Game.bonusMultiplier);
-			}
 			if (this.stance != Stance.Attack && this.lastAttacker !== null) {
 				amount = Math.round(Game.math.guardStance.damageTaken(amount, tags));
 				term.print(`${this.name} hit in Guard Stance, reduce damage`);

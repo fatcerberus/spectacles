@@ -55,8 +55,8 @@ Game.skills =
 		targetType: 'single',
 		actions: [
 			{
-				announceAs: "Charging Up...",
-				rank: 2,
+				announceAs: "Charge",
+				rank: 1,
 				preserveGuard: true,
 				effects: [
 					{
@@ -67,8 +67,8 @@ Game.skills =
 				]
 			},
 			{
-				announceAs: "Charge Slash",
-				rank: 3,
+				announceAs: "Sword Slash",
+				rank: 2,
 				accuracyType: 'sword',
 				isMelee: true,
 				effects: [
@@ -76,7 +76,7 @@ Game.skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 50,
+						power: 22.5,
 					}
 				]
 			}
@@ -579,14 +579,14 @@ Game.skills =
 			}
 		]
 	},
-	zombie: {
-		name: "Zombify",
+	bolt: {
+		name: "Bolt",
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 10,
 		actions: [
 			{
-				announceAs: "Zombify",
+				announceAs: "Bolt",
 				rank: 2,
 				accuracyType: 'magic',
 				effects: [
@@ -603,7 +603,7 @@ Game.skills =
 			}
 		]
 	},
-	disarray: {
+	tremor: {
 		name: "Tremor",
 		category: 'strategy',
 		targetType: 'single',

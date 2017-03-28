@@ -12,7 +12,7 @@ const Game =
 	bossHPPerBar: 1000,
 	partyHPPerBar: 250,
 
-	bonusMultiplier: 1.5,
+	bonusMultiplier: 2.0,
 	defaultBattleBGM: 'CreepFight',
 	defaultMoveRank: 2,
 	defaultItemRank: 2,
