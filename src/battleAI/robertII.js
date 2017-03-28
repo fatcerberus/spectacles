@@ -14,9 +14,9 @@ class Robert2AI extends BattleAI
 		this.definePhases([ 9000, 6000, 3000, 1000 ], 50);
 		this.defaultSkill = 'swordSlash';
 
+		this.doChargeSlashNext = false;
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
-		this.isAlcoholUsed = false;
 		this.isNecroTonicItemPending = false;
 		this.isNecromancyPending = false;
 		this.isScottZombie = false;
@@ -196,24 +196,21 @@ class Robert2AI extends BattleAI
 				break;
 			case 5:
 				if (this.isAlcoholPending) {
-					if (this.unit.hasStatus('zombie')) {
-						if (this.isSkillUsable('omni'))
-							this.queueSkill('omni');
-						this.queueSkill('chargeSlash');
-						this.isAlcoholPending = false;
-						this.isDesperate = true;
-					} else {
-						this.isAlcoholPending = false;
+					this.isAlcoholPending = false;
+					if (!this.unit.hasStatus('zombie')) {
 						this.queueItem('alcohol');
 						this.queueSkill('chargeSlash');
 						this.queueSkill('hellfire');
 						this.queueSkill('upheaval');
 						this.queueSkill('windchill');
 						this.queueSkill('electrocute');
+						this.queueSkill('omni', Stance.Charge);
+					} else {
+						if (this.isSkillUsable('omni')) {
+							this.queueSkill('omni', Stance.Charge);
+						}
+						this.queueSkill('chargeSlash');
 					}
-				} else if ((this.unit.hp <= 500 || this.unit.mpPool.availableMP < 200) && !this.isDesperate) {
-					this.isDesperate = true;
-					this.queueSkill('omni');
 				} else {
 					var qsTurns = this.predictSkillTurns('quickstrike');
 					var moves = this.unit.mpPool.availableMP >= 200
@@ -271,7 +268,6 @@ class Robert2AI extends BattleAI
 				.adjustBGM(1.0)
 				.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 				.run(true);
-			this.isAlcoholUsed = true;
 		} else if (userID == 'scott' && from(targetIDs).anyIs('robert2')) {
 			if (from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
 				&& !this.isSkillQueued('electrocute'))
@@ -341,7 +337,6 @@ class Robert2AI extends BattleAI
 				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine'))
 					this.queueItem('vaccine');
 				this.isAlcoholPending = true;
-				this.isDesperate = false;
 				this.isComboStarted = false;
 				break;
 		}

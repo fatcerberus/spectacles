@@ -124,7 +124,7 @@ Game.statuses =
 			'unitTargeted'
 		],
 		initialize(unit) {
-			this.turnsLeft = 5;
+			this.turnsLeft = 10;
 		},
 		acting(unit, eventData) {
 			from(eventData.action.effects)
@@ -133,7 +133,7 @@ Game.statuses =
 				.each(effect =>
 			{
 				var oldPower = effect.power;
-				effect.power = Math.round(Game.bonusMultiplier * effect.power);
+				effect.power *= Game.bonusMultiplier;
 				if (effect.power != oldPower) {
 					term.print("Outgoing POW modified by Drunk to " + effect.power,
 						"was: " + oldPower);
