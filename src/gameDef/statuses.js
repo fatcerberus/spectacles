@@ -124,7 +124,7 @@ Game.statuses =
 			'unitTargeted'
 		],
 		initialize(unit) {
-			this.turnsLeft = 10;
+			this.turnsLeft = 7;
 		},
 		acting(unit, eventData) {
 			from(eventData.action.effects)

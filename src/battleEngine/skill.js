@@ -129,7 +129,7 @@ class SkillUsable
 		this.grow(experience);
 		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
-		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, from(targets).select(v => v.id).toArray());
+		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, unit.stance, from(targets).select(v => v.id).toArray());
 		return eventData.skill.actions;
 	}
 }

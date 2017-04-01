@@ -60,36 +60,6 @@ Game.items =
 			]
 		}
 	},
-	powerTonic: {
-		name: "Power Tonic",
-		tags: [ 'drink', 'curative' ],
-		uses: 5,
-		action: {
-			announceAs: "Power Tonic",
-			effects: [
-				{
-					targetHint: 'selected',
-					type: 'recoverHP',
-					strength: 70,
-				}
-			]
-		}
-	},
-	redBull: {
-		name: "Red Bull",
-		tags: [ 'drink', 'curative' ],
-		uses: 5,
-		action: {
-			announceAs: "Red Bull",
-			effects: [
-				{
-					targetHint: 'selected',
-					type: 'recoverMP',
-					strength: 100
-				}
-			]
-		}
-	},
 	tonic: {
 		name: "Tonic",
 		tags: [ 'drink', 'curative' ],
@@ -100,7 +70,57 @@ Game.items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 35,
+					strength: 33,
+				}
+			]
+		}
+	},
+	powerTonic: {
+		name: "Power Tonic",
+		tags: [ 'drink', 'curative' ],
+		uses: 5,
+		action: {
+			announceAs: "Power Tonic",
+			effects: [
+				{
+					targetHint: 'selected',
+					type: 'recoverHP',
+					strength: 66,
+				}
+			]
+		}
+	},
+	fullTonic: {
+		name: "Full Tonic",
+		tags: [ 'drink', 'curative' ],
+		uses: 2,
+		action: {
+			announceAs: "Full Tonic",
+			effects: [
+				{
+					targetHint: 'selected',
+					type: 'recoverHP',
+					strength: 100,
+				},
+				{
+					targetHint: 'selected',
+					type: 'addStatus',
+					status: 'reGen',
+				},
+			]
+		}
+	},
+	redBull: {
+		name: "Red Bull",
+		tags: [ 'drink', 'curative' ],
+		uses: 3,
+		action: {
+			announceAs: "Red Bull",
+			effects: [
+				{
+					targetHint: 'selected',
+					type: 'recoverMP',
+					strength: 100
 				}
 			]
 		}

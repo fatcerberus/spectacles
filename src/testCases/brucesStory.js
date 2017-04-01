@@ -19,7 +19,7 @@ TestHarness.addBattle('rsb2',
 	party: {
 		scott: {
 			level: 50, weapon: 'templeSword',
-			items: [ 'tonic', 'powerTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
+			items: [ 'tonic', 'powerTonic', 'fullTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
 		},
 	}
 });

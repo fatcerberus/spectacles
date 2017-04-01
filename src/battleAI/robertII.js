@@ -17,6 +17,7 @@ class Robert2AI extends BattleAI
 		this.doChargeSlashNext = false;
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
+		this.isComboStarted = false;
 		this.isNecroTonicItemPending = false;
 		this.isNecromancyPending = false;
 		this.isScottZombie = false;
@@ -206,9 +207,8 @@ class Robert2AI extends BattleAI
 						this.queueSkill('electrocute');
 						this.queueSkill('omni', Stance.Charge);
 					} else {
-						if (this.isSkillUsable('omni')) {
+						if (this.isSkillUsable('omni'))
 							this.queueSkill('omni', Stance.Charge);
-						}
 						this.queueSkill('chargeSlash');
 					}
 				} else {
@@ -342,7 +342,7 @@ class Robert2AI extends BattleAI
 		}
 	}
 
-	on_skillUsed(userID, skillID, targetIDs)
+	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
