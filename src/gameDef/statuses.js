@@ -390,8 +390,9 @@ Game.statuses =
 			this.turnsLeft = 10;
 		},
 		beginCycle: function(unit, eventData) {
-			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(vit, [ 'cure' ]);
+			let unitInfo = unit.battlerInfo;
+			let cap = Game.math.hp(unitInfo, unitInfo.level, 1);
+			unit.heal(cap / 10, [ 'cure' ]);
 			--this.turnsLeft;
 			if (this.turnsLeft <= 0) {
 				term.print(unit.name + "'s ReGen has expired");

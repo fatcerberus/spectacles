@@ -86,9 +86,9 @@ function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadow
 {
 	const Align =
 	{
-		left:   (font, x, text) => x,
-		center: (font, x, text) => x - font.getStringWidth(text) / 2,
-		right:  (font, x, text) => x - font.getStringWidth(text),
+		'left':   (font, x, text) => x,
+		'center': (font, x, text) => x - font.getStringWidth(text) / 2,
+		'right':  (font, x, text) => x - font.getStringWidth(text),
 	};
 
 	x = Align[alignment](font, x, text);
