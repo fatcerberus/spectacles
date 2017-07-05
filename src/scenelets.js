@@ -5,14 +5,14 @@
 
 RequireScript('battleEngine/battle.js');
 
-defScenelet('adjustBGM',
+Scene.defineAction('adjustBGM',
 {
 	start(scene, volume, duration = 0.0) {
-		music.adjust(volume, duration);
+		Music.adjust(volume, duration);
 	},
 
 	update(scene) {
-		return music.adjusting;
+		return Music.adjusting;
 	}
 });
 
@@ -20,7 +20,7 @@ defScenelet('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-defScenelet('battle',
+Scene.defineAction('battle',
 {
 	start(scene, battleID, session) {
 		this.mode = 'battle';
@@ -31,9 +31,9 @@ defScenelet('battle',
 	update(scene) {
 		switch (this.mode) {
 			case 'battle':
-				if (!threads.isRunning(this.battleThread)) {
+				if (!Thread.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.Lose) {
-						term.print("player lost battle, showing Game Over screen");
+						Console.log("player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -43,9 +43,9 @@ defScenelet('battle',
 				}
 				break;
 			case 'gameOver':
-				if (!threads.isRunning(this.gameOverThread)) {
+				if (!Thread.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.Retry) {
-						term.print("player asked to retry last battle");
+						Console.log("player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
@@ -58,14 +58,14 @@ defScenelet('battle',
 	}
 });
 
-defScenelet('changeBGM',
+Scene.defineAction('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
-		music.play("music/" + trackName + ".ogg", fadeTime);
+		Music.play("music/" + trackName + ".ogg", fadeTime);
 	}
 });
 
-defScenelet('marquee',
+Scene.defineAction('marquee',
 {
 	start(scene, text, backgroundColor, color) {
 		backgroundColor = backgroundColor || Color.Black;
@@ -93,7 +93,7 @@ defScenelet('marquee',
 		var boxY = screen.height / 2 - boxHeight / 2;
 		var textX = screen.width - this.scroll * this.windowSize;
 		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
-		prim.rect(screen, 0, boxY, screen.width, boxHeight, this.background);
+		Prim.drawSolidRectangle(screen, 0, boxY, screen.width, boxHeight, this.background);
 		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.a));
 		this.font.drawText(screen, textX, textY, this.text, this.color);
 	},
@@ -103,21 +103,21 @@ defScenelet('marquee',
 	}
 });
 
-defScenelet('popBGM',
+Scene.defineAction('popBGM',
 {
 	start(scene) {
-		music.pop();
+		Music.pop();
 	}
 });
 
-defScenelet('pushBGM',
+Scene.defineAction('pushBGM',
 {
 	start(scene, trackName) {
-		music.push("music/" + trackName + ".ogg");
+		Music.push("music/" + trackName + ".ogg");
 	}
 });
 
-defScenelet('talk',
+Scene.defineAction('talk',
 {
 	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
@@ -312,7 +312,7 @@ defScenelet('talk',
 	getInput: function(scene) {
 		if (this.mode != "idle")
 			return;
-		if ((Keyboard.Default.isPressed(Key.Z) || joy.P1.isPressed(0))
+		if ((Keyboard.Default.isPressed(Key.Z) || Joypad.P1.isPressed(0))
 			&& this.timeout == Infinity)
 		{
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {

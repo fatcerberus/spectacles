@@ -190,7 +190,7 @@ TargetMenu.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	threads.join(threads.create(this, 10));
+	Thread.join(Thread.create(this, 10));
 	return this.targets;
 };
 

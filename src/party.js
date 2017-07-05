@@ -10,7 +10,7 @@ class Party
 {
 	constructor(level = 1)
 	{
-		term.print("initialize party manager");
+		Console.log("initialize party manager");
 
 		this.defaultLevel = level;
 		this.members = {};
@@ -34,7 +34,7 @@ class Party
 	{
 		let newMember = new PartyMember(characterID, level);
 		this.members[characterID] = newMember;
-		term.print(`add PC ${newMember.name} to party`);
+		Console.log(`add PC ${newMember.name} to party`);
 	}
 
 	hasMember(characterID)
@@ -46,7 +46,7 @@ class Party
 	{
 		from(this.members)
 			.where((v, k) => k === characterID)
-			.besides(v => term.print(`remove PC ${v.name} from party`))
+			.besides(v => Console.log(`remove PC ${v.name} from party`))
 			.remove();
 	}
 }
@@ -71,7 +71,7 @@ class PartyMember
 		this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
 		for (let statID in character.baseStats)
 			this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
-		term.print(`create new PC ${this.name}`, `lvl: ${this.level}`);
+		Console.log(`create new PC ${this.name}`, `lvl: ${this.level}`);
 		for (let i = 0; i < character.skills.length; ++i)
 			this.learnSkill(character.skills[i]);
 	}
@@ -112,7 +112,7 @@ class PartyMember
 		let skill = new SkillUsable(skillID, 100);
 		this.skillList.push(skill);
 		this.refreshSkills();
-		term.print(`PC ${this.name} learned skill ${skill.name}`);
+		Console.log(`PC ${this.name} learned skill ${skill.name}`);
 		return skill;
 	}
 

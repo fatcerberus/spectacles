@@ -73,7 +73,7 @@ class Robert2AI extends BattleAI
 					: this.phase === 3 ? 0.5
 					: 0.0;
 				let skill = this.phase < 2 ? 'necromancy' : 'bolt';
-				if (random.chance(zombieChance) && !this.hasMovesQueued())
+				if (Random.chance(zombieChance) && !this.hasMovesQueued())
 					this.queueSkill(skill);
 			}
 		}

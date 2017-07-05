@@ -11,7 +11,7 @@ class BattleAI
 {
 	constructor(unit, battle)
 	{
-		term.print(`initialize AI for ${unit.fullName}`);
+		Console.log(`initialize AI for ${unit.fullName}`);
 		this.battle = battle;
 		this.data = {};
 		this.defaultSkillID = null;
@@ -35,19 +35,19 @@ class BattleAI
 	
 	set defaultSkill(value)
 	{
-		term.print(`default skill for ${this.unit.name} is ${Game.skills[value].name}`);
+		Console.log(`default skill for ${this.unit.name} is ${Game.skills[value].name}`);
 		this.defaultSkillID = value;
 	}
 
 	definePhases(thresholds, sigma = 0)
 	{
-		term.print(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
+		Console.log(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
-			.select(v => Math.round(random.normal(v, sigma)))
+			.select(v => Math.round(Random.normal(v, sigma)))
 			.toArray();
 		let phase = 1;
 		for (let milestone of this.phasePoints)
-			term.print(`phase ${++phase} will start at <= ${milestone} HP`);
+			Console.log(`phase ${++phase} will start at <= ${milestone} HP`);
 		this.currentPhase = 0;
 		this.lastPhase = 0;
 	}
@@ -57,7 +57,7 @@ class BattleAI
 		var moveToUse = null;
 		do {
 			if (this.moveQueue.length == 0) {
-				term.print(`defer to AI for ${this.unit.name}'s next move`);
+				Console.log(`defer to AI for ${this.unit.name}'s next move`);
 				let enemyList = this.battle.enemiesOf(this.unit);
 				this.enemies = [];
 				for (let i = 0; i < enemyList.length; ++i) {
@@ -77,7 +77,7 @@ class BattleAI
 				if (this.moveQueue.length == 0)
 					this.strategize();
 				if (this.moveQueue.length == 0) {
-					term.print(`no moves queued for ${this.unit.name}, using default`);
+					Console.log(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {
 						this.queueSkill(this.defaultSkillID);
 					} else {
@@ -92,7 +92,7 @@ class BattleAI
 				let isLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 				isUsable = isLegal && candidateMove.predicate();
 				if (!isUsable)
-					term.print(`discard ${this.unit.name}'s ${candidateMove.usable.name}, not usable`);
+					Console.log(`discard ${this.unit.name}'s ${candidateMove.usable.name}, not usable`);
 			} while (!isUsable && this.moveQueue.length > 0);
 			if (isUsable)
 				moveToUse = candidateMove;
@@ -144,7 +144,7 @@ class BattleAI
 	{
 		let item = from(this.unit.items)
 			.where(v => v.itemID === itemID)
-			.besides(v => term.print(`${this.unit.name} counting remaining ${v.name}`, `left: ${v.usesLeft}`))
+			.besides(v => Console.log(`${this.unit.name} counting remaining ${v.name}`, `left: ${v.usesLeft}`))
 			.first();
 		return item.usesLeft;
 	}
@@ -156,7 +156,7 @@ class BattleAI
 
 		var itemRank = 'rank' in Game.items[itemID] ? Game.items[itemID].rank : Game.defaultItemRank;
 		var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
-		term.print(`${this.unit.name} considering ${Game.items[itemID].name}`,
+		Console.log(`${this.unit.name} considering ${Game.items[itemID].name}`,
 			`next: ${forecast[0].unit.name}`);
 		return forecast;
 	}
@@ -167,7 +167,7 @@ class BattleAI
 			throw new ReferenceError(`no skill definition for '${skillID}'`);
 
 		var forecast = this.battle.predictTurns(this.unit, Game.skills[skillID].actions);
-		term.print(`${this.unit.name} considering ${Game.skills[skillID].name}`,
+		Console.log(`${this.unit.name} considering ${Game.skills[skillID].name}`,
 			`next: ${forecast[0].unit.name}`);
 		return forecast;
 	}
@@ -198,7 +198,7 @@ class BattleAI
 			targets,
 			predicate: () => true,
 		});
-		term.print(`${this.unit.name} queued use of item ${itemToUse.name}`);
+		Console.log(`${this.unit.name} queued use of item ${itemToUse.name}`);
 	}
 
 	queueSkill(skillID, stance = Stance.Attack, unitID = null, predicate = () => true)
@@ -214,7 +214,7 @@ class BattleAI
 			targets: targets,
 			predicate: predicate
 		});
-		term.print(`${this.unit.name} queued use of skill ${skillToUse.name}`);
+		Console.log(`${this.unit.name} queued use of skill ${skillToUse.name}`);
 	}
 
 	queueWeapon(weaponID)
@@ -227,7 +227,7 @@ class BattleAI
 			predicate: () => true,
 		});
 		var weaponDef = Game.weapons[weaponID];
-		term.print(`${this.unit.name} queued weapon change to ${weaponDef.name}`);
+		Console.log(`${this.unit.name} queued weapon change to ${weaponDef.name}`);
 	}
 
 	setTarget(targetID)
@@ -255,7 +255,7 @@ class BattleAI
 		let lastPhase = this.currentPhase;
 		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
 		if (this.currentPhase > lastPhase) {
-			term.print(`${this.unit.name} is entering phase ${this.currentPhase}`,
+			Console.log(`${this.unit.name} is entering phase ${this.currentPhase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
 			this.on_phaseChanged(this.currentPhase, lastPhase);
 		}

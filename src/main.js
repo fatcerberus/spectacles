@@ -3,18 +3,17 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-const { DayNightEngine }     = require('@/scripts/inGameClock');
-const { Delegate }           = require('events');
-const { defScenelet, Scene } = require('scenes');
-const { Thread }             = require('threads');
+const from     = require('from'),
+      Console  = require('console'),
+      Delegate = require('delegate'),
+      Joypad   = require('joypad'),
+      Music    = require('music'),
+      Prim     = require('prim'),
+      Random   = require('random'),
+      Scene    = require('scene');
+      Thread   = require('thread');
 
-global.from    = require('from');
-global.joy     = require('joy');
-global.music   = require('music');
-global.prim    = require('prim');
-global.random  = require('random');
-global.term    = require('term');
-global.threads = require('threads');
+const { DayNightEngine } = require('@/scripts/inGameClock');
 
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
@@ -33,29 +32,19 @@ function game()
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 
-	TestHarness.initialize();
-
-	term.define('bgm', null, {
-		override(track) { music.override(`music/${track}.ogg`); },
-		play(track) { music.play(`music/${track}.ogg`); },
-		pop() { music.pop(); },
-		push(track) { music.push(`music/${track}.ogg`); },
-		reset() { music.reset(); },
-		stop() { music.play(null); },
-		volume(value) { music.adjust(value / 100); },
-	});
-	
-	term.define('yap', null, {
+	Console.initialize({ hotKey: Key.Tilde });
+	Console.defineObject('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;
-			term.print("oh, yappy times are here again...");
+			Console.log("oh, yappy times are here again...");
 		},
-
 		'off': function() {
 			Sphere.Game.disableTalking = true;
-			term.print("the yappy times are OVER!");
+			Console.log("the yappy times are OVER!");
 		},
 	});
+
+	TestHarness.initialize();
 
 	let dayNight = new DayNightEngine();
 	TestHarness.run('rsb2');

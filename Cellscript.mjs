@@ -5,8 +5,9 @@
 
 import { transpile } from 'compiler';
 
-describe("Spectacles: Bruce's Story",
+Object.assign(Sphere.Game,
 {
+	name: "Spectacles: Bruce's Story",
 	version: 1,
 	saveID: 'fatcerberus-spectacles',
 	author: "Fat Cerberus",

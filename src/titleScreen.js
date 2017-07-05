@@ -30,9 +30,9 @@ class TitleScreen
 			.pushBGM(this.themeTrack)
 			.tween(this, 120, 'linear', { fadeness: 0.0 })
 			.run();
-		threads.join(threads.create(this));
-		music.pop();
-		music.adjust(1.0);
+		Thread.join(Thread.create(this));
+		Music.pop();
+		Music.adjust(1.0);
 		return new Session();
 	}
 
@@ -65,7 +65,7 @@ class TitleScreen
 
 	render()
 	{
-		prim.blit(screen, 0, 0, this.image);
-		prim.fill(screen, Color.Black.fade(this.fadeness));
+		Prim.blit(screen, 0, 0, this.image);
+		Prim.fill(screen, Color.Black.fade(this.fadeness));
 	}
 }

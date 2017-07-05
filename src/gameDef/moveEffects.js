@@ -37,16 +37,16 @@ Game.moveEffects =
 			}
 			var damage = Math.max(Math.round(Game.math.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(damage / 10);
-			targets[i].takeDamage(Math.max(random.uniform(damage, tolerance), 1), damageTags);
+			targets[i].takeDamage(Math.max(Random.uniform(damage, tolerance), 1), damageTags);
 			var recoilFunction = effect.damageType + "Recoil";
 			if (recoilFunction in Game.math.damage) {
 				var recoil = Math.round(Game.math.damage[recoilFunction](userInfo, targetInfo, effect.power));
 				var tolerance = Math.round(recoil / 10);
-				actor.takeDamage(Math.max(random.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
+				actor.takeDamage(Math.max(Random.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
 			}
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (random.chance(statusChance)) {
+				if (Random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus, true);
 				}
 			}
@@ -60,7 +60,7 @@ Game.moveEffects =
 				var experience = Game.math.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
 				actor.growSkill(munchData.skill, experience);
 			}
-			term.print(targets[i].fullName + " got eaten by " + actor.name);
+			Console.log(targets[i].fullName + " got eaten by " + actor.name);
 			targets[i].die();
 		}
 		actor.heal(actor.maxHP - actor.hp, [], true);
@@ -81,10 +81,10 @@ Game.moveEffects =
 			var targetInfo = targets[i].battlerInfo;
 			var healing = Math.max(Math.round(Game.math.healing(userInfo, targetInfo, effect.power)), 1);
 			var tolerance = Math.round(healing / 10);
-			targets[i].heal(Math.max(random.uniform(healing, tolerance), 1), [ 'cure' ]);
+			targets[i].heal(Math.max(Random.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
 				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
-				if (random.chance(statusChance)) {
+				if (Random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus);
 				}
 			}

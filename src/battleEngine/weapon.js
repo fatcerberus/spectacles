@@ -51,7 +51,7 @@ class WeaponUsable
 		if (!this.isUsable(unit, unit.stance)) {
 			Abort("WeaponUsable.use(): " + unit.name + " tried to change weapons, which is not currently possible.");
 		}
-		term.print(unit.name + " is equipping " + this.name,
+		Console.log(unit.name + " is equipping " + this.name,
 			"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
 		from(targets).each(function(x) {
 			x.setWeapon(this.weaponID);

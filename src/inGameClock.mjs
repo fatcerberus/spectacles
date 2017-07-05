@@ -3,8 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import * as prim  from 'prim';
-import { Thread } from 'threads';
+import { Prim, Thread } from 'sphere-runtime';
 
 // note: don't run more than one day/night engine at a time.  doing so
 //       will cause multiple day/night masks to be applied to the screen,
@@ -21,7 +20,7 @@ class DayNightEngine extends Thread
 	{
 		super({ priority: 1 });
 
-		term.print("initialize day/night engine", `time: ${this.now()}`);
+		Console.log("initialize day/night engine", `time: ${this.now()}`);
 		this.currentMask = Color.Transparent;
 		this.start();
 	}
@@ -69,7 +68,7 @@ class DayNightEngine extends Thread
 
 	on_render()
 	{
-		prim.fill(screen, this.currentMask);
+		Prim.fill(screen, this.currentMask);
 	}
 }
 

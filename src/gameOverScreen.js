@@ -27,13 +27,13 @@ class GameOverScreen
 		if (Sphere.Game.disableAnimations) {
 			this.fadeness = 0.0;
 		}
-		music.play(null);
+		Music.play(null);
 		this.transition = new Scene()
 			.pushBGM('gameOver')
 			.adjustBGM(1.0)
 			.tween(this, 300, 'linear', { fadeness: 0.0 })
 			.run();
-		return threads.create(this);
+		return Thread.create(this);
 	}
 
 	update()
@@ -62,8 +62,8 @@ class GameOverScreen
 				break;
 			case 'transitionOut':
 				if (!this.transition.isRunning()) {
-					music.pop();
-					music.adjust(1.0);
+					Music.pop();
+					Music.adjust(1.0);
 				}
 				return this.transition.isRunning();
 		}
@@ -72,7 +72,7 @@ class GameOverScreen
 
 	render()
 	{
-		prim.blit(screen, 0, 0, this.image);
-		prim.fill(screen, Color.Black.fade(this.fadeness));
+		Prim.blit(screen, 0, 0, this.image);
+		Prim.fill(screen, Color.Black.fade(this.fadeness));
 	}
 }

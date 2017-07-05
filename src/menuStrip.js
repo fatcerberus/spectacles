@@ -167,11 +167,11 @@ class MenuStrip
 		while (AreKeysLeft()) {
 			GetKey();
 		}
-		var menuThread = threads.create(this, 100);
+		var menuThread = Thread.create(this, 100);
 		this.animation = new Scene()
 			.tween(this, 15, 'easeOutQuad', { openness: 1.0 })
 			.run();
-		threads.join(menuThread);
+		Thread.join(menuThread);
 		this.menuThread = null;
 		return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 	}

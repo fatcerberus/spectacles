@@ -84,7 +84,7 @@ class SkillUsable
 	{
 		amount = Math.max(Math.round(amount), 0);
 		this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
-		term.print(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.getLevel()}`);
+		Console.log(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.getLevel()}`);
 	}
 
 	isUsable(user, stance = Stance.Attack)
@@ -117,9 +117,9 @@ class SkillUsable
 	{
 		if (!this.isUsable(unit, unit.stance))
 			throw new Error(`${unit.name} tried to use unusable skill ${this.name}`);
-		term.print(`${unit.name} is using ${this.name}`, `targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
+		Console.log(`${unit.name} is using ${this.name}`, `targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
 		if (unit.weapon != null && this.skillInfo.weaponType != null)
-			term.print(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);
+			Console.log(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);
 		unit.mpPool.use(this.mpCost(unit));
 		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
 		var targetInfos = [];

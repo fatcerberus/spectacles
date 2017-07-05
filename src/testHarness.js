@@ -7,12 +7,12 @@ class TestHarness
 {
 	static initialize()
 	{
-		term.print("initialize Specs Engine test harness");
+		Console.log("initialize Specs Engine test harness");
 
-		term.define('harness', this, {
+		Console.defineObject('harness', this, {
 			'run': function(testID) {
 				if (!(testID in this.tests))
-					return term.print(`unknown test ID '${testID}'`);
+					return Console.log(`unknown test ID '${testID}'`);
 				this.run(testID);
 			}
 		});
@@ -22,7 +22,7 @@ class TestHarness
 		let fileNames = from(GetFileList('~/scripts/testCases'))
 			.where(fileName => fileName.endsWith('.js'));
 		for (let fileName of fileNames) {
-			term.print(`load test cases from '${fileName}'`);
+			Console.log(`load test cases from '${fileName}'`);
 			EvaluateScript(`~/scripts/testCases/${fileName}`);
 		}
 	}
@@ -33,10 +33,10 @@ class TestHarness
 			setup: setupData,
 			run: function() {
 				if (TestHarness.isBattleRunning) {
-					term.print("cannot start test battle, one is ongoing");
+					Console.log("cannot start test battle, one is ongoing");
 					return;
 				}
-				term.print("initiate test battle", `battleID: ${this.setup.battleID}`);
+				Console.log("initiate test battle", `battleID: ${this.setup.battleID}`);
 				var session = new Session();
 				for (let characterID of Game.initialParty)
 					session.party.remove(characterID);
@@ -57,7 +57,7 @@ class TestHarness
 				TestHarness.isBattleRunning = false;
 			}
 		};
-		term.print(`add battle test '${testID}'`);
+		Console.log(`add battle test '${testID}'`);
 	}
 
 	static addTest(testID, func)
@@ -69,15 +69,15 @@ class TestHarness
 				this.func.call(this.context);
 			}
 		};
-		term.define(testID, this.tests[testID], {
+		Console.defineObject(testID, this.tests[testID], {
 			'test': TestHarness.run.bind(TestHarness, testID)
 		});
-		term.print(`add generic test '${testID}'`);
+		Console.log(`add generic test '${testID}'`);
 	}
 
 	static run(testID)
 	{
-		term.print("test harness invoked", `testID: ${testID}`);
+		Console.log("test harness invoked", `testID: ${testID}`);
 		this.tests[testID].run(this.tests[testID].setup, testID);
 	}
 }

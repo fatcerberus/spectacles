@@ -22,7 +22,7 @@ class Battle
 		if (!(battleID in Game.battles))
 			throw new ReferenceError(`no encounter data for '${battleID}'`);
 
-		term.print(`initialize battle context for '${battleID}'`);
+		Console.log(`initialize battle context for '${battleID}'`);
 		this.aiList = [];
 		this.battleID = battleID;
 		this.mode = null;
@@ -51,12 +51,12 @@ class Battle
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 					this.session.battlesSeen.push(this.battleID);
 					 if ('onFirstStart' in this.parameters) {
-						term.print(`call onFirstStart() for battle '${this.battleID}'`);
+						Console.log(`call onFirstStart() for battle '${this.battleID}'`);
 						this.parameters.onFirstStart.call(this);
 					 }
 				}
 				if ('onStart' in this.parameters) {
-					term.print(`call onStart() for battle '${this.battleID}'`);
+					Console.log(`call onStart() for battle '${this.battleID}'`);
 					this.parameters.onStart.call(this);
 				}
 				this.ui.showTitle();
@@ -67,13 +67,13 @@ class Battle
 				break;
 		}
 		if (this.result !== null) {
-			term.print("shut down battle engine");
+			Console.log("shut down battle engine");
 			from(this.battleUnits)
 				.each(unit => unit.dispose());
 			this.ui.dispose();
-			music.pop();
-			music.adjust(1.0, 0);
-			term.undefine('battle');
+			Music.pop();
+			Music.adjust(1.0, 0);
+			Console.undefineObject('battle');
 			return false;
 		}
 		else {
@@ -90,9 +90,9 @@ class Battle
 		if (!eventData.cancel) {
 			let effect = new FieldCondition(eventData.conditionID, this);
 			this.conditions.push(effect);
-			term.print(`install field condition ${effect.name}`);
+			Console.log(`install field condition ${effect.name}`);
 		} else {
-			term.print(`cancel FC '${conditionID}' per existing FC`);
+			Console.log(`cancel FC '${conditionID}' per existing FC`);
 		}
 	}
 
@@ -133,18 +133,18 @@ class Battle
 	go()
 	{
 		if (Sphere.Game.disableBattles) {
-			term.print("battles disabled, automatic win", `battleID: ${this.battleID}`);
+			Console.log("battles disabled, automatic win", `battleID: ${this.battleID}`);
 			this.result = BattleResult.Win;
 			return null;
 		}
-		term.print("");
-		term.print("start battle engine", `battleID: ${this.battleID}`);
+		Console.log("");
+		Console.log("start battle engine", `battleID: ${this.battleID}`);
 		var partyMaxMP = 0;
 		for (id in this.session.party.members) {
 			var battlerInfo = this.session.party.members[id].getInfo();
 			var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
-			term.print(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+			Console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 		}
 		partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 		var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
@@ -177,16 +177,16 @@ class Battle
 			battleBGMTrack = this.parameters.bgm;
 		}
 		this.ui.hud.turnPreview.set(this.predictTurns());
-		music.push(battleBGMTrack !== null
+		Music.push(battleBGMTrack !== null
 			? `music/${battleBGMTrack}.ogg`
 			: null);
 		this.result = null;
 		this.timer = 0;
 		this.mode = 'setup';
-		term.define('battle', this, {
+		Console.defineObject('battle', this, {
 			'spawn': this.spawnEnemy
 		});
-		var battleThread = threads.create(this);
+		var battleThread = Thread.create(this);
 		return battleThread;
 	}
 
@@ -206,14 +206,14 @@ class Battle
 	{
 		from(this.conditions)
 			.where(v => v.conditionID === conditionID)
-			.besides(v => term.print(`lift field condition ${v.name}`))
+			.besides(v => Console.log(`lift field condition ${v.name}`))
 			.remove();
 	}
 
 	notifyAIs(eventName, ...args)
 	{
 		from(this.aiList)
-			.besides(v => term.print(`notify AI battler ${v.unit.name} '${eventName}'`))
+			.besides(v => Console.log(`notify AI battler ${v.unit.name} '${eventName}'`))
 			.each(v => v[`on_${eventName}`](...args));
 	}
 
@@ -275,7 +275,7 @@ class Battle
 			.where(it => it.targetHint === 'user')
 			.each(effect =>
 		{
-			term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
+			Console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 			let effectHandler = Game.moveEffects[effect.type];
 			effectHandler(actingUnit, [ actingUnit ], effect);
 		});
@@ -298,8 +298,8 @@ class Battle
 				aimRate = eventData.aimRate;
 			}
 			let odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
-			let isHit = random.chance(odds);
-			term.print(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
+			let isHit = Random.chance(odds);
+			Console.log(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
 				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
@@ -324,9 +324,9 @@ class Battle
 				if (this.pc < this.effects.length) {
 					let effect = this.effects[this.pc++];
 					let targets = effect.targetHint == 'random'
-						? [ random.sample(targetsHit) ]
+						? [ Random.sample(targetsHit) ]
 						: targetsHit;
-					term.print(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
+					Console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 					Game.moveEffects[effect.type](actingUnit, targets, effect);
 				}
 				return this.pc < this.effects.length;
@@ -344,7 +344,7 @@ class Battle
 
 	spawnEnemy(enemyClass)
 	{
-		term.print(`spawn new enemy '${enemyClass}'`);
+		Console.log(`spawn new enemy '${enemyClass}'`);
 		var newUnit = new BattleUnit(this, enemyClass);
 		this.battleUnits.push(newUnit);
 		this.enemyUnits.push(newUnit);
@@ -359,8 +359,8 @@ class Battle
 	{
 		if (this.suspendCount > 0 || this.result != null)
 			return;
-		term.print("");
-		term.print(`begin CTB turn cycle #${this.timer + 1}`);
+		Console.log("");
+		Console.log(`begin CTB turn cycle #${this.timer + 1}`);
 		++this.timer;
 		var isUnitDead = unit => !unit.isAlive();
 		var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -375,17 +375,17 @@ class Battle
 				actionTaken = unit.tick() || actionTaken;
 			});
 			if (from(this.playerUnits).all(isUnitDead)) {
-				music.adjust(0.0, 120);
+				Music.adjust(0.0, 120);
 				this.ui.fadeOut(2.0);
 				this.result = BattleResult.Lose;
-				term.print("all player characters have been KO'd");
+				Console.log("all player characters have been KO'd");
 				return;
 			}
 			if (from(this.enemyUnits).all(isUnitDead)) {
-				music.adjust(0.0, 60);
+				Music.adjust(0.0, 60);
 				this.ui.fadeOut(1.0);
 				this.result = BattleResult.Win;
-				term.print("all enemies have been KO'd");
+				Console.log("all enemies have been KO'd");
 				return;
 			}
 		}

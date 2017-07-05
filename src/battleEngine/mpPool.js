@@ -10,7 +10,7 @@ class MPPool
 		this.id = id;
 		this.availableMP = Math.min(availableMP, capacity);
 		this.capacity = capacity;
-		term.print(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
+		Console.log(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
 			`now: ${this.availableMP}`);
 
 		// handler function signature:
@@ -25,7 +25,7 @@ class MPPool
 		this.availableMP = Math.min(this.availableMP + amount, this.capacity);
 		this.gainedMP.invoke(this, this.availableMP);
 		if (amount != 0) {
-			term.print(`restore ${amount} MP to pool '${this.id}'`,
+			Console.log(`restore ${amount} MP to pool '${this.id}'`,
 				`now: ${this.availableMP}`);
 		}
 	}
@@ -38,7 +38,7 @@ class MPPool
 		this.availableMP -= amount;
 		this.lostMP.invoke(this, this.availableMP);
 		if (amount != 0) {
-			term.print(`use ${Math.round(amount)} MP from pool '${this.id}'`,
+			Console.log(`use ${Math.round(amount)} MP from pool '${this.id}'`,
 				`left: ${this.availableMP}`);
 		}
 	}

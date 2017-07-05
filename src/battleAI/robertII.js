@@ -49,7 +49,7 @@ class Robert2AI extends BattleAI
 							this.doChargeSlashNext = true;
 							this.isComboStarted = false;
 						} else {
-							let skillID = random.sample(magicks);
+							let skillID = Random.sample(magicks);
 							if (this.isSkillUsable(skillID))
 								this.queueSkill(skillID);
 							else
@@ -57,7 +57,7 @@ class Robert2AI extends BattleAI
 						}
 					}
 				} else {
-					let skillID = random.sample(magicks);
+					let skillID = Random.sample(magicks);
 					if (this.isSkillUsable(skillID))
 						this.queueSkill(skillID);
 					else
@@ -103,13 +103,13 @@ class Robert2AI extends BattleAI
 					}
 					this.isStatusHealPending = false;
 					this.wasHolyWaterUsed = false;
-				} else if ((random.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.unit) {
+				} else if ((Random.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.unit) {
 					this.queueSkill('quickstrike');
 					this.isComboStarted = true;
 					this.wasHolyWaterUsed = false;
 				} else if (this.isComboStarted) {
-					var skillToUse = random.chance(0.5)
-						? random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ])
+					var skillToUse = Random.chance(0.5)
+						? Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ])
 						: 'chargeSlash';
 					this.queueSkill(skillToUse);
 					if (skillToUse == 'upheaval')
@@ -118,7 +118,7 @@ class Robert2AI extends BattleAI
 					this.isStatusHealPending = skillToUse == 'upheaval';
 					this.wasHolyWaterUsed = false;
 				} else {
-					var skillToUse = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+					var skillToUse = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillToUse);
 					if (skillToUse == 'upheaval')
 						this.queueSkill('tremor');
@@ -149,7 +149,7 @@ class Robert2AI extends BattleAI
 							this.queueSkill('ignite', Stance.Attack, 'robert2');
 						}
 					}
-				} else if (random.chance(0.5) || this.isComboStarted) {
+				} else if (Random.chance(0.5) || this.isComboStarted) {
 					var forecast = this.predictSkillTurns('chargeSlash');
 					if ((forecast[0].unit === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
 						this.isComboStarted = false;
@@ -158,7 +158,7 @@ class Robert2AI extends BattleAI
 						} else {
 							this.queueSkill(this.nextElementalMove !== null
 								? this.nextElementalMove
-								: random.sample([ 'ignite', 'frostbite' ]));
+								: Random.sample([ 'ignite', 'frostbite' ]));
 						}
 					} else {
 						this.isComboStarted = true;
@@ -166,7 +166,7 @@ class Robert2AI extends BattleAI
 						if (forecast[0].unit === this.unit) {
 							this.queueSkill('quickstrike');
 						} else {
-							var skillToUse = random.chance(0.5) ? 'upheaval' : 'swordSlash';
+							var skillToUse = Random.chance(0.5) ? 'upheaval' : 'swordSlash';
 							if (this.isSkillUsable(skillToUse)) {
 								this.queueSkill(skillToUse);
 								if (skillToUse == 'upheaval')
@@ -181,14 +181,14 @@ class Robert2AI extends BattleAI
 						}
 					}
 				} else {
-					var skillID = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+					var skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 					this.queueSkill(skillID);
 					if (skillID == 'upheaval')
 						this.queueSkill('tremor');
 				}
 				break;
 			case 4:
-				var skillID = random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+				var skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 				var finisherID = this.isSkillUsable(skillID) ? skillID : 'swordSlash';
 				var qsTurns = this.predictSkillTurns('quickstrike');
 				this.queueSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : finisherID);
@@ -216,7 +216,7 @@ class Robert2AI extends BattleAI
 					var moves = this.unit.mpPool.availableMP >= 200
 						? [ 'flare', 'chill', 'lightning', 'quake', 'quickstrike', 'chargeSlash' ]
 						: [ 'quickstrike', 'chargeSlash' ];
-					var skillID = random.sample(moves);
+					var skillID = Random.sample(moves);
 					if (skillID == 'quickstrike' || this.isComboStarted) {
 						skillID = qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash';
 						this.isComboStarted = skillID == 'quickstrike';
@@ -233,7 +233,7 @@ class Robert2AI extends BattleAI
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
 
-		term.print(userID, itemID, targetIDs);
+		Console.log(userID, itemID, targetIDs);
 
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (userID == 'robert2' && from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
@@ -296,7 +296,7 @@ class Robert2AI extends BattleAI
 				&& this.zombieHealFixState === null)
 			{
 				this.necromancyChance += 0.25;
-				if (random.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
+				if (Random.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
 					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'bolt');
 					this.necromancyChance = 0.0;
 				}

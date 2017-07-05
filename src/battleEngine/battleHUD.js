@@ -3,9 +3,7 @@
   *           Copyright (c) 2013 Power-Command
 ***/
 
-const HPGauge     = require('@/scripts/battleEngine/ui').HPGauge;
-const MPGauge     = require('@/scripts/battleEngine/ui').MPGauge;
-const TurnPreview = require('@/scripts/battleEngine/ui').TurnPreview;
+const { HPGauge, MPGauge, TurnPreview } = require('@/scripts/battleEngine/ui');
 
 // BattleHUD() constructor
 // Creates an object representing the in-battle heads-up display (HUD).
@@ -89,7 +87,7 @@ function BattleHUD(partyMaxMP)
 BattleHUD.prototype.dispose = function()
 {
 	this.turnPreview.dispose();
-	threads.kill(this.thread);
+	Thread.kill(this.thread);
 };
 
 // .createEnemyHPGauge() method
@@ -101,7 +99,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 	var gauge = new HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
-	term.print(`create HP gauge for unit '${unit.name}'`, `cap: ${unit.maxHP}`);
+	Console.log(`create HP gauge for unit '${unit.name}'`, `cap: ${unit.maxHP}`);
 };
 
 // .hide() method
@@ -225,8 +223,8 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
-		term.print("activate battle screen HUD");
-		this.thread = threads.create(this, 20);
+		Console.log("activate battle screen HUD");
+		this.thread = Thread.create(this, 20);
 	}
 	new Scene()
 		.tween(this, 30, 'easeOutExpo', { fadeness: 1.0 })

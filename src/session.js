@@ -22,7 +22,7 @@ class Session
 
 	constructor(difficulty = Difficulty.Standard)
 	{
-		term.print("initialize new game session", `diff lv: ${difficulty}`);
+		Console.log("initialize new game session", `diff lv: ${difficulty}`);
 
 		this.difficulty = difficulty;
 		this.party = new Party(1);

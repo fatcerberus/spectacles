@@ -23,8 +23,8 @@ class BattleScreen
 
 		this.startRunning = function()
 		{
-			term.print("activate main battle screen");
-			this.thread = threads.create(this);
+			Console.log("activate main battle screen");
+			this.thread = Thread.create(this);
 			this.hud.show();
 		};
 	}
@@ -32,7 +32,7 @@ class BattleScreen
 	dispose()
 	{
 		this.hud.dispose();
-		threads.kill(this.thread);
+		Thread.kill(this.thread);
 	}
 
 	update()
@@ -47,7 +47,7 @@ class BattleScreen
 
 	render()
 	{
-		prim.blit(screen, 0, -56, this.background);
+		Prim.blit(screen, 0, -56, this.background);
 		for (let type in this.actorTypes) {
 			for (let i = 0; i < this.actors[type].length; ++i)
 				this.actors[type][i].render();
@@ -70,21 +70,21 @@ class BattleScreen
 				var y = 112;
 				var textY = y + height / 2 - this.font.getHeight() / 2;
 				var boxColor = this.color.fade(1.0 - this.fadeness);
-				prim.rect(screen, x, y, width, height, boxColor);
-				prim.lineRect(screen, x, y, width, height, 1, Color.Black.fade(0.25 * (1.0 - this.fadeness)));
+				Prim.drawSolidRectangle(screen, x, y, width, height, boxColor);
+				Prim.drawRectangle(screen, x, y, width, height, 1, Color.Black.fade(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
 			update: function() {
 				return true;
 			}
 		};
-		let thread = threads.create(announcement, 10);
+		let thread = Thread.create(announcement, 10);
 		new Scene()
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 0.0 })
 			.pause(46)
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 1.0 })
 			.run(true);
-		threads.kill(thread);
+		Thread.kill(thread);
 	}
 
 	createActor(name, position, row, alignment, alreadyThere = false)

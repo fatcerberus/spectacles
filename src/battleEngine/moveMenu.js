@@ -281,8 +281,8 @@ MoveMenu.prototype.open = function()
 		while (AreKeysLeft()) { GetKey(); }
 		this.showMenu.run();
 		this.updateTurnPreview();
-		this.menuThread = threads.create(this, 10);
-		threads.join(this.menuThread);
+		this.menuThread = Thread.create(this, 10);
+		Thread.join(this.menuThread);
 		switch (this.stance) {
 			case Stance.Attack:
 			case Stance.Charge:

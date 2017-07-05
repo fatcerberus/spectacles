@@ -22,7 +22,7 @@ Game.statuses =
 				var oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
 				if (effect.power != oldPower) {
-					term.print(`outgoing POW modified by Crackdown to ${effect.power}`,
+					Console.log(`outgoing POW modified by Crackdown to ${effect.power}`,
 						`was: ${oldPower}`);
 				}
 			});
@@ -35,9 +35,9 @@ Game.statuses =
 			this.lastSkillType = eventData.skill.category;
 			if (this.multiplier != oldMultiplier) {
 				if (this.multiplier < 1.0) {
-					term.print("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
+					Console.log("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
 				} else {
-					term.print("Crackdown POW modifier reset to 100%");
+					Console.log("Crackdown POW modifier reset to 100%");
 				}
 			}
 		}
@@ -56,16 +56,16 @@ Game.statuses =
 		afflicted: function(unit, eventData) {
 			var statusDef = Game.statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('buff')) {
-				term.print("Status " + statusDef.name + " was blocked by Curse");
+				Console.log("Status " + statusDef.name + " was blocked by Curse");
 				eventData.cancel = true;
 			}
 		},
 		beginTurn: function(unit, eventData) {
 			if (this.turnsLeft <= 0) {
-				term.print(unit.name + "'s Curse has expired");
+				Console.log(unit.name + "'s Curse has expired");
 				unit.liftStatus('curse');
 			} else {
-				term.print(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
+				Console.log(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
 		}
@@ -90,13 +90,13 @@ Game.statuses =
 		},
 		acting: function(unit, eventData) {
 			var oldRank = eventData.action.rank;
-			eventData.action.rank = random.discrete(1, 5);
+			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
-				term.print("Rank of action changed by Disarray to " + eventData.action.rank,
+				Console.log("Rank of action changed by Disarray to " + eventData.action.rank,
 					"was: " + oldRank);
 			}
 			++this.actionsTaken;
-			term.print(this.actionsTaken < 3
+			Console.log(this.actionsTaken < 3
 				? unit.name + "'s Disarray will expire in " + (3 - this.actionsTaken) + " more action(s)"
 				: unit.name + "'s Disarray has expired");
 			if (this.actionsTaken >= 3) {
@@ -135,7 +135,7 @@ Game.statuses =
 				var oldPower = effect.power;
 				effect.power *= Game.bonusMultiplier;
 				if (effect.power != oldPower) {
-					term.print("Outgoing POW modified by Drunk to " + effect.power,
+					Console.log("Outgoing POW modified by Drunk to " + effect.power,
 						"was: " + oldPower);
 				}
 			});
@@ -186,7 +186,7 @@ Game.statuses =
 				var oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
 				if (effect.power != oldPower) {
-					term.print("Outgoing POW modified by Final Stand to " + effect.power,
+					Console.log("Outgoing POW modified by Final Stand to " + effect.power,
 						"was: " + oldPower);
 				}
 			});
@@ -234,7 +234,7 @@ Game.statuses =
 		damaged: function(unit, eventData) {
 			if (from(eventData.tags).anyIs('fire') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
-				term.print("Frostbite neutralized by fire, damage increased");
+				Console.log("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
 			}
 		},
@@ -310,7 +310,7 @@ Game.statuses =
 		damaged: function(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
-				term.print("Ignite neutralized by ice, damage increased");
+				Console.log("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
 			}
 		}
@@ -328,16 +328,16 @@ Game.statuses =
 		afflicted: function(unit, eventData) {
 			var statusDef = Game.statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
-				term.print("Status " + statusDef.name + " was blocked by Immune");
+				Console.log("Status " + statusDef.name + " was blocked by Immune");
 				eventData.cancel = true;
 			}
 		},
 		beginTurn: function(unit, eventData) {
 			if (this.turnsLeft <= 0) {
-				term.print(unit.name + "'s Immune has expired");
+				Console.log(unit.name + "'s Immune has expired");
 				unit.liftStatus('immune');
 			} else {
-				term.print(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
+				Console.log(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
 		}
@@ -395,10 +395,10 @@ Game.statuses =
 			unit.heal(cap / 10, [ 'cure' ]);
 			--this.turnsLeft;
 			if (this.turnsLeft <= 0) {
-				term.print(unit.name + "'s ReGen has expired");
+				Console.log(unit.name + "'s ReGen has expired");
 				unit.liftStatus('reGen');
 			} else {
-				term.print(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
+				Console.log(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
 			}
 		}
 	},
@@ -466,7 +466,7 @@ Game.statuses =
 			this.wakeChance = 0.0;
 		},
 		beginCycle: function(unit, eventData) {
-			if (random.chance(this.wakeChance)) {
+			if (Random.chance(this.wakeChance)) {
 				unit.liftStatus('sleep');
 			}
 			this.wakeChance += 0.01;
@@ -477,7 +477,7 @@ Game.statuses =
 		},
 		damaged: function(unit, eventData) {
 			var healthLost = 100 * eventData.amount / unit.maxHP;
-			if (random.chance(healthLost * 5 * this.wakeChance)
+			if (Random.chance(healthLost * 5 * this.wakeChance)
 				&& eventData.tags.indexOf('magic') === -1
 				&& eventData.tags.indexOf('special') === -1)
 			{
