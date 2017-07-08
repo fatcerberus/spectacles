@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Prim, Thread } from 'sphere-runtime';
+import { Console, Prim, Thread } from 'sphere-runtime';
 
 // note: don't run more than one day/night engine at a time.  doing so
 //       will cause multiple day/night masks to be applied to the screen,

@@ -23,7 +23,7 @@ class MPPool
 	{
 		amount = Math.round(amount);
 		this.availableMP = Math.min(this.availableMP + amount, this.capacity);
-		this.gainedMP.invoke(this, this.availableMP);
+		this.gainedMP.call(this, this.availableMP);
 		if (amount != 0) {
 			Console.log(`restore ${amount} MP to pool '${this.id}'`,
 				`now: ${this.availableMP}`);
@@ -36,7 +36,7 @@ class MPPool
 		if (amount > this.availableMP)
 			throw new Error(`'${this.id}' MP overdraft`);
 		this.availableMP -= amount;
-		this.lostMP.invoke(this, this.availableMP);
+		this.lostMP.call(this, this.availableMP);
 		if (amount != 0) {
 			Console.log(`use ${Math.round(amount)} MP from pool '${this.id}'`,
 				`left: ${this.availableMP}`);
