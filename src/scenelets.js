@@ -8,7 +8,7 @@ RequireScript('battleEngine/battle.js');
 Scene.defineAction('adjustBGM',
 {
 	start(scene, volume, duration = 0.0) {
-		Music.adjust(volume, duration);
+		Music.adjustVolume(volume, duration);
 	},
 
 	update(scene) {

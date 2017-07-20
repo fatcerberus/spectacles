@@ -72,7 +72,7 @@ class Battle
 				.each(unit => unit.dispose());
 			this.ui.dispose();
 			Music.pop();
-			Music.adjust(1.0, 0);
+			Music.adjustVolume(1.0, 0);
 			Console.undefineObject('battle');
 			return false;
 		}
@@ -375,14 +375,14 @@ class Battle
 				actionTaken = unit.tick() || actionTaken;
 			});
 			if (from(this.playerUnits).all(isUnitDead)) {
-				Music.adjust(0.0, 120);
+				Music.adjustVolume(0.0, 120);
 				this.ui.fadeOut(2.0);
 				this.result = BattleResult.Lose;
 				Console.log("all player characters have been KO'd");
 				return;
 			}
 			if (from(this.enemyUnits).all(isUnitDead)) {
-				Music.adjust(0.0, 60);
+				Music.adjustVolume(0.0, 60);
 				this.ui.fadeOut(1.0);
 				this.result = BattleResult.Win;
 				Console.log("all enemies have been KO'd");

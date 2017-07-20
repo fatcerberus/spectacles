@@ -32,7 +32,7 @@ class TitleScreen
 			.run();
 		Thread.join(Thread.create(this));
 		Music.pop();
-		Music.adjust(1.0);
+		Music.adjustVolume(1.0);
 		return new Session();
 	}
 

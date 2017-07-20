@@ -63,7 +63,7 @@ class GameOverScreen
 			case 'transitionOut':
 				if (!this.transition.isRunning()) {
 					Music.pop();
-					Music.adjust(1.0);
+					Music.adjustVolume(1.0);
 				}
 				return this.transition.isRunning();
 		}
