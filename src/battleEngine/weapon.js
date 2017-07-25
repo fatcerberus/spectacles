@@ -20,6 +20,11 @@ class WeaponUsable
 		this.allowDeadTarget = false;
 	}
 
+	get rank()
+	{
+		return Game.equipWeaponRank;
+	}
+
 	clone()
 	{
 		var newCopy = new WeaponUsable(this.weaponID);
@@ -29,11 +34,6 @@ class WeaponUsable
 	defaultTargets(user)
 	{
 		return [ user ];
-	}
-
-	getRank()
-	{
-		return Game.equipWeaponRank;
 	}
 
 	isUsable(user, stance = Stance.Attack)

@@ -30,6 +30,20 @@ class SkillUsable
 			: false;
 	}
 
+	get level()
+	{
+		for (let level = 100; level >= 2; --level) {
+			if (this.experience >= this.levelUpTable[level])
+				return level;
+		}
+		return 1;
+	}
+	
+	get rank()
+	{
+		return Game.math.skillRank(this.skillInfo);
+	}
+	
 	defaultTargets(user)
 	{
 		switch (this.skillInfo.targetType) {
@@ -66,25 +80,11 @@ class SkillUsable
 		}
 	}
 
-	getLevel()
-	{
-		for (let level = 100; level >= 2; --level) {
-			if (this.experience >= this.levelUpTable[level])
-				return level;
-		}
-		return 1;
-	}
-
-	getRank()
-	{
-		return Game.math.skillRank(this.skillInfo);
-	}
-
 	grow(amount)
 	{
 		amount = Math.max(Math.round(amount), 0);
 		this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
-		Console.log(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.getLevel()}`);
+		Console.log(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.level}`);
 	}
 
 	isUsable(user, stance = Stance.Attack)
@@ -105,7 +105,7 @@ class SkillUsable
 
 	mpCost(user)
 	{
-		return Math.min(Math.max(Math.ceil(Game.math.mp.usage(this.skillInfo, this.getLevel(), user.battlerInfo)), 0), 999);
+		return Math.min(Math.max(Math.ceil(Game.math.mp.usage(this.skillInfo, this.level, user.battlerInfo)), 0), 999);
 	}
 
 	peekActions()

@@ -68,7 +68,7 @@ class BattleUnit
 			this.fullName = this.partyMember.fullName;
 			this.allowTargetScan = this.partyMember.isTargetScanOn;
 			this.skills = [ ...this.partyMember.getUsableSkills() ];
-			this.items = [ ...this.partyMember.items ];
+			this.items = clone(this.partyMember.items);
 			for (let statID in this.baseStats)
 				this.stats[statID] = this.partyMember.stats[statID];
 			this.weapon = Game.weapons[this.partyMember.weaponID];
@@ -543,7 +543,7 @@ class BattleUnit
 						return Console.log("'" + this.id + " inv add': Item ID required");
 					var itemID = arguments[1];
 					if (!(itemID in Game.items))
-						return Console.log("No such item ID '" + itemID + "'");
+						return Console.log("no such item ID '" + itemID + "'");
 					var defaultUses = 'uses' in Game.items[itemID] ? Game.items[itemID].uses : 1;
 					var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 					var addCount = 0;

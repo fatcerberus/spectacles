@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Prim, Scene } from 'sphere-runtime';
+import { Console, Prim, Scene, Thread } from 'sphere-runtime';
 
 export
 class HPGauge

@@ -25,6 +25,12 @@ class ItemUsable
 		this.usesLeft = 'uses' in this.itemDef ? this.itemDef.uses : 1;
 	}
 
+	get rank()
+	{
+		return 'rank' in this.itemDef.action ? this.itemDef.action.rank
+			: Game.defaultItemRank;
+	}
+
 	clone()
 	{
 		var newCopy = new ItemUsable(this.itemID);
@@ -42,12 +48,6 @@ class ItemUsable
 				.sample(1).first();
 		}
 		return [ target ];
-	}
-
-	getRank()
-	{
-		return 'rank' in this.itemDef.action ? this.itemDef.action.rank
-			: Game.defaultItemRank;
 	}
 
 	isUsable(user, stance = Stance.Attack)

@@ -207,7 +207,7 @@ MoveMenu.prototype.getInput = function()
 					idColor: CreateColor(192, 192, 192, 255),
 					isEnabled: usables[i].isUsable(this.unit, this.stance),
 					mpCost: usables[i].mpCost(this.unit),
-					rank: usables[i].getRank(),
+					rank: usables[i].rank,
 					usable: usables[i]
 				};
 				var actions = menuItem.usable.peekActions();
