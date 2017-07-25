@@ -409,11 +409,11 @@ Game.statuses =
 	// result in death.
 	skeleton: {
 		name: "Skeleton",
-		tags: [ 'undead' ],
+		tags: [ 'ailment', 'undead' ],
 		overrules: [ 'ghost', 'zombie' ],
 		statModifiers: {
 			str: 1 / Game.bonusMultiplier,
-			mag: 1 / Game.bonusMultiplier
+			mag: 1 / Game.bonusMultiplier,
 		},
 		initialize: function(unit) {
 			this.allowDeath = false;
