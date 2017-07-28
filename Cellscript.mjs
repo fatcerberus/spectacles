@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { transpile } from 'compiler';
+import { transpile } from 'cell-runtime';
 
 Object.assign(Sphere.Game,
 {
