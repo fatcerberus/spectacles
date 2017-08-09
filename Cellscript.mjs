@@ -13,7 +13,7 @@ Object.assign(Sphere.Game,
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x200',
-	main: 'scripts/main.js',
+	main: '@/scripts/main.js',
 
 	logPath: '~/consoleLog.txt',
 

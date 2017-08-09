@@ -10,10 +10,10 @@ const from     = require('from'),
       Music    = require('music'),
       Prim     = require('prim'),
       Random   = require('random'),
-      Scene    = require('scene');
+      Scene    = require('scene'),
       Thread   = require('thread');
 
-const { DayNightEngine } = require('@/scripts/inGameClock');
+const { DayNightEngine } = require('$/inGameClock');
 
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
@@ -28,7 +28,7 @@ EvaluateScript('gameDef/game.js');
 function game()
 {
 	// note: a game() function is needed for now because the engine was
-	//       originally written for Sphere v1.  the goal is to eventually
+	//       originally written for Sphere 1.x.  the goal is to eventually
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 

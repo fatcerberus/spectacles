@@ -3,15 +3,15 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Console, Prim, Thread } from 'sphere-runtime';
-
 // note: don't run more than one day/night engine at a time.  doing so
 //       will cause multiple day/night masks to be applied to the screen,
 //       which won't look too nice. :o)
 
+import { Console, Prim, Thread } from 'sphere-runtime';
+
 const DayMask      = Color.Transparent;
 const TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625);
-const NightMask    = new Color(0, 0, 0.125, 0.5625);
+const NightMask    = new Color(0.0, 0.0, 0.125, 0.5625);
 
 export
 class DayNightEngine extends Thread
