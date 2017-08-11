@@ -19,12 +19,12 @@ class TestHarness
 		this.tests = {};
 		this.isBattleRunning = false;
 
-		let fileNames = from(GetFileList('~/scripts/testCases'))
-			.where(fileName => fileName.endsWith('.js'));
-		for (let fileName of fileNames) {
-			Console.log(`load test cases from '${fileName}'`);
-			EvaluateScript(`~/scripts/testCases/${fileName}`);
-		}
+		let fileNames = from(new DirectoryStream('$/testCases'))
+			.where(it => it.fileName.endsWith('.js'))
+			.select(it => it.fullPath)
+			.besides(it => Console.log(`found ${it}`));
+		for (let fileName of fileNames)
+			EvaluateScript(fileName);
 	}
 
 	static addBattle(testID, setupData)

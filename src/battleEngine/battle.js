@@ -177,9 +177,7 @@ class Battle
 			battleBGMTrack = this.parameters.bgm;
 		}
 		this.ui.hud.turnPreview.set(this.predictTurns());
-		Music.push(battleBGMTrack !== null
-			? `music/${battleBGMTrack}.ogg`
-			: null);
+		Music.push(battleBGMTrack);
 		this.result = null;
 		this.timer = 0;
 		this.mode = 'setup';

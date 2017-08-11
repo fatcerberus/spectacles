@@ -18,7 +18,7 @@ class BattleScreen
 		this.actors = {};
 		for (let type in this.actorTypes)
 			this.actors[type] = [];
-		this.background = new Texture('images/battleBackground.png');
+		this.background = new Image('battleBackground');
 		this.hud = new BattleHUD(partyMaxMP);
 
 		this.startRunning = function()
@@ -47,7 +47,7 @@ class BattleScreen
 
 	render()
 	{
-		Prim.blit(screen, 0, -56, this.background);
+		this.background.blitTo(screen, 0, -56);
 		for (let type in this.actorTypes) {
 			for (let i = 0; i < this.actors[type].length; ++i)
 				this.actors[type][i].render();

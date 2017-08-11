@@ -61,7 +61,7 @@ Scene.defineAction('battle',
 Scene.defineAction('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
-		Music.play("music/" + trackName + ".ogg", fadeTime);
+		Music.play(trackName, fadeTime);
 	}
 });
 
@@ -113,7 +113,7 @@ Scene.defineAction('popBGM',
 Scene.defineAction('pushBGM',
 {
 	start(scene, trackName) {
-		Music.push("music/" + trackName + ".ogg");
+		Music.push(trackName);
 	}
 });
 
