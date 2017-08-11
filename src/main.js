@@ -3,6 +3,8 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+RequireSystemScript('persist.js');
+
 const from     = require('from'),
       Console  = require('console'),
       Delegate = require('delegate'),
