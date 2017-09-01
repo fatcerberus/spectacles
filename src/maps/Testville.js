@@ -23,14 +23,14 @@
 			{ name: 'robert', sprite: 'battlers/Robert.rss', ghostLevel: 0 },
 		];
 		
-		SetDefaultPersonScript(SCRIPT_ON_DESTROY, function() {
+		SetDefaultPersonScript(SCRIPT_ON_DESTROY, () => {
 			var person = GetCurrentPerson();
 			var distance = GetPersonLeader(person) != "" ? GetPersonFollowDistance(person) : 0;
-			from(GetPersonFollowers(person)).each(function(name) {
+			for (let name of GetPersonFollowers(person)) {
 				FollowPerson(name, GetPersonLeader(person), distance);
-			});
+			}
 		});
-		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, function() {
+		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TALK, () => {
 			var name = GetCurrentPerson();
 			if (name == 'maggie' || name == 'robert') return;
 			if (GetInputPerson() == 'scott') {
@@ -47,7 +47,7 @@
 					.run(true);
 			}
 		});
-		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, function() {
+		SetDefaultPersonScript(SCRIPT_ON_ACTIVATE_TOUCH, () => {
 			var muncher = GetActingPerson();
 			var food = GetCurrentPerson();
 			if (food == 'maggie') {
@@ -76,31 +76,29 @@
 		});
 		
 		Thread.create({
-			render: function() {
-				from(followers)
-					.where(v => DoesPersonExist(v.name))
-					.where(v => v.ghostLevel > 0)
-					.each(info =>
-				{
-					var x = MapToScreenX('Base', GetPersonX(info.name));
-					var y = MapToScreenY('Base', GetPersonY(info.name));
-					drawTextEx(font, x, y, "Lv." + info.ghostLevel, CreateColor(255, 255, 255, 128), 1, 'center');
-				});
+			render() {
+				let ghosts = from(followers)
+					.where(it => DoesPersonExist(it.name))
+					.where(it => it.ghostLevel > 0);
+				for (let ghost of ghosts) {
+					var x = MapToScreenX('Base', GetPersonX(ghost.name));
+					var y = MapToScreenY('Base', GetPersonY(ghost.name));
+					drawTextEx(font, x, y, "Lv." + ghost.ghostLevel, CreateColor(255, 255, 255, 128), 1, 'center');
+				}
 			},
-			update: function() {
-				from(followers)
-					.where(v => !DoesPersonExist(v.name))
-					.take(1)
-					.each(info =>
-				{
-					++info.ghostLevel;
-					CreatePerson(info.name, info.sprite, false);
-					SetPersonMask(info.name, CreateColor(255, 255, 255, 128));
+			update() {
+				let ghostInfo = from(followers)
+					.where(it => !DoesPersonExist(it.name))
+					.first();
+				if (ghostInfo !== undefined) {
+					++ghostInfo.ghostLevel;
+					CreatePerson(ghostInfo.name, ghostInfo.sprite, false);
+					SetPersonMask(ghostInfo.name, CreateColor(255, 255, 255, 128));
 					var maggieX = GetPersonX('maggie');
 					var maggieY = GetPersonY('maggie');
-					SetPersonIgnoreList(info.name,
+					SetPersonIgnoreList(ghostInfo.name,
 						from(followers)
-							.select(v => v.name)
+							.select(it => it.name)
 							.including([ 'robert' ])
 							.toArray());
 					var x, y;
@@ -108,9 +106,9 @@
 					do {
 						x = Random.discrete(maggieX - distance, maggieX + distance);
 						y = Random.discrete(maggieY - distance, maggieY + distance);
-					} while (IsPersonObstructed(info.name, x, y));
-					SetPersonXYFloat(info.name, x, y);
-					SetPersonScript(info.name, SCRIPT_COMMAND_GENERATOR, function() {
+					} while (IsPersonObstructed(ghostInfo.name, x, y));
+					SetPersonXYFloat(ghostInfo.name, x, y);
+					SetPersonScript(ghostInfo.name, SCRIPT_COMMAND_GENERATOR, () => {
 						var name = GetCurrentPerson();
 						var maggieX = GetPersonX('maggie');
 						var maggieY = GetPersonY('maggie');
@@ -135,7 +133,7 @@
 						for (var i = 0; i < steps; ++i)
 							QueuePersonCommand(name, movement, false);
 					});
-				});
+				}
 				if (!IsCameraAttached()) {  // it seems Scott got eaten...
 					var session = persist.getWorld().session;
 					session.party.remove('scott');
@@ -153,7 +151,7 @@
 					isHippoAround = true;
 				}
 				var ghostCount = from(followers)
-					.where(v => v.ghostLevel > 0)
+					.where(it => it.ghostLevel > 0)
 					.count();
 				return true;
 			}
@@ -226,7 +224,7 @@
 			person.isActive = false;
 			var number = person.peopleEaten != 1 ? person.peopleEaten.toString() : "one";
 			new Scene()
-				.doIf(function() { return person.peopleEaten > 0; })
+				.doIf(() => person.peopleEaten > 0)
 					.talk("Scott", true, 2.0, Infinity,
 						"Thanks maggie, you just devoured " + number + " of my friends!",
 						"Stupid backstabbing hunger-pigs...")
@@ -249,7 +247,8 @@
 					persist.world.munchSound.play(false);
 					DestroyPerson(food);
 					++person.peopleEaten;
-				} else {
+				}
+				else {
 					DetachInput('scott');
 					person.isActive = false;
 					if (++person.timesStopped <= 1) {
@@ -258,7 +257,8 @@
 							.run(true);
 						person.isActive = true;
 						AttachInput('scott');
-					} else {
+					}
+					else {
 						DetachCamera();
 						new Scene()
 							.talk("maggie", true, 2.0, Infinity, "That's it, you blocked my path for the last time! Prepare to be devoured!")

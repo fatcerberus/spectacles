@@ -11,7 +11,8 @@ const from     = require('from'),
       Image    = require('image'),
       Joypad   = require('joypad'),
       Music    = require('music'),
-      Person   = require('person');
+      Pact     = require('pact'),
+      Person   = require('person'),
       Prim     = require('prim'),
       Random   = require('random'),
       Scene    = require('scene'),
@@ -37,7 +38,7 @@ function game()
 	//       is ongoing,  but a full conversion will take a while.
 
 	persist.init();
-	
+
 	Console.initialize({ hotKey: Key.Tilde });
 	Console.defineObject('yap', null, {
 		'on': function() {

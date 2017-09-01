@@ -140,8 +140,8 @@ class Battle
 		Console.log("");
 		Console.log("start battle engine", `battleID: ${this.battleID}`);
 		var partyMaxMP = 0;
-		for (id in this.session.party.members) {
-			var battlerInfo = this.session.party.members[id].getInfo();
+		for (let key in this.session.party.members) {
+			var battlerInfo = this.session.party.members[key].getInfo();
 			var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
 			Console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
