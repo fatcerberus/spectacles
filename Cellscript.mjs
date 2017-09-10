@@ -24,11 +24,7 @@ install('@/scripts', files('src/*.js', true));
 install('@/scripts', files('src/*.mjs', true));
 
 install('@/images',     files('images/*.png', true));
-install('@/lib',        files('lib/*.js', true));
-install('@/maps',       files('maps/*.rmp', true));
-install('@/maps',       files('maps/*.rts', true));
 install('@/music',      files('music/*.ogg', true));
-install('@/music',      files('music/*.mp3', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds',     files('sounds/*.wav', true));
 install('@/',           files('icon.png'));
