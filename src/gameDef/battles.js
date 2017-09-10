@@ -3,7 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('battleAI/headlessHorse.js');
 RequireScript('battleAI/robertII.js');
 
 // boss and miniboss battle definitions.
@@ -11,30 +10,6 @@ RequireScript('battleAI/robertII.js');
 // game composes them on-the-fly, ex nihilo.
 Game.battles =
 {
-	headlessHorse: {
-		title: "Headless Horse",
-		bgm: 'manorBoss',
-		battleLevel: 8,
-		enemies: [
-			'headlessHorse',
-		],
-		onStart() {
-			let theHorse = this.findUnit('headlessHorse');
-			theHorse.addStatus('zombie');
-			new Scene()
-				.talk("the pig", true, 1.0, Infinity,
-					"Keep your guard up if you want to beat this thing.  It won't hesitate to roast " +
-					"you alive--and then I'd have to eat you!")
-				.talk("Lauren", true, 1.0, Infinity, "Yeah, because I totally always wanted to get " +
-					"burnt to a crisp by a fire-breathing horse BEFORE GETTING EATEN BY A FREAKING PIG.  " +
-					"Awesome.")
-				.talk("Scott", true, 1.0, Infinity, "Stupid pig")
-				.run(true);
-			let themaggie = this.findUnit('maggie');
-			themaggie.turnIntoAHippo();
-		}
-	},
-
 	rsbFinal: {
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
@@ -68,31 +43,6 @@ Game.battles =
 // field enemies.
 Game.enemies =
 {
-	headlessHorse: {
-		name: "H. Horse",
-		fullName: "Headless Horse",
-		aiClass: HeadlessHorseAI,
-		hasLifeBar: true,
-		tier: 3,
-		turnRatio: 3.0,
-		baseStats: {
-			vit: 50,
-			str: 10,
-			def: 55,
-			foc: 65,
-			mag: 30,
-			agi: 80,
-		},
-		damageModifiers: {
-			'fire':  -1.0,
-			'earth': Game.bonusMultiplier,
-		},
-		immunities: [],
-		munchData: {
-			skill: 'flameBreath',
-		},
-	},
-
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",

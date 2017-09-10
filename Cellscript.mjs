@@ -3,8 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { transpile } from 'cell-runtime';
-
 Object.assign(Sphere.Game,
 {
 	name: "Spectacles: Bruce's Story",
@@ -22,8 +20,8 @@ Object.assign(Sphere.Game,
 	disableTitleScreen: false,
 });
 
-transpile('@/scripts', files('src/*.js', true));
-transpile('@/scripts', files('src/*.mjs', true));
+install('@/scripts', files('src/*.js', true));
+install('@/scripts', files('src/*.mjs', true));
 
 install('@/images',     files('images/*.png', true));
 install('@/lib',        files('lib/*.js', true));

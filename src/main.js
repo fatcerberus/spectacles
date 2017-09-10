@@ -3,16 +3,12 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireSystemScript('persist.js');
-
 const from     = require('from'),
       Console  = require('console'),
       Delegate = require('delegate'),
       Image    = require('image'),
       Joypad   = require('joypad'),
       Music    = require('music'),
-      Pact     = require('pact'),
-      Person   = require('person'),
       Prim     = require('prim'),
       Random   = require('random'),
       Scene    = require('scene'),
@@ -37,8 +33,6 @@ function game()
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 
-	persist.init();
-
 	Console.initialize({ hotKey: Key.Tilde });
 	Console.defineObject('yap', null, {
 		'on': function() {
@@ -54,11 +48,7 @@ function game()
 	TestHarness.initialize();
 
 	let dayNight = new DayNightEngine();
-	
-	let session = new Session();
-	persist.getWorld().session = session;
-	MapEngine('Testville.rmp', screen.frameRate);
-	//TestHarness.run('rsb2');
+	TestHarness.run('rsb2');
 }
 
 function clone(o, memo = [])

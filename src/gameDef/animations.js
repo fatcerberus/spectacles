@@ -15,7 +15,7 @@ Game.animations =
 
 	munch: function(user, targets, doesMiss) {
 		new Scene()
-			.playSound('sounds/Munch.wav')
+			.playSound('sounds/munch.wav')
 			.run();
 		this.nextEffect();
 	},
