@@ -20,7 +20,7 @@ class DayNightEngine extends Thread
 	{
 		super({ priority: 1 });
 
-		Console.log("initialize day/night engine", `time: ${this.now()}`);
+		console.log("initialize day/night engine", `time: ${this.now()}`);
 		this.currentMask = Color.Transparent;
 		this.start();
 	}

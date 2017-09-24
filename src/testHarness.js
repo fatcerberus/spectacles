@@ -7,12 +7,12 @@ class TestHarness
 {
 	static initialize()
 	{
-		Console.log("initialize Specs Engine test harness");
+		console.log("initialize Specs Engine test harness");
 
-		Console.defineObject('harness', this, {
+		console.defineObject('harness', this, {
 			'run': function(testID) {
 				if (!(testID in this.tests))
-					return Console.log(`unknown test ID '${testID}'`);
+					return console.log(`unknown test ID '${testID}'`);
 				this.run(testID);
 			}
 		});
@@ -22,7 +22,7 @@ class TestHarness
 		let fileNames = from(new DirectoryStream('$/testCases'))
 			.where(it => it.fileName.endsWith('.js'))
 			.select(it => it.fullPath)
-			.besides(it => Console.log(`found ${it}`));
+			.besides(it => console.log(`found '${it}'`));
 		for (let fileName of fileNames)
 			EvaluateScript(fileName);
 	}
@@ -33,10 +33,10 @@ class TestHarness
 			setup: setupData,
 			run: function() {
 				if (TestHarness.isBattleRunning) {
-					Console.log("cannot start test battle, one is ongoing");
+					console.log("cannot start test battle, one is ongoing");
 					return;
 				}
-				Console.log("initiate test battle", `battleID: ${this.setup.battleID}`);
+				console.log("initiate test battle", `battleID: ${this.setup.battleID}`);
 				var session = new Session();
 				for (let characterID of Game.initialParty)
 					session.party.remove(characterID);
@@ -57,7 +57,7 @@ class TestHarness
 				TestHarness.isBattleRunning = false;
 			}
 		};
-		Console.log(`add battle test '${testID}'`);
+		console.log(`add battle test '${testID}'`);
 	}
 
 	static addTest(testID, func)
@@ -69,15 +69,15 @@ class TestHarness
 				this.func.call(this.context);
 			}
 		};
-		Console.defineObject(testID, this.tests[testID], {
+		console.defineObject(testID, this.tests[testID], {
 			'test': TestHarness.run.bind(TestHarness, testID)
 		});
-		Console.log(`add generic test '${testID}'`);
+		console.log(`add generic test '${testID}'`);
 	}
 
 	static run(testID)
 	{
-		Console.log("test harness invoked", `testID: ${testID}`);
+		console.log("test harness invoked", `testID: ${testID}`);
 		this.tests[testID].run(this.tests[testID].setup, testID);
 	}
 }

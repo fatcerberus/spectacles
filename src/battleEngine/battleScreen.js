@@ -23,7 +23,7 @@ class BattleScreen
 
 		this.startRunning = function()
 		{
-			Console.log("activate main battle screen");
+			console.log("activate main battle screen");
 			this.thread = Thread.create(this);
 			this.hud.show();
 		};
@@ -69,9 +69,9 @@ class BattleScreen
 				var x = GetScreenWidth() / 2 - width / 2;
 				var y = 112;
 				var textY = y + height / 2 - this.font.getHeight() / 2;
-				var boxColor = this.color.fade(1.0 - this.fadeness);
+				var boxColor = this.color.fadeTo(1.0 - this.fadeness);
 				Prim.drawSolidRectangle(screen, x, y, width, height, boxColor);
-				Prim.drawRectangle(screen, x, y, width, height, 1, Color.Black.fade(0.25 * (1.0 - this.fadeness)));
+				Prim.drawRectangle(screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
 			update: function() {
@@ -131,7 +131,7 @@ class BattleScreen
 		if (this.title === null || Sphere.Game.disableAnimations)
 			return;
 		new Scene()
-			.marquee(this.title, Color.Black.fade(0.5))
+			.marquee(this.title, Color.Black.fadeTo(0.5))
 			.run(true);
 	}
 }

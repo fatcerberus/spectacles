@@ -22,7 +22,7 @@ class Battle
 		if (!(battleID in Game.battles))
 			throw new ReferenceError(`no encounter data for '${battleID}'`);
 
-		Console.log(`initialize battle context for '${battleID}'`);
+		console.log(`initialize battle context for '${battleID}'`);
 		this.aiList = [];
 		this.battleID = battleID;
 		this.mode = null;
@@ -51,12 +51,12 @@ class Battle
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 					this.session.battlesSeen.push(this.battleID);
 					 if ('onFirstStart' in this.parameters) {
-						Console.log(`call onFirstStart() for battle '${this.battleID}'`);
+						console.log(`call onFirstStart() for battle '${this.battleID}'`);
 						this.parameters.onFirstStart.call(this);
 					 }
 				}
 				if ('onStart' in this.parameters) {
-					Console.log(`call onStart() for battle '${this.battleID}'`);
+					console.log(`call onStart() for battle '${this.battleID}'`);
 					this.parameters.onStart.call(this);
 				}
 				this.ui.showTitle();
@@ -67,13 +67,13 @@ class Battle
 				break;
 		}
 		if (this.result !== null) {
-			Console.log("shut down battle engine");
+			console.log("shut down battle engine");
 			from(this.battleUnits)
 				.each(unit => unit.dispose());
 			this.ui.dispose();
 			Music.pop();
 			Music.adjustVolume(1.0, 0);
-			Console.undefineObject('battle');
+			console.undefineObject('battle');
 			return false;
 		}
 		else {
@@ -90,9 +90,9 @@ class Battle
 		if (!eventData.cancel) {
 			let effect = new FieldCondition(eventData.conditionID, this);
 			this.conditions.push(effect);
-			Console.log(`install field condition ${effect.name}`);
+			console.log(`install field condition ${effect.name}`);
 		} else {
-			Console.log(`cancel FC '${conditionID}' per existing FC`);
+			console.log(`cancel FC '${conditionID}' per existing FC`);
 		}
 	}
 
@@ -133,27 +133,27 @@ class Battle
 	go()
 	{
 		if (Sphere.Game.disableBattles) {
-			Console.log("battles disabled, automatic win", `battleID: ${this.battleID}`);
+			console.log("battles disabled, automatic win", `battleID: ${this.battleID}`);
 			this.result = BattleResult.Win;
 			return null;
 		}
-		Console.log("");
-		Console.log("start battle engine", `battleID: ${this.battleID}`);
+		console.log("");
+		console.log("start battle engine", `battleID: ${this.battleID}`);
 		var partyMaxMP = 0;
 		for (let key in this.session.party.members) {
 			var battlerInfo = this.session.party.members[key].getInfo();
 			var mpDonated = Math.round(Game.math.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
-			Console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+			console.log(Game.characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 		}
 		partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 		var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
-		partyMPPool.gainedMP.add(function(mpPool, availableMP) {
+		partyMPPool.gainedMP.addHandler((mpPool, availableMP) => {
 			this.ui.hud.mpGauge.set(availableMP);
-		}, this);
-		partyMPPool.lostMP.add(function(mpPool, availableMP) {
+		});
+		partyMPPool.lostMP.addHandler((mpPool, availableMP) => {
 			this.ui.hud.mpGauge.set(availableMP);
-		}, this);
+		});
 		this.ui = new BattleScreen(partyMaxMP);
 		this.battleUnits = [];
 		this.playerUnits = [];
@@ -181,7 +181,7 @@ class Battle
 		this.result = null;
 		this.timer = 0;
 		this.mode = 'setup';
-		Console.defineObject('battle', this, {
+		console.defineObject('battle', this, {
 			'spawn': this.spawnEnemy
 		});
 		var battleThread = Thread.create(this);
@@ -204,14 +204,14 @@ class Battle
 	{
 		from(this.conditions)
 			.where(v => v.conditionID === conditionID)
-			.besides(v => Console.log(`lift field condition ${v.name}`))
+			.besides(v => console.log(`lift field condition ${v.name}`))
 			.remove();
 	}
 
 	notifyAIs(eventName, ...args)
 	{
 		from(this.aiList)
-			.besides(v => Console.log(`notify AI battler ${v.unit.name} '${eventName}'`))
+			.besides(v => console.log(`notify AI battler ${v.unit.name} '${eventName}'`))
 			.each(v => v[`on_${eventName}`](...args));
 	}
 
@@ -273,7 +273,7 @@ class Battle
 			.where(it => it.targetHint === 'user')
 			.each(effect =>
 		{
-			Console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
+			console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 			let effectHandler = Game.moveEffects[effect.type];
 			effectHandler(actingUnit, [ actingUnit ], effect);
 		});
@@ -297,7 +297,7 @@ class Battle
 			}
 			let odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
 			let isHit = Random.chance(odds);
-			Console.log(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
+			console.log(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
 				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
@@ -324,7 +324,7 @@ class Battle
 					let targets = effect.targetHint == 'random'
 						? [ Random.sample(targetsHit) ]
 						: targetsHit;
-					Console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
+					console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 					Game.moveEffects[effect.type](actingUnit, targets, effect);
 				}
 				return this.pc < this.effects.length;
@@ -342,7 +342,7 @@ class Battle
 
 	spawnEnemy(enemyClass)
 	{
-		Console.log(`spawn new enemy '${enemyClass}'`);
+		console.log(`spawn new enemy '${enemyClass}'`);
 		var newUnit = new BattleUnit(this, enemyClass);
 		this.battleUnits.push(newUnit);
 		this.enemyUnits.push(newUnit);
@@ -357,8 +357,8 @@ class Battle
 	{
 		if (this.suspendCount > 0 || this.result != null)
 			return;
-		Console.log("");
-		Console.log(`begin CTB turn cycle #${this.timer + 1}`);
+		console.log("");
+		console.log(`begin CTB turn cycle #${this.timer + 1}`);
 		++this.timer;
 		var isUnitDead = unit => !unit.isAlive();
 		var unitLists = [ this.enemyUnits, this.playerUnits ];
@@ -376,14 +376,14 @@ class Battle
 				Music.adjustVolume(0.0, 120);
 				this.ui.fadeOut(2.0);
 				this.result = BattleResult.Lose;
-				Console.log("all player characters have been KO'd");
+				console.log("all player characters have been KO'd");
 				return;
 			}
 			if (from(this.enemyUnits).all(isUnitDead)) {
 				Music.adjustVolume(0.0, 60);
 				this.ui.fadeOut(1.0);
 				this.result = BattleResult.Win;
-				Console.log("all enemies have been KO'd");
+				console.log("all enemies have been KO'd");
 				return;
 			}
 		}

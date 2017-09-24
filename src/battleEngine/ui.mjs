@@ -10,15 +10,15 @@ class HPGauge
 {
 	constructor(capacity, sectorSize = 100, color = Color.White, maxSectors = 'auto')
 	{
-		this.borderColor = Color.Black.fade(color.a);
+		this.borderColor = Color.Black.fadeTo(color.a);
 		this.capacity = capacity;
 		this.colorFadeDuration = 0;
 		this.colorFadeTimer = 0;
 		this.damage = 0;
-		this.damageColor = Color.DarkRed.fade(color.a);
+		this.damageColor = Color.DarkRed.fadeTo(color.a);
 		this.damageFadeness = 1.0;
 		this.drainSpeed = 1.0;
-		this.emptyColor = Color.of('#202020').fade(color.a);
+		this.emptyColor = Color.of('#202020').fadeTo(color.a);
 		this.fadeSpeed = 0.0;
 		this.fadeness = 1.0;
 		this.hpColor = color.clone();
@@ -202,9 +202,9 @@ class MPGauge
 		screen.clipTo(x, y, size, size);
 		if (this.capacity > 0) {
 			var innerFillColor = this.color;
-			var outerFillColor = Color.mix(this.color, Color.Black.fade(this.color.a));
+			var outerFillColor = Color.mix(this.color, Color.Black.fadeTo(this.color.a));
 			var outerUsageColor = this.usageColor;
-			var innerUsageColor = Color.mix(this.usageColor, Color.Black.fade(this.usageColor.a));
+			var innerUsageColor = Color.mix(this.usageColor, Color.Black.fadeTo(this.usageColor.a));
 			var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 			Prim.drawSolidCircle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
 			Prim.drawSolidCircle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
@@ -332,7 +332,7 @@ class TurnPreview
 	show()
 	{
 		if (this.thread === null) {
-			Console.log("activate battle screen turn preview");
+			console.log("activate battle screen turn preview");
 			this.thread = Thread.create(this, 20);
 		}
 		new Scene()
@@ -351,7 +351,7 @@ function drawSegment(x, y, width, height, color)
 	let topHeight = Math.ceil(height / 8);
 	let bottomHeight = height - topHeight;
 	let yBottom = y + topHeight;
-	let dimColor = Color.mix(color, Color.Black.fade(color.a), 66, 33);
+	let dimColor = Color.mix(color, Color.Black.fadeTo(color.a), 66, 33);
 	Prim.drawSolidRectangle(screen, x, y, width, topHeight, dimColor, dimColor, color, color);
 	Prim.drawSolidRectangle(screen, x, yBottom, width, bottomHeight, color, color, dimColor, dimColor);
 };
@@ -367,13 +367,13 @@ function drawText(font, x, y, shadowDistance, color, text, alignment = 'left')
 	if (!(alignment in Align))
 		throw new Error(`invalid text alignment '${alignment}'.`);
 	x = Align[alignment](font, x, text);
-	font.drawText(screen, x + shadowDistance, y + shadowDistance, text, Color.Black.fade(color.a));
+	font.drawText(screen, x + shadowDistance, y + shadowDistance, text, Color.Black.fadeTo(color.a));
 	font.drawText(screen, x, y, text, color);
 }
 
 function fadeColor(color, fadeness)
 {
-	return color.fade(1.0 - fadeness);
+	return color.fadeTo(1.0 - fadeness);
 }
 
 function tween(start, time, duration, end)

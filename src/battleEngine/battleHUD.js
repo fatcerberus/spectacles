@@ -99,7 +99,7 @@ BattleHUD.prototype.createEnemyHPGauge = function(unit)
 	var gauge = new HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 	this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 	gauge.show(0.0);
-	Console.log(`create HP gauge for unit '${unit.name}'`, `cap: ${unit.maxHP}`);
+	console.log(`create HP gauge for unit '${unit.name}'`, `cap: ${unit.maxHP}`);
 };
 
 // .hide() method
@@ -223,7 +223,7 @@ BattleHUD.prototype.setPartyMember = function(slot, unit, hp, maxHP)
 BattleHUD.prototype.show = function()
 {
 	if (this.thread === null) {
-		Console.log("activate battle screen HUD");
+		console.log("activate battle screen HUD");
 		this.thread = Thread.create(this, 20);
 	}
 	new Scene()

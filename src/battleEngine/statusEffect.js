@@ -15,7 +15,7 @@ class StatusEffect
 		this.statusDef = Game.statuses[statusID];
 		this.statusID = statusID;
 		this.unit = unit;
-		Console.log(`initialize status effect ${unit.name}->${this.name}`);
+		console.log(`initialize status effect ${unit.name}->${this.name}`);
 		if ('overrules' in this.statusDef) {
 			for (let i = 0; i < this.statusDef.overrules.length; ++i)
 				this.unit.liftStatus(this.statusDef.overrules[i]);
@@ -40,7 +40,7 @@ class StatusEffect
 	{
 		if (!(eventID in this.statusDef))
 			return;  // no-op if no handler
-		Console.log(`invoke ${this.unit.name}->${this.name}`, `evt: ${eventID}`);
+		console.log(`invoke ${this.unit.name}->${this.name}`, `evt: ${eventID}`);
 		this.unit.battle.suspend();
 		this.statusDef[eventID].call(this.context, this.unit, data);
 		this.unit.battle.resume();

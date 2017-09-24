@@ -66,6 +66,6 @@ class TitleScreen
 	render()
 	{
 		Prim.blit(screen, 0, 0, this.image);
-		Prim.fill(screen, Color.Black.fade(this.fadeness));
+		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
 	}
 }

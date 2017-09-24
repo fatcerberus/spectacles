@@ -33,15 +33,17 @@ function game()
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 
-	Console.initialize({ hotKey: Key.Tilde });
-	Console.defineObject('yap', null, {
+	global.console = new Console({ hotKey: Key.Tilde });
+
+	console.start();
+	console.defineObject('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;
-			Console.log("oh, yappy times are here again...");
+			console.log("oh, yappy times are here again...");
 		},
 		'off': function() {
 			Sphere.Game.disableTalking = true;
-			Console.log("the yappy times are OVER!");
+			console.log("the yappy times are OVER!");
 		},
 	});
 

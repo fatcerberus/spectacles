@@ -71,7 +71,7 @@ class ItemUsable
 		if (!this.isUsable(unit, unit.stance))
 			throw new Error(`${unit.name} tried to use unusable item ${this.name}`);
 		--this.usesLeft;
-		Console.log(`${unit.name} is using ${this.name}`,
+		console.log(`${unit.name} is using ${this.name}`,
 			`targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`,
 			`left: ${this.usesLeft}`);
 		var eventData = { item: clone(this.itemDef) };

@@ -10,7 +10,7 @@ class MPPool
 		this.id = id;
 		this.availableMP = Math.min(availableMP, capacity);
 		this.capacity = capacity;
-		Console.log(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
+		console.log(`create MP pool '${this.id}'`, `cap: ${this.capacity}`,
 			`now: ${this.availableMP}`);
 
 		// handler function signature:
@@ -25,7 +25,7 @@ class MPPool
 		this.availableMP = Math.min(this.availableMP + amount, this.capacity);
 		this.gainedMP.call(this, this.availableMP);
 		if (amount != 0) {
-			Console.log(`restore ${amount} MP to pool '${this.id}'`,
+			console.log(`restore ${amount} MP to pool '${this.id}'`,
 				`now: ${this.availableMP}`);
 		}
 	}
@@ -38,7 +38,7 @@ class MPPool
 		this.availableMP -= amount;
 		this.lostMP.call(this, this.availableMP);
 		if (amount != 0) {
-			Console.log(`use ${Math.round(amount)} MP from pool '${this.id}'`,
+			console.log(`use ${Math.round(amount)} MP from pool '${this.id}'`,
 				`left: ${this.availableMP}`);
 		}
 	}

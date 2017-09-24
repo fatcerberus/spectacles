@@ -33,7 +33,7 @@ Scene.defineAction('battle',
 			case 'battle':
 				if (!Thread.isRunning(this.battleThread)) {
 					if (this.battle.result == BattleResult.Lose) {
-						Console.log("player lost battle, showing Game Over screen");
+						console.log("player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
@@ -45,7 +45,7 @@ Scene.defineAction('battle',
 			case 'gameOver':
 				if (!Thread.isRunning(this.gameOverThread)) {
 					if (this.gameOver.action === GameOverAction.Retry) {
-						Console.log("player asked to retry last battle");
+						console.log("player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
 					} else {
@@ -94,7 +94,7 @@ Scene.defineAction('marquee',
 		var textX = screen.width - this.scroll * this.windowSize;
 		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
 		Prim.drawSolidRectangle(screen, 0, boxY, screen.width, boxHeight, this.background);
-		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fade(this.color.a));
+		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fadeTo(this.color.a));
 		this.font.drawText(screen, textX, textY, this.text, this.color);
 	},
 

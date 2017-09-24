@@ -233,7 +233,7 @@ class Robert2AI extends BattleAI
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
 
-		Console.log(userID, itemID, targetIDs);
+		console.log(userID, itemID, targetIDs);
 
 		var curativeIDs = [ 'tonic', 'powerTonic' ];
 		if (userID == 'robert2' && from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
