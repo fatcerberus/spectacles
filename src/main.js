@@ -35,7 +35,6 @@ function game()
 
 	global.console = new Console({ hotKey: Key.Tilde });
 
-	console.start();
 	console.defineObject('yap', null, {
 		'on': function() {
 			Sphere.Game.disableTalking = false;
