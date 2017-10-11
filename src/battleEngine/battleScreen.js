@@ -54,7 +54,7 @@ class BattleScreen
 		}
 	}
 
-	announceAction(actionName, alignment, bannerColor = Color.Gray)
+	async announceAction(actionName, alignment, bannerColor = Color.Gray)
 	{
 		let announcement = {
 			screen: this,
@@ -79,12 +79,12 @@ class BattleScreen
 			}
 		};
 		let thread = Thread.create(announcement, 10);
-		new Scene()
+		await new Scene()
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 0.0 })
 			.pause(46)
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 1.0 })
-			.run(true);
-		Thread.kill(thread);
+			.run();
+		thread.stop();
 	}
 
 	createActor(name, position, row, alignment, alreadyThere = false)
@@ -97,23 +97,23 @@ class BattleScreen
 		return actor;
 	}
 
-	fadeOut(duration)
+	async fadeOut(duration)
 	{
 		if (Sphere.Game.disableAnimations) {
 			this.dispose();
 			return;
 		}
-		new Scene()
+		await new Scene()
 			.fadeTo(Color.Black, duration)
 			.call(this.dispose.bind(this))
 			.fadeTo(Color.Transparent, 0.5)
-			.run(true);
+			.run();
 	}
 
-	go(title = null)
+	async go(title = null)
 	{
 		this.title = title;
-		new Scene()
+		await new Scene()
 			.doIf(() => !Sphere.Game.disableAnimations)
 				.fadeTo(Color.White, 15)
 				.fadeTo(Color.Transparent, 30)
@@ -123,15 +123,15 @@ class BattleScreen
 			.doIf(() => !Sphere.Game.disableAnimations)
 				.fadeTo(Color.Transparent, 60)
 			.end()
-			.run(true);
+			.run();
 	}
 
-	showTitle()
+	async showTitle()
 	{
 		if (this.title === null || Sphere.Game.disableAnimations)
 			return;
-		new Scene()
+		await new Scene()
 			.marquee(this.title, Color.Black.fadeTo(0.5))
-			.run(true);
+			.run();
 	}
 }

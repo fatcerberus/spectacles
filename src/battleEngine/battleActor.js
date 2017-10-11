@@ -45,13 +45,13 @@ class BattleActor
 					.pause(15);
 				data.scene.run();
 			}
-			if (!data.scene.isRunning()) {
+			if (!data.scene.running) {
 				this.damages.splice(i, 1);
 				--i;
 			}
 		}
 		for (let i = 0; i < this.healings.length; ++i) {
-			if (!this.healings[i].scene.isRunning()) {
+			if (!this.healings[i].scene.running) {
 				this.healings.splice(i, 1);
 				--i;
 			}
@@ -85,7 +85,7 @@ class BattleActor
 		}
 	}
 
-	animate(animationID)
+	async animate(animationID)
 	{
 		// TODO: implement me!
 		switch (animationID) {
@@ -106,29 +106,27 @@ class BattleActor
 					.run();
 				break;
 			case 'sleep':
-				new Scene()
+				await new Scene()
 					.talk("maggie", 2.0, this.name + " fell asleep! Hey, does that mean I get to eat him now?")
-					.run(true);
+					.run();
 				break;
 		}
 	}
 
-	enter(isImmediate = false)
+	async enter(isImmediate = false)
 	{
 		if (this.hasEntered)
 			return;
 		var newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
-		var threadID = null;
 		if (!isImmediate) {
-			var entrance = new Scene()
+			await new Scene()
 				.tween(this, 90, 'linear', { x: newX })
-				.run(true);
+				.run();
 		} else {
 			this.x = newX;
 		}
 		this.sprite.stop();
 		this.hasEntered = true;
-		return threadID;
 	}
 
 	showDamage(amount, color = null)

@@ -28,8 +28,8 @@ class TitleScreen
 		this.transition = new Scene()
 			.adjustBGM(1.0)
 			.pushBGM(this.themeTrack)
-			.tween(this, 120, 'linear', { fadeness: 0.0 })
-			.run();
+			.tween(this, 120, 'linear', { fadeness: 0.0 });
+		this.transition.run();
 		Thread.join(Thread.create(this));
 		Music.pop();
 		Music.adjustVolume(1.0);
@@ -42,7 +42,7 @@ class TitleScreen
 			case 'idle':
 				return true;
 			case 'transitionIn':
-				if (!this.transition.isRunning()) {
+				if (!this.transition.running) {
 					this.mode = 'idle';
 					this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
 					if (Sphere.Game.disableAnimations) {
@@ -52,13 +52,13 @@ class TitleScreen
 						.fork()
 							.adjustBGM(0.0, 120)
 						.end()
-						.tween(this, 120, 'linear', { fadeness: 1.0 })
-						.run();
+						.tween(this, 120, 'linear', { fadeness: 1.0 });
+					this.transition.run();
 					this.mode = 'transitionOut';
 				}
 				break;
 			case 'transitionOut':
-				return this.transition.isRunning();
+				return this.transition.running;
 		}
 		return true;
 	}

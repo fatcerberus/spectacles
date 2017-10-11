@@ -90,7 +90,7 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 			.end()
 			.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 			.resync()
-			.call(function() {
+			.call(() => {
 				this.unitToShowInfo = unit;
 				if (this.unitToShowInfo !== null) {
 					this.statusNames = !this.unitToShowInfo.isAlive() ? [ "Knocked Out" ] : [];
@@ -98,12 +98,12 @@ function TargetMenu(unit, battle, usable = null, moveName = null)
 						this.statusNames.push(this.unitToShowInfo.statuses[i].name);
 					}
 				}
-			}.bind(this))
+			})
 			.fork()
 				.tween(this, 15, 'easeOutBack', { infoBoxFadeness: 0.0 })
 			.end()
-			.tween(this, 15, 'easeInOutSine', { infoFadeness: 0.0 })
-			.run();
+			.tween(this, 15, 'easeInOutSine', { infoFadeness: 0.0 });
+		this.doChangeInfo.run();
 	};
 }
 
@@ -177,7 +177,7 @@ TargetMenu.prototype.lockTargets = function(targetUnits)
 // Opens the targeting menu and waits for the player to select a target.
 // Returns:
 //     A list of all units chosen by the player.
-TargetMenu.prototype.open = function()
+TargetMenu.prototype.open = async function ()
 {
 	this.isChoiceMade = false;
 	if (!this.isTargetLocked) {
@@ -190,7 +190,9 @@ TargetMenu.prototype.open = function()
 	while (AreKeysLeft()) {
 		GetKey();
 	}
-	Thread.join(Thread.create(this, 10));
+	let thread = Thread.create(this, 10);
+	thread.takeInput();
+	await Thread.join(thread);
 	return this.targets;
 };
 

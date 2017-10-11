@@ -52,7 +52,7 @@ class BattleAI
 		this.lastPhase = 0;
 	}
 
-	getNextMove()
+	async getNextMove()
 	{
 		var moveToUse = null;
 		do {
@@ -75,7 +75,7 @@ class BattleAI
 				this.targets = null;
 				this.updatePhase();
 				if (this.moveQueue.length == 0)
-					this.strategize();
+					await this.strategize();
 				if (this.moveQueue.length == 0) {
 					console.log(`no moves queued for ${this.unit.name}, using default`);
 					if (this.defaultSkillID !== null) {

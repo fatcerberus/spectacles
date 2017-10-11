@@ -194,7 +194,7 @@ function MoveMenu(unit, battle, stance)
 MoveMenu.prototype.getInput = function()
 {
 	var key = AreKeysLeft() ? GetKey() : null;
-	/*if (this.showMenu.isRunning()) {
+	/*if (this.showMenu.running) {
 		return;
 	}*/
 	if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
@@ -267,7 +267,7 @@ MoveMenu.prototype.getInput = function()
 
 // .open() method
 // Opens the menu to allow the player to choose an action.
-MoveMenu.prototype.open = function()
+MoveMenu.prototype.open = async function ()
 {
 	this.battle.suspend();
 	this.battle.ui.hud.highlight(this.unit);
@@ -282,24 +282,25 @@ MoveMenu.prototype.open = function()
 		this.showMenu.run();
 		this.updateTurnPreview();
 		this.menuThread = Thread.create(this, 10);
-		Thread.join(this.menuThread);
+		this.menuThread.takeInput();
+		await Thread.join(this.menuThread);
 		switch (this.stance) {
 			case Stance.Attack:
 			case Stance.Charge:
 				var name = this.stance == Stance.Charge
 					? `CS ${this.selection.name}`
 					: this.selection.name;
-				var chosenTargets = new TargetMenu(this.unit, this.battle, this.selection, name).open();
+				var chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).open();
 				break;
 			case Stance.Counter:
 				var targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
 				targetMenu.lockTargets([ this.unit.counterTarget ]);
-				var chosenTargets = targetMenu.open();
+				var chosenTargets = await targetMenu.open();
 				break;
 			case Stance.Guard:
 				var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
 				targetMenu.lockTargets([ this.unit ]);
-				var chosenTargets = targetMenu.open();
+				var chosenTargets = await targetMenu.open();
 				break;
 		}
 	}
@@ -344,7 +345,7 @@ MoveMenu.prototype.render = function()
 		Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
 		itemY = y;
 		for (let i = 0; i < this.moveMenu.length; ++i) {
-			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.isRunning());
+			this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.running);
 			itemY += 18;
 		}
 		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
@@ -358,5 +359,5 @@ MoveMenu.prototype.render = function()
 MoveMenu.prototype.update = function()
 {
 	return (this.stance != Stance.Guard && this.selection === null)
-		|| this.chooseMove.isRunning();
+		|| this.chooseMove.running;
 };

@@ -18,11 +18,11 @@ Game.battles =
 		enemies: [
 			'robert2'
 		],
-		onStart() {
+		async onStart() {
 			let scottUnit = this.findUnit('scott');
 			if (scottUnit !== null) {
 				scottUnit.addStatus('specsAura');
-				new Scene()
+				await new Scene()
 					.talk("Robert", true, 1.0, Infinity,
 						"Bruce's death changed nothing.  Hell, if anything, it's made you far too reckless. Look around, "
 						+ "Scott!  Where are your friends?  Did they abandon you in your most desperate hour, or are you truly "
@@ -32,7 +32,7 @@ Game.battles =
 						+ "Not now. Not when I know just what my world would become if I did!")
 					.pause(120)
 					.talk("Robert", true, 1.0, Infinity, "What makes you so sure you have a choice?")
-					.run(true);
+					.run();
 			}
 		},
 	},

@@ -5,7 +5,7 @@
 
 RequireScript('battleEngine/battle.js');
 
-Scene.defineAction('adjustBGM',
+Scene.defineOp('adjustBGM',
 {
 	start(scene, volume, duration = 0.0) {
 		Music.adjustVolume(volume, duration);
@@ -20,7 +20,7 @@ Scene.defineAction('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-Scene.defineAction('battle',
+Scene.defineOp('battle',
 {
 	start(scene, battleID, session) {
 		this.mode = 'battle';
@@ -31,7 +31,7 @@ Scene.defineAction('battle',
 	update(scene) {
 		switch (this.mode) {
 			case 'battle':
-				if (!Thread.isRunning(this.battleThread)) {
+				if (!this.battleThread.running) {
 					if (this.battle.result == BattleResult.Lose) {
 						console.log("player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
@@ -43,7 +43,7 @@ Scene.defineAction('battle',
 				}
 				break;
 			case 'gameOver':
-				if (!Thread.isRunning(this.gameOverThread)) {
+				if (!this.gameOverThread.running) {
 					if (this.gameOver.action === GameOverAction.Retry) {
 						console.log("player asked to retry last battle");
 						this.mode = 'battle';
@@ -58,19 +58,16 @@ Scene.defineAction('battle',
 	}
 });
 
-Scene.defineAction('changeBGM',
+Scene.defineOp('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
 		Music.play(trackName, fadeTime);
 	}
 });
 
-Scene.defineAction('marquee',
+Scene.defineOp('marquee',
 {
-	start(scene, text, backgroundColor, color) {
-		backgroundColor = backgroundColor || Color.Black;
-		color = color || Color.White;
-
+	start(scene, text, backgroundColor = Color.Black, color = Color.White) {
 		this.text = text;
 		this.color = color;
 		this.background = backgroundColor;
@@ -84,8 +81,8 @@ Scene.defineAction('marquee',
 			.tween(this, 15, 'linear', { fadeness: 1.0 })
 			.tween(this, 60, 'easeOutExpo', { scroll: 0.5 })
 			.tween(this, 60, 'easeInExpo', { scroll: 1.0 })
-			.tween(this, 15, 'linear', { fadeness: 0.0 })
-			.run();
+			.tween(this, 15, 'linear', { fadeness: 0.0 });
+		this.animation.run();
 	},
 
 	render(scene) {
@@ -99,25 +96,25 @@ Scene.defineAction('marquee',
 	},
 
 	update(scene) {
-		return this.animation.isRunning();
+		return this.animation.running;
 	}
 });
 
-Scene.defineAction('popBGM',
+Scene.defineOp('popBGM',
 {
 	start(scene) {
 		Music.pop();
 	}
 });
 
-Scene.defineAction('pushBGM',
+Scene.defineOp('pushBGM',
 {
 	start(scene, trackName) {
 		Music.push(trackName);
 	}
 });
 
-Scene.defineAction('talk',
+Scene.defineOp('talk',
 {
 	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
@@ -149,8 +146,8 @@ Scene.defineAction('talk',
 		this.lineToReveal = 0;
 		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
 		this.transition = new Scene()
-			.tween(this, 20, 'easeOutBack', { boxVisibility: 1.0 })
-			.run();
+			.tween(this, 20, 'easeOutBack', { boxVisibility: 1.0 });
+		this.transition.run();
 		this.mode = "fadein";
 		while (AreKeysLeft()) {
 			GetKey();
@@ -216,7 +213,7 @@ Scene.defineAction('talk',
 			case "idle":
 				if (this.timeout !== Infinity) {
 					if (this.topLine + 3 >= this.text[this.currentPage].length) {
-						this.timeoutLeft -= 1.0 / screen.frameRate;
+						this.timeoutLeft -= 1.0 / Sphere.frameRate;
 						if (this.timeoutLeft <= 0.0) {
 							if (this.currentPage < this.text.length - 1) {
 								this.mode = "page";
@@ -233,14 +230,14 @@ Scene.defineAction('talk',
 				}
 				break;
 			case "fadein":
-				if (!this.transition.isRunning()) {
+				if (!this.transition.running) {
 					this.mode = "write";
 				}
 				break;
 			case "write":
-				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / screen.frameRate, 1.0);
+				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Sphere.frameRate, 1.0);
 				if (this.nameVisibility >= 1.0) {
-					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / screen.frameRate, 1.0);
+					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / Sphere.frameRate, 1.0);
 					var lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					var currentLineText = this.text[this.currentPage][this.lineToReveal];
 					var currentLineWidth = this.font.getStringWidth(currentLineText);
@@ -268,7 +265,7 @@ Scene.defineAction('talk',
 					this.mode = "write";
 					break;
 				}
-				this.scrollOffset = Math.min(this.scrollOffset + 8.0 * this.textSpeed / screen.frameRate, 1.0);
+				this.scrollOffset = Math.min(this.scrollOffset + 8.0 * this.textSpeed / Sphere.frameRate, 1.0);
 				if (this.scrollOffset >= 1.0) {
 					this.topLine += 1;
 					this.scrollOffset = 0.0;
@@ -278,7 +275,7 @@ Scene.defineAction('talk',
 				}
 				break;
 			case "page":
-				this.textVisibility = Math.max(this.textVisibility - (2.0 * this.textSpeed) / screen.frameRate, 0.0);
+				this.textVisibility = Math.max(this.textVisibility - (2.0 * this.textSpeed) / Sphere.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
 					this.mode = "write";
 					++this.currentPage;
@@ -290,16 +287,16 @@ Scene.defineAction('talk',
 				}
 				break;
 			case "hidetext":
-				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / screen.frameRate, 0.0);
+				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Sphere.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
-					this.transition = new Scene()
-						.tween(this, 20, 'easeInBack', { boxVisibility: 0.0 })
-						.run();
+				    this.transition = new Scene()
+						.tween(this, 20, 'easeInBack', { boxVisibility: 0.0 });
+					this.transition.run();
 					this.mode = "fadeout";
 				}
 				break;
 			case "fadeout":
-				if (!this.transition.isRunning()) {
+				if (!this.transition.running) {
 					this.mode = "finish";
 				}
 				break;
@@ -309,7 +306,7 @@ Scene.defineAction('talk',
 		return true;
 	},
 
-	getInput: function(scene) {
+	getInput(scene) {
 		if (this.mode != "idle")
 			return;
 		if ((Keyboard.Default.isPressed(Key.Z) || Joypad.P1.isPressed(0))

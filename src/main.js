@@ -3,16 +3,16 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-const from     = require('from'),
-      Console  = require('console'),
-      Delegate = require('delegate'),
-      Image    = require('image'),
-      Joypad   = require('joypad'),
-      Music    = require('music'),
-      Prim     = require('prim'),
-      Random   = require('random'),
-      Scene    = require('scene'),
-      Thread   = require('thread');
+const from     = require('from').default,
+      Console  = require('console').default,
+      Delegate = require('delegate').default,
+      Image    = require('image').default,
+      Joypad   = require('joypad').default,
+      Music    = require('music').default,
+      Prim     = require('prim').default,
+      Random   = require('random').default,
+      Scene    = require('scene').default,
+      Thread   = require('thread').default;
 
 const { DayNightEngine } = require('$/inGameClock');
 
@@ -26,7 +26,7 @@ RequireScript('titleScreen.js');
 
 EvaluateScript('gameDef/game.js');
 
-function game()
+async function game()
 {
 	// note: a game() function is needed for now because the engine was
 	//       originally written for Sphere 1.x.  the goal is to eventually
@@ -49,7 +49,7 @@ function game()
 	TestHarness.initialize();
 
 	let dayNight = new DayNightEngine();
-	TestHarness.run('rsb2');
+	await TestHarness.run('rsb2');
 }
 
 function clone(o, memo = [])

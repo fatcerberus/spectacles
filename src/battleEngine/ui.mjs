@@ -165,15 +165,15 @@ class HPGauge
 			this.hpColor = this.newColor;
 			this.colorFadeDuration = 0;
 		}
-		this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / screen.frameRate, 0.0), 1.0);
-		this.drainTimer += this.drainSpeed / screen.frameRate;
+		this.fadeness = Math.min(Math.max(this.fadeness + this.fadeSpeed / Sphere.frameRate, 0.0), 1.0);
+		this.drainTimer += this.drainSpeed / Sphere.frameRate;
 		if (this.newReading != this.reading && this.drainTimer < 0.25) {
 			this.reading = Math.round(tween(this.oldReading, this.drainTimer, 0.25, this.newReading));
 		} else {
 			this.reading = this.newReading;
 		}
 		if (this.numCombosRunning <= 0 && this.reading == this.newReading) {
-			this.damageFadeness += this.drainSpeed / screen.frameRate;
+			this.damageFadeness += this.drainSpeed / Sphere.frameRate;
 			if (this.damageFadeness >= 1.0) {
 				this.damage = 0;
 				this.damageFadeness = 1.0;
@@ -229,15 +229,15 @@ class MPGauge
 					.tween(this, 15, 'easeInOutSine', { reading: value })
 				.end()
 				.tween(this.usageColor, 6, 'easeInOutSine', this.color)
-				.tween(this.usageColor, 30, 'easeInOutSine', Color.Transparent)
-				.run();
+				.tween(this.usageColor, 30, 'easeInOutSine', Color.Transparent);
+			this.animation.run();
 		}
 		this.value = value;
 	}
 
 	update()
 	{
-		if (this.animation != null && !this.animation.isRunning()) {
+		if (this.animation != null && !this.animation.running) {
 			this.usage = 0;
 		}
 	}
@@ -257,7 +257,7 @@ class TurnPreview
 
 	dispose()
 	{
-		Thread.kill(this.thread);
+		this.thread.stop();
 	}
 
 	ensureEntries(unit)

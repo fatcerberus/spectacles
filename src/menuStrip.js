@@ -24,12 +24,12 @@ class MenuStrip
 	{
 		switch (this.mode) {
 			case 'open':
-				if (!this.animation.isRunning()) {
+				if (!this.animation.running) {
 					this.mode = "idle";
 				}
 				break;
 			case 'changeItem':
-				if (!this.animation.isRunning()) {
+				if (!this.animation.running) {
 					var newSelection = this.selectedItem + this.scrollDirection;
 					if (newSelection < 0) {
 						newSelection = this.menuItems.length - 1;
@@ -43,7 +43,7 @@ class MenuStrip
 				}
 				break;
 			case 'close':
-				return this.animation.isRunning();
+				return this.animation.running;
 		}
 		return true;
 	}
@@ -113,26 +113,26 @@ class MenuStrip
 					.tween(this, 7, 'easeInOutSine', { brightness: 1.0 })
 					.tween(this, 7, 'easeInOutSine', { brightness: 0.0 })
 				.end()
-				.tween(this, 15, 'easeInQuad', { openness: 0.0 })
-				.run();
+				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
+			this.animation.run();
 			this.mode = 'close';
 		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
 			this.chosenItem = null;
 			this.animation = new Scene()
-				.tween(this, 15, 'easeInQuad', { openness: 0.0 })
-				.run();
+				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
+			this.animation.run();
 			this.mode = 'close';
 		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 			this.scrollDirection = -1;
 			this.animation = new Scene()
-				.tween(this, 15, 'linear', { scrollProgress: 1.0 })
-				.run();
+				.tween(this, 15, 'linear', { scrollProgress: 1.0 });
+			this.animation.run();
 			this.mode = 'changeItem';
 		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 			this.scrollDirection = 1;
 			this.animation = new Scene()
-				.tween(this, 15, 'linear', { scrollProgress: 1.0 })
-				.run();
+				.tween(this, 15, 'linear', { scrollProgress: 1.0 });
+			this.animation.run();
 			this.mode = 'changeItem';
 		}
 	}
@@ -151,7 +151,7 @@ class MenuStrip
 		return this.menuThread !== null;
 	}
 
-	open()
+	async open()
 	{
 		this.openness = 0.0;
 		this.scrollDirection = 0;
@@ -169,9 +169,9 @@ class MenuStrip
 		}
 		var menuThread = Thread.create(this, 100);
 		this.animation = new Scene()
-			.tween(this, 15, 'easeOutQuad', { openness: 1.0 })
-			.run();
-		Thread.join(menuThread);
+			.tween(this, 15, 'easeOutQuad', { openness: 1.0 });
+		this.animation.run();
+		await Thread.join(menuThread);
 		this.menuThread = null;
 		return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
 	}

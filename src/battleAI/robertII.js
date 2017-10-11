@@ -228,7 +228,7 @@ class Robert2AI extends BattleAI
 		}
 	};
 
-	on_itemUsed(userID, itemID, targetIDs)
+	async on_itemUsed(userID, itemID, targetIDs)
 	{
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
@@ -245,7 +245,7 @@ class Robert2AI extends BattleAI
 			}
 		} else if (userID == 'robert2' && itemID == 'alcohol' && from(targetIDs).anyIs('robert2')) {
 			this.unit.addStatus('finalStand');
-			new Scene()
+			await new Scene()
 				.adjustBGM(0.5, 300)
 				.talk("Scott", true, 2.0, Infinity,
 					"Robert! Tell me what we're accomplishing fighting like this! You HAVE to "
@@ -267,7 +267,7 @@ class Robert2AI extends BattleAI
 				.changeBGM('basicInstinct')
 				.adjustBGM(1.0)
 				.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
-				.run(true);
+				.run();
 		} else if (userID == 'scott' && from(targetIDs).anyIs('robert2')) {
 			if (from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
 				&& !this.isSkillQueued('electrocute'))

@@ -34,36 +34,31 @@ class Battle
 		this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.level;
 	}
 
-	update() {
+	async update() {
 		switch (this.mode) {
 			case 'setup':
 				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
 					? "Final Battle: " : "Boss Battle: ";
-				this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
-				let walkInThreads = [];
-				from(this.enemyUnits, this.playerUnits)
-					.each(function(unit)
-				{
-					let threadID = unit.actor.enter();
-					walkInThreads.push(threadID);
-				});
+				await this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
+				for (const unit of from(this.enemyUnits, this.playerUnits))
+					await unit.actor.enter();
 				this.ui.hud.turnPreview.show();
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 					this.session.battlesSeen.push(this.battleID);
 					 if ('onFirstStart' in this.parameters) {
 						console.log(`call onFirstStart() for battle '${this.battleID}'`);
-						this.parameters.onFirstStart.call(this);
+						await this.parameters.onFirstStart.call(this);
 					 }
 				}
 				if ('onStart' in this.parameters) {
 					console.log(`call onStart() for battle '${this.battleID}'`);
-					this.parameters.onStart.call(this);
+					await this.parameters.onStart.call(this);
 				}
-				this.ui.showTitle();
+				await this.ui.showTitle();
 				this.mode = 'battle';
 				break;
 			case 'battle':
-				this.tick();
+				await this.tick();
 				break;
 		}
 		if (this.result !== null) {
@@ -208,11 +203,12 @@ class Battle
 			.remove();
 	}
 
-	notifyAIs(eventName, ...args)
+	async notifyAIs(eventName, ...args)
 	{
-		from(this.aiList)
-			.besides(v => console.log(`notify AI battler ${v.unit.name} '${eventName}'`))
-			.each(v => v[`on_${eventName}`](...args));
+		for (const ai of this.aiList) {
+			console.log(`notify AI battler ${ai.unit.name} '${eventName}'`);
+			await ai[`on_${eventName}`](...args);
+		}
 	}
 
 	predictTurns(actingUnit = null, nextActions = null)
@@ -262,13 +258,13 @@ class Battle
 			this.suspendCount = 0;
 	}
 
-	runAction(action, actingUnit, targetUnits, useAiming = true)
+	async runAction(action, actingUnit, targetUnits, useAiming = true)
 	{
 		let eventData = { action: action, targets: targetUnits };
 		this.raiseEvent('actionTaken', eventData);
 		targetUnits = eventData.targets;
 		if ('announceAs' in action && action.announceAs != null)
-			actingUnit.announce(action.announceAs);
+			await actingUnit.announce(action.announceAs);
 		from(action.effects)
 			.where(it => it.targetHint === 'user')
 			.each(effect =>
@@ -300,7 +296,7 @@ class Battle
 			console.log(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
-				this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
+				await this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
 				targetsHit.push(targetUnits[i]);
 			} else {
 				targetUnits[i].evade(actingUnit, action);
@@ -353,7 +349,7 @@ class Battle
 		++this.suspendCount;
 	}
 
-	tick()
+	async tick()
 	{
 		if (this.suspendCount > 0 || this.result != null)
 			return;
@@ -369,9 +365,8 @@ class Battle
 		this.raiseEvent('beginCycle');
 		var actionTaken = false;
 		while (!actionTaken) {
-			from(...unitLists).each(unit => {
-				actionTaken = unit.tick() || actionTaken;
-			});
+			for (const unit of from(...unitLists))
+				actionTaken = await unit.tick() || actionTaken;
 			if (from(this.playerUnits).all(isUnitDead)) {
 				Music.adjustVolume(0.0, 120);
 				this.ui.fadeOut(2.0);
@@ -387,8 +382,8 @@ class Battle
 				return;
 			}
 		}
-		from(...unitLists)
-			.each(unit => unit.endCycle());
+		for (const unit of from(...unitLists))
+			await unit.endCycle();
 	}
 
 	unregisterAI(ai)

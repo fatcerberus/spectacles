@@ -10,7 +10,7 @@ class TestHarness
 		console.log("initialize Specs Engine test harness");
 
 		console.defineObject('harness', this, {
-			'run': function(testID) {
+			run(testID) {
 				if (!(testID in this.tests))
 					return console.log(`unknown test ID '${testID}'`);
 				this.run(testID);
@@ -31,7 +31,7 @@ class TestHarness
 	{
 		this.tests[testID] = {
 			setup: setupData,
-			run: function() {
+			async run() {
 				if (TestHarness.isBattleRunning) {
 					console.log("cannot start test battle, one is ongoing");
 					return;
@@ -51,9 +51,9 @@ class TestHarness
 					}
 				}
 				TestHarness.isBattleRunning = true;
-				new Scene()
+				await new Scene()
 					.battle(this.setup.battleID, session)
-					.run(true);
+					.run();
 				TestHarness.isBattleRunning = false;
 			}
 		};
@@ -65,7 +65,7 @@ class TestHarness
 		this.tests[testID] = {
 			func: func,
 			context: {},
-			run: function() {
+			run() {
 				this.func.call(this.context);
 			}
 		};
@@ -75,9 +75,9 @@ class TestHarness
 		console.log(`add generic test '${testID}'`);
 	}
 
-	static run(testID)
+	static async run(testID)
 	{
 		console.log("test harness invoked", `testID: ${testID}`);
-		this.tests[testID].run(this.tests[testID].setup, testID);
+		await this.tests[testID].run(this.tests[testID].setup, testID);
 	}
 }

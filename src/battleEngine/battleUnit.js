@@ -163,12 +163,12 @@ class BattleUnit
 		}
 	}
 
-	announce(text)
+	async announce(text)
 	{
 		let bannerColor = this.isPartyMember()
 			? Color.mix(Color.Blue, Color.White, 75, 25).fadeTo(0.75)
 			: Color.mix(Color.Red, Color.White, 75, 25).fadeTo(0.75);
-		this.battle.ui.announceAction(text, this.isPartyMember() ? 'party' : 'enemy', bannerColor);
+		await this.battle.ui.announceAction(text, this.isPartyMember() ? 'party' : 'enemy', bannerColor);
 	}
 
 	beginCycle()
@@ -209,9 +209,9 @@ class BattleUnit
 		}
 	}
 
-	die()
+	async die()
 	{
-		this.battle.notifyAIs('unitKilled', this.id);
+		await this.battle.notifyAIs('unitKilled', this.id);
 		this.lazarusFlag = false;
 		this.hp = 0;
 		this.battle.ui.hud.setHP(this, this.hp);
@@ -220,7 +220,7 @@ class BattleUnit
 		console.log(`death comes near ${this.fullName}`);
 	}
 
-	endCycle()
+	async endCycle()
 	{
 		if (!this.isAlive())
 			return;
@@ -231,19 +231,19 @@ class BattleUnit
 				this.actor.animate('active');
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				console.log(`ask player for ${this.name}'s GS counterattack`);
-				chosenMove = this.counterMenu.open();
+				chosenMove = await this.counterMenu.open();
 			} else {
-				chosenMove = this.ai.getNextMove();
+				chosenMove = await this.ai.getNextMove();
 				chosenMove.targets = [ this.counterTarget ];
 			}
 			this.queueMove(chosenMove);
-			this.performAction(this.getNextAction(), chosenMove);
+			await this.performAction(this.getNextAction(), chosenMove);
 			this.actor.animate('dormant');
 			this.newStance = Stance.Attack;
 		}
 		if (this.newStance !== this.stance) {
 			this.stance = this.newStance;
-			this.battle.notifyAIs('stanceChanged', this.id, this.stance);
+			await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 			let stanceName = this.stance === Stance.Guard ? "Guard"
 				: this.stance === Stance.Counter ? "Counter"
 				: "Attack";
@@ -319,7 +319,7 @@ class BattleUnit
 			.any(v => v.statusID === statusID);
 	}
 
-	heal(amount, tags = [], isPriority = false)
+	async heal(amount, tags = [], isPriority = false)
 	{
 		if (!isPriority) {
 			let eventData = {
@@ -340,7 +340,7 @@ class BattleUnit
 			this.hp = Math.min(this.hp + amount, this.maxHP);
 			this.actor.showHealing(amount);
 			this.battle.ui.hud.setHP(this, this.hp);
-			this.battle.notifyAIs('unitHealed', this, amount, tags);
+			await this.battle.notifyAIs('unitHealed', this, amount, tags);
 			console.log(`heal ${this.name} for ${amount} HP`, `now: ${this.hp}`);
 		} else if (amount < 0) {
 			this.takeDamage(-amount, [], true);
@@ -385,7 +385,7 @@ class BattleUnit
 			.each(v => this.liftStatus(v.statusID));
 	}
 
-	performAction(action, move)
+	async performAction(action, move)
 	{
 		let targetsInfo = from(move.targets)
 			.select(v => v.battlerInfo)
@@ -396,7 +396,7 @@ class BattleUnit
 		if (this.isAlive()) {
 			if (this.stance === Stance.Counter)
 				action.accuracyRate = 2.0;
-			let unitsHit = this.battle.runAction(action, this, move.targets, move.usable.useAiming);
+			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
 				var allEnemies = this.battle.enemiesOf(this);
 				var experience = {};
@@ -650,7 +650,7 @@ class BattleUnit
 		this.resetCounter(Game.equipWeaponRank);
 	}
 
-	takeDamage(amount, tags = [], isPriority = false)
+	async takeDamage(amount, tags = [], isPriority = false)
 	{
 		amount = Math.round(amount);
 		var multiplier = 1.0;
@@ -686,7 +686,7 @@ class BattleUnit
 				this.hp = Math.max(this.hp - amount, 0);
 			else
 				this.hp = 1;
-			this.battle.notifyAIs('unitDamaged', this, amount, tags, this.lastAttacker);
+			await this.battle.notifyAIs('unitDamaged', this, amount, tags, this.lastAttacker);
 			console.log(`damage ${this.name} for ${amount} HP`, `left: ${this.hp}`);
 			if (oldHPValue > 0 || this.lazarusFlag) {
 				let elementTags = from(tags).where(v => v in Game.elements);
@@ -742,7 +742,7 @@ class BattleUnit
 		}
 	}
 
-	tick()
+	async tick()
 	{
 		if (!this.isAlive())
 			return false;
@@ -750,7 +750,7 @@ class BattleUnit
 			this.battle.suspend();
 			if (this.stance === Stance.Guard) {
 				this.stance = this.newStance = Stance.Attack;
-				this.battle.notifyAIs('stanceChanged', this.id, this.stance);
+				await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				console.log(`${this.name}'s Guard Stance expired`);
 			} else if (this.stance === Stance.Counter) {
 				this.newStance = Stance.Attack;
@@ -777,9 +777,9 @@ class BattleUnit
 				if (this.ai == null) {
 					this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 					console.log(`ask player for ${this.name}'s next move`);
-					chosenMove = this.attackMenu.open();
+					chosenMove = await this.attackMenu.open();
 				} else {
-					chosenMove = this.ai.getNextMove();
+					chosenMove = await this.ai.getNextMove();
 				}
 				if (chosenMove.stance != Stance.Guard) {
 					this.queueMove(chosenMove);
@@ -790,7 +790,7 @@ class BattleUnit
 			}
 			if (this.isAlive()) {
 				if (action !== null) {
-					this.performAction(action, this.moveUsed);
+					await this.performAction(action, this.moveUsed);
 				}
 				this.raiseEvent('endTurn');
 			}
