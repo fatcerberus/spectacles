@@ -32,7 +32,7 @@ class BattleScreen
 	dispose()
 	{
 		this.hud.dispose();
-		Thread.kill(this.thread);
+		this.thread.stop();
 	}
 
 	update()

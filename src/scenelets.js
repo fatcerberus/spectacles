@@ -12,7 +12,7 @@ Scene.defineOp('adjustBGM',
 	},
 
 	update(scene) {
-		return Music.adjusting;
+		return Music.adjustingVolume;
 	}
 });
 

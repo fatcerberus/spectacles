@@ -227,6 +227,7 @@ class BattleUnit
 
 		if (this.stance === Stance.Counter) {
 			this.cv = 0;
+			let chosenMove;
 			if (this.ai == null) {
 				this.actor.animate('active');
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
@@ -522,21 +523,21 @@ class BattleUnit
 					console.log(`invalid status ID '${statusID}'`);
 			},
 
-			'damage': function(amount) {
-				tags = [].slice.call(arguments, 1);
+			'damage': function(amount, ...tags) {
 				amount = Math.max(parseInt(amount), 0);
 				this.takeDamage(amount, tags);
 			},
 
-			'heal': function(amount) {
-				tags = [].slice.call(arguments, 1);
+			'heal': function(amount, ...tags) {
 				amount = Math.max(parseInt(amount), 0);
 				this.heal(amount, tags);
 			},
 
 			'inv': function(instruction) {
-				if (arguments.length < 1)
-					return console.log("'" + this.id + " inv': No instruction provided");
+				if (instruction === undefined) {
+					console.log("'" + this.id + " inv': No instruction provided");
+					return;
+				}
 				switch (instruction) {
 				case 'add':
 					if (arguments.length < 2)
@@ -593,8 +594,10 @@ class BattleUnit
 
 			'scan': function(flag) {
 				flag = flag.toLowerCase();
-				if (flag == 'on') this.allowTargetScan = true;
-				if (flag == 'off') this.allowTargetScan = false;
+				if (flag == 'on')
+					this.allowTargetScan = true;
+				if (flag == 'off')
+					this.allowTargetScan = false;
 				console.log(`Target Scan for ${this.name} is ${this.allowTargetScan ? "ON" : "OFF"}`);
 			},
 		});
@@ -633,18 +636,18 @@ class BattleUnit
 		}
 	}
 
-	setGuard()
+	async setGuard()
 	{
 		console.log(`${this.name} will switch to Guard Stance`);
-		this.announce("Guard");
+		await this.announce("Guard");
 		this.newStance = Stance.Guard;
 		this.resetCounter(Game.stanceChangeRank);
 	}
 
-	setWeapon(weaponID)
+	async setWeapon(weaponID)
 	{
 		var weaponDef = Game.weapons[weaponID];
-		this.announce(`equip ${weaponDef.name}`);
+		await this.announce(`equip ${weaponDef.name}`);
 		this.weapon = weaponDef;
 		console.log(`${this.name} equipped weapon ${weaponDef.name}`);
 		this.resetCounter(Game.equipWeaponRank);
@@ -785,7 +788,7 @@ class BattleUnit
 					this.queueMove(chosenMove);
 					action = this.getNextAction();
 				} else {
-					this.setGuard();
+					await this.setGuard();
 				}
 			}
 			if (this.isAlive()) {

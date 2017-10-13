@@ -36,6 +36,11 @@ class DayNightEngine extends Thread
 		return new InGameTime(hour, minute, second);
 	}
 
+	on_render()
+	{
+		Prim.fill(screen, this.currentMask);
+	}
+
 	on_update()
 	{
 		let now = this.now();
@@ -64,11 +69,6 @@ class DayNightEngine extends Thread
 			let alpha = now.minute / 60;
 			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		}
-	}
-
-	on_render()
-	{
-		Prim.fill(screen, this.currentMask);
 	}
 }
 

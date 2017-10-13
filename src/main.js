@@ -26,6 +26,8 @@ RequireScript('titleScreen.js');
 
 EvaluateScript('gameDef/game.js');
 
+global.console = new Console({ hotKey: Key.Tilde });
+
 async function game()
 {
 	// note: a game() function is needed for now because the engine was
@@ -33,7 +35,15 @@ async function game()
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 
-	global.console = new Console({ hotKey: Key.Tilde });
+	console.defineObject('bgm', null, {
+		override(fileName) { Music.override(fileName); },
+		pop() { Music.pop(); },
+		play(fileName) { Music.play(fileName); },
+		push(fileName) { Music.push(fileName); },
+		reset() { Music.reset(); },
+		stop(fileName) { Music.override(null); },
+		volume(value) { Music.adjustVolume(value); },
+	});
 
 	console.defineObject('yap', null, {
 		'on': function() {

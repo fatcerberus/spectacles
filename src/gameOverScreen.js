@@ -36,7 +36,7 @@ class GameOverScreen
 		return Thread.create(this);
 	}
 
-	update()
+	async update()
 	{
 		switch (this.mode) {
 			case 'idle':
@@ -47,7 +47,7 @@ class GameOverScreen
 					var menu = new MenuStrip("Game Over", false);
 					menu.addItem("Retry Battle", GameOverAction.Retry);
 					menu.addItem("Give Up", GameOverAction.Quit);
-					this.action = menu.open();
+					this.action = await menu.open();
 					if (Sphere.Game.disableAnimations) {
 						this.fadeness = 1.0;
 					}
