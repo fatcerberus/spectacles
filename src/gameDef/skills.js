@@ -854,7 +854,7 @@ Game.skills =
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'offGuard'
+						status: 'winded'
 					},
 				]
 			}

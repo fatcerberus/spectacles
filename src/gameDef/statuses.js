@@ -15,17 +15,16 @@ Game.statuses =
 			this.multiplier = 1.0;
 		},
 		acting: function(unit, eventData) {
-			from(eventData.action.effects)
-				.where(it => it.type == 'damage')
-				.each(effect =>
+			for (const effect of from(eventData.action.effects)
+				.where(it => it.type == 'damage'))
 			{
-				var oldPower = effect.power;
+				let oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
 				if (effect.power != oldPower) {
 					console.log(`outgoing POW modified by Crackdown to ${effect.power}`,
 						`was: ${oldPower}`);
 				}
-			});
+			}
 		},
 		useSkill: function(unit, eventData) {
 			var oldMultiplier = this.multiplier;
@@ -344,8 +343,8 @@ Game.statuses =
 	},
 
 	// Off Guard status
-	// Imbued as part of several two-turn attacks such as Charge Slash. If the unit
-	// is attacked while Off Guard, the damage from the attack will be increased.
+	// Inflicted during the first turn of an attack launched from Charge Stance. If
+	// the unit is attacked while Off Guard, damage will be increased.
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
@@ -496,6 +495,21 @@ Game.statuses =
 		beginCycle: function(unit, eventData) {
 			var vit = Game.math.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(0.25 * vit, [ 'specs' ]);
+		}
+	},
+
+	// Winded status
+	// Inflicted after a using a particularly powerful attack, takes one turn
+	// to recover from.  Increases damage taken from attacks.
+	winded: {
+		name: "Winded",
+		tags: [ 'special' ],
+		beginTurn: function(unit, eventData) {
+			unit.liftStatus('winded');
+		},
+		damaged: function(unit, eventData) {
+			if (eventData.actingUnit !== null)
+				eventData.amount *= Game.bonusMultiplier;
 		}
 	},
 

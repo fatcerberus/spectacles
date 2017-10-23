@@ -369,14 +369,14 @@ class Battle
 				actionTaken = await unit.tick() || actionTaken;
 			if (from(this.playerUnits).all(isUnitDead)) {
 				Music.adjustVolume(0.0, 120);
-				this.ui.fadeOut(2.0);
+				await this.ui.fadeOut(120);
 				this.result = BattleResult.Lose;
 				console.log("all player characters have been KO'd");
 				return;
 			}
 			if (from(this.enemyUnits).all(isUnitDead)) {
 				Music.adjustVolume(0.0, 60);
-				this.ui.fadeOut(1.0);
+				await this.ui.fadeOut(60);
 				this.result = BattleResult.Win;
 				console.log("all enemies have been KO'd");
 				return;

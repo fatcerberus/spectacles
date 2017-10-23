@@ -35,6 +35,8 @@ async function game()
 	//       convert the Specs Engine entirely to Sphere v2.  that effort
 	//       is ongoing,  but a full conversion will take a while.
 
+	Scene.defaultPriority = 99;
+	
 	console.defineObject('bgm', null, {
 		override(fileName) { Music.override(fileName); },
 		pop() { Music.pop(); },

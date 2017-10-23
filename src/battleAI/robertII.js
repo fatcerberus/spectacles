@@ -14,6 +14,7 @@ class Robert2AI extends BattleAI
 		this.definePhases([ 9000, 6000, 3000, 1000 ], 50);
 		this.defaultSkill = 'swordSlash';
 
+		this.curatives = [ 'tonic', 'powerTonic', 'fullTonic' ];
 		this.doChargeSlashNext = false;
 		this.hasZombieHealedSelf = false;
 		this.isAlcoholPending = false;
@@ -233,10 +234,7 @@ class Robert2AI extends BattleAI
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
 
-		console.log(userID, itemID, targetIDs);
-
-		var curativeIDs = [ 'tonic', 'powerTonic' ];
-		if (userID == 'robert2' && from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
+		if (userID == 'robert2' && from(this.curatives).anyIs(itemID) && this.unit.hasStatus('zombie')
 			&& from(targetIDs).anyIs('robert2') && this.phase <= 4)
 		{
 			if (this.zombieHealFixState === null && this.isItemUsable('holyWater')) {
@@ -269,11 +267,13 @@ class Robert2AI extends BattleAI
 				.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 				.run();
 		} else if (userID == 'scott' && from(targetIDs).anyIs('robert2')) {
-			if (from(curativeIDs).anyIs(itemID) && this.unit.hasStatus('zombie')
+			if (from(this.curatives).anyIs(itemID) && this.unit.hasStatus('zombie')
 				&& !this.isSkillQueued('electrocute'))
 			{
 				if (this.phase <= 4 && this.zombieHealFixState === null) {
 					this.zombieHealFixState = 'fixStatus';
+					if (itemID === 'fullTonic')
+						this.zombieHealAlertLevel = 2.0;
 					if (this.zombieHealAlertLevel > 1.0 || !this.isItemUsable('vaccine') && !this.isItemUsable('holyWater'))
 						this.zombieHealFixState = 'retaliate';
 				} else if (this.phase == 5 && !this.hasMovesQueued()) {
@@ -291,7 +291,7 @@ class Robert2AI extends BattleAI
 				this.scottImmuneTurnsLeft = 6;
 			} else if (itemID == 'holyWater' && this.isScottZombie) {
 				this.isScottZombie = false;
-			} else if (this.phase <= 3 && from(curativeIDs).anyIs(itemID) && !this.isNecromancyPending
+			} else if (this.phase <= 3 && from(this.curatives).anyIs(itemID) && !this.isNecromancyPending
 				&& !this.isScottZombie && !this.isSkillQueued('necromancy') && !this.isSkillQueued('electrocute')
 				&& this.zombieHealFixState === null)
 			{
@@ -428,7 +428,7 @@ class Robert2AI extends BattleAI
 							default:
 								if (this.isItemUsable('redBull'))
 									this.queueItem('redBull');
-								this.queueSkill('omni');
+								this.queueSkill('omni', Stance.Charge);
 								break;
 						}
 						this.zombieHealFixState = 'finish';
