@@ -244,20 +244,21 @@ class MPGauge
 }
 
 export
-class TurnPreview
+class TurnPreview extends Thread
 {
 	constructor()
 	{
+		super({ priority: 20 });
+
 		this.entries = {};
 		this.fadeness = 1.0;
 		this.font = GetSystemFont();
 		this.lastPrediction = null;
-		this.thread = null;
 	}
 
 	dispose()
 	{
-		this.thread.stop();
+		this.stop();
 	}
 
 	ensureEntries(unit)
@@ -273,28 +274,6 @@ class TurnPreview
 			}
 			this.entries[unit.tag] = entry;
 		}
-	}
-
-	render()
-	{
-		var alpha = 255 * (1.0 - this.fadeness);
-		var y = -16 * this.fadeness;
-		SetClippingRectangle(0, y, 160, 16);
-		Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.75));
-		OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.125));
-		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
-		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
-		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
-		for (let id in this.entries) {
-			var entry = this.entries[id];
-			for (let i = 0; i < entry.turnBoxes.length; ++i) {
-				var turnBox = entry.turnBoxes[i];
-				Rectangle(turnBox.x, y, 16, 16, entry.color);
-				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
-				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
-			}
-		}
-		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
 	}
 
 	set(prediction)
@@ -331,18 +310,35 @@ class TurnPreview
 
 	show()
 	{
-		if (this.thread === null) {
+		if (!this.running) {
 			console.log("activate battle screen turn preview");
-			this.thread = Thread.create(this, 20);
+			this.start();
 		}
 		new Scene()
 			.tween(this, 30, 'easeOutExpo', { fadeness: 0.0 })
 			.run();
 	}
 
-	update()
+	on_render()
 	{
-		return true;
+		var alpha = 255 * (1.0 - this.fadeness);
+		var y = -16 * this.fadeness;
+		SetClippingRectangle(0, y, 160, 16);
+		Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.75));
+		OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.125));
+		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
+		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
+		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
+		for (let id in this.entries) {
+			var entry = this.entries[id];
+			for (let i = 0; i < entry.turnBoxes.length; ++i) {
+				var turnBox = entry.turnBoxes[i];
+				Rectangle(turnBox.x, y, 16, 16, entry.color);
+				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
+				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
+			}
+		}
+		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
 	}
 }
 

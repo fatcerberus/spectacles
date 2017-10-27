@@ -12,6 +12,8 @@ Object.assign(Sphere.Game,
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x200',
 	main: '@/scripts/main.js',
+	
+	fullScreen: false,
 
 	disableAnimations: false,
 	disableBattles: false,

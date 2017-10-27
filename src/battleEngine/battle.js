@@ -15,12 +15,14 @@ const BattleResult =
 	Lose: 3,
 };
 
-class Battle
+class Battle extends Thread
 {
 	constructor(session, battleID)
 	{
 		if (!(battleID in Game.battles))
 			throw new ReferenceError(`no encounter data for '${battleID}'`);
+
+		super();
 
 		console.log(`initialize battle context for '${battleID}'`);
 		this.aiList = [];
@@ -32,48 +34,6 @@ class Battle
 		this.suspendCount = 0;
 		this.timer = 0;
 		this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.level;
-	}
-
-	async update() {
-		switch (this.mode) {
-			case 'setup':
-				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
-					? "Final Battle: " : "Boss Battle: ";
-				await this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
-				for (const unit of from(this.enemyUnits, this.playerUnits))
-					await unit.actor.enter();
-				this.ui.hud.turnPreview.show();
-				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
-					this.session.battlesSeen.push(this.battleID);
-					 if ('onFirstStart' in this.parameters) {
-						console.log(`call onFirstStart() for battle '${this.battleID}'`);
-						await this.parameters.onFirstStart.call(this);
-					 }
-				}
-				if ('onStart' in this.parameters) {
-					console.log(`call onStart() for battle '${this.battleID}'`);
-					await this.parameters.onStart.call(this);
-				}
-				await this.ui.showTitle();
-				this.mode = 'battle';
-				break;
-			case 'battle':
-				await this.tick();
-				break;
-		}
-		if (this.result !== null) {
-			console.log("shut down battle engine");
-			from(this.battleUnits)
-				.each(unit => unit.dispose());
-			this.ui.dispose();
-			Music.pop();
-			Music.adjustVolume(1.0, 0);
-			console.undefineObject('battle');
-			return false;
-		}
-		else {
-			return true;
-		}
 	}
 
 	addCondition(conditionID)
@@ -101,7 +61,8 @@ class Battle
 
 	areEnemies(unit1, unit2)
 	{
-		return from(this.enemiesOf(unit1)).anyIs(unit2);
+		return from(this.enemiesOf(unit1))
+			.anyIs(unit2);
 	}
 
 	enemiesOf(unit)
@@ -116,7 +77,7 @@ class Battle
 	findUnit(unitID)
 	{
 		let unit = from(this.enemyUnits, this.playerUnits)
-			.first(v => v.id == unitID);
+			.first(it => it.id == unitID);
 		return unit !== undefined ? unit : null;
 	}
 
@@ -177,10 +138,10 @@ class Battle
 		this.timer = 0;
 		this.mode = 'setup';
 		console.defineObject('battle', this, {
-			'spawn': this.spawnEnemy
+			'spawn': this.spawnEnemy,
 		});
-		var battleThread = Thread.create(this);
-		return battleThread;
+		this.start();
+		return this;
 	}
 
 	hasCondition(conditionID)
@@ -198,8 +159,8 @@ class Battle
 	liftCondition(conditionID)
 	{
 		from(this.conditions)
-			.where(v => v.conditionID === conditionID)
-			.besides(v => console.log(`lift field condition ${v.name}`))
+			.where(it => it.conditionID === conditionID)
+			.besides(it => console.log(`lift field condition ${it.name}`))
 			.remove();
 	}
 
@@ -217,7 +178,7 @@ class Battle
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			let bias = 0;
 			from(this.enemyUnits, this.playerUnits)
-				.where(v => v !== actingUnit || turnIndex > 0)
+				.where(it => it !== actingUnit || turnIndex > 0)
 				.each(unit =>
 			{
 				++bias;
@@ -244,7 +205,7 @@ class Battle
 	{
 		var conditions = [ ...this.conditions ];
 		from(conditions)
-			.each(v => v.invoke(eventID, data));
+			.each(it => it.invoke(eventID, data));
 	}
 
 	registerAI(ai)
@@ -274,7 +235,7 @@ class Battle
 			effectHandler(actingUnit, [ actingUnit ], effect);
 		});
 		from(targetUnits)
-			.each(v => v.takeHit(actingUnit, action));
+			.each(it => it.takeHit(actingUnit, action));
 		if (action.effects === null)
 			return [];
 		let targetsHit = [];
@@ -307,7 +268,7 @@ class Battle
 
 		// apply move effects to target(s)
 		from(targetsHit)
-			.each(v => v.beginTargeting(actingUnit));
+			.each(it => it.beginTargeting(actingUnit));
 		let animContext = {
 			effects: from(action.effects)
 				.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
@@ -332,7 +293,7 @@ class Battle
 		}
 		while (animContext.nextEffect());
 		from(targetsHit)
-			.each(v => v.endTargeting());
+			.each(it => it.endTargeting());
 		return targetsHit;
 	}
 
@@ -389,7 +350,49 @@ class Battle
 	unregisterAI(ai)
 	{
 		from(this.aiList)
-			.where(v => v === ai)
+			.where(it => it === ai)
 			.remove();
+	}
+
+	async on_update() {
+		switch (this.mode) {
+			case 'setup':
+				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
+					? "Final Battle: " : "Boss Battle: ";
+				await this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
+				for (const unit of from(this.enemyUnits, this.playerUnits))
+					await unit.actor.enter();
+				this.ui.hud.turnPreview.show();
+				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
+					this.session.battlesSeen.push(this.battleID);
+					 if ('onFirstStart' in this.parameters) {
+						console.log(`call onFirstStart() for battle '${this.battleID}'`);
+						await this.parameters.onFirstStart.call(this);
+					 }
+				}
+				if ('onStart' in this.parameters) {
+					console.log(`call onStart() for battle '${this.battleID}'`);
+					await this.parameters.onStart.call(this);
+				}
+				await this.ui.showTitle();
+				this.mode = 'battle';
+				break;
+			case 'battle':
+				await this.tick();
+				break;
+		}
+		if (this.result !== null) {
+			console.log("shut down battle engine");
+			from(this.battleUnits)
+				.each(unit => unit.dispose());
+			this.ui.dispose();
+			Music.pop();
+			Music.adjustVolume(1.0, 0);
+			console.undefineObject('battle');
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 }
