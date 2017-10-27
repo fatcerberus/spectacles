@@ -6,48 +6,54 @@
 RequireScript("menuStrip.js");
 RequireScript("session.js");
 
-class TitleScreen
+class TitleScreen extends Thread
 {
 	constructor(themeTrack)
 	{
+		super();
+		
 		this.fadeness = 1.0;
 		this.image = new Texture('images/titleScreen.png');
 		this.themeTrack = themeTrack;
 	}
 
-	show()
+	async show()
 	{
-		if (Sphere.Game.disableTitleScreen) {
+		if (Sphere.Game.disableTitleScreen)
 			return new Session();
-		}
 		this.choice = null;
 		this.mode = 'transitionIn';
-		if (Sphere.Game.disableAnimations) {
+		if (Sphere.Game.disableAnimations)
 			this.fadeness = 0.0;
-		}
 		this.transition = new Scene()
 			.adjustBGM(1.0)
 			.pushBGM(this.themeTrack)
 			.tween(this, 120, 'linear', { fadeness: 0.0 });
 		this.transition.run();
-		Thread.join(Thread.create(this));
+		this.start();
+		await Thread.join(this);
 		Music.pop();
 		Music.adjustVolume(1.0);
 		return new Session();
 	}
 
-	update()
+	on_render()
+	{
+		Prim.blit(screen, 0, 0, this.image);
+		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
+	}
+
+	on_update()
 	{
 		switch (this.mode) {
 			case 'idle':
-				return true;
+				break;
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
 					this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
-					if (Sphere.Game.disableAnimations) {
+					if (Sphere.Game.disableAnimations)
 						this.fadeness = 1.0;
-					}
 					this.transition = new Scene()
 						.fork()
 							.adjustBGM(0.0, 120)
@@ -58,14 +64,9 @@ class TitleScreen
 				}
 				break;
 			case 'transitionOut':
-				return this.transition.running;
+				if (!this.transition.running)
+					this.stop();
+				break;
 		}
-		return true;
-	}
-
-	render()
-	{
-		Prim.blit(screen, 0, 0, this.image);
-		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
 	}
 }

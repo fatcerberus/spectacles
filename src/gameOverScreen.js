@@ -11,10 +11,12 @@ const GameOverAction =
 	Quit:  2,
 };
 
-class GameOverScreen
+class GameOverScreen extends Thread
 {
 	constructor()
 	{
+		super();
+
 		this.fadeness = 1.0;
 		this.image = new Texture('images/gameOverScreen.png');
 		this.transition = null;
@@ -33,14 +35,21 @@ class GameOverScreen
 			.adjustBGM(1.0)
 			.tween(this, 300, 'linear', { fadeness: 0.0 });
 		this.transition.run();
-		return Thread.create(this);
+		this.start();
+		return this;
 	}
 
-	async update()
+	on_render()
+	{
+		Prim.blit(screen, 0, 0, this.image);
+		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
+	}
+
+	async on_update()
 	{
 		switch (this.mode) {
 			case 'idle':
-				return true;
+				break;
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
@@ -48,9 +57,8 @@ class GameOverScreen
 					menu.addItem("Retry Battle", GameOverAction.Retry);
 					menu.addItem("Give Up", GameOverAction.Quit);
 					this.action = await menu.open();
-					if (Sphere.Game.disableAnimations) {
+					if (Sphere.Game.disableAnimations)
 						this.fadeness = 1.0;
-					}
 					this.transition = new Scene()
 						.fork()
 							.adjustBGM(0.0, 120)
@@ -64,15 +72,9 @@ class GameOverScreen
 				if (!this.transition.running) {
 					Music.pop();
 					Music.adjustVolume(1.0);
+					this.stop();
 				}
-				return this.transition.running;
+				break;
 		}
-		return true;
-	}
-
-	render()
-	{
-		Prim.blit(screen, 0, 0, this.image);
-		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
 	}
 }

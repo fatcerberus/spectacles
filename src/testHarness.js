@@ -23,8 +23,8 @@ class TestHarness
 			.where(it => it.fileName.endsWith('.js'))
 			.select(it => it.fullPath)
 			.besides(it => console.log(`found '${it}'`));
-		for (let fileName of fileNames)
-			EvaluateScript(fileName);
+		for (const fileName of fileNames)
+			FS.evaluateScript(fileName);
 	}
 
 	static addBattle(testID, setupData)

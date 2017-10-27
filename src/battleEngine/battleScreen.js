@@ -6,17 +6,19 @@
 RequireScript('battleEngine/battleActor.js');
 RequireScript('battleEngine/battleHUD.js');
 
-class BattleScreen
+class BattleScreen extends Thread
 {
 	constructor(partyMaxMP)
 	{
+		super();
+		
 		this.actorTypes = {
 			enemy: { isEnemy: true },
-			party: { isEnemy: false }
+			party: { isEnemy: false },
 		};
 
 		this.actors = {};
-		for (let type in this.actorTypes)
+		for (const type in this.actorTypes)
 			this.actors[type] = [];
 		this.background = new Image('battleBackground');
 		this.hud = new BattleHUD(partyMaxMP);
@@ -24,7 +26,7 @@ class BattleScreen
 		this.startRunning = function()
 		{
 			console.log("activate main battle screen");
-			this.thread = Thread.create(this);
+			this.start();
 			this.hud.show();
 		};
 	}
@@ -32,26 +34,7 @@ class BattleScreen
 	dispose()
 	{
 		this.hud.dispose();
-		this.thread.stop();
-	}
-
-	update()
-	{
-		for (let type in this.actorTypes) {
-			for (let i = 0; i < this.actors[type].length; ++i) {
-				this.actors[type][i].update();
-			}
-		}
-		return true;
-	}
-
-	render()
-	{
-		this.background.blitTo(screen, 0, -56);
-		for (let type in this.actorTypes) {
-			for (let i = 0; i < this.actors[type].length; ++i)
-				this.actors[type][i].render();
-		}
+		this.stop();
 	}
 
 	async announceAction(actionName, alignment, bannerColor = Color.Gray)
@@ -63,18 +46,18 @@ class BattleScreen
 			color: bannerColor,
 			font: GetSystemFont(),
 			fadeness: 1.0,
-			render: function() {
-				var width = this.font.getStringWidth(this.text) + 20;
-				var height = this.font.getHeight() + 10;
-				var x = GetScreenWidth() / 2 - width / 2;
-				var y = 112;
-				var textY = y + height / 2 - this.font.getHeight() / 2;
-				var boxColor = this.color.fadeTo(1.0 - this.fadeness);
+			render() {
+				let width = this.font.getStringWidth(this.text) + 20;
+				let height = this.font.getHeight() + 10;
+				let x = GetScreenWidth() / 2 - width / 2;
+				let y = 112;
+				let textY = y + height / 2 - this.font.getHeight() / 2;
+				let boxColor = this.color.fadeTo(1.0 - this.fadeness);
 				Prim.drawSolidRectangle(screen, x, y, width, height, boxColor);
 				Prim.drawRectangle(screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
-			update: function() {
+			update() {
 				return true;
 			}
 		};
@@ -105,7 +88,7 @@ class BattleScreen
 		}
 		await new Scene()
 			.fadeTo(Color.Black, duration)
-			.call(this.dispose.bind(this))
+			.call(() => this.dispose())
 			.fadeTo(Color.Transparent, 0.5)
 			.run();
 	}
@@ -119,7 +102,7 @@ class BattleScreen
 				.fadeTo(Color.Transparent, 30)
 				.fadeTo(Color.White, 15)
 			.end()
-			.call(this.startRunning.bind(this))
+			.call(() => this.startRunning())
 			.doIf(() => !Sphere.Game.disableAnimations)
 				.fadeTo(Color.Transparent, 60)
 			.end()
@@ -133,5 +116,22 @@ class BattleScreen
 		await new Scene()
 			.marquee(this.title, Color.Black.fadeTo(0.5))
 			.run();
+	}
+
+	on_render()
+	{
+		this.background.blitTo(screen, 0, -56);
+		for (const type in this.actorTypes) {
+			for (let i = 0; i < this.actors[type].length; ++i)
+				this.actors[type][i].render();
+		}
+	}
+
+	on_update()
+	{
+		for (const type in this.actorTypes) {
+			for (let i = 0; i < this.actors[type].length; ++i)
+				this.actors[type][i].update();
+		}
 	}
 }
