@@ -38,7 +38,7 @@ class DayNightEngine extends Thread
 
 	on_render()
 	{
-		Prim.fill(screen, this.currentMask);
+		Prim.fill(Surface.Screen, this.currentMask);
 	}
 
 	on_update()

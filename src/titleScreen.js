@@ -39,8 +39,8 @@ class TitleScreen extends Thread
 
 	on_render()
 	{
-		Prim.blit(screen, 0, 0, this.image);
-		Prim.fill(screen, Color.Black.fadeTo(this.fadeness));
+		Prim.blit(Surface.Screen, 0, 0, this.image);
+		Prim.fill(Surface.Screen, Color.Black.fadeTo(this.fadeness));
 	}
 
 	on_update()

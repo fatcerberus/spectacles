@@ -81,13 +81,13 @@ class HPGauge
 		var emptyColor = fadeColor(this.emptyColor, this.fadeness);
 		var usageColor = Color.mix(emptyColor, fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
 		if (barInUse < this.sectorSize && numReservesFilled > 0) {
-			Prim.drawRectangle(screen, x, y, width, barHeight, 1, Color.mix(borderColor, Color.Transparent, 25, 75));
+			Prim.drawRectangle(Surface.Screen, x, y, width, barHeight, 1, Color.mix(borderColor, Color.Transparent, 25, 75));
 			drawSegment(x + 1, y + 1, width - 2, barHeight - 2, Color.mix(fillColor, Color.Transparent, 25, 75));
 		}
 		var barEdgeX = x + width - 1;
-		Prim.drawRectangle(screen, barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, 1, borderColor);
+		Prim.drawRectangle(Surface.Screen, barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, 1, borderColor);
 		drawSegment(barEdgeX - fillWidth, y + 1, fillWidth, barHeight - 2, fillColor);
-		Prim.drawSolidRectangle(screen, barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
+		Prim.drawSolidRectangle(Surface.Screen, barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 		drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 		var slotYSize = height - barHeight + 1;
 		var slotXSize = this.maxSectors === 'auto'
@@ -105,7 +105,7 @@ class HPGauge
 				color = emptyColor;
 			}
 			slotX = x + (width - slotXSize) - i * (slotXSize - 1);
-			Prim.drawRectangle(screen, slotX, slotY, slotXSize, slotYSize, 1, borderColor);
+			Prim.drawRectangle(Surface.Screen, slotX, slotY, slotXSize, slotYSize, 1, borderColor);
 			drawSegment(slotX + 1, slotY + 1, slotXSize - 2, slotYSize - 2, color);
 		}
 	}
@@ -199,19 +199,19 @@ class MPGauge
 
 	draw(x, y, size)
 	{
-		screen.clipTo(x, y, size, size);
+		Surface.Screen.clipTo(x, y, size, size);
 		if (this.capacity > 0) {
 			var innerFillColor = this.color;
 			var outerFillColor = Color.mix(this.color, Color.Black.fadeTo(this.color.a));
 			var outerUsageColor = this.usageColor;
 			var innerUsageColor = Color.mix(this.usageColor, Color.Black.fadeTo(this.usageColor.a));
 			var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
-			Prim.drawSolidCircle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
-			Prim.drawSolidCircle(screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
+			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
+			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
 			drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, Color.White, Math.round(this.reading), 'right');
 			drawText(this.textFont, x + size - 20, y + size / 2 - 4, 1, new Color(1, 0.75, 0), "MP");
 		}
-		screen.clipTo(0, 0, screen.width, screen.height);
+		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 	}
 
 	set(value)
@@ -348,8 +348,8 @@ function drawSegment(x, y, width, height, color)
 	let bottomHeight = height - topHeight;
 	let yBottom = y + topHeight;
 	let dimColor = Color.mix(color, Color.Black.fadeTo(color.a), 66, 33);
-	Prim.drawSolidRectangle(screen, x, y, width, topHeight, dimColor, dimColor, color, color);
-	Prim.drawSolidRectangle(screen, x, yBottom, width, bottomHeight, color, color, dimColor, dimColor);
+	Prim.drawSolidRectangle(Surface.Screen, x, y, width, topHeight, dimColor, dimColor, color, color);
+	Prim.drawSolidRectangle(Surface.Screen, x, yBottom, width, bottomHeight, color, color, dimColor, dimColor);
 };
 
 function drawText(font, x, y, shadowDistance, color, text, alignment = 'left')
@@ -363,8 +363,8 @@ function drawText(font, x, y, shadowDistance, color, text, alignment = 'left')
 	if (!(alignment in Align))
 		throw new Error(`invalid text alignment '${alignment}'.`);
 	x = Align[alignment](font, x, text);
-	font.drawText(screen, x + shadowDistance, y + shadowDistance, text, Color.Black.fadeTo(color.a));
-	font.drawText(screen, x, y, text, color);
+	font.drawText(Surface.Screen, x + shadowDistance, y + shadowDistance, text, Color.Black.fadeTo(color.a));
+	font.drawText(Surface.Screen, x, y, text, color);
 }
 
 function fadeColor(color, fadeness)

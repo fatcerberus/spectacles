@@ -47,7 +47,7 @@ class MenuStrip extends Thread
 			GetKey();
 		}
 		this.start();
-		this.takeInput();
+		this.takeFocus();
 		this.animation = new Scene()
 			.tween(this, 15, 'easeOutQuad', { openness: 1.0 });
 		this.animation.run();

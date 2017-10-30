@@ -191,7 +191,7 @@ TargetMenu.prototype.open = async function ()
 		GetKey();
 	}
 	let thread = Thread.create(this, 10);
-	thread.takeInput();
+	thread.takeFocus();
 	await Thread.join(thread);
 	return this.targets;
 };

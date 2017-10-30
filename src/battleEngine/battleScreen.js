@@ -53,8 +53,8 @@ class BattleScreen extends Thread
 				let y = 112;
 				let textY = y + height / 2 - this.font.getHeight() / 2;
 				let boxColor = this.color.fadeTo(1.0 - this.fadeness);
-				Prim.drawSolidRectangle(screen, x, y, width, height, boxColor);
-				Prim.drawRectangle(screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
+				Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, boxColor);
+				Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
 			update() {
@@ -120,7 +120,7 @@ class BattleScreen extends Thread
 
 	on_render()
 	{
-		this.background.blitTo(screen, 0, -56);
+		this.background.blitTo(Surface.Screen, 0, -56);
 		for (const type in this.actorTypes) {
 			for (let i = 0; i < this.actors[type].length; ++i)
 				this.actors[type][i].render();

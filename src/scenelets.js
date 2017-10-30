@@ -72,7 +72,7 @@ Scene.defineOp('marquee',
 		this.color = color;
 		this.background = backgroundColor;
 		this.font = Font.Default;
-		this.windowSize = screen.width + this.font.getTextSize(this.text).width;
+		this.windowSize = Surface.Screen.width + this.font.getTextSize(this.text).width;
 		this.height = this.font.height + 10;
 		this.textHeight = this.font.height;
 		this.fadeness = 0.0;
@@ -87,12 +87,12 @@ Scene.defineOp('marquee',
 
 	render(scene) {
 		var boxHeight = this.height * this.fadeness;
-		var boxY = screen.height / 2 - boxHeight / 2;
-		var textX = screen.width - this.scroll * this.windowSize;
+		var boxY = Surface.Screen.height / 2 - boxHeight / 2;
+		var textX = Surface.Screen.width - this.scroll * this.windowSize;
 		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
-		Prim.drawSolidRectangle(screen, 0, boxY, screen.width, boxHeight, this.background);
-		this.font.drawText(screen, textX + 1, textY + 1, this.text, Color.Black.fadeTo(this.color.a));
-		this.font.drawText(screen, textX, textY, this.text, this.color);
+		Prim.drawSolidRectangle(Surface.Screen, 0, boxY, Surface.Screen.width, boxHeight, this.background);
+		this.font.drawText(Surface.Screen, textX + 1, textY + 1, this.text, Color.Black.fadeTo(this.color.a));
+		this.font.drawText(Surface.Screen, textX, textY, this.text, this.color);
 	},
 
 	update(scene) {

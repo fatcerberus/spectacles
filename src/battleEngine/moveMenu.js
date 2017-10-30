@@ -282,7 +282,7 @@ MoveMenu.prototype.open = async function ()
 		this.showMenu.run();
 		this.updateTurnPreview();
 		this.menuThread = Thread.create(this, 10);
-		this.menuThread.takeInput();
+		this.menuThread.takeFocus();
 		await Thread.join(this.menuThread);
 		switch (this.stance) {
 			case Stance.Attack:
