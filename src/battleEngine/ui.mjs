@@ -61,9 +61,8 @@ class HPGauge
 		var barInUse;
 		if (numReservesFilled == numReserves) {
 			barInUse = this.capacity % this.sectorSize;
-			if (barInUse == 0) {
+			if (barInUse == 0)
 				barInUse = this.sectorSize;
-			}
 		} else {
 			barInUse = this.sectorSize;
 		}

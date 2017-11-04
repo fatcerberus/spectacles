@@ -3,6 +3,9 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { console } from '$/main.mjs';
+
+export default
 class TestHarness
 {
 	static initialize()

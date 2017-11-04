@@ -7,11 +7,13 @@
 //       will cause multiple day/night masks to be applied to the screen,
 //       which won't look too nice. :o)
 
-import { Console, Prim, Thread } from 'sphere-runtime';
+import { Prim, Thread } from 'sphere-runtime';
 
-const DayMask      = Color.Transparent;
-const TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625);
-const NightMask    = new Color(0.0, 0.0, 0.125, 0.5625);
+import { console } from '$/main.mjs';
+
+const DayMask = Color.Transparent,
+      TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625),
+      NightMask = new Color(0.0, 0.0, 0.125, 0.5625);
 
 export
 class DayNightEngine extends Thread

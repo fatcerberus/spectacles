@@ -3,8 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-// Game object
-// Defines basic gameplay parameters.
 const Game =
 {
 	title: "Spectacles: Bruce's Story",
@@ -22,15 +20,15 @@ const Game =
 	stanceChangeRank: 5,
 };
 
-EvaluateScript('gameDef/animations.js');
-EvaluateScript('gameDef/battles.js');
-EvaluateScript('gameDef/characters.js');
-EvaluateScript('gameDef/conditions.js');
-EvaluateScript('gameDef/items.js');
-EvaluateScript('gameDef/maps.js');
-EvaluateScript('gameDef/math.js');
-EvaluateScript('gameDef/moveEffects.js');
-EvaluateScript('gameDef/skills.js');
-EvaluateScript('gameDef/statuses.js');
-EvaluateScript('gameDef/stats.js');
-EvaluateScript('gameDef/weapons.js');
+FS.evaluateScript('$/gameDef/animations.js');
+FS.evaluateScript('$/gameDef/battles.js');
+FS.evaluateScript('$/gameDef/characters.js');
+FS.evaluateScript('$/gameDef/conditions.js');
+FS.evaluateScript('$/gameDef/items.js');
+FS.evaluateScript('$/gameDef/maps.js');
+FS.evaluateScript('$/gameDef/math.js');
+FS.evaluateScript('$/gameDef/moveEffects.js');
+FS.evaluateScript('$/gameDef/skills.js');
+FS.evaluateScript('$/gameDef/statuses.js');
+FS.evaluateScript('$/gameDef/stats.js');
+FS.evaluateScript('$/gameDef/weapons.js');
