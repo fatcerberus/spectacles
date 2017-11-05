@@ -17,13 +17,13 @@ const from     = require('from').default,
 const clone = require('$/main.mjs').clone,
       drawTextEx = require('$/main.mjs').drawTextEx,
       { DayNightEngine } = require('$/inGameClock'),
+      MenuStrip = require('$/menuStrip').default,
+      { Session, Difficulty } = require('$/sessions'),
       TestHarness = require('$/testHarness').default;
 
 RequireScript('battleEngine/battle.js');
 RequireScript('gameOverScreen.js');
-RequireScript('menuStrip.js');
 RequireScript('scenelets.js');
-RequireScript('session.js');
 RequireScript('titleScreen.js');
 
 EvaluateScript('gameDef/game.js');

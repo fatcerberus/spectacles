@@ -5,6 +5,7 @@
 
 RequireScript('party.js');
 
+export
 const Difficulty =
 {
 	Beginner: 1,
@@ -13,6 +14,7 @@ const Difficulty =
 	Critical: 4,
 };
 
+export
 class Session
 {
 	static fromFile(fileName)

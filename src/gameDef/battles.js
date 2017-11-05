@@ -3,8 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('battleAI/robertII.js');
-
 // boss and miniboss battle definitions.
 // random field battles don't have specific definitions as the
 // game composes them on-the-fly, ex nihilo.
@@ -46,7 +44,7 @@ Game.enemies =
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",
-		aiClass: Robert2AI,
+		aiClass: 'robertII',
 		hasLifeBar: true,
 		tier: 3,
 		turnRatio: 1.0,

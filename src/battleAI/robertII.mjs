@@ -5,6 +5,7 @@
 
 RequireScript('battleEngine/battleAI.js');
 
+export default
 class Robert2AI extends BattleAI
 {
 	constructor(unit, battle)

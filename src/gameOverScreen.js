@@ -3,8 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript("menuStrip.js");
-
 const GameOverAction =
 {
 	Retry: 1,
@@ -26,9 +24,8 @@ class GameOverScreen extends Thread
 	{
 		this.action = null;
 		this.mode = 'transitionIn';
-		if (Sphere.Game.disableAnimations) {
+		if (Sphere.Game.disableAnimations)
 			this.fadeness = 0.0;
-		}
 		Music.play(null);
 		this.transition = new Scene()
 			.pushBGM('gameOver')
@@ -56,7 +53,7 @@ class GameOverScreen extends Thread
 					var menu = new MenuStrip("Game Over", false);
 					menu.addItem("Retry Battle", GameOverAction.Retry);
 					menu.addItem("Give Up", GameOverAction.Quit);
-					this.action = await menu.open();
+					this.action = await menu.run();
 					if (Sphere.Game.disableAnimations)
 						this.fadeness = 1.0;
 					this.transition = new Scene()

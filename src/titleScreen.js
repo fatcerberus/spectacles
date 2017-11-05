@@ -3,9 +3,6 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript("menuStrip.js");
-RequireScript("session.js");
-
 class TitleScreen extends Thread
 {
 	constructor(themeTrack)
@@ -51,7 +48,7 @@ class TitleScreen extends Thread
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
-					this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).open();
+					this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).run();
 					if (Sphere.Game.disableAnimations)
 						this.fadeness = 1.0;
 					this.transition = new Scene()

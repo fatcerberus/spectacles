@@ -34,7 +34,7 @@ async function main()
 		},
 	});
 
-	TestHarness.initialize();
+	await TestHarness.initialize();
 
 	let dayNight = new DayNightEngine();
 	await TestHarness.run('rsb2');

@@ -3,6 +3,8 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import TestHarness from '$/testHarness.mjs';
+
 TestHarness.addBattle('rsb2',
 {
 	battleID: 'rsbFinal',

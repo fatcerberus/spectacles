@@ -85,7 +85,7 @@ class BattleUnit
 				this.stats[statID] = new Stat(this.baseStats[statID], battle.getLevel(), false);
 			if ('items' in this.enemyInfo) {
 				this.items = from(this.enemyInfo.items)
-					.select(v => new ItemUsable(v))
+					.select(it => new ItemUsable(it))
 					.toArray();
 			}
 			else {
@@ -98,7 +98,9 @@ class BattleUnit
 			this.weapon = Game.weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			this.ai = Reflect.construct(this.enemyInfo.aiClass, [ this, battle ]);
+			let aiFile = FS.fullPath(this.enemyInfo.aiClass, '$/battleAI');
+			let aiConstructor = require(aiFile).default;
+			this.ai = Reflect.construct(aiConstructor, [ this, battle ]);
 			this.battle.registerAI(this.ai);
 		}
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);

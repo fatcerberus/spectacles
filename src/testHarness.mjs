@@ -3,12 +3,12 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { console } from '$/main.mjs';
+import { console } from '$/main';
 
 export default
 class TestHarness
 {
-	static initialize()
+	static async initialize()
 	{
 		console.log("initialize Specs Engine test harness");
 
@@ -23,11 +23,11 @@ class TestHarness
 		this.isBattleRunning = false;
 
 		let fileNames = from(new DirectoryStream('$/testCases'))
-			.where(it => it.fileName.endsWith('.js'))
+			.where(it => it.fileName.endsWith('.mjs'))
 			.select(it => it.fullPath)
 			.besides(it => console.log(`found '${it}'`));
 		for (const fileName of fileNames)
-			FS.evaluateScript(fileName);
+			await import(fileName);
 	}
 
 	static addBattle(testID, setupData)

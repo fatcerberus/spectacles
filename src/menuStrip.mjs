@@ -3,6 +3,9 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { Prim, Scene, Thread } from 'sphere-runtime';
+
+export default
 class MenuStrip extends Thread
 {
 	constructor(title = "", isCancelable = true, items = null)
@@ -16,8 +19,8 @@ class MenuStrip extends Thread
 		this.selectedItem = 0;
 		this.title = title;
 		if (items !== null) {
-			from(items)
-				.each(v => this.addItem(v));
+			for (const item of items)
+				this.addItem(item);
 		}
 	}
 
@@ -30,7 +33,7 @@ class MenuStrip extends Thread
 		return this;
 	}
 
-	async open()
+	async run()
 	{
 		this.openness = 0.0;
 		this.scrollDirection = 0;
@@ -43,23 +46,24 @@ class MenuStrip extends Thread
 			carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 		}
 		this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
-		while (AreKeysLeft()) {
+		while (AreKeysLeft())
 			GetKey();
-		}
 		this.start();
 		this.takeFocus();
 		this.animation = new Scene()
 			.tween(this, 15, 'easeOutQuad', { openness: 1.0 });
 		this.animation.run();
 		await Thread.join(this);
-		return this.chosenItem === null ? null : this.menuItems[this.chosenItem].tag;
+		return this.chosenItem !== null
+			? this.menuItems[this.chosenItem].tag
+			: null;
 	}
 
 	on_inputCheck()
 	{
-		if (this.mode != 'idle') {
+		if (this.mode != 'idle')
 			return;
-		}
+
 		var key = AreKeysLeft() ? GetKey() : null;
 		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 			this.chosenItem = this.selectedItem;
