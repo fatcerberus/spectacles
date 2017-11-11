@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import TestHarness from '$/testHarness.mjs';
+import TestHarness from '$/test-harness.mjs';
 
 TestHarness.addBattle('rsb2',
 {

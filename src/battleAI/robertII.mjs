@@ -3,7 +3,10 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('battleEngine/battleAI.js');
+import { from, Random, Scene } from 'sphere-runtime';
+
+import BattleAI from '$/battleEngine/battleAI.mjs';
+import { Stance } from '$/battleEngine/battleUnit.mjs';
 
 export default
 class Robert2AI extends BattleAI

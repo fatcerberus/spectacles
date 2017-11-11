@@ -3,7 +3,11 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-RequireScript('party.js');
+import { from } from 'sphere-runtime';
+
+import { console } from '$/main.mjs';
+import { Party, PartyMember } from './party-manager.mjs';
+import { Game } from '$/gameDef';
 
 export
 const Difficulty =
@@ -28,9 +32,8 @@ class Session
 
 		this.difficulty = difficulty;
 		this.party = new Party(1);
-		from(Game.initialParty).each(function(characterID) {
+		for (const characterID of Game.initialParty)
 			this.party.add(characterID);
-		}.bind(this));
 		this.battlesSeen = [];
 	}
 }

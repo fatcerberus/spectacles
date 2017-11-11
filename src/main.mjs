@@ -5,39 +5,49 @@
 
 import { Console, Scene } from 'sphere-runtime';
 
-export
-const console = new Console({ hotKey: Key.Tilde });
+import { DayNightEngine } from './inGameClock.mjs';
+import TestHarness from './test-harness.mjs';
+
+import './scenelets.mjs';
+
+export const console =
+	new Console({ hotKey: Key.Tilde });
 
 export default
-async function main()
+class SpecsEngine
 {
-	Scene.defaultPriority = 99;
+	constructor()
+	{
+		Scene.defaultPriority = 99;
 
-	console.defineObject('bgm', null, {
-		override(fileName) { Music.override(fileName); },
-		pop() { Music.pop(); },
-		play(fileName) { Music.play(fileName); },
-		push(fileName) { Music.push(fileName); },
-		reset() { Music.reset(); },
-		stop(fileName) { Music.override(null); },
-		volume(value) { Music.adjustVolume(value); },
-	});
+		console.defineObject('bgm', null, {
+			override(fileName) { Music.override(fileName); },
+			pop() { Music.pop(); },
+			play(fileName) { Music.play(fileName); },
+			push(fileName) { Music.push(fileName); },
+			reset() { Music.reset(); },
+			stop(fileName) { Music.override(null); },
+			volume(value) { Music.adjustVolume(value); },
+		});
+		console.defineObject('yap', null, {
+			'on': function() {
+				Sphere.Game.disableTalking = false;
+				console.log("oh, yappy times are here again...");
+			},
+			'off': function() {
+				Sphere.Game.disableTalking = true;
+				console.log("the yappy times are OVER!");
+			},
+		});
+	}
 
-	console.defineObject('yap', null, {
-		'on': function() {
-			Sphere.Game.disableTalking = false;
-			console.log("oh, yappy times are here again...");
-		},
-		'off': function() {
-			Sphere.Game.disableTalking = true;
-			console.log("the yappy times are OVER!");
-		},
-	});
+	async start()
+	{
+		await TestHarness.initialize();
 
-	await TestHarness.initialize();
-
-	let dayNight = new DayNightEngine();
-	await TestHarness.run('rsb2');
+		let dayNight = new DayNightEngine();
+		await TestHarness.run('rsb2');
+	}
 }
 
 export

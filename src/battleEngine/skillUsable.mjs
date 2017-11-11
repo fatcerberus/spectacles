@@ -1,0 +1,141 @@
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2017 Power-Command
+***/
+
+import { from } from 'sphere-runtime';
+
+import { clone, console } from '$/main.mjs';
+import { Maths, Skills } from '$/gameDef';
+import { Stance } from './battleUnit.mjs';
+import Stat from './stat.mjs';
+
+export default
+class SkillUsable
+{
+	constructor(skillID, level = 1)
+	{
+		if (!(skillID in Skills))
+			throw new ReferenceError(`no skill definition for '${skillID}'`);
+
+		this.levelUpTable = [];
+		for (let i = 1; i <= 100; ++i) {
+			var xpNeeded = Math.ceil(i > 1 ? i ** 3 : 0);
+			this.levelUpTable[i] = xpNeeded;
+		}
+		this.skillInfo = Skills[skillID];
+		this.experience = this.levelUpTable[level];
+		this.givesExperience = true;
+		this.isGroupCast = from([ 'allEnemies', 'allAllies' ])
+			.anyIs(this.skillInfo.targetType);
+		this.name = this.skillInfo.name;
+		this.skillID = skillID;
+		this.useAiming = true;
+		this.allowDeadTarget = 'allowDeadTarget' in this.skillInfo
+			? this.skillInfo.allowDeadTarget
+			: false;
+	}
+
+	get level()
+	{
+		for (let level = 100; level >= 2; --level) {
+			if (this.experience >= this.levelUpTable[level])
+				return level;
+		}
+		return 1;
+	}
+	
+	get rank()
+	{
+		return Maths.skillRank(this.skillInfo);
+	}
+	
+	defaultTargets(user)
+	{
+		switch (this.skillInfo.targetType) {
+			case 'single':
+				var enemies = user.battle.enemiesOf(user);
+				var target = from(enemies)
+					.where(v => v.isAlive())
+					.sample(1).first();
+				if (this.allowDeadTarget && from(enemies).any(v => !v.isAlive())) {
+					target = from(enemies)
+						.where(v => !v.isAlive())
+						.sample(1).first();
+				}
+				return [ target ];
+			case 'ally':
+				var allies = user.battle.alliesOf(user);
+				var target = user;
+				if (this.allowDeadTarget && from(allies).any(v => !v.isAlive())) {
+					target = from(allies)
+						.where(v => !v.isAlive())
+						.sample(1).first();
+				}
+				return [ target ];
+			case 'allEnemies':
+				return from(user.battle.enemiesOf(user))
+					.where(v => v.isAlive() || this.allowDeadUnits)
+					.toArray();
+			case 'allAllies':
+				return from(user.battle.alliesOf(user))
+					.where(v => v.isAlive() || this.allowDeadUnits)
+					.toArray();
+			default:
+				return user;
+		}
+	}
+
+	grow(amount)
+	{
+		amount = Math.max(Math.round(amount), 0);
+		this.experience = Math.min(this.experience + amount, this.levelUpTable[100]);
+		console.log(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.level}`);
+	}
+
+	isUsable(user, stance = Stance.Attack)
+	{
+		var userWeaponType = user.weapon != null ? user.weapon.type : null;
+		var skillWeaponType = this.skillInfo.weaponType;
+		if (skillWeaponType != null && userWeaponType != skillWeaponType)
+			return false;
+		var canCharge = ('chargeable' in this.skillInfo ? this.skillInfo.chargeable : true)
+			&& this.skillInfo.actions.length == 1;
+		var isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
+			&& this.skillInfo.targetType == 'single' && this.skillInfo.actions.length == 1;
+		return this.mpCost(user) <= user.mpPool.availableMP
+			&& (stance != Stance.Charge || canCharge)
+			&& (stance != Stance.Counter || isValidCounter)
+			&& stance != Stance.Guard;
+	}
+
+	mpCost(user)
+	{
+		return Math.min(Math.max(Math.ceil(Maths.mp.usage(this.skillInfo, this.level, user.battlerInfo)), 0), 999);
+	}
+
+	peekActions()
+	{
+		return this.skillInfo.actions;
+	}
+
+	use(unit, targets)
+	{
+		if (!this.isUsable(unit, unit.stance))
+			throw new Error(`${unit.name} tried to use unusable skill ${this.name}`);
+		console.log(`${unit.name} is using ${this.name}`, `targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
+		if (unit.weapon != null && this.skillInfo.weaponType != null)
+			console.log(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);
+		unit.mpPool.use(this.mpCost(unit));
+		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
+		var targetInfos = [];
+		for (let i = 0; i < targets.length; ++i)
+			targetInfos.push(targets[i].battlerInfo);
+		var experience = Maths.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
+		this.grow(experience);
+		let eventData = { skill: clone(this.skillInfo) };
+		unit.raiseEvent('useSkill', eventData);
+		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, unit.stance, from(targets).select(v => v.id).toArray());
+		return eventData.skill.actions;
+	}
+}

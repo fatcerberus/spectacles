@@ -3,7 +3,9 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Console, Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Thread } from 'sphere-runtime';
+
+import { console, drawTextEx } from '$/main.mjs';
 
 export
 class HPGauge
