@@ -21,7 +21,6 @@ Object.assign(Sphere.Game,
 	disableTitleScreen: false,
 });
 
-install('@/scripts', files('src/*.js', true));
 install('@/scripts', files('src/*.mjs', true));
 
 install('@/images',     files('images/*.png', true));

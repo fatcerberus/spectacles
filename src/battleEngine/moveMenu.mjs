@@ -37,7 +37,7 @@ function MoveMenu(unit, battle, stance)
 	this.topCursorColor = CreateColor(0, 0, 0, 0);
 	this.unit = unit;
 	var drawerTable = {};
-	from(this.unit.skills).each(function(skill) {
+	for (const skill of this.unit.skills) {
 		var category = skill.skillInfo.category;
 		if (!(category in drawerTable)) {
 			drawerTable[category] = {
@@ -47,7 +47,7 @@ function MoveMenu(unit, battle, stance)
 			};
 		}
 		drawerTable[category].contents.push(skill);
-	});
+	}
 	this.drawers = [];
 	for (let category in drawerTable) {
 		this.drawers.push(drawerTable[category]);

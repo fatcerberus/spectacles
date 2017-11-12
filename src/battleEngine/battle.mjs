@@ -184,10 +184,9 @@ class Battle extends Thread
 		var forecast = [];
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			let bias = 0;
-			from(this.enemyUnits, this.playerUnits)
-				.where(it => it !== actingUnit || turnIndex > 0)
-				.each(unit =>
-			{
+			let candidates = from(this.enemyUnits, this.playerUnits)
+				.where(it => it !== actingUnit || turnIndex > 0);
+			for (const unit of candidates) {
 				++bias;
 				let timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
 					actingUnit === unit ? nextActions : null);
@@ -197,9 +196,9 @@ class Battle extends Thread
 					turnIndex: turnIndex,
 					unit: unit
 				});
-			});
+			}
 		}
-		forecast.sort(function(a, b) {
+		forecast.sort((a, b) => {
 			let sortOrder = a.remainingTime - b.remainingTime;
 			let biasOrder = a.bias - b.bias;
 			return sortOrder !== 0 ? sortOrder : biasOrder;
@@ -210,9 +209,9 @@ class Battle extends Thread
 
 	raiseEvent(eventID, data = null)
 	{
-		var conditions = [ ...this.conditions ];
-		from(conditions)
-			.each(it => it.invoke(eventID, data));
+		let conditions = [ ...this.conditions ];
+		for (const condition of conditions)
+			condition.invoke(eventID, data);
 	}
 
 	registerAI(ai)
@@ -233,16 +232,15 @@ class Battle extends Thread
 		targetUnits = eventData.targets;
 		if ('announceAs' in action && action.announceAs != null)
 			await actingUnit.announce(action.announceAs);
-		from(action.effects)
-			.where(it => it.targetHint === 'user')
-			.each(effect =>
-		{
+		let userEffects = from(action.effects)
+			.where(it => it.targetHint === 'user');
+		for (const effect of userEffects) {
 			console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 			let effectHandler = MoveEffects[effect.type];
 			effectHandler(actingUnit, [ actingUnit ], effect);
-		});
-		from(targetUnits)
-			.each(it => it.takeHit(actingUnit, action));
+		}
+		for (const target of targetUnits)
+			target.takeHit(actingUnit, action);
 		if (action.effects === null)
 			return [];
 		let targetsHit = [];
@@ -274,15 +272,15 @@ class Battle extends Thread
 			return [];
 
 		// apply move effects to target(s)
-		from(targetsHit)
-			.each(it => it.beginTargeting(actingUnit));
+		for (const target of targetsHit)
+			target.beginTargeting(actingUnit);
 		let animContext = {
 			effects: from(action.effects)
 				.where(it => from([ 'selected', 'random' ]).anyIs(it.targetHint))
 				.where(it => it.type != null)
 				.toArray(),
 			pc: 0,
-			nextEffect: function() {
+			nextEffect() {
 				if (this.pc < this.effects.length) {
 					let effect = this.effects[this.pc++];
 					let targets = effect.targetHint == 'random'
@@ -299,8 +297,8 @@ class Battle extends Thread
 				.call(animContext, actingUnit, targetsHit, false);
 		}
 		while (animContext.nextEffect());
-		from(targetsHit)
-			.each(it => it.endTargeting());
+		for (const target of targetsHit)
+			target.endTargeting();
 		return targetsHit;
 	}
 

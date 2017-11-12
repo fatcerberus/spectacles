@@ -106,7 +106,7 @@ class BattleActor
 			case 'revive':
 				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 1.0 })
-					.call(function() { this.sprite.direction = this.isEnemy ? 'east' : 'west'; }.bind(this))
+					.call(() => { this.sprite.direction = this.isEnemy ? 'east' : 'west'; })
 					.run();
 				break;
 			case 'sleep':
