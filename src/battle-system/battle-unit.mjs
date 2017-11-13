@@ -7,15 +7,14 @@ import { from, Random, Scene } from 'sphere-runtime';
 
 import { console, clone } from '$/main.mjs';
 import { PartyMember } from '../party-manager.mjs';
-import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons }
-	from '$/gameDef';
+import { FieldCondition, StatusEffect } from './field-effect.mjs';
+import { MoveMenu } from './move-menu.mjs';
+import { MPPool } from './mp-pool.mjs';
+import { Stat } from './stat.mjs';
+import { ItemUsable, SkillUsable } from './usables.mjs';
 
-import ItemUsable from './itemUsable.mjs';
-import MPPool from './mpPool.mjs';
-import MoveMenu from './moveMenu.mjs';
-import Stat from './stat.mjs';
-import StatusEffect from './statusEffect.mjs';
-import SkillUsable from './skillUsable.mjs';
+import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons }
+	from '$/game-data';
 
 export
 const Row =
@@ -35,7 +34,7 @@ const Stance =
 	Hippo:   4,
 };
 
-export default
+export
 class BattleUnit
 {
 	constructor(battle, basis, position, startingRow, mpPool)
@@ -108,7 +107,7 @@ class BattleUnit
 			this.weapon = Weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			let aiFile = FS.fullPath(this.enemyInfo.aiClass, '$/battleAI');
+			let aiFile = FS.fullPath(this.enemyInfo.aiType, '$/cpu-battlers');
 			let aiConstructor = require(aiFile).default;
 			this.ai = Reflect.construct(aiConstructor, [ this, battle ]);
 			this.battle.registerAI(this.ai);

@@ -5,41 +5,38 @@
 
 import { Music, Scene, Thread } from 'sphere-runtime';
 
-import MenuStrip from '$/menu-strip.mjs';
+import { MenuStrip } from '$/menu-strip.mjs';
 
 export
-const GameOverAction =
+class TitleScreen extends Thread
 {
-	Retry: 1,
-	Quit:  2,
-};
-
-export default
-class GameOverScreen extends Thread
-{
-	constructor()
+	constructor(themeTrack)
 	{
 		super();
-
+		
 		this.fadeness = 1.0;
-		this.image = new Texture('images/gameOverScreen.png');
-		this.transition = null;
+		this.image = new Texture('images/titleScreen.png');
+		this.themeTrack = themeTrack;
 	}
 
-	show()
+	async show()
 	{
-		this.action = null;
+		if (Sphere.Game.disableTitleScreen)
+			return new Session();
+		this.choice = null;
 		this.mode = 'transitionIn';
 		if (Sphere.Game.disableAnimations)
 			this.fadeness = 0.0;
-		Music.play(null);
 		this.transition = new Scene()
-			.pushBGM('gameOver')
 			.adjustBGM(1.0)
-			.tween(this, 300, 'linear', { fadeness: 0.0 });
+			.pushBGM(this.themeTrack)
+			.tween(this, 120, 'linear', { fadeness: 0.0 });
 		this.transition.run();
 		this.start();
-		return this;
+		await Thread.join(this);
+		Music.pop();
+		Music.adjustVolume(1.0);
+		return new Session();
 	}
 
 	on_render()
@@ -48,7 +45,7 @@ class GameOverScreen extends Thread
 		Prim.fill(Surface.Screen, Color.Black.fadeTo(this.fadeness));
 	}
 
-	async on_update()
+	on_update()
 	{
 		switch (this.mode) {
 			case 'idle':
@@ -56,10 +53,7 @@ class GameOverScreen extends Thread
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
-					var menu = new MenuStrip("Game Over", false);
-					menu.addItem("Retry Battle", GameOverAction.Retry);
-					menu.addItem("Give Up", GameOverAction.Quit);
-					this.action = await menu.run();
+					this.choice = new MenuStrip("", false, [ "New Game", "Continue" ]).run();
 					if (Sphere.Game.disableAnimations)
 						this.fadeness = 1.0;
 					this.transition = new Scene()
@@ -72,11 +66,8 @@ class GameOverScreen extends Thread
 				}
 				break;
 			case 'transitionOut':
-				if (!this.transition.running) {
-					Music.pop();
-					Music.adjustVolume(1.0);
+				if (!this.transition.running)
 					this.stop();
-				}
 				break;
 		}
 	}

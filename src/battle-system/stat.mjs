@@ -3,9 +3,9 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Maths } from '$/gameDef';
+import { Maths } from '$/game-data';
 
-export default
+export
 class Stat
 {
 	constructor(baseValue, level = 1, enableGrowth = true, growthRate = 1.0)

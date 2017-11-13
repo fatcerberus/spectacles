@@ -6,12 +6,13 @@
 import { from, Music, Random, Thread } from 'sphere-runtime';
 
 import { clone, console } from '$/main.mjs';
-import BattleScreen from './battleScreen.mjs';
-import BattleUnit, { Row } from './battleUnit.mjs';
-import FieldCondition from './fieldCondition.mjs';
-import MPPool from './mpPool.mjs';
+import { BattleScreen } from './battle-screen.mjs';
+import { BattleUnit, Row } from './battle-unit.mjs';
+import { FieldCondition } from './field-effect.mjs';
+import { MPPool } from './mp-pool.mjs';
+
 import { Animations, Battles, Characters, Game, Maths, MoveEffects }
-	from '$/gameDef';
+	from '$/game-data';
 
 export
 const BattleResult =
@@ -21,7 +22,7 @@ const BattleResult =
 	Lose: 3,
 };
 
-export default
+export
 class Battle extends Thread
 {
 	constructor(session, battleID)

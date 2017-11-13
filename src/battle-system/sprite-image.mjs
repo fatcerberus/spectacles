@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-export default
+export
 class SpriteImage
 {
 	constructor(filename)

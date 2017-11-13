@@ -6,9 +6,10 @@
 import { from } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
-import { Characters, Weapons } from '$/gameDef';
-import SkillUsable from '$/battleEngine/skillUsable.mjs';
-import Stat from '$/battleEngine/stat.mjs';
+import { SkillUsable } from '$/battle-system/usables.mjs';
+import { Stat } from '$/battle-system/stat.mjs';
+
+import { Characters, Weapons } from '$/game-data';
 
 export
 class Party

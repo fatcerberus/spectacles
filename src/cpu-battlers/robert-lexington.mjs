@@ -5,11 +5,11 @@
 
 import { from, Random, Scene } from 'sphere-runtime';
 
-import BattleAI from '$/battleEngine/battleAI.mjs';
-import { Stance } from '$/battleEngine/battleUnit.mjs';
+import { Stance } from '$/battle-system/battle-unit.mjs';
+import { CPUBattler } from '$/battle-system/cpu-battler.mjs';
 
 export default
-class Robert2AI extends BattleAI
+class Robert2AI extends CPUBattler
 {
 	constructor(unit, battle)
 	{

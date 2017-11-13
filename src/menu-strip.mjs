@@ -5,7 +5,7 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-export default
+export
 class MenuStrip extends Thread
 {
 	constructor(title = "", isCancelable = true, items = null)

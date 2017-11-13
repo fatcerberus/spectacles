@@ -7,7 +7,8 @@ import { from } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
 import { Party, PartyMember } from './party-manager.mjs';
-import { Game } from '$/gameDef';
+
+import { Game } from '$/game-data';
 
 export
 const Difficulty =

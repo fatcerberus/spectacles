@@ -7,7 +7,7 @@ import { Delegate } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
 
-export default
+export
 class MPPool
 {
 	constructor(id, capacity, availableMP = capacity)

@@ -6,14 +6,13 @@
 import { from, Random } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
-import { Stance } from './battleUnit.mjs';
-import ItemUsable from './itemUsable.mjs';
-import SkillUsable from './skillUsable.mjs';
-import WeaponUsable from './weaponUsable.mjs';
-import { Game, Items, Skills, Weapons } from '$/gameDef';
+import { Stance } from './battle-unit.mjs';
+import { ItemUsable, SkillUsable, WeaponUsable } from './usables.mjs';
 
-export default
-class BattleAI
+import { Game, Items, Skills, Weapons } from '$/game-data';
+
+export
+class CPUBattler
 {
 	constructor(unit, battle)
 	{

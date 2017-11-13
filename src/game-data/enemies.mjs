@@ -9,7 +9,7 @@ const Enemies =
 	robert2: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",
-		aiClass: 'robertII',
+		aiType: 'robert-lexington',
 		hasLifeBar: true,
 		tier: 3,
 		turnRatio: 1.0,

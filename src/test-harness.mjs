@@ -6,9 +6,10 @@
 import { from, Scene } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
-import ItemUsable from '$/battleEngine/itemUsable.mjs';
 import { Session } from '$/sessions.mjs';
-import { Game } from '$/gameDef';
+import { ItemUsable } from '$/battle-system/usables.mjs';
+
+import { Game } from '$/game-data';
 
 export default
 class TestHarness
@@ -27,7 +28,7 @@ class TestHarness
 		this.tests = {};
 		this.isBattleRunning = false;
 
-		let fileNames = from(new DirectoryStream('$/testCases'))
+		let fileNames = from(new DirectoryStream('$/test-cases'))
 			.where(it => it.fileName.endsWith('.mjs'))
 			.select(it => it.fullPath)
 			.besides(it => console.log(`found '${it}'`));
