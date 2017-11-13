@@ -8,7 +8,7 @@ import { from, Music, Random, Thread } from 'sphere-runtime';
 import { clone, console } from '$/main.mjs';
 import { BattleScreen } from './battle-screen.mjs';
 import { BattleUnit, Row } from './battle-unit.mjs';
-import { FieldCondition } from './field-effect.mjs';
+import { FieldCondition } from './field-effects.mjs';
 import { MPPool } from './mp-pool.mjs';
 
 import { Animations, Battles, Characters, Game, Maths, MoveEffects }

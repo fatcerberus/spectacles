@@ -7,7 +7,7 @@ import { from, Random, Scene } from 'sphere-runtime';
 
 import { console, clone } from '$/main.mjs';
 import { PartyMember } from '../party-manager.mjs';
-import { FieldCondition, StatusEffect } from './field-effect.mjs';
+import { FieldCondition, StatusEffect } from './field-effects.mjs';
 import { MoveMenu } from './move-menu.mjs';
 import { MPPool } from './mp-pool.mjs';
 import { Stat } from './stat.mjs';

@@ -6,7 +6,7 @@
 import { Console, Scene } from 'sphere-runtime';
 
 import { DayNightEngine } from './in-game-clock.mjs';
-import TestHarness from './test-harness.mjs';
+import { TestHarness } from './test-harness.mjs';
 
 import './scenelets.mjs';
 

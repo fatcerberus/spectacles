@@ -11,7 +11,7 @@ import { ItemUsable } from '$/battle-system/usables.mjs';
 
 import { Game } from '$/game-data';
 
-export default
+export
 class TestHarness
 {
 	static async initialize()
