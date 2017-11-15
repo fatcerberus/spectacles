@@ -5,7 +5,7 @@
 
 import { console } from '$/main.mjs';
 
-import { Conditions, StatNames, Statuses } from '$/game-data';
+import { Conditions, StatNames, Statuses } from '$/game-data/index.mjs';
 
 export
 class FieldCondition

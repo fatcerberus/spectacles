@@ -9,7 +9,7 @@ import { console } from '$/main.mjs';
 import { Session } from '$/sessions.mjs';
 import { ItemUsable } from '$/battle-system/usables.mjs';
 
-import { Game } from '$/game-data';
+import { Game } from '$/game-data/index.mjs';
 
 export
 class TestHarness

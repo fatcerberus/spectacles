@@ -19,7 +19,7 @@ const Game =
 	guardBreakRank: 1,
 	reviveRank: 2,
 	stanceChangeRank: 5,
-	
+
 	initialParty: [
 		'scott',
 	],

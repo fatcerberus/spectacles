@@ -11,7 +11,7 @@ class MenuStrip extends Thread
 	constructor(title = "", isCancelable = true, items = null)
 	{
 		super({ priority: 100 });
-		
+
 		this.carouselSurface = null;
 		this.font = GetSystemFont();
 		this.isCancelable = isCancelable;

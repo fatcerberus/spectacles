@@ -12,7 +12,7 @@ import { FieldCondition } from './field-effects.mjs';
 import { MPPool } from './mp-pool.mjs';
 
 import { Animations, Battles, Characters, Game, Maths, MoveEffects }
-	from '$/game-data';
+	from '$/game-data/index.mjs';
 
 export
 const BattleResult =

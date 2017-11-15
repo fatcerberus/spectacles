@@ -9,7 +9,7 @@ import { console } from '$/main.mjs';
 import { SkillUsable } from '$/battle-system/usables.mjs';
 import { Stat } from '$/battle-system/stat.mjs';
 
-import { Characters, Weapons } from '$/game-data';
+import { Characters, Weapons } from '$/game-data/index.mjs';
 
 export
 class Party

@@ -14,7 +14,7 @@ import { Stat } from './stat.mjs';
 import { ItemUsable, SkillUsable } from './usables.mjs';
 
 import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons }
-	from '$/game-data';
+	from '$/game-data/index.mjs';
 
 export
 const Row =
@@ -844,7 +844,7 @@ class BattleUnit
 			return Infinity;
 		}
 	}
-	
+
 	turnIntoAHippo()
 	{
 		this.actor.animate('hippo');

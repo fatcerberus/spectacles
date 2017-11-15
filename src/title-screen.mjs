@@ -13,7 +13,7 @@ class TitleScreen extends Thread
 	constructor(themeTrack)
 	{
 		super();
-		
+
 		this.fadeness = 1.0;
 		this.image = new Texture('images/titleScreen.png');
 		this.themeTrack = themeTrack;

@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Maths } from '$/game-data';
+import { Maths } from '$/game-data/index.mjs';
 
 export
 class Stat

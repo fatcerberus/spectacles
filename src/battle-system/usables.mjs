@@ -9,7 +9,7 @@ import { clone, console } from '$/main.mjs';
 import { Stance } from './battle-unit.mjs';
 import { Stat } from './stat.mjs';
 
-import { Game, Items, Maths, Skills, Weapons } from '$/game-data';
+import { Game, Items, Maths, Skills, Weapons } from '$/game-data/index.mjs';
 
 export
 class ItemUsable
@@ -124,12 +124,12 @@ class SkillUsable
 		}
 		return 1;
 	}
-	
+
 	get rank()
 	{
 		return Maths.skillRank(this.skillInfo);
 	}
-	
+
 	defaultTargets(user)
 	{
 		switch (this.skillInfo.targetType) {

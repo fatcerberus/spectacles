@@ -9,7 +9,7 @@ import { console } from '$/main.mjs';
 import { Stance } from './battle-unit.mjs';
 import { ItemUsable, SkillUsable, WeaponUsable } from './usables.mjs';
 
-import { Game, Items, Skills, Weapons } from '$/game-data';
+import { Game, Items, Skills, Weapons } from '$/game-data/index.mjs';
 
 export
 class CPUBattler
@@ -32,12 +32,12 @@ class CPUBattler
 	{
 		return this.defaultSkillID;
 	}
-	
+
 	get phase()
 	{
 		return this.currentPhase;
 	}
-	
+
 	set defaultSkill(value)
 	{
 		console.log(`default skill for ${this.unit.name} is ${Skills[value].name}`);
@@ -59,21 +59,21 @@ class CPUBattler
 
 	async getNextMove()
 	{
-		var moveToUse = null;
+		let moveToUse = null;
 		do {
 			if (this.moveQueue.length == 0) {
 				console.log(`defer to AI for ${this.unit.name}'s next move`);
 				let enemyList = this.battle.enemiesOf(this.unit);
 				this.enemies = [];
 				for (let i = 0; i < enemyList.length; ++i) {
-					var enemy = enemyList[i];
+					let enemy = enemyList[i];
 					this.enemies.push(enemy);
 					this.enemies[enemy.id] = enemy;
 				}
 				let allyList = this.battle.alliesOf(this.unit);
 				this.allies = [];
 				for (let i = 0; i < allyList.length; ++i) {
-					var ally = allyList[i];
+					let ally = allyList[i];
 					this.allies.push(ally);
 					this.allies[ally.id] = ally;
 				}
@@ -90,8 +90,8 @@ class CPUBattler
 					}
 				}
 			}
-			var candidateMove;
-			var isUsable;
+			let candidateMove;
+			let isUsable;
 			do {
 				candidateMove = this.moveQueue.shift();
 				let isLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
@@ -141,7 +141,7 @@ class CPUBattler
 
 	isSkillUsable(skillID)
 	{
-		var skillToUse = new SkillUsable(skillID, 100);
+		let skillToUse = new SkillUsable(skillID, 100);
 		return skillToUse.isUsable(this.unit, this.unit.stance);
 	}
 
@@ -159,8 +159,8 @@ class CPUBattler
 		if (!(itemID in Items))
 			throw new ReferenceError(`no item definition for '${itemID}'`);
 
-		var itemRank = 'rank' in Items[itemID] ? Items[itemID].rank : Game.defaultItemRank;
-		var forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
+		let itemRank = 'rank' in Items[itemID] ? Items[itemID].rank : Game.defaultItemRank;
+		let forecast = this.battle.predictTurns(this.unit, [ itemRank ]);
 		console.log(`${this.unit.name} considering ${Items[itemID].name}`,
 			`next: ${forecast[0].unit.name}`);
 		return forecast;
@@ -171,7 +171,7 @@ class CPUBattler
 		if (!(skillID in Skills))
 			throw new ReferenceError(`no skill definition for '${skillID}'`);
 
-		var forecast = this.battle.predictTurns(this.unit, Skills[skillID].actions);
+		let forecast = this.battle.predictTurns(this.unit, Skills[skillID].actions);
 		console.log(`${this.unit.name} considering ${Skills[skillID].name}`,
 			`next: ${forecast[0].unit.name}`);
 		return forecast;
@@ -224,20 +224,20 @@ class CPUBattler
 
 	queueWeapon(weaponID)
 	{
-		var weaponUsable = new WeaponUsable(weaponID);
+		let weaponUsable = new WeaponUsable(weaponID);
 		this.moveQueue.push({
 			usable: weaponUsable,
 			stance: Stance.Attack,
 			targets: weaponUsable.defaultTargets(this.unit),
 			predicate: () => true,
 		});
-		var weaponDef = Weapons[weaponID];
+		let weaponDef = Weapons[weaponID];
 		console.log(`${this.unit.name} queued weapon change to ${weaponDef.name}`);
 	}
 
 	setTarget(targetID)
 	{
-		var unit = this.battle.findUnit(targetID);
+		let unit = this.battle.findUnit(targetID);
 		this.targets = unit !== null ? [ unit ] : null;
 	}
 
