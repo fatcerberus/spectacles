@@ -12,10 +12,12 @@ import { ItemUsable } from './usables.mjs';
 import { Elements, SkillCategories } from '$/game-data/index.mjs';
 
 export
-class MoveMenu
+class MoveMenu extends Thread
 {
 	constructor(unit, battle, stance)
 	{
+		super({ priority: 10 });
+		
 		this.lockedCursorColor = CreateColor(0, 36, 72, 255);
 		this.moveRankColor = CreateColor(255, 255, 255, 255);
 		this.normalCursorColor = CreateColor(0, 72, 144, 255);
@@ -29,7 +31,6 @@ class MoveMenu
 		this.font = GetSystemFont();
 		this.isExpanded = false;
 		this.menuStance = stance;
-		this.menuThread = null;
 		this.moveCursor = 0;
 		this.moveCursorColor = CreateColor(0, 0, 0, 0);
 		this.moveMenu = null;
@@ -192,7 +193,53 @@ class MoveMenu
 		};
 	}
 
-	getInput()
+	async run()
+	{
+		this.battle.suspend();
+		this.battle.ui.hud.highlight(this.unit);
+		var chosenTargets = null;
+		this.stance = this.lastStance = this.menuStance;
+		while (chosenTargets === null) {
+			this.expansion = 0.0;
+			this.isExpanded = false;
+			this.selection = null;
+			this.stance = this.lastStance;
+			while (AreKeysLeft()) { GetKey(); }
+			this.showMenu.run();
+			this.updateTurnPreview();
+			this.start();
+			this.takeFocus();
+			await Thread.join(this);
+			switch (this.stance) {
+				case Stance.Attack:
+				case Stance.Charge:
+					var name = this.stance == Stance.Charge
+						? `CS ${this.selection.name}`
+						: this.selection.name;
+					var chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).run();
+					break;
+				case Stance.Counter:
+					var targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
+					targetMenu.lockTargets([ this.unit.counterTarget ]);
+					var chosenTargets = await targetMenu.run();
+					break;
+				case Stance.Guard:
+					var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
+					targetMenu.lockTargets([ this.unit ]);
+					var chosenTargets = await targetMenu.run();
+					break;
+			}
+		}
+		this.battle.ui.hud.highlight(null);
+		this.battle.resume();
+		return {
+			usable: this.selection,
+			stance: this.stance,
+			targets: chosenTargets
+		};
+	}
+
+	on_inputCheck()
 	{
 		var key = AreKeysLeft() ? GetKey() : null;
 		/*if (this.showMenu.running) {
@@ -266,53 +313,7 @@ class MoveMenu
 		}
 	}
 
-	async open()
-	{
-		this.battle.suspend();
-		this.battle.ui.hud.highlight(this.unit);
-		var chosenTargets = null;
-		this.stance = this.lastStance = this.menuStance;
-		while (chosenTargets === null) {
-			this.expansion = 0.0;
-			this.isExpanded = false;
-			this.selection = null;
-			this.stance = this.lastStance;
-			while (AreKeysLeft()) { GetKey(); }
-			this.showMenu.run();
-			this.updateTurnPreview();
-			this.menuThread = Thread.create(this, 10);
-			this.menuThread.takeFocus();
-			await Thread.join(this.menuThread);
-			switch (this.stance) {
-				case Stance.Attack:
-				case Stance.Charge:
-					var name = this.stance == Stance.Charge
-						? `CS ${this.selection.name}`
-						: this.selection.name;
-					var chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).open();
-					break;
-				case Stance.Counter:
-					var targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
-					targetMenu.lockTargets([ this.unit.counterTarget ]);
-					var chosenTargets = await targetMenu.open();
-					break;
-				case Stance.Guard:
-					var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
-					targetMenu.lockTargets([ this.unit ]);
-					var chosenTargets = await targetMenu.open();
-					break;
-			}
-		}
-		this.battle.ui.hud.highlight(null);
-		this.battle.resume();
-		return {
-			usable: this.selection,
-			stance: this.stance,
-			targets: chosenTargets
-		};
-	}
-
-	render()
+	on_render()
 	{
 		var yOrigin = -54 * (1.0 - this.fadeness) + 16;
 		var stanceText = this.stance == Stance.Charge ? "CS"
@@ -351,18 +352,20 @@ class MoveMenu
 		}
 	}
 
-	update()
+	on_update()
 	{
-		return (this.stance != Stance.Guard && this.selection === null)
-			|| this.chooseMove.running;
+		if ((this.selection !== null || this.stance === Stance.Guard) && !this.chooseMove.running)
+			this.stop();
 	}
 }
 
 export
-class TargetMenu
+class TargetMenu extends Thread
 {
 	constructor(unit, battle, usable = null, moveName = null)
 	{
+		super({ priority: 10 });
+		
 		this.battle = battle;
 		this.doChangeInfo = null;
 		this.isChoiceMade = false;
@@ -457,7 +460,32 @@ class TargetMenu
 		};
 	}
 
-	getInput()
+	lockTargets(targetUnits)
+	{
+		this.targets = targetUnits;
+		this.isTargetLocked = true;
+	}
+
+	async run()
+	{
+		this.isChoiceMade = false;
+		if (!this.isTargetLocked) {
+			this.targets = this.usable !== null
+				? this.usable.defaultTargets(this.unit)
+				: [ this.battle.enemiesOf(this.unit)[0] ];
+		}
+		this.isGroupCast = this.usable !== null ? this.usable.isGroupCast : false;
+		this.updateInfo();
+		while (AreKeysLeft()) {
+			GetKey();
+		}
+		this.start();
+		this.takeFocus();
+		await Thread.join(this);
+		return this.targets;
+	}
+
+	on_inputCheck()
 	{
 		switch (AreKeysLeft() ? GetKey() : null) {
 			case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
@@ -514,32 +542,7 @@ class TargetMenu
 		}
 	}
 
-	lockTargets(targetUnits)
-	{
-		this.targets = targetUnits;
-		this.isTargetLocked = true;
-	}
-
-	async open()
-	{
-		this.isChoiceMade = false;
-		if (!this.isTargetLocked) {
-			this.targets = this.usable !== null
-				? this.usable.defaultTargets(this.unit)
-				: [ this.battle.enemiesOf(this.unit)[0] ];
-		}
-		this.isGroupCast = this.usable !== null ? this.usable.isGroupCast : false;
-		this.updateInfo();
-		while (AreKeysLeft()) {
-			GetKey();
-		}
-		let thread = Thread.create(this, 10);
-		thread.takeFocus();
-		await Thread.join(thread);
-		return this.targets;
-	}
-
-	render()
+	on_render()
 	{
 		if (this.targets !== null) {
 			for (let i = 0; i < this.targets.length; ++i) {
@@ -575,8 +578,9 @@ class TargetMenu
 		}
 	}
 
-	update()
+	on_update()
 	{
-		return !this.isChoiceMade;
+		if (this.isChoiceMade)
+			this.stop();
 	}
 }

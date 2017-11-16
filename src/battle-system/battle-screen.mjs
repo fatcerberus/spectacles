@@ -63,17 +63,14 @@ class BattleScreen extends Thread
 				Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
 				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
 			},
-			update() {
-				return true;
-			}
 		};
-		let thread = Thread.create(announcement, 10);
+		let job = Dispatch.onRender(() => announcement.render(), { priority: 10 });
 		await new Scene()
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 0.0 })
 			.pause(46)
 			.tween(announcement, 7, 'easeInOutSine', { fadeness: 1.0 })
 			.run();
-		thread.stop();
+		job.cancel();
 	}
 
 	createActor(name, position, row, alignment, alreadyThere = false)
@@ -294,10 +291,12 @@ class BattleActor
 	}
 }
 
-class BattleHUD
+class BattleHUD extends Thread
 {
 	constructor(partyMaxMP)
 	{
+		super({ priority: 20 });
+		
 		this.enemyHPGaugeColor = Color.White;
 		this.partyHPGaugeColor = Color.Lime;
 		this.partyHighlightColor = CreateColor(25, 25, 112, 255);
@@ -310,7 +309,6 @@ class BattleHUD
 		this.hpGaugesInfo = [];
 		this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
 		this.partyInfo = [ null, null, null ];
-		this.thread = null;
 		this.turnPreview = new TurnPreview();
 
 		this.drawElementBox = function(x, y, width, height)
@@ -371,8 +369,8 @@ class BattleHUD
 
 	dispose()
 	{
+		this.stop();
 		this.turnPreview.dispose();
-		this.thread.stop();
 	}
 
 	createEnemyHPGauge(unit)
@@ -402,35 +400,6 @@ class BattleHUD
 			new Scene()
 				.tween(this.highlightColor, 6, 'easeInQuad', CreateColor(0, 0, 0, 0))
 				.run();
-		}
-	}
-
-	render()
-	{
-		var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-		var itemY = y;
-		this.drawElementBox(260, itemY, 60, 60);
-		this.mpGauge.draw(261, itemY + 1, 58);
-		for (let i = 0; i < this.partyInfo.length; ++i) {
-			var itemX = 160;
-			var itemY = y + i * 20;
-			if (this.partyInfo[i] !== null) {
-				this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedUnit == this.partyInfo[i].unit);
-			} else {
-				this.drawElementBox(itemX, itemY, 100, 20);
-			}
-		}
-		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
-			var gaugeInfo = this.hpGaugesInfo[i];
-			var itemX = 160;
-			var itemY = y + this.partyInfo.length * 20 + i * 20;
-			this.drawElementBox(itemX, itemY, 160, 20);
-			if (this.highlightedUnit == gaugeInfo.owner) {
-				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
-			}
-			Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
-			OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
-			gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
 		}
 	}
 
@@ -481,16 +450,45 @@ class BattleHUD
 
 	show()
 	{
-		if (this.thread === null) {
+		if (!this.running) {
 			console.log("activate battle screen HUD");
-			this.thread = Thread.create(this, 20);
+			this.start();
 		}
 		new Scene()
 			.tween(this, 30, 'easeOutExpo', { fadeness: 1.0 })
 			.run();
 	}
 
-	update()
+	on_render()
+	{
+		var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
+		var itemY = y;
+		this.drawElementBox(260, itemY, 60, 60);
+		this.mpGauge.draw(261, itemY + 1, 58);
+		for (let i = 0; i < this.partyInfo.length; ++i) {
+			var itemX = 160;
+			var itemY = y + i * 20;
+			if (this.partyInfo[i] !== null) {
+				this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedUnit == this.partyInfo[i].unit);
+			} else {
+				this.drawElementBox(itemX, itemY, 100, 20);
+			}
+		}
+		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
+			var gaugeInfo = this.hpGaugesInfo[i];
+			var itemX = 160;
+			var itemY = y + this.partyInfo.length * 20 + i * 20;
+			this.drawElementBox(itemX, itemY, 160, 20);
+			if (this.highlightedUnit == gaugeInfo.owner) {
+				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
+			}
+			Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
+			OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
+			gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
+		}
+	}
+
+	on_update()
 	{
 		for (let i = 0; i < this.partyInfo.length; ++i) {
 			if (this.partyInfo[i] !== null) {
@@ -500,6 +498,5 @@ class BattleHUD
 		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 			this.hpGaugesInfo[i].gauge.update();
 		}
-		return true;
 	}
 }

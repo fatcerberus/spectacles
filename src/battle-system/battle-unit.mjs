@@ -243,7 +243,7 @@ class BattleUnit
 				this.actor.animate('active');
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				console.log(`ask player for ${this.name}'s GS counterattack`);
-				chosenMove = await this.counterMenu.open();
+				chosenMove = await this.counterMenu.run();
 			} else {
 				chosenMove = await this.ai.getNextMove();
 				chosenMove.targets = [ this.counterTarget ];
@@ -791,7 +791,7 @@ class BattleUnit
 				if (this.ai == null) {
 					this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 					console.log(`ask player for ${this.name}'s next move`);
-					chosenMove = await this.attackMenu.open();
+					chosenMove = await this.attackMenu.run();
 				} else {
 					chosenMove = await this.ai.getNextMove();
 				}
