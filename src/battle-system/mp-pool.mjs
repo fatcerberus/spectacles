@@ -39,7 +39,7 @@ class MPPool
 	{
 		amount = Math.round(amount);
 		if (amount > this.availableMP)
-			throw new Error(`'${this.id}' MP overdraft`);
+			throw RangeError(`'${this.id}' MP overdraft`);
 		this.availableMP -= amount;
 		this.lostMP.call(this, this.availableMP);
 		if (amount != 0) {

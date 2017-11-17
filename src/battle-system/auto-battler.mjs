@@ -12,7 +12,7 @@ import { ItemUsable, SkillUsable, WeaponUsable } from './usables.mjs';
 import { Game, Items, Skills, Weapons } from '$/game-data/index.mjs';
 
 export
-class CPUBattler
+class AutoBattler
 {
 	constructor(unit, battle)
 	{

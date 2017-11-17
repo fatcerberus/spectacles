@@ -55,9 +55,9 @@ class BattleScreen extends Thread
 			render() {
 				let width = this.font.getStringWidth(this.text) + 20;
 				let height = this.font.getHeight() + 10;
-				let x = GetScreenWidth() / 2 - width / 2;
+				let x = (Surface.Screen.width - width) / 2;
 				let y = 112;
-				let textY = y + height / 2 - this.font.getHeight() / 2;
+				let textY = y + (height - this.font.getHeight()) / 2;
 				let boxColor = this.color.fadeTo(1.0 - this.fadeness);
 				Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, boxColor);
 				Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));

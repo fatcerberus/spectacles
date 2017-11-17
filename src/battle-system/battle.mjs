@@ -41,7 +41,9 @@ class Battle extends Thread
 		this.session = session;
 		this.suspendCount = 0;
 		this.timer = 0;
-		this.battleLevel = 'battleLevel' in this.parameters ? this.parameters.battleLevel : session.party.level;
+		this.battleLevel = 'battleLevel' in this.parameters
+			? this.parameters.battleLevel
+			: session.party.level;
 	}
 
 	addCondition(conditionID)

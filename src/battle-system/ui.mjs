@@ -339,7 +339,7 @@ class TurnPreview extends Thread
 				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
 			}
 		}
-		SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
+		SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
 	}
 }
 

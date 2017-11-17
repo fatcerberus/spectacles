@@ -91,9 +91,9 @@ Scene.defineOp('marquee',
 
 	render(scene) {
 		var boxHeight = this.height * this.fadeness;
-		var boxY = Surface.Screen.height / 2 - boxHeight / 2;
+		var boxY = (Surface.Screen.height - boxHeight) / 2;
 		var textX = Surface.Screen.width - this.scroll * this.windowSize;
-		var textY = boxY + boxHeight / 2 - this.textHeight / 2;
+		var textY = boxY + (boxHeight - this.textHeight) / 2;
 		Prim.drawSolidRectangle(Surface.Screen, 0, boxY, Surface.Screen.width, boxHeight, this.background);
 		this.font.drawText(Surface.Screen, textX + 1, textY + 1, this.text, Color.Black.fadeTo(this.color.a));
 		this.font.drawText(Surface.Screen, textX, textY, this.text, this.color);
@@ -130,7 +130,7 @@ Scene.defineOp('talk',
 		this.font = GetSystemFont();
 		this.text = [];
 		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
-		var textAreaWidth = GetScreenWidth() - 16;
+		var textAreaWidth = Surface.Screen.width - 16;
 		for (let i = 5; i < arguments.length; ++i) {
 			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
@@ -165,10 +165,10 @@ Scene.defineOp('talk',
 	render(scene) {
 		var lineHeight = this.font.getHeight();
 		var boxHeight = lineHeight * 3 + 11;
-		var finalBoxY = GetScreenHeight() * 0.85 - boxHeight / 2;
-		var boxY = finalBoxY + (GetScreenHeight() - finalBoxY) * (1.0 - this.boxVisibility);
-		OutlinedRectangle(-1, boxY - 1, GetScreenWidth() + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
-		Rectangle(0, boxY, GetScreenWidth(), boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
+		var finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
+		var boxY = finalBoxY + (Surface.Screen.height - finalBoxY) * (1.0 - this.boxVisibility);
+		OutlinedRectangle(-1, boxY - 1, Surface.Screen.width + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
+		Rectangle(0, boxY, Surface.Screen.width, boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
 		this.textSurface.setBlendMode(REPLACE);
 		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, CreateColor(0, 0, 0, 0));
 		this.textSurface.setBlendMode(BLEND);
@@ -206,7 +206,7 @@ Scene.defineOp('talk',
 				this.textSurface.drawText(this.font, 0, textY, this.speakerText);
 			}
 		}
-		this.textSurface.blit(GetScreenWidth() / 2 - this.textSurface.width / 2, boxY + 5);
+		this.textSurface.blit((Surface.Screen.width - this.textSurface.width) / 2, boxY + 5);
 	},
 
 	update(scene) {

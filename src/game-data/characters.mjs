@@ -163,7 +163,7 @@ const Characters =
 	// she assails her enemies with throwing stars.
 	lauren: {
 		name: "Lauren",
-		fullName: "Lauren Tusgafas",
+		fullName: "Lauren Adora",
 		baseStats: {
 			vit: 30,
 			str: 60,

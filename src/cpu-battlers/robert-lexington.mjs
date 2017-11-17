@@ -5,11 +5,11 @@
 
 import { from, Random, Scene } from 'sphere-runtime';
 
+import { AutoBattler } from '$/battle-system/auto-battler.mjs';
 import { Stance } from '$/battle-system/battle-unit.mjs';
-import { CPUBattler } from '$/battle-system/cpu-battler.mjs';
 
 export default
-class Robert2AI extends CPUBattler
+class Robert2AI extends AutoBattler
 {
 	constructor(unit, battle)
 	{
@@ -70,8 +70,7 @@ class Robert2AI extends CPUBattler
 				}
 				break;
 			case 2:
-				this.isStatusHealPending =
-					(this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
+				this.isStatusHealPending = (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
 					&& this.isStatusHealPending;
 				var qsTurns = this.predictSkillTurns('quickstrike');
 				if (this.isStatusHealPending && this.hasZombieHealedSelf

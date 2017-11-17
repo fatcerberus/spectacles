@@ -241,10 +241,7 @@ class MoveMenu extends Thread
 
 	on_inputCheck()
 	{
-		var key = AreKeysLeft() ? GetKey() : null;
-		/*if (this.showMenu.running) {
-			return;
-		}*/
+		let key = AreKeysLeft() ? GetKey() : null;
 		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 			if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
 				var usables = this.drawers[this.topCursor].contents;
@@ -337,7 +334,7 @@ class MoveMenu extends Thread
 		}
 		var itemY;
 		if (this.expansion > 0.0) {
-			SetClippingRectangle(0, yOrigin + 34, 160, GetScreenHeight() - (yOrigin + 34));
+			SetClippingRectangle(0, yOrigin + 34, 160, Surface.Screen.height - (yOrigin + 34));
 			var height = this.moveMenu.length * 16;
 			var y = yOrigin + 34 - height * (1.0 - this.expansion);
 			Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
@@ -346,7 +343,7 @@ class MoveMenu extends Thread
 				this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.running);
 				itemY += 18;
 			}
-			SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight())
+			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height)
 		} else {
 			itemY = yOrigin + 34;
 		}
@@ -391,7 +388,7 @@ class TargetMenu extends Thread
 		this.drawCursor = function(unit)
 		{
 			var width = this.cursorFont.getStringWidth(this.name) + 10;
-			var x = unit.actor.x < GetScreenWidth() / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
+			var x = unit.actor.x < Surface.Screen.width / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
 			var y = unit.actor.y + 6;
 			Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
 			OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
@@ -550,7 +547,7 @@ class TargetMenu extends Thread
 			}
 		}
 		if (this.unitToShowInfo != null) {
-			SetClippingRectangle(0, 16, 160, GetScreenHeight() - 16);
+			SetClippingRectangle(0, 16, 160, Surface.Screen.height - 16);
 			var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 			if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
 				var nameBoxHeight = 20 + 12 * this.statusNames.length;
@@ -574,7 +571,7 @@ class TargetMenu extends Thread
 				this.drawInfoBox(0, y, 160, 20, 160);
 				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
 			}
-			SetClippingRectangle(0, 0, GetScreenWidth(), GetScreenHeight());
+			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
 		}
 	}
 

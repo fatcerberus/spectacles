@@ -99,11 +99,11 @@ class MenuStrip extends Thread
 	on_render()
 	{
 		var height = this.font.getHeight() + 10;
-		var menuY = GetScreenHeight() - height * this.openness;
+		var menuY = Surface.Screen.height - height * this.openness;
 		var normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
 		var litStripColor = CreateColor(255, 255, 255, this.openness * 192);
 		var stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
-		Rectangle(0, menuY, GetScreenWidth(), height, stripColor);
+		Rectangle(0, menuY, Surface.Screen.width, height, stripColor);
 		var normalTitleColor = CreateColor(64, 64, 64, this.openness * 255);
 		var litTitleColor = CreateColor(0, 0, 0, this.openness * 255);
 		var titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
@@ -132,7 +132,7 @@ class MenuStrip extends Thread
 			this.font.setColorMask(itemColor);
 			this.carouselSurface.drawText(this.font, textX - xOffset, 5, itemText);
 		}
-		let carouselX = GetScreenWidth() - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
+		let carouselX = Surface.Screen.width - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
 		this.carouselSurface.blit(carouselX, menuY);
 		this.font.setColorMask(CreateColor(128, 128, 128, this.openness * 255));
 		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
