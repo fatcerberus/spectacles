@@ -410,8 +410,8 @@ class BattleUnit
 				action.accuracyRate = 2.0;
 			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
-				var allEnemies = this.battle.enemiesOf(this);
-				var experience = {};
+				let allEnemies = this.battle.enemiesOf(this);
+				let experience = {};
 				for (let i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
 						for (let statID in unitsHit[i].baseStats) {
@@ -491,7 +491,7 @@ class BattleUnit
 		// the gamedef, they should be cloned first to prevent the event from inadvertantly
 		// modifying the original definition.
 
-		var statuses = [ ...this.statuses ];
+		let statuses = [ ...this.statuses ];
 		from(statuses)
 			.each(v => v.invoke(eventID, data));
 	}
@@ -549,16 +549,17 @@ class BattleUnit
 					console.log("'" + this.id + " inv': No instruction provided");
 					return;
 				}
+				let itemCount, itemID;
 				switch (instruction) {
 				case 'add':
 					if (arguments.length < 2)
 						return console.log("'" + this.id + " inv add': Item ID required");
-					var itemID = arguments[1];
+					itemID = arguments[1];
 					if (!(itemID in Items))
 						return console.log("no such item ID '" + itemID + "'");
-					var defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
-					var itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
-					var addCount = 0;
+					let defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
+					itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
+					let addCount = 0;
 					from(this.items)
 						.where(item => item.itemID === itemID)
 						.each(item =>
@@ -567,7 +568,7 @@ class BattleUnit
 						addCount += itemCount;
 					});
 					if (addCount == 0) {
-						var usable = new ItemUsable(itemID);
+						let usable = new ItemUsable(itemID);
 						usable.usesLeft = itemCount;
 						this.items.push(usable);
 						addCount = itemCount;
@@ -582,8 +583,8 @@ class BattleUnit
 				case 'rm':
 					if (arguments.length < 2)
 						return console.log("'" + this.id + " inv add': Item ID required");
-					var itemID = arguments[1];
-					var itemCount = 0;
+					itemID = arguments[1];
+					itemCount = 0;
 					from(this.items)
 						.where(v => v.itemID === itemID)
 						.besides(v => itemCount += v.usesLeft)
@@ -630,7 +631,7 @@ class BattleUnit
 	{
 		amount = Math.round(amount);
 		this.mpPool.restore(amount);
-		var color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
+		let color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
 		this.actor.showHealing(`${amount}MP`, color);
 	}
 
@@ -657,7 +658,7 @@ class BattleUnit
 
 	async setWeapon(weaponID)
 	{
-		var weaponDef = Weapons[weaponID];
+		let weaponDef = Weapons[weaponID];
 		await this.announce(`equip ${weaponDef.name}`);
 		this.weapon = weaponDef;
 		console.log(`${this.name} equipped weapon ${weaponDef.name}`);
@@ -667,7 +668,7 @@ class BattleUnit
 	async takeDamage(amount, tags = [], isPriority = false)
 	{
 		amount = Math.round(amount);
-		var multiplier = 1.0;
+		let multiplier = 1.0;
 		for (let i = 0; i < tags.length; ++i) {
 			if (tags[i] in this.affinities) {
 				multiplier *= this.affinities[tags[i]];
@@ -675,7 +676,7 @@ class BattleUnit
 		}
 		amount = Math.round(amount * multiplier);
 		if (amount > 0 && !isPriority) {
-			var eventData = {
+			let eventData = {
 				unit: this, amount: amount, tags: tags,
 				actingUnit: this.lastAttacker,
 				cancel: false
@@ -719,7 +720,7 @@ class BattleUnit
 			if (this.hp <= 0 && (oldHPValue > 0 || this.lazarusFlag)) {
 				console.log(`${this.name} dying due to lack of HP`);
 				this.lazarusFlag = true;
-				var eventData = { unit: this, cancel: false };
+				let eventData = { unit: this, cancel: false };
 				this.battle.raiseEvent('unitDying', eventData);
 				if (!eventData.cancel) {
 					this.raiseEvent('dying', eventData);
@@ -738,14 +739,14 @@ class BattleUnit
 
 	takeHit(actingUnit, action)
 	{
-		var eventData = {
+		let eventData = {
 			actingUnitInfo: actingUnit.battlerInfo,
 			action: action,
 			stance: actingUnit.stance
 		};
 		this.raiseEvent('attacked', eventData);
-		var isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
-		var isMelee = 'isMelee' in action ? action.isMelee : false;
+		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
+		let isMelee = 'isMelee' in action ? action.isMelee : false;
 		if (this.stance === Stance.Guard && isMelee && isGuardBroken) {
 			action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
 		}
@@ -772,7 +773,7 @@ class BattleUnit
 			console.log(`${this.name}'s turn is up`);
 			this.actor.animate('active');
 			this.battle.notifyAIs('unitReady', this.id);
-			var eventData = { skipTurn: false };
+			let eventData = { skipTurn: false };
 			this.raiseEvent('beginTurn', eventData);
 			if (!this.isAlive()) {
 				this.battle.resume();
@@ -785,9 +786,9 @@ class BattleUnit
 				this.battle.resume();
 				return true;
 			}
-			var action = this.getNextAction();
+			let action = this.getNextAction();
 			if (action == null) {
-				var chosenMove = null;
+				let chosenMove = null;
 				if (this.ai == null) {
 					this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 					console.log(`ask player for ${this.name}'s next move`);
@@ -808,7 +809,7 @@ class BattleUnit
 				}
 				this.raiseEvent('endTurn');
 			}
-			var eventData = { actingUnit: this };
+			eventData = { actingUnit: this };
 			this.battle.raiseEvent('endTurn', eventData);
 			this.actor.animate('dormant');
 			console.log(`end of ${this.name}'s turn`);
@@ -830,9 +831,9 @@ class BattleUnit
 			nextActions = nextActions !== null
 				? this.actionQueue.concat(nextActions)
 				: this.actionQueue;
-			var timeLeft = this.cv;
+			let timeLeft = this.cv;
 			for (let i = 1; i <= turnIndex; ++i) {
-				var rank = assumedRank;
+				let rank = assumedRank;
 				if (i <= nextActions.length) {
 					rank = isNaN(nextActions[i - 1]) ? nextActions[i - 1].rank
 						: nextActions[i - 1];

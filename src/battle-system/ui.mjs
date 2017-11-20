@@ -56,11 +56,11 @@ class HPGauge
 	{
 		if (this.fadeness >= 1.0)
 			return;  // invisible, skip rendering
-		var damageShown = Math.max(this.damage - (this.reading - this.newReading), 0) * (1.0 - this.damageFadeness);
-		var numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
-		var numReservesFilled = Math.max(Math.ceil(this.reading / this.sectorSize - 1), 0);
-		var numReservesDamaged = Math.ceil((damageShown + this.reading) / this.sectorSize - 1);
-		var barInUse;
+		let damageShown = Math.max(this.damage - (this.reading - this.newReading), 0) * (1.0 - this.damageFadeness);
+		let numReserves = Math.ceil(this.capacity / this.sectorSize - 1);
+		let numReservesFilled = Math.max(Math.ceil(this.reading / this.sectorSize - 1), 0);
+		let numReservesDamaged = Math.ceil((damageShown + this.reading) / this.sectorSize - 1);
+		let barInUse;
 		if (numReservesFilled == numReserves) {
 			barInUse = this.capacity % this.sectorSize;
 			if (barInUse == 0)
@@ -68,36 +68,36 @@ class HPGauge
 		} else {
 			barInUse = this.sectorSize;
 		}
-		var barFilled = this.reading % this.sectorSize;
+		let barFilled = this.reading % this.sectorSize;
 		if (barFilled == 0 && this.reading > 0)
 			barFilled = barInUse;
-		var barDamaged = Math.min(damageShown, this.sectorSize - barFilled);
-		var barHeight = Math.ceil(height * 0.5 + 0.5);
-		var widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
-		var fillWidth = Math.ceil(widthInUse * barFilled / barInUse);
-		var damageWidth = Math.ceil(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
-		var emptyWidth = widthInUse - (fillWidth + damageWidth);
-		var borderColor = fadeColor(this.borderColor, this.fadeness);
-		var fillColor = fadeColor(this.hpColor, this.fadeness);
-		var emptyColor = fadeColor(this.emptyColor, this.fadeness);
-		var usageColor = Color.mix(emptyColor, fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
+		let barDamaged = Math.min(damageShown, this.sectorSize - barFilled);
+		let barHeight = Math.ceil(height * 0.5 + 0.5);
+		let widthInUse = Math.round((width - 2) * barInUse / this.sectorSize);
+		let fillWidth = Math.ceil(widthInUse * barFilled / barInUse);
+		let damageWidth = Math.ceil(widthInUse * (barFilled + barDamaged) / barInUse) - fillWidth;
+		let emptyWidth = widthInUse - (fillWidth + damageWidth);
+		let borderColor = fadeColor(this.borderColor, this.fadeness);
+		let fillColor = fadeColor(this.hpColor, this.fadeness);
+		let emptyColor = fadeColor(this.emptyColor, this.fadeness);
+		let usageColor = Color.mix(emptyColor, fadeColor(this.damageColor, this.fadeness), this.damageFadeness, 1.0 - this.damageFadeness);
 		if (barInUse < this.sectorSize && numReservesFilled > 0) {
 			Prim.drawRectangle(Surface.Screen, x, y, width, barHeight, 1, Color.mix(borderColor, Color.Transparent, 25, 75));
 			drawSegment(x + 1, y + 1, width - 2, barHeight - 2, Color.mix(fillColor, Color.Transparent, 25, 75));
 		}
-		var barEdgeX = x + width - 1;
+		let barEdgeX = x + width - 1;
 		Prim.drawRectangle(Surface.Screen, barEdgeX - widthInUse - 1, y, widthInUse + 2, barHeight, 1, borderColor);
 		drawSegment(barEdgeX - fillWidth, y + 1, fillWidth, barHeight - 2, fillColor);
 		Prim.drawSolidRectangle(Surface.Screen, barEdgeX - fillWidth - damageWidth, y + 1, damageWidth, barHeight - 2, usageColor);
 		drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
-		var slotYSize = height - barHeight + 1;
-		var slotXSize = this.maxSectors === 'auto'
+		let slotYSize = height - barHeight + 1;
+		let slotXSize = this.maxSectors === 'auto'
 			? Math.round(slotYSize * 1)
 			: Math.ceil(width / (this.maxSectors - 1));
-		var slotX;
-		var slotY = y + height - slotYSize;
+		let slotX;
+		let slotY = y + height - slotYSize;
 		for (let i = 0; i < numReserves; ++i) {
-			var color;
+			let color;
 			if (i < numReservesFilled) {
 				color = fillColor;
 			} else if (i < numReservesDamaged) {
@@ -202,11 +202,11 @@ class MPGauge
 	{
 		Surface.Screen.clipTo(x, y, size, size);
 		if (this.capacity > 0) {
-			var innerFillColor = this.color;
-			var outerFillColor = Color.mix(this.color, Color.Black.fadeTo(this.color.a));
-			var outerUsageColor = this.usageColor;
-			var innerUsageColor = Color.mix(this.usageColor, Color.Black.fadeTo(this.usageColor.a));
-			var maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
+			let innerFillColor = this.color;
+			let outerFillColor = Color.mix(this.color, Color.Black.fadeTo(this.color.a));
+			let outerUsageColor = this.usageColor;
+			let innerUsageColor = Color.mix(this.usageColor, Color.Black.fadeTo(this.usageColor.a));
+			let maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
 			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
 			drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, Color.White, Math.round(this.reading), 'right');
@@ -265,7 +265,7 @@ class TurnPreview extends Thread
 	ensureEntries(unit)
 	{
 		if (!(unit.tag in this.entries)) {
-			var entry = {
+			let entry = {
 				color: unit.isPartyMember() ? CreateColor(72, 61, 139, 255) : CreateColor(128, 0, 0, 255),
 				name: unit.name,
 				turnBoxes: []
@@ -279,13 +279,13 @@ class TurnPreview extends Thread
 
 	set(prediction)
 	{
-		var moveEasing = 'easeInOutExpo';
-		var moveTime = 15;
+		let moveEasing = 'easeInOutExpo';
+		let moveTime = 15;
 		if (this.lastPrediction !== null) {
 			for (let i = 0; i < Math.min(this.lastPrediction.length, 7); ++i) {
-				var unit = this.lastPrediction[i].unit;
-				var turnIndex = this.lastPrediction[i].turnIndex;
-				var turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
+				let unit = this.lastPrediction[i].unit;
+				let turnIndex = this.lastPrediction[i].turnIndex;
+				let turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
 				if (turnBox.tween !== null) {
 					turnBox.tween.stop();
 				}
@@ -296,10 +296,10 @@ class TurnPreview extends Thread
 		}
 		this.lastPrediction = prediction;
 		for (let i = 0; i < Math.min(prediction.length, 7); ++i) {
-			var unit = prediction[i].unit;
-			var turnIndex = prediction[i].turnIndex;
+			let unit = prediction[i].unit;
+			let turnIndex = prediction[i].turnIndex;
 			this.ensureEntries(unit);
-			var turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
+			let turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
 			if (turnBox.tween !== null) {
 				turnBox.tween.stop();
 			}
@@ -322,8 +322,8 @@ class TurnPreview extends Thread
 
 	on_render()
 	{
-		var alpha = 255 * (1.0 - this.fadeness);
-		var y = -16 * this.fadeness;
+		let alpha = 255 * (1.0 - this.fadeness);
+		let y = -16 * this.fadeness;
 		SetClippingRectangle(0, y, 160, 16);
 		Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.125));
@@ -331,9 +331,9 @@ class TurnPreview extends Thread
 		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
 		for (let id in this.entries) {
-			var entry = this.entries[id];
+			let entry = this.entries[id];
 			for (let i = 0; i < entry.turnBoxes.length; ++i) {
-				var turnBox = entry.turnBoxes[i];
+				let turnBox = entry.turnBoxes[i];
 				Rectangle(turnBox.x, y, 16, 16, entry.color);
 				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
 				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);

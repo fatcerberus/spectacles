@@ -164,14 +164,14 @@ class BattleActor
 	{
 		this.sprite.update();
 		for (let i = 0; i < this.damages.length; ++i) {
-			var data = this.damages[i];
-			var finalY = 20 - 11 * i;
+			let data = this.damages[i];
+			let finalY = 20 - 11 * i;
 			if (data.finalY != finalY) {
 				data.scene.stop();
 				data.finalY = finalY;
-				var tweenInfo = {};
+				let tweenInfo = {};
 				for (let i2 = 0; i2 < data.text.length; ++i2) {
-					var yName = 'y' + i2.toString();
+					let yName = 'y' + i2.toString();
 					tweenInfo[yName] = finalY;
 				}
 				data.scene = new Scene()
@@ -199,21 +199,21 @@ class BattleActor
 			return;
 		this.sprite.blit(this.x, this.y, this.opacity * 255);
 		for (let i = 0; i < this.damages.length; ++i) {
-			var text = this.damages[i].text;
-			var x = this.x + 16 - this.messageFont.getStringWidth(text) / 2;
+			let text = this.damages[i].text;
+			let x = this.x + 16 - this.messageFont.getStringWidth(text) / 2;
 			for (let i2 = 0; i2 < text.length; ++i2) {
-				var yName = 'y' + i2.toString();
-				var y = this.y + this.damages[i][yName];
-				var color = this.damages[i].color !== null ? this.damages[i].color
+				let yName = 'y' + i2.toString();
+				let y = this.y + this.damages[i][yName];
+				let color = this.damages[i].color !== null ? this.damages[i].color
 					: CreateColor(255, 255, 255, 255);
 				drawTextEx(this.messageFont, x, y, text[i2], color, 1);
 				x += this.messageFont.getStringWidth(text[i2]);
 			}
 		}
 		for (let i = 0; i < this.healings.length; ++i) {
-			var y = this.y + this.healings[i].y;
-			var color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
-			var textColor = BlendColors(color, color);
+			let y = this.y + this.healings[i].y;
+			let color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
+			let textColor = BlendColors(color, color);
 			textColor.alpha *= this.healings[i].alpha / 255;
 			drawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
 		}
@@ -251,7 +251,7 @@ class BattleActor
 	{
 		if (this.hasEntered)
 			return;
-		var newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
+		let newX = this.isEnemy ? 64 - this.row * 32 : 224 + this.row * 32;
 		if (!isImmediate) {
 			await new Scene()
 				.tween(this, 90, 'linear', { x: newX })
@@ -265,11 +265,11 @@ class BattleActor
 
 	showDamage(amount, color = null)
 	{
-		var finalY = 20 - 11 * this.damages.length;
-		var data = { text: amount.toString(), color: color, finalY: finalY };
-		var tweenInfo = {};
+		let finalY = 20 - 11 * this.damages.length;
+		let data = { text: amount.toString(), color: color, finalY: finalY };
+		let tweenInfo = {};
 		for (let i = 0; i < data.text.length; ++i) {
-			var yName = 'y' + i.toString();
+			let yName = 'y' + i.toString();
 			data[yName] = finalY - (20 - i * 5);
 			tweenInfo[yName] = finalY;
 		}
@@ -282,7 +282,7 @@ class BattleActor
 
 	showHealing(amount, color = null)
 	{
-		var data = { amount: amount, color: color, y: 20, alpha: 255 };
+		let data = { amount: amount, color: color, y: 20, alpha: 255 };
 		data.scene = new Scene()
 			.tween(data, 60, 'easeOutExpo', { y: -11 * this.healings.length })
 			.tween(data, 30, 'easeInOutSine', { alpha: 0 });
@@ -319,9 +319,9 @@ class BattleHUD extends Thread
 
 		this.drawHighlight = function(x, y, width, height, color)
 		{
-			var outerColor = color;
-			var innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
-			var halfHeight = Math.round(height / 2);
+			let outerColor = color;
+			let innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
+			let halfHeight = Math.round(height / 2);
 			GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
 			GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
 			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha / 2));
@@ -334,10 +334,10 @@ class BattleHUD extends Thread
 				this.drawHighlight(x, y, 100, 20, this.highlightColor);
 			}
 			this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
-			var headingColor = isHighlighted ?
+			let headingColor = isHighlighted ?
 				BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 				CreateColor(192, 144, 0, 255);
-			var textColor = isHighlighted ?
+			let textColor = isHighlighted ?
 				BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
 				CreateColor(192, 192, 192, 255);
 			memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
@@ -375,7 +375,7 @@ class BattleHUD extends Thread
 
 	createEnemyHPGauge(unit)
 	{
-		var gauge = new HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
+		let gauge = new HPGauge(unit.maxHP, Game.bossHPPerBar, this.enemyHPGaugeColor, 20);
 		this.hpGaugesInfo.push({ owner: unit, gauge: gauge });
 		gauge.show(0.0);
 		console.log(`create HP gauge for unit '${unit.name}'`, `cap: ${unit.maxHP}`);
@@ -406,15 +406,15 @@ class BattleHUD extends Thread
 	setHP(unit, hp)
 	{
 		for (let i = 0; i < this.partyInfo.length; ++i) {
-			var characterInfo = this.partyInfo[i];
+			let characterInfo = this.partyInfo[i];
 			if (characterInfo !== null && characterInfo.unit == unit && hp != characterInfo.hp) {
 				characterInfo.hpGauge.set(hp);
-				var gaugeColor =
+				let gaugeColor =
 					hp / characterInfo.maxHP <= 0.1 ? Color.Red
 					: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
 					: Color.Lime;
 				characterInfo.hpGauge.changeColor(gaugeColor, 0.5);
-				var flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
+				let flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
 				new Scene()
 					.fork()
 						.tween(characterInfo.lightColor, 15, 'easeOutQuad', flashColor)
@@ -425,7 +425,7 @@ class BattleHUD extends Thread
 			}
 		}
 		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
-			var gaugeInfo = this.hpGaugesInfo[i];
+			let gaugeInfo = this.hpGaugesInfo[i];
 			if (gaugeInfo.owner == unit) {
 				gaugeInfo.gauge.set(hp);
 			}
@@ -437,7 +437,7 @@ class BattleHUD extends Thread
 		if (slot < 0 || slot >= this.partyInfo.length) {
 			Abort("BattleHUD.switchOut(): Invalid party slot index '" + slot + "'!");
 		}
-		var hpGauge = new HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
+		let hpGauge = new HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
 		hpGauge.show();
 		this.partyInfo[slot] = {
 			unit: unit,
@@ -461,13 +461,13 @@ class BattleHUD extends Thread
 
 	on_render()
 	{
-		var y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
-		var itemY = y;
+		let y = -((this.partyInfo.length + this.hpGaugesInfo.length) * 20) * (1.0 - this.fadeness);
+		let itemY = y;
 		this.drawElementBox(260, itemY, 60, 60);
 		this.mpGauge.draw(261, itemY + 1, 58);
 		for (let i = 0; i < this.partyInfo.length; ++i) {
-			var itemX = 160;
-			var itemY = y + i * 20;
+			let itemX = 160;
+			let itemY = y + i * 20;
 			if (this.partyInfo[i] !== null) {
 				this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedUnit == this.partyInfo[i].unit);
 			} else {
@@ -475,9 +475,9 @@ class BattleHUD extends Thread
 			}
 		}
 		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
-			var gaugeInfo = this.hpGaugesInfo[i];
-			var itemX = 160;
-			var itemY = y + this.partyInfo.length * 20 + i * 20;
+			let gaugeInfo = this.hpGaugesInfo[i];
+			let itemX = 160;
+			let itemY = y + this.partyInfo.length * 20 + i * 20;
 			this.drawElementBox(itemX, itemY, 160, 20);
 			if (this.highlightedUnit == gaugeInfo.owner) {
 				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);

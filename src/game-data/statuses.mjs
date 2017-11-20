@@ -34,7 +34,7 @@ const Statuses =
 			}
 		},
 		useSkill: function(unit, eventData) {
-			var oldMultiplier = this.multiplier;
+			let oldMultiplier = this.multiplier;
 			this.multiplier = eventData.skill.category == this.lastSkillType
 				? this.multiplier / Game.bonusMultiplier
 				: 1.0;
@@ -60,7 +60,7 @@ const Statuses =
 			this.turnsLeft = 5;
 		},
 		afflicted: function(unit, eventData) {
-			var statusDef = Statuses[eventData.statusID];
+			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('buff')) {
 				console.log("Status " + statusDef.name + " was blocked by Curse");
 				eventData.cancel = true;
@@ -95,7 +95,7 @@ const Statuses =
 			this.actionsTaken = 0;
 		},
 		acting: function(unit, eventData) {
-			var oldRank = eventData.action.rank;
+			let oldRank = eventData.action.rank;
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log("Rank of action changed by Disarray to " + eventData.action.rank,
@@ -138,7 +138,7 @@ const Statuses =
 				.where(it => it.type == 'damage')
 				.each(effect =>
 			{
-				var oldPower = effect.power;
+				let oldPower = effect.power;
 				effect.power *= Game.bonusMultiplier;
 				if (effect.power != oldPower) {
 					console.log("Outgoing POW modified by Drunk to " + effect.power,
@@ -189,7 +189,7 @@ const Statuses =
 				.where(it => it.type == 'damage')
 				.each(effect =>
 			{
-				var oldPower = effect.power;
+				let oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
 				if (effect.power != oldPower) {
 					console.log("Outgoing POW modified by Final Stand to " + effect.power,
@@ -245,7 +245,7 @@ const Statuses =
 			}
 		},
 		endTurn: function(unit, eventData) {
-			var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(0.5 * vit * this.multiplier, [ 'ice', 'special' ]);
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
 		}
@@ -260,7 +260,7 @@ const Statuses =
 		overrules: [ 'zombie' ],
 		aiming: function(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
-				var effect = eventData.action.effects[i];
+				let effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
 				}
@@ -271,7 +271,7 @@ const Statuses =
 		},
 		attacked: function(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
-				var effect = eventData.action.effects[i];
+				let effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
 					continue;
 				}
@@ -293,7 +293,7 @@ const Statuses =
 			this.multiplier = 1.0;
 		},
 		beginCycle: function(unit, eventData) {
-			var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(0.5 * vit * this.multiplier, [ 'fire', 'special' ]);
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
@@ -332,7 +332,7 @@ const Statuses =
 			this.turnsLeft = 5;
 		},
 		afflicted: function(unit, eventData) {
-			var statusDef = Statuses[eventData.statusID];
+			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
 				console.log("Status " + statusDef.name + " was blocked by Immune");
 				eventData.cancel = true;
@@ -375,7 +375,7 @@ const Statuses =
 			this.lossPerHit = (1.0 - this.multiplier) / 10;
 		},
 		damaged: function(unit, eventData) {
-			var isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
+			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected) {
 				eventData.amount *= this.multiplier;
 				this.multiplier += this.lossPerHit;
@@ -482,7 +482,7 @@ const Statuses =
 			unit.actor.animate('snore');
 		},
 		damaged: function(unit, eventData) {
-			var healthLost = 100 * eventData.amount / unit.maxHP;
+			let healthLost = 100 * eventData.amount / unit.maxHP;
 			if (Random.chance(healthLost * 5 * this.wakeChance)
 				&& eventData.tags.indexOf('magic') === -1
 				&& eventData.tags.indexOf('special') === -1)
@@ -500,7 +500,7 @@ const Statuses =
 		name: "Specs Aura",
 		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {
-			var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(0.25 * vit, [ 'specs' ]);
 		}
 	},
@@ -544,7 +544,7 @@ const Statuses =
 		},
 		healed: function(unit, eventData) {
 			if (from(eventData.tags).anyIn([ 'cure', 'specs' ])) {
-				var damageTags = from(eventData.tags).anyIs('specs')
+				let damageTags = from(eventData.tags).anyIs('specs')
 					? [ 'zombie', 'specs' ]
 					: [ 'zombie' ];
 				unit.takeDamage(eventData.amount, damageTags);

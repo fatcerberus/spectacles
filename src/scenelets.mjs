@@ -90,10 +90,10 @@ Scene.defineOp('marquee',
 	},
 
 	render(scene) {
-		var boxHeight = this.height * this.fadeness;
-		var boxY = (Surface.Screen.height - boxHeight) / 2;
-		var textX = Surface.Screen.width - this.scroll * this.windowSize;
-		var textY = boxY + (boxHeight - this.textHeight) / 2;
+		let boxHeight = this.height * this.fadeness;
+		let boxY = (Surface.Screen.height - boxHeight) / 2;
+		let textX = Surface.Screen.width - this.scroll * this.windowSize;
+		let textY = boxY + (boxHeight - this.textHeight) / 2;
 		Prim.drawSolidRectangle(Surface.Screen, 0, boxY, Surface.Screen.width, boxHeight, this.background);
 		this.font.drawText(Surface.Screen, textX + 1, textY + 1, this.text, Color.Black.fadeTo(this.color.a));
 		this.font.drawText(Surface.Screen, textX, textY, this.text, this.color);
@@ -129,12 +129,12 @@ Scene.defineOp('talk',
 		this.timeoutLeft = this.timeout;
 		this.font = GetSystemFont();
 		this.text = [];
-		var speakerTextWidth = this.font.getStringWidth(this.speakerText);
-		var textAreaWidth = Surface.Screen.width - 16;
+		let speakerTextWidth = this.font.getStringWidth(this.speakerText);
+		let textAreaWidth = Surface.Screen.width - 16;
 		for (let i = 5; i < arguments.length; ++i) {
-			var lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
-			var wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
-			var page = this.text.push([]) - 1;
+			let lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
+			let wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
+			let page = this.text.push([]) - 1;
 			for (let iLine = 0; iLine < wrappedText.length; ++iLine) {
 				this.text[page].push(wrappedText[iLine]);
 			}
@@ -163,35 +163,35 @@ Scene.defineOp('talk',
 	},
 
 	render(scene) {
-		var lineHeight = this.font.getHeight();
-		var boxHeight = lineHeight * 3 + 11;
-		var finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
-		var boxY = finalBoxY + (Surface.Screen.height - finalBoxY) * (1.0 - this.boxVisibility);
+		let lineHeight = this.font.getHeight();
+		let boxHeight = lineHeight * 3 + 11;
+		let finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
+		let boxY = finalBoxY + (Surface.Screen.height - finalBoxY) * (1.0 - this.boxVisibility);
 		OutlinedRectangle(-1, boxY - 1, Surface.Screen.width + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
 		Rectangle(0, boxY, Surface.Screen.width, boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
 		this.textSurface.setBlendMode(REPLACE);
 		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, CreateColor(0, 0, 0, 0));
 		this.textSurface.setBlendMode(BLEND);
-		var lineCount = this.text[this.currentPage].length;
-		var textAreaWidth = this.textSurface.width;
-		var textX = 0;
+		let lineCount = this.text[this.currentPage].length;
+		let textAreaWidth = this.textSurface.width;
+		let textX = 0;
 		if (this.speakerName != null) {
-			var speakerTextWidth = this.font.getStringWidth(this.speakerText);
+			let speakerTextWidth = this.font.getStringWidth(this.speakerText);
 			textX = speakerTextWidth + 5;
 		}
 		textAreaWidth -= textX;
 		for (let iLine = Math.min(this.lineToReveal - this.topLine + 1, lineCount - this.topLine, 3) - 1; iLine >= 0; --iLine) {
-			var trueLine = this.topLine + iLine;
-			var textY = iLine * lineHeight - this.scrollOffset * lineHeight;
-			var lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
+			let trueLine = this.topLine + iLine;
+			let textY = iLine * lineHeight - this.scrollOffset * lineHeight;
+			let lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
 			if (this.lineVisibility > 0.0 || this.lineToReveal != trueLine) {
-				var lineText = this.text[this.currentPage][trueLine];
+				let lineText = this.text[this.currentPage][trueLine];
 				this.font.setColorMask(CreateColor(0, 0, 0, 255 * this.textVisibility * lineVisibility));
 				this.textSurface.drawText(this.font, textX + 1, textY + 1, lineText);
 				this.font.setColorMask(CreateColor(255, 255, 255, 255 * this.textVisibility * lineVisibility));
 				this.textSurface.drawText(this.font, textX, textY, lineText);
 				if (this.lineToReveal == trueLine) {
-					var shownArea = textAreaWidth * this.lineVisibility;
+					let shownArea = textAreaWidth * this.lineVisibility;
 					this.textSurface.setBlendMode(SUBTRACT);
 					this.textSurface.gradientRectangle((textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
 					this.textSurface.setBlendMode(REPLACE);
@@ -242,12 +242,12 @@ Scene.defineOp('talk',
 				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Sphere.frameRate, 1.0);
 				if (this.nameVisibility >= 1.0) {
 					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / Sphere.frameRate, 1.0);
-					var lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
-					var currentLineText = this.text[this.currentPage][this.lineToReveal];
-					var currentLineWidth = this.font.getStringWidth(currentLineText);
-					var textAreaWidth = this.textSurface.width;
+					let lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
+					let currentLineText = this.text[this.currentPage][this.lineToReveal];
+					let currentLineWidth = this.font.getStringWidth(currentLineText);
+					let textAreaWidth = this.textSurface.width;
 					if (this.speakerName != null) {
-						var speakerTextWidth = this.font.getStringWidth(this.speakerText);
+						let speakerTextWidth = this.font.getStringWidth(this.speakerText);
 						textAreaWidth -= speakerTextWidth + 5;
 					}
 					if (this.lineVisibility >= 1.0 || textAreaWidth * this.lineVisibility >= currentLineWidth + 20) {

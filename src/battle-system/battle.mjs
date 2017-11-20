@@ -105,15 +105,15 @@ class Battle extends Thread
 		}
 		console.log("");
 		console.log("start battle engine", `battleID: ${this.battleID}`);
-		var partyMaxMP = 0;
+		let partyMaxMP = 0;
 		for (let key in this.session.party.members) {
-			var battlerInfo = this.session.party.members[key].getInfo();
-			var mpDonated = Math.round(Maths.mp.capacity(battlerInfo));
+			let battlerInfo = this.session.party.members[key].getInfo();
+			let mpDonated = Math.round(Maths.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
 			console.log(Characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
 		}
 		partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
-		var partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
+		let partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));
 		partyMPPool.gainedMP.addHandler((mpPool, availableMP) => {
 			this.ui.hud.mpGauge.set(availableMP);
 		});
@@ -126,19 +126,19 @@ class Battle extends Thread
 		this.enemyUnits = [];
 		this.conditions = [];
 		for (let i = 0; i < this.parameters.enemies.length; ++i) {
-			var enemyID = this.parameters.enemies[i];
-			var unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle);
+			let enemyID = this.parameters.enemies[i];
+			let unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle);
 			this.battleUnits.push(unit);
 			this.enemyUnits.push(unit);
 		}
-		var i = 0;
+		let i = 0;
 		for (let name in this.session.party.members) {
-			var unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
+			let unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
 			this.battleUnits.push(unit);
 			this.playerUnits.push(unit);
 			++i;
 		}
-		var battleBGMTrack = Game.defaultBattleBGM;
+		let battleBGMTrack = Game.defaultBattleBGM;
 		if ('bgm' in this.parameters) {
 			battleBGMTrack = this.parameters.bgm;
 		}
@@ -184,7 +184,7 @@ class Battle extends Thread
 
 	predictTurns(actingUnit = null, nextActions = null)
 	{
-		var forecast = [];
+		let forecast = [];
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			let bias = 0;
 			let candidates = from(this.enemyUnits, this.playerUnits)
@@ -308,7 +308,7 @@ class Battle extends Thread
 	spawnEnemy(enemyClass)
 	{
 		console.log(`spawn new enemy '${enemyClass}'`);
-		var newUnit = new BattleUnit(this, enemyClass);
+		let newUnit = new BattleUnit(this, enemyClass);
 		this.battleUnits.push(newUnit);
 		this.enemyUnits.push(newUnit);
 	}
@@ -325,14 +325,14 @@ class Battle extends Thread
 		console.log("");
 		console.log(`begin CTB turn cycle #${this.timer + 1}`);
 		++this.timer;
-		var isUnitDead = unit => !unit.isAlive();
-		var unitLists = [ this.enemyUnits, this.playerUnits ];
+		let isUnitDead = unit => !unit.isAlive();
+		let unitLists = [ this.enemyUnits, this.playerUnits ];
 		from(...unitLists)
 			.each(unit => unit.beginCycle());
 		from(this.conditions)
 			.each(condition => condition.beginCycle());
 		this.raiseEvent('beginCycle');
-		var actionTaken = false;
+		let actionTaken = false;
 		while (!actionTaken) {
 			for (const unit of from(...unitLists))
 				actionTaken = await unit.tick() || actionTaken;
@@ -365,7 +365,7 @@ class Battle extends Thread
 	async on_update() {
 		switch (this.mode) {
 			case 'setup':
-				var heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
+				let heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
 					? "Final Battle: " : "Boss Battle: ";
 				await this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
 				for (const unit of from(this.enemyUnits, this.playerUnits))

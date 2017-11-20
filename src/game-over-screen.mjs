@@ -56,7 +56,7 @@ class GameOverScreen extends Thread
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
-					var menu = new MenuStrip("Game Over", false);
+					let menu = new MenuStrip("Game Over", false);
 					menu.addItem("Retry Battle", GameOverAction.Retry);
 					menu.addItem("Give Up", GameOverAction.Quit);
 					this.action = await menu.run();

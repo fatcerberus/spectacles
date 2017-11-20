@@ -33,24 +33,24 @@ const MoveEffects =
 	},
 
 	damage: function(actor, targets, effect) {
-		var userInfo = actor.battlerInfo;
+		let userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
-			var targetInfo = targets[i].battlerInfo;
-			var damageTags = [ effect.damageType ];
+			let targetInfo = targets[i].battlerInfo;
+			let damageTags = [ effect.damageType ];
 			if ('element' in effect) {
 				damageTags.push(effect.element);
 			}
-			var damage = Math.max(Math.round(Maths.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
-			var tolerance = Math.round(damage / 10);
+			let damage = Math.max(Math.round(Maths.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
+			let tolerance = Math.round(damage / 10);
 			targets[i].takeDamage(Math.max(Random.uniform(damage, tolerance), 1), damageTags);
-			var recoilFunction = effect.damageType + "Recoil";
+			let recoilFunction = effect.damageType + "Recoil";
 			if (recoilFunction in Maths.damage) {
-				var recoil = Math.round(Maths.damage[recoilFunction](userInfo, targetInfo, effect.power));
-				var tolerance = Math.round(recoil / 10);
+				let recoil = Math.round(Maths.damage[recoilFunction](userInfo, targetInfo, effect.power));
+				let tolerance = Math.round(recoil / 10);
 				actor.takeDamage(Math.max(Random.uniform(recoil, tolerance), 1), [ 'recoil' ], true);
 			}
 			if ('addStatus' in effect) {
-				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
+				let statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
 				if (Random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus, true);
 				}
@@ -61,8 +61,8 @@ const MoveEffects =
 	devour: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			if (!targets[i].isPartyMember()) {
-				var munchData = targets[i].enemyInfo.munchData;
-				var experience = Maths.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
+				let munchData = targets[i].enemyInfo.munchData;
+				let experience = Maths.experience.skill(munchData.skill, actor.battlerInfo, [ targets[i].battlerInfo ]);
 				actor.growSkill(munchData.skill, experience);
 			}
 			console.log(targets[i].fullName + " got eaten by " + actor.name);
@@ -81,14 +81,14 @@ const MoveEffects =
 	},
 
 	heal: function(actor, targets, effect) {
-		var userInfo = actor.battlerInfo;
+		let userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
-			var targetInfo = targets[i].battlerInfo;
-			var healing = Math.max(Math.round(Maths.healing(userInfo, targetInfo, effect.power)), 1);
-			var tolerance = Math.round(healing / 10);
+			let targetInfo = targets[i].battlerInfo;
+			let healing = Math.max(Math.round(Maths.healing(userInfo, targetInfo, effect.power)), 1);
+			let tolerance = Math.round(healing / 10);
 			targets[i].heal(Math.max(Random.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
-				var statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
+				let statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
 				if (Random.chance(statusChance)) {
 					targets[i].addStatus(effect.addStatus);
 				}
@@ -117,8 +117,8 @@ const MoveEffects =
 
 	recoverHP: function(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
-			var unitInfo = targets[i].battlerInfo;
-			var cap = Maths.hp(unitInfo, unitInfo.level, 1);
+			let unitInfo = targets[i].battlerInfo;
+			let cap = Maths.hp(unitInfo, unitInfo.level, 1);
 			targets[i].heal(effect.strength * cap / 100, [ 'cure' ]);
 		}
 	},

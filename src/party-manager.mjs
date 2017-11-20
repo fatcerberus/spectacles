@@ -74,7 +74,7 @@ class PartyMember
 		this.stats = {};
 		this.usableSkills = null;
 
-		var character = Characters[this.characterID];
+		let character = Characters[this.characterID];
 		this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
 		for (let statID in character.baseStats)
 			this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
@@ -125,10 +125,10 @@ class PartyMember
 
 	refreshSkills()
 	{
-		var heldWeaponType = this.weaponID !== null ? Weapons[this.weaponID].type : null;
+		let heldWeaponType = this.weaponID !== null ? Weapons[this.weaponID].type : null;
 		this.usableSkills = [];
 		for (let i = 0; i < this.skillList.length; ++i) {
-			var skillInfo = this.skillList[i].skillInfo;
+			let skillInfo = this.skillList[i].skillInfo;
 			if (skillInfo.weaponType != null && heldWeaponType != skillInfo.weaponType)
 				continue;
 			this.usableSkills.push(this.skillList[i]);

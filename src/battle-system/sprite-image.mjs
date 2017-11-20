@@ -24,8 +24,8 @@ class SpriteImage
 
 	set direction(value)
 	{
-		var index = this.spriteset.directions.length;
-		var wasFound = false;
+		let index = this.spriteset.directions.length;
+		let wasFound = false;
 		while (--index >= 0) {
 			if (this.spriteset.directions[index].name == value) {
 				wasFound = true;
@@ -64,7 +64,7 @@ class SpriteImage
 	{
 		if (this.stopped)
 			return;
-		var frames = this.spriteset.directions[this.directionID].frames;
+		let frames = this.spriteset.directions[this.directionID].frames;
 		if (this.elapsedFrames >= frames[this.frameID].delay) {
 			this.frameID = (this.frameID + 1) % frames.length;
 			this.elapsedFrames = 0;

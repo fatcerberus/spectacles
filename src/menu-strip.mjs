@@ -40,9 +40,9 @@ class MenuStrip extends Thread
 		this.scrollProgress = 0.0;
 		this.brightness = 0.0;
 		this.mode = "open";
-		var carouselWidth = 0;
+		let carouselWidth = 0;
 		for (i = 0; i < this.menuItems.length; ++i) {
-			var itemText = this.menuItems[i].text;
+			let itemText = this.menuItems[i].text;
 			carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 		}
 		this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
@@ -64,7 +64,7 @@ class MenuStrip extends Thread
 		if (this.mode != 'idle')
 			return;
 
-		var key = AreKeysLeft() ? GetKey() : null;
+		let key = AreKeysLeft() ? GetKey() : null;
 		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 			this.chosenItem = this.selectedItem;
 			this.animation = new Scene()
@@ -98,15 +98,15 @@ class MenuStrip extends Thread
 
 	on_render()
 	{
-		var height = this.font.getHeight() + 10;
-		var menuY = Surface.Screen.height - height * this.openness;
-		var normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
-		var litStripColor = CreateColor(255, 255, 255, this.openness * 192);
-		var stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
+		let height = this.font.getHeight() + 10;
+		let menuY = Surface.Screen.height - height * this.openness;
+		let normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
+		let litStripColor = CreateColor(255, 255, 255, this.openness * 192);
+		let stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
 		Rectangle(0, menuY, Surface.Screen.width, height, stripColor);
-		var normalTitleColor = CreateColor(64, 64, 64, this.openness * 255);
-		var litTitleColor = CreateColor(0, 0, 0, this.openness * 255);
-		var titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
+		let normalTitleColor = CreateColor(64, 64, 64, this.openness * 255);
+		let litTitleColor = CreateColor(0, 0, 0, this.openness * 255);
+		let titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
 		this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
 		this.font.drawText(6, menuY + 6, this.title);
 		this.font.setColorMask(titleColor);
@@ -114,19 +114,19 @@ class MenuStrip extends Thread
 		this.carouselSurface.setBlendMode(REPLACE);
 		this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, CreateColor(0, 0, 0, 0));
 		this.carouselSurface.setBlendMode(BLEND);
-		var xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carouselSurface.width;
-		var normalItemColor = CreateColor(255, 192, 0, this.openness * 255);
-		var litItemColor = CreateColor(128, 128, 64, this.openness * 255);
-		var itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
+		let xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carouselSurface.width;
+		let normalItemColor = CreateColor(255, 192, 0, this.openness * 255);
+		let litItemColor = CreateColor(128, 128, 64, this.openness * 255);
+		let itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
 		for (let i = -1; i <= this.menuItems.length; ++i) {
-			var itemIndex = i;
+			let itemIndex = i;
 			if (i >= this.menuItems.length) {
 				itemIndex = i % this.menuItems.length;
 			} else if (i < 0) {
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
 			}
-			var itemText = this.menuItems[itemIndex].text;
-			var textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
+			let itemText = this.menuItems[itemIndex].text;
+			let textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
 			this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
 			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, itemText);
 			this.font.setColorMask(itemColor);
@@ -158,7 +158,7 @@ class MenuStrip extends Thread
 				break;
 			case 'changeItem':
 				if (!this.animation.running) {
-					var newSelection = this.selectedItem + this.scrollDirection;
+					let newSelection = this.selectedItem + this.scrollDirection;
 					if (newSelection < 0) {
 						newSelection = this.menuItems.length - 1;
 					} else if (newSelection >= this.menuItems.length) {

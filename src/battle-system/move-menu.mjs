@@ -39,9 +39,9 @@ class MoveMenu extends Thread
 		this.topCursor = 0;
 		this.topCursorColor = CreateColor(0, 0, 0, 0);
 		this.unit = unit;
-		var drawerTable = {};
+		let drawerTable = {};
 		for (const skill of this.unit.skills) {
-			var category = skill.skillInfo.category;
+			let category = skill.skillInfo.category;
 			if (!(category in drawerTable)) {
 				drawerTable[category] = {
 					name: SkillCategories[category],
@@ -96,16 +96,16 @@ class MoveMenu extends Thread
 
 		this.drawCursor = function(x, y, width, height, cursorColor, isLockedIn, isEnabled = true)
 		{
-			var color;
-			var color2;
+			let color;
+			let color2;
 			color = isEnabled ? cursorColor : CreateColor(96, 96, 96, cursorColor.alpha);
 			color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
 			if (isLockedIn) {
-				var mainColor = color;
+				let mainColor = color;
 				color = color2;
 				color2 = mainColor;
 			}
-			var halfHeight = Math.round(height / 2);
+			let halfHeight = Math.round(height / 2);
 			GradientRectangle(x, y, width , halfHeight, color2, color2, color, color);
 			GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
 			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
@@ -122,16 +122,16 @@ class MoveMenu extends Thread
 
 		this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 		{
-			var alpha = 255 * this.fadeness * this.expansion;
-			var isEnabled = item.isEnabled;
-			var textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
-			var usageTextColor = isSelected ? this.usageTextColor : BlendColors(this.usageTextColor, CreateColor(0, 0, 0, this.usageTextColor.alpha));
+			let alpha = 255 * this.fadeness * this.expansion;
+			let isEnabled = item.isEnabled;
+			let textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
+			let usageTextColor = isSelected ? this.usageTextColor : BlendColors(this.usageTextColor, CreateColor(0, 0, 0, this.usageTextColor.alpha));
 			textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 			usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
 			this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-			var rankBoxColor = isEnabled ? BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha))
+			let rankBoxColor = isEnabled ? BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha))
 				: BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 25, 75);
-			var rankColor = isEnabled ? item.idColor : BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 33, 66);
+			let rankColor = isEnabled ? item.idColor : BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 33, 66);
 			Rectangle(x + 5, y + 2, 14, 14, rankBoxColor);
 			OutlinedRectangle(x + 5, y + 2, 14, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
 			drawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", rankColor, 1, 'center');
@@ -165,21 +165,21 @@ class MoveMenu extends Thread
 
 		this.drawTopItem = function(x, y, width, item, isSelected)
 		{
-			var isEnabled = item.contents.length > 0;
+			let isEnabled = item.contents.length > 0;
 			this.drawItemBox(x, y, width, 18, 144 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
-			var textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
+			let textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 			textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
 			this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
 		};
 
 		this.updateTurnPreview = function()
 		{
-			var nextMoveOrRank;
+			let nextMoveOrRank;
 			if (this.stance != Stance.Guard) {
 				if (this.isExpanded) {
 					nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 				} else {
-					var drawer = this.drawers[this.topCursor];
+					let drawer = this.drawers[this.topCursor];
 					nextMoveOrRank = drawer.contents.length > 0 ? drawer.contents[drawer.cursor] : Game.defaultItemRank;
 				}
 			} else {
@@ -197,7 +197,7 @@ class MoveMenu extends Thread
 	{
 		this.battle.suspend();
 		this.battle.ui.hud.highlight(this.unit);
-		var chosenTargets = null;
+		let chosenTargets = null;
 		this.stance = this.lastStance = this.menuStance;
 		while (chosenTargets === null) {
 			this.expansion = 0.0;
@@ -210,23 +210,24 @@ class MoveMenu extends Thread
 			this.start();
 			this.takeFocus();
 			await Thread.join(this);
+			let targetMenu;
 			switch (this.stance) {
 				case Stance.Attack:
 				case Stance.Charge:
-					var name = this.stance == Stance.Charge
+					let name = this.stance == Stance.Charge
 						? `CS ${this.selection.name}`
 						: this.selection.name;
-					var chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).run();
+					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).run();
 					break;
 				case Stance.Counter:
-					var targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
+					targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
 					targetMenu.lockTargets([ this.unit.counterTarget ]);
-					var chosenTargets = await targetMenu.run();
+					chosenTargets = await targetMenu.run();
 					break;
 				case Stance.Guard:
-					var targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
+					targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
 					targetMenu.lockTargets([ this.unit ]);
-					var chosenTargets = await targetMenu.run();
+					chosenTargets = await targetMenu.run();
 					break;
 			}
 		}
@@ -244,10 +245,10 @@ class MoveMenu extends Thread
 		let key = AreKeysLeft() ? GetKey() : null;
 		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
 			if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
-				var usables = this.drawers[this.topCursor].contents;
+				let usables = this.drawers[this.topCursor].contents;
 				this.moveMenu = [];
 				for (let i = 0; i < usables.length; ++i) {
-					var menuItem = {
+					let menuItem = {
 						name: usables[i].name,
 						idColor: CreateColor(192, 192, 192, 255),
 						isEnabled: usables[i].isUsable(this.unit, this.stance),
@@ -255,7 +256,7 @@ class MoveMenu extends Thread
 						rank: usables[i].rank,
 						usable: usables[i]
 					};
-					var actions = menuItem.usable.peekActions();
+					let actions = menuItem.usable.peekActions();
 					for (let i2 = 0; i2 < actions.length; ++i2) {
 						for (let i3 = 0; i3 < actions[i2].effects.length; ++i3) {
 							if ('element' in actions[i2].effects[i3]) {
@@ -312,8 +313,8 @@ class MoveMenu extends Thread
 
 	on_render()
 	{
-		var yOrigin = -54 * (1.0 - this.fadeness) + 16;
-		var stanceText = this.stance == Stance.Charge ? "CS"
+		let yOrigin = -54 * (1.0 - this.fadeness) + 16;
+		let stanceText = this.stance == Stance.Charge ? "CS"
 			: this.stance == Stance.Counter ? "GS"
 			: this.stance == Stance.Guard ? "GS"
 			: "AS";
@@ -323,20 +324,20 @@ class MoveMenu extends Thread
 		OutlinedRectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
 		this.drawText(this.font, 68, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName, 'center');
 		this.drawText(this.font, 148, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), stanceText, 'center');
-		var itemWidth = 160 / this.drawers.length;
-		var litTextColor = CreateColor(255, 255, 255, 255);
-		var dimTextColor = CreateColor(192, 192, 192, 255);
+		let itemWidth = 160 / this.drawers.length;
+		let litTextColor = CreateColor(255, 255, 255, 255);
+		let dimTextColor = CreateColor(192, 192, 192, 255);
 		Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 192 * this.fadeness));
 		for (let i = 0; i < this.drawers.length; ++i) {
-			var x = Math.floor(i * itemWidth);
-			var width = Math.floor((i + 1) * itemWidth) - x;
+			let x = Math.floor(i * itemWidth);
+			let width = Math.floor((i + 1) * itemWidth) - x;
 			this.drawTopItem(x, yOrigin + 16, width, this.drawers[i], i == this.topCursor);
 		}
-		var itemY;
+		let itemY;
 		if (this.expansion > 0.0) {
 			SetClippingRectangle(0, yOrigin + 34, 160, Surface.Screen.height - (yOrigin + 34));
-			var height = this.moveMenu.length * 16;
-			var y = yOrigin + 34 - height * (1.0 - this.expansion);
+			let height = this.moveMenu.length * 16;
+			let y = yOrigin + 34 - height * (1.0 - this.expansion);
 			Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
 			itemY = y;
 			for (let i = 0; i < this.moveMenu.length; ++i) {
@@ -387,9 +388,9 @@ class TargetMenu extends Thread
 
 		this.drawCursor = function(unit)
 		{
-			var width = this.cursorFont.getStringWidth(this.name) + 10;
-			var x = unit.actor.x < Surface.Screen.width / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
-			var y = unit.actor.y + 6;
+			let width = this.cursorFont.getStringWidth(this.name) + 10;
+			let x = unit.actor.x < Surface.Screen.width / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
+			let y = unit.actor.y + 6;
 			Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
 			OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
 			drawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, CreateColor(255, 255, 255, 255), 1, 'center');
@@ -405,9 +406,9 @@ class TargetMenu extends Thread
 		{
 			if (this.isGroupCast || this.targets == null)
 				return;
-			var position = this.targets[0].actor.position;
-			var candidates = this.battle.alliesOf(this.targets[0]);
-			var unitToSelect = null;
+			let position = this.targets[0].actor.position;
+			let candidates = this.battle.alliesOf(this.targets[0]);
+			let unitToSelect = null;
 			while (unitToSelect === null) {
 				position += direction;
 				position = position > 2 ? 0 :
@@ -430,7 +431,7 @@ class TargetMenu extends Thread
 
 		this.updateInfo = function()
 		{
-			var unit = this.targets.length == 1 ? this.targets[0] : null;
+			let unit = this.targets.length == 1 ? this.targets[0] : null;
 			if (this.doChangeInfo != null) {
 				this.doChangeInfo.stop();
 			}
@@ -548,14 +549,14 @@ class TargetMenu extends Thread
 		}
 		if (this.unitToShowInfo != null) {
 			SetClippingRectangle(0, 16, 160, Surface.Screen.height - 16);
-			var textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
+			let textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 			if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
-				var nameBoxHeight = 20 + 12 * this.statusNames.length;
-				var y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
+				let nameBoxHeight = 20 + 12 * this.statusNames.length;
+				let y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
 				Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
 				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
-				var statusColor = this.statusNames.length == 0 ?
+				let statusColor = this.statusNames.length == 0 ?
 					CreateColor(96, 192, 96, textAlpha) :
 					CreateColor(192, 192, 96, textAlpha);
 				for (let i = 0; i < this.statusNames.length; ++i) {
@@ -566,7 +567,7 @@ class TargetMenu extends Thread
 				this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 128);
 				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
 			} else {
-				var y = 16 - 20 * this.infoBoxFadeness;
+				let y = 16 - 20 * this.infoBoxFadeness;
 				Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, 20, 160);
 				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');

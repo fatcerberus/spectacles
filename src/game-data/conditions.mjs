@@ -24,8 +24,8 @@ const Conditions =
 
 		actionTaken: function(battle, eventData) {
 			if (eventData.targets.length == 1 && Random.chance(0.5)) {
-				var target = eventData.targets[0];
-				var newTargets = Random.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
+				let target = eventData.targets[0];
+				let newTargets = Random.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
 				eventData.targets = [ Random.sample(newTargets) ];
 			}
 			--this.actionsLeft;
@@ -50,7 +50,7 @@ const Conditions =
 		},
 
 		actionTaken: function(battle, eventData) {
-			var oldRank = eventData.action.rank
+			let oldRank = eventData.action.rank
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log("Rank of action changed by G. Disarray to " + eventData.action.rank,
@@ -78,11 +78,11 @@ const Conditions =
 		},
 
 		beginCycle: function(battle, eventData) {
-			var units = from(battle.battleUnits)
+			let units = from(battle.battleUnits)
 				.where(it => it.isAlive())
 				.toArray();
-			var unit = Random.sample(units);
-			var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			let unit = Random.sample(units);
+			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.heal(vit, [ 'cure' ]);
 			--this.cyclesLeft;
 			if (this.cyclesLeft <= 0) {
@@ -120,12 +120,12 @@ const Conditions =
 				.each(effect =>
 			{
 				if (effect.element == 'fire') {
-					var oldPower = effect.power;
+					let oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
 					console.log("Fire attack strengthened by Inferno to " + effect.power + " POW",
 						"was: " + oldPower);
 				} else if (effect.element == 'ice') {
-					var oldPower = effect.power;
+					let oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
 					console.log("Ice attack weakened by Inferno to " + effect.power + " POW",
 						"was: " + oldPower);
@@ -134,11 +134,11 @@ const Conditions =
 		},
 
 		beginCycle: function(battle, eventData) {
-			var units = from(battle.battleUnits)
+			let units = from(battle.battleUnits)
 				.where(it => it.isAlive())
 				.toArray();
-			var unit = Random.sample(units);
-			var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+			let unit = Random.sample(units);
+			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
 
@@ -198,12 +198,12 @@ const Conditions =
 				.each(effect =>
 			{
 				if (effect.element == 'ice') {
-					var oldPower = effect.power;
+					let oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
 					console.log("Ice attack strengthened by Subzero to " + effect.power + " POW",
 						"was: " + oldPower);
 				} else if (effect.element == 'fire') {
-					var oldPower = effect.power;
+					let oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
 					console.log("Fire attack weakened by Subzero to " + effect.power + " POW",
 						"was: " + oldPower);
@@ -226,11 +226,11 @@ const Conditions =
 		},
 
 		endTurn: function(battle, eventData) {
-			var unit = eventData.actingUnit;
+			let unit = eventData.actingUnit;
 			if (unit.isAlive() && this.rank != 0) {
-				var vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+				let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 				unit.takeDamage(this.rank * vit * this.multiplier / 5, [ 'special', 'ice' ]);
-				var increment = 0.1 * this.rank / 5;
+				let increment = 0.1 * this.rank / 5;
 				this.multiplier = Math.min(this.multiplier + increment, 2.0);
 			}
 			this.rank = 0;
@@ -260,12 +260,12 @@ const Conditions =
 
 		endTurn: function(battle, eventData) {
 			if (Random.chance(0.5)) {
-				var unit = eventData.actingUnit;
+				let unit = eventData.actingUnit;
 				console.log(unit.name + " struck by lightning from Thunderstorm");
-				var level = battle.getLevel();
-				var attack = Maths.statValue(100, level);
-				var defense = Maths.statValue(0, level);
-				var damage = Maths.damage.calculate(5, battle.getLevel(), unit.tier, attack, defense);
+				let level = battle.getLevel();
+				let attack = Maths.statValue(100, level);
+				let defense = Maths.statValue(0, level);
+				let damage = Maths.damage.calculate(5, battle.getLevel(), unit.tier, attack, defense);
 				unit.takeDamage(damage, [ 'special', 'lightning' ]);
 				unit.liftStatusTags('buff');
 				--this.strikesLeft;

@@ -79,14 +79,14 @@ const Maths =
 
 	experience: {
 		skill: function(skillInfo, userInfo, targetsInfo) {
-			var levelSum = 0;
-			var statSum = 0;
+			let levelSum = 0;
+			let statSum = 0;
 			for (let i = 0; i < targetsInfo.length; ++i) {
 				levelSum += targetsInfo[i].level;
 				statSum += targetsInfo[i].baseStatAverage;
 			}
-			var levelAverage = Math.round(levelSum / targetsInfo.length);
-			var statAverage = Math.round(statSum / targetsInfo.length);
+			let levelAverage = Math.round(levelSum / targetsInfo.length);
+			let statAverage = Math.round(statSum / targetsInfo.length);
 			return levelAverage * statAverage;
 		},
 		stat: function(statID, enemyUnitInfo) {
@@ -135,7 +135,7 @@ const Maths =
 			return 10 * unitInfo.tier * statAverage;
 		},
 		usage: function(skill, level, userInfo) {
-			var baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
+			let baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
 			return baseCost * level**0.5 * userInfo.baseStats.mag / 100;
 		}
 	},
@@ -145,7 +145,7 @@ const Maths =
 	},
 
 	skillRank: function(skill) {
-		var rankTotal = 0;
+		let rankTotal = 0;
 		for (let i = 0; i < skill.actions.length; ++i) {
 			rankTotal += skill.actions[i].rank;
 		}

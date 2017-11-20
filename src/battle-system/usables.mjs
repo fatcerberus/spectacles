@@ -42,15 +42,15 @@ class ItemUsable
 
 	clone()
 	{
-		var newCopy = new ItemUsable(this.itemID);
+		let newCopy = new ItemUsable(this.itemID);
 		newCopy.usesLeft = this.usesLeft;
 		return newCopy;
 	}
 
 	defaultTargets(user)
 	{
-		var target = user;
-		var allies = user.battle.alliesOf(user);
+		let target = user;
+		let allies = user.battle.alliesOf(user);
 		if (this.allowDeadTarget && from(allies).any(unit => !unit.isAlive())) {
 			target = from(allies)
 				.where(unit => !unit.isAlive())
@@ -83,7 +83,7 @@ class ItemUsable
 		console.log(`${unit.name} is using ${this.name}`,
 			`targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`,
 			`left: ${this.usesLeft}`);
-		var eventData = { item: clone(this.itemDef) };
+		let eventData = { item: clone(this.itemDef) };
 		unit.raiseEvent('useItem', eventData);
 		unit.battle.notifyAIs('itemUsed', unit.id, this.itemID, from(targets).select(v => v.id).toArray());
 		return [ eventData.item.action ];
@@ -100,7 +100,7 @@ class SkillUsable
 
 		this.levelUpTable = [];
 		for (let i = 1; i <= 100; ++i) {
-			var xpNeeded = Math.ceil(i > 1 ? i ** 3 : 0);
+			let xpNeeded = Math.ceil(i > 1 ? i ** 3 : 0);
 			this.levelUpTable[i] = xpNeeded;
 		}
 		this.skillInfo = Skills[skillID];
@@ -132,10 +132,11 @@ class SkillUsable
 
 	defaultTargets(user)
 	{
+		let target;
 		switch (this.skillInfo.targetType) {
 			case 'single':
-				var enemies = user.battle.enemiesOf(user);
-				var target = from(enemies)
+				let enemies = user.battle.enemiesOf(user);
+				target = from(enemies)
 					.where(v => v.isAlive())
 					.sample(1).first();
 				if (this.allowDeadTarget && from(enemies).any(v => !v.isAlive())) {
@@ -145,8 +146,8 @@ class SkillUsable
 				}
 				return [ target ];
 			case 'ally':
-				var allies = user.battle.alliesOf(user);
-				var target = user;
+				let allies = user.battle.alliesOf(user);
+				target = user;
 				if (this.allowDeadTarget && from(allies).any(v => !v.isAlive())) {
 					target = from(allies)
 						.where(v => !v.isAlive())
@@ -175,13 +176,13 @@ class SkillUsable
 
 	isUsable(user, stance = Stance.Attack)
 	{
-		var userWeaponType = user.weapon != null ? user.weapon.type : null;
-		var skillWeaponType = this.skillInfo.weaponType;
+		let userWeaponType = user.weapon != null ? user.weapon.type : null;
+		let skillWeaponType = this.skillInfo.weaponType;
 		if (skillWeaponType != null && userWeaponType != skillWeaponType)
 			return false;
-		var canCharge = ('chargeable' in this.skillInfo ? this.skillInfo.chargeable : true)
+		let canCharge = ('chargeable' in this.skillInfo ? this.skillInfo.chargeable : true)
 			&& this.skillInfo.actions.length == 1;
-		var isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
+		let isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
 			&& this.skillInfo.targetType == 'single' && this.skillInfo.actions.length == 1;
 		return this.mpCost(user) <= user.mpPool.availableMP
 			&& (stance != Stance.Charge || canCharge)
@@ -207,11 +208,11 @@ class SkillUsable
 		if (unit.weapon != null && this.skillInfo.weaponType != null)
 			console.log(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);
 		unit.mpPool.use(this.mpCost(unit));
-		var growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
-		var targetInfos = [];
+		let growthRate = 'growthRate' in this.skillInfo ? this.skillInfo.growthRate : 1.0;
+		let targetInfos = [];
 		for (let i = 0; i < targets.length; ++i)
 			targetInfos.push(targets[i].battlerInfo);
-		var experience = Maths.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
+		let experience = Maths.experience.skill(this.skillInfo, unit.battlerInfo, targetInfos);
 		this.grow(experience);
 		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
@@ -245,7 +246,7 @@ class WeaponUsable
 
 	clone()
 	{
-		var newCopy = new WeaponUsable(this.weaponID);
+		let newCopy = new WeaponUsable(this.weaponID);
 		return newCopy;
 	}
 
