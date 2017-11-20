@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Console, Scene } from 'sphere-runtime';
+import { Console, Music, Scene } from 'sphere-runtime';
 
 import { DayNightEngine } from './in-game-clock.mjs';
 import { TestHarness } from './test-harness.mjs';
