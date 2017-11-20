@@ -8,13 +8,14 @@ import { Scene } from 'sphere-runtime';
 export
 const Battles =
 {
-	rsbFinal: {
+	rsbFinal:
+	{
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
 		bgm: 'thePromise',
 		battleLevel: 50,
 		enemies: [
-			'robert2'
+			'robert2',
 		],
 		async onStart() {
 			let scottUnit = this.findUnit('scott');
@@ -33,5 +34,16 @@ const Battles =
 					.run();
 			}
 		},
+	},
+
+	scottTemple:
+	{
+		title: "Scott Victor Temple",
+		isFinalBattle: true,
+		bgm: 'runawayTrain',
+		battleLevel: 60,
+		enemies: [
+			'scottTemple',
+		],
 	},
 };

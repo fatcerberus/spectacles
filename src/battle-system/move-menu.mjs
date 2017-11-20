@@ -9,7 +9,7 @@ import { drawTextEx } from '$/main.mjs';
 import { Stance } from './battle-unit.mjs';
 import { ItemUsable } from './usables.mjs';
 
-import { Elements, SkillCategories } from '$/game-data/index.mjs';
+import { Game, Elements, SkillCategories } from '$/game-data/index.mjs';
 
 export
 class MoveMenu extends Thread

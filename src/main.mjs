@@ -47,7 +47,7 @@ class SpecsEngine
 		await TestHarness.initialize();
 
 		let dayNight = new DayNightEngine();
-		await TestHarness.run('rsb2');
+		await TestHarness.run('temple');
 	}
 }
 
@@ -90,4 +90,11 @@ function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadow
 	font.setColorMask(color);
 	font.drawText(x, y, text);
 	font.setColorMask(oldColorMask);
+}
+
+export
+function* range(min, max)
+{
+	for (let value = min; value <= max; ++value)
+		yield value;
 }

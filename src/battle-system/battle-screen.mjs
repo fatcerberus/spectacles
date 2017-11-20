@@ -3,9 +3,9 @@
   *           Copyright (c) 2012 Power-Command
 ***/
 
-import { Image, Prim, Scene, Thread } from 'sphere-runtime';
+import { from, Image, Prim, Scene, Thread } from 'sphere-runtime';
 
-import { console, drawTextEx } from '$/main.mjs';
+import { console, drawTextEx, range } from '$/main.mjs';
 import { SpriteImage } from './sprite-image.mjs';
 import { HPGauge, MPGauge, TurnPreview } from './ui.mjs';
 
@@ -171,7 +171,7 @@ class BattleActor
 				data.finalY = finalY;
 				let tweenInfo = {};
 				for (let i2 = 0; i2 < data.text.length; ++i2) {
-					let yName = 'y' + i2.toString();
+					let yName = `y${i2.toString()}`;
 					tweenInfo[yName] = finalY;
 				}
 				data.scene = new Scene()
@@ -268,9 +268,11 @@ class BattleActor
 		let finalY = 20 - 11 * this.damages.length;
 		let data = { text: amount.toString(), color: color, finalY: finalY };
 		let tweenInfo = {};
+		let indices = from(range(0, data.text.length - 1))
+			.shuffle().toArray();
 		for (let i = 0; i < data.text.length; ++i) {
-			let yName = 'y' + i.toString();
-			data[yName] = finalY - (20 - i * 5);
+			let yName = `y${i}`;
+			data[yName] = finalY - (20 - indices[i] * 5);
 			tweenInfo[yName] = finalY;
 		}
 		data.scene = new Scene()
