@@ -6,6 +6,7 @@
 import { Console, Music, Scene } from 'sphere-runtime';
 
 import { DayNightEngine } from './in-game-clock.mjs';
+import { Party } from './party-manager.mjs';
 import { TestHarness } from './test-harness.mjs';
 
 import './scenelets.mjs';

@@ -27,9 +27,8 @@ class Party
 		let memberCount = from(this.members).count();
 		if (memberCount > 0) {
 			let total = 0;
-			from(this.members).each(member => {
-				total += this.members[i].level;
-			});
+			for (const member of from(this.members))
+				total += member.level;
 			return Math.floor(total / memberCount);
 		} else {
 			return this.defaultLevel;
@@ -87,9 +86,8 @@ class PartyMember
 	{
 		let count = from(this.stats).count();
 		let sum = 0;
-		from(this.stats).each(stat => {
-			sum += stat.level
-		});
+		for (const stat of from(this.stats))
+			sum += stat.level;
 		return Math.floor(sum / count);
 	}
 
