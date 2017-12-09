@@ -75,7 +75,7 @@ class PartyMember
 
 		let character = Characters[this.characterID];
 		this.weaponID = 'startingWeapon' in character ? character.startingWeapon : null;
-		for (let statID in character.baseStats)
+		for (const statID in character.baseStats)
 			this.stats[statID] = new Stat(character.baseStats[statID], level, true, 1.0);
 		console.log(`create new PC ${this.name}`, `lvl: ${this.level}`);
 		for (let i = 0; i < character.skills.length; ++i)
@@ -100,7 +100,7 @@ class PartyMember
 		};
 		info.baseStats = {};
 		info.stats = {};
-		for (let statID in this.characterDef.baseStats) {
+		for (const statID in this.characterDef.baseStats) {
 			info.baseStats[statID] = this.characterDef.baseStats[statID];
 			info.stats[statID] = this.stats[statID].value;
 		}

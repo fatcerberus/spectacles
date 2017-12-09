@@ -68,7 +68,7 @@ class StatusEffect
 	beginCycle()
 	{
 		if ('statModifiers' in this.statusDef) {
-			for (let stat in StatNames) {
+			for (const stat in StatNames) {
 				let multiplier = stat in this.statusDef.statModifiers
 					? this.statusDef.statModifiers[stat]
 					: 1.0;

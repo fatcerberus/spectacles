@@ -106,7 +106,7 @@ class Battle extends Thread
 		console.log("");
 		console.log("start battle engine", `battleID: ${this.battleID}`);
 		let partyMaxMP = 0;
-		for (let key in this.session.party.members) {
+		for (const key in this.session.party.members) {
 			let battlerInfo = this.session.party.members[key].getInfo();
 			let mpDonated = Math.round(Maths.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
@@ -132,7 +132,7 @@ class Battle extends Thread
 			this.enemyUnits.push(unit);
 		}
 		let i = 0;
-		for (let name in this.session.party.members) {
+		for (const name in this.session.party.members) {
 			let unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
 			this.battleUnits.push(unit);
 			this.playerUnits.push(unit);

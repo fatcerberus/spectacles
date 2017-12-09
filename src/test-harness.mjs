@@ -47,9 +47,9 @@ class TestHarness
 				}
 				console.log("initiate test battle", `battleID: ${this.setup.battleID}`);
 				let session = new Session();
-				for (let characterID of Game.initialParty)
+				for (const characterID of Game.initialParty)
 					session.party.remove(characterID);
-				for (let id in this.setup.party) {
+				for (const id in this.setup.party) {
 					let memberInfo = this.setup.party[id];
 					session.party.add(id, memberInfo.level);
 					if ('weapon' in memberInfo)

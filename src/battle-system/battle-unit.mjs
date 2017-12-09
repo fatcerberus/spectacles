@@ -78,7 +78,7 @@ class BattleUnit
 			this.allowTargetScan = this.partyMember.isTargetScanOn;
 			this.skills = [ ...this.partyMember.getUsableSkills() ];
 			this.items = clone(this.partyMember.items);
-			for (let statID in this.baseStats)
+			for (const statID in this.baseStats)
 				this.stats[statID] = this.partyMember.stats[statID];
 			this.weapon = Weapons[this.partyMember.weaponID];
 		} else {
@@ -90,7 +90,7 @@ class BattleUnit
 			this.id = basis;
 			this.name = this.enemyInfo.name;
 			this.fullName = 'fullName' in this.enemyInfo ? this.enemyInfo.fullName : this.enemyInfo.name;
-			for (let statID in this.baseStats)
+			for (const statID in this.baseStats)
 				this.stats[statID] = new Stat(this.baseStats[statID], battle.getLevel(), false);
 			if ('items' in this.enemyInfo) {
 				this.items = from(this.enemyInfo.items)
@@ -195,7 +195,7 @@ class BattleUnit
 		let baseStatSum = 0;
 		let statSum = 0;
 		let numStats = 0;
-		for (let statID in this.baseStats) {
+		for (const statID in this.baseStats) {
 			++numStats;
 			this.battlerInfo.stats[statID] = Math.round(this.battlerInfo.stats[statID]);
 			statSum += this.battlerInfo.stats[statID];
@@ -414,7 +414,7 @@ class BattleUnit
 				let experience = {};
 				for (let i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
-						for (let statID in unitsHit[i].baseStats) {
+						for (const statID in unitsHit[i].baseStats) {
 							if (!(statID in experience)) {
 								experience[statID] = 0;
 							}
@@ -422,7 +422,7 @@ class BattleUnit
 						}
 					}
 				}
-				for (let statID in experience) {
+				for (const statID in experience) {
 					this.stats[statID].grow(experience[statID]);
 					console.log(`${this.name} got ${experience[statID]} EXP for ${StatNames[statID]}`,
 						`value: ${this.stats[statID].value}`);
@@ -506,7 +506,7 @@ class BattleUnit
 		this.battlerInfo.tier = this.tier;
 		this.battlerInfo.baseStats = {};
 		this.battlerInfo.stats = { maxHP: this.maxHP };
-		for (let statID in this.baseStats) {
+		for (const statID in this.baseStats) {
 			this.battlerInfo.baseStats[statID] = this.baseStats[statID];
 			this.battlerInfo.stats[statID] = this.stats[statID].value;
 		}
@@ -706,7 +706,7 @@ class BattleUnit
 			if (oldHPValue > 0 || this.lazarusFlag) {
 				let elementTags = from(tags).where(v => v in Elements);
 				let damageColor = null;
-				for (let tag of elementTags) {
+				for (const tag of elementTags) {
 					damageColor = damageColor !== null
 						? BlendColors(damageColor, Elements[tag].color)
 						: Elements[tag].color;

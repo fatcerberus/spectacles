@@ -52,9 +52,8 @@ class MoveMenu extends Thread
 			drawerTable[category].contents.push(skill);
 		}
 		this.drawers = [];
-		for (let category in drawerTable) {
+		for (const category in drawerTable)
 			this.drawers.push(drawerTable[category]);
-		}
 		if (stance == Stance.Attack) {
 			this.drawers = this.drawers.concat([
 				{ name: "Item", contents: this.unit.items, cursor: 0 } ]);

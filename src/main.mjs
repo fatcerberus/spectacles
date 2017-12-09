@@ -64,7 +64,7 @@ function clone(o, memo = [])
 			: {};
 		memo[memo.length] = { original: o, dolly: dolly };
 		if (Array.isArray(o) || !('clone' in o) || typeof o.clone !== 'function') {
-			for (let p in o)
+			for (const p in o)
 				dolly[p] = clone(o[p], memo);
 		}
 		return dolly;

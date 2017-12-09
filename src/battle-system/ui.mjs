@@ -330,7 +330,7 @@ class TurnPreview extends Thread
 		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
 		Rectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(48, y, 112, 16, CreateColor(0, 0, 0, alpha * 0.125));
-		for (let id in this.entries) {
+		for (const id in this.entries) {
 			let entry = this.entries[id];
 			for (let i = 0; i < entry.turnBoxes.length; ++i) {
 				let turnBox = entry.turnBoxes[i];

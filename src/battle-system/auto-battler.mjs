@@ -51,7 +51,7 @@ class AutoBattler
 			.select(v => Math.round(Random.normal(v, sigma)))
 			.toArray();
 		let phase = 1;
-		for (let milestone of this.phasePoints)
+		for (const milestone of this.phasePoints)
 			console.log(`phase ${++phase} will start at <= ${milestone} HP`);
 		this.currentPhase = 0;
 		this.lastPhase = 0;
