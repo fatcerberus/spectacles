@@ -85,7 +85,7 @@ class ItemUsable
 			`left: ${this.usesLeft}`);
 		let eventData = { item: clone(this.itemDef) };
 		unit.raiseEvent('useItem', eventData);
-		unit.battle.notifyAIs('itemUsed', unit.id, this.itemID, from(targets).select(v => v.id).toArray());
+		unit.battle.notifyAIs('itemUsed', unit.id, this.itemID, from(targets).select(it => it.id).toArray());
 		return [ eventData.item.action ];
 	}
 }
@@ -137,30 +137,30 @@ class SkillUsable
 			case 'single':
 				let enemies = user.battle.enemiesOf(user);
 				target = from(enemies)
-					.where(v => v.isAlive())
+					.where(it => it.isAlive())
 					.sample(1).first();
-				if (this.allowDeadTarget && from(enemies).any(v => !v.isAlive())) {
+				if (this.allowDeadTarget && from(enemies).any(it => !it.isAlive())) {
 					target = from(enemies)
-						.where(v => !v.isAlive())
+						.where(it => !it.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'ally':
 				let allies = user.battle.alliesOf(user);
 				target = user;
-				if (this.allowDeadTarget && from(allies).any(v => !v.isAlive())) {
+				if (this.allowDeadTarget && from(allies).any(it => !it.isAlive())) {
 					target = from(allies)
-						.where(v => !v.isAlive())
+						.where(it => !it.isAlive())
 						.sample(1).first();
 				}
 				return [ target ];
 			case 'allEnemies':
 				return from(user.battle.enemiesOf(user))
-					.where(v => v.isAlive() || this.allowDeadUnits)
+					.where(it => it.isAlive() || this.allowDeadUnits)
 					.toArray();
 			case 'allAllies':
 				return from(user.battle.alliesOf(user))
-					.where(v => v.isAlive() || this.allowDeadUnits)
+					.where(it => it.isAlive() || this.allowDeadUnits)
 					.toArray();
 			default:
 				return user;
@@ -216,7 +216,7 @@ class SkillUsable
 		this.grow(experience);
 		let eventData = { skill: clone(this.skillInfo) };
 		unit.raiseEvent('useSkill', eventData);
-		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, unit.stance, from(targets).select(v => v.id).toArray());
+		unit.battle.notifyAIs('skillUsed', unit.id, this.skillID, unit.stance, from(targets).select(it => it.id).toArray());
 		return eventData.skill.actions;
 	}
 }

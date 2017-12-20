@@ -42,7 +42,7 @@ class Party
 		console.log(`add PC ${newMember.name} to party`);
 	}
 
-	hasMember(characterID)
+	includes(characterID)
 	{
 		return characterID in this.members;
 	}
@@ -64,9 +64,9 @@ class PartyMember
 		this.characterDef = Characters[characterID];
 		this.characterID = characterID;
 		this.isTargetScanOn = this.characterDef.autoScan;
-		this.fullName = 'fullName' in Characters[characterID] ?
-			Characters[characterID].fullName :
-			Characters[characterID].name;
+		this.fullName = 'fullName' in Characters[characterID]
+			? Characters[characterID].fullName
+			: Characters[characterID].name;
 		this.items = [];
 		this.name = Characters[characterID].name;
 		this.skillList = [];

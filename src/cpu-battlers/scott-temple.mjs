@@ -17,7 +17,7 @@ class ScottTempleAI extends AutoBattler
 
 		//this.definePhases([ 1208, 812 ], 100);
 		this.defaultSkill = 'swordSlash';
-
+		
 	}
 
 	strategize()

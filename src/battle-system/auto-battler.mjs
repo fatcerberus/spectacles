@@ -48,7 +48,7 @@ class AutoBattler
 	{
 		console.log(`set up ${thresholds.length + 1} phases for ${this.unit.name}`);
 		this.phasePoints = from(thresholds)
-			.select(v => Math.round(Random.normal(v, sigma)))
+			.select(it => Math.round(Random.normal(it, sigma)))
 			.toArray();
 		let phase = 1;
 		for (const milestone of this.phasePoints)
@@ -121,22 +121,22 @@ class AutoBattler
 	isItemQueued(itemID)
 	{
 		return from(this.moveQueue)
-			.where(v => v.usable instanceof ItemUsable)
-			.any(v => v.usable.itemID == itemID);
+			.where(it => it.usable instanceof ItemUsable)
+			.any(it => it.usable.itemID == itemID);
 	}
 
 	isItemUsable(itemID)
 	{
 		return from(this.unit.items)
-			.where(v => v.itemID === itemID)
-			.any(v => v.isUsable(this, this.unit.stance));
+			.where(it => it.itemID === itemID)
+			.any(it => it.isUsable(this, this.unit.stance));
 	}
 
 	isSkillQueued(skillID)
 	{
 		return from(this.moveQueue)
-			.where(v => v.usable instanceof SkillUsable)
-			.any(v => v.usable.skillID == skillID);
+			.where(it => it.usable instanceof SkillUsable)
+			.any(it => it.usable.skillID == skillID);
 	}
 
 	isSkillUsable(skillID)
@@ -148,8 +148,8 @@ class AutoBattler
 	itemsLeft(itemID)
 	{
 		let item = from(this.unit.items)
-			.where(v => v.itemID === itemID)
-			.besides(v => console.log(`${this.unit.name} counting remaining ${v.name}`, `left: ${v.usesLeft}`))
+			.where(it => it.itemID === itemID)
+			.besides(it => console.log(`${this.unit.name} counting remaining ${it.name}`, `left: ${it.usesLeft}`))
 			.first();
 		return item.usesLeft;
 	}
@@ -189,8 +189,8 @@ class AutoBattler
 	queueItem(itemID, unitID = null)
 	{
 		let itemToUse = from(this.unit.items)
-			.where(v => v.itemID === itemID)
-			.where(v => v.isUsable(this.unit, this.unit.stance))
+			.where(it => it.itemID === itemID)
+			.where(it => it.isUsable(this.unit, this.unit.stance))
 			.first();
 		if (itemToUse === undefined)
 			throw new Error(`${this.unit.name} tried to use an item '${itemID}' not owned`);
@@ -254,7 +254,7 @@ class AutoBattler
 		let phaseToEnter = 1;
 		if (this.phasePoints !== null) {
 			let milestone = from(this.phasePoints)
-				.last(v => v >= this.unit.hp);
+				.last(it => it >= this.unit.hp);
 			phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
 		}
 		let lastPhase = this.currentPhase;
