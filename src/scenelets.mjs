@@ -6,7 +6,7 @@
 import { Joypad, Music, Prim, Scene } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
-import { GameOverScreen } from '$/game-over-screen.mjs';
+import { GameOverScreen, GameOverAction } from '$/game-over-screen.mjs';
 import { Battle, BattleResult } from './battle-system/battle.mjs';
 
 Scene.defineOp('adjustBGM',

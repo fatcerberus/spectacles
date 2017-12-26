@@ -397,10 +397,7 @@ class Battle extends Thread
 			Music.pop();
 			Music.adjustVolume(1.0, 0);
 			console.undefineObject('battle');
-			return false;
-		}
-		else {
-			return true;
+			this.stop();
 		}
 	}
 }

@@ -41,7 +41,7 @@ class MenuStrip extends Thread
 		this.brightness = 0.0;
 		this.mode = "open";
 		let carouselWidth = 0;
-		for (i = 0; i < this.menuItems.length; ++i) {
+		for (let i = 0; i < this.menuItems.length; ++i) {
 			let itemText = this.menuItems[i].text;
 			carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
 		}

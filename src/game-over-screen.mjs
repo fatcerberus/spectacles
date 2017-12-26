@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Music, Scene, Thread } from 'sphere-runtime';
+import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
 import { MenuStrip } from '$/menu-strip.mjs';
 

@@ -6,6 +6,7 @@
 import { from, Random } from 'sphere-runtime';
 
 import { console } from '$/main.mjs';
+import { Stance } from '$/battle-system/battle-unit.mjs';
 import { Game } from './game.mjs';
 import { Maths } from './maths.mjs';
 

@@ -3,6 +3,8 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { from } from 'sphere-runtime';
+
 export
 const Maths =
 {
