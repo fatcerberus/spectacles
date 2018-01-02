@@ -3,6 +3,8 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { Scene } from 'sphere-runtime';
+
 export
 const Maps =
 {

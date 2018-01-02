@@ -3,8 +3,9 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { Random } from 'sphere-runtime';
+import { from, Random } from 'sphere-runtime';
 
+import { console } from '$/main.mjs';
 import { Maths } from './maths.mjs';
 
 export

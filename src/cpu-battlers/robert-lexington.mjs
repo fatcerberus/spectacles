@@ -176,7 +176,7 @@ class Robert2AI extends AutoBattler
 							this.queueSkill(skillToUse);
 							if (skillToUse == 'upheaval')
 								this.queueSkill('tremor');
-							this.doChargeSlashNext = skillID == 'swordSlash';
+							this.doChargeSlashNext = skillToUse == 'swordSlash';
 							this.isComboStarted = false;
 						} else {
 							this.queueSkill('swordSlash');
