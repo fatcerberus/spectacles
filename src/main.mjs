@@ -5,14 +5,16 @@
 
 import { Console, Music, Scene } from 'sphere-runtime';
 
-import { DayNightEngine } from './in-game-clock.mjs';
+import { DayNightThread } from './in-game-clock.mjs';
 import { Party } from './party-manager.mjs';
 import { TestHarness } from './test-harness.mjs';
 
 import './scenelets.mjs';
 
 export const console =
-	new Console({ hotKey: Key.Tilde });
+new Console({
+	hotKey:      Key.Tilde,
+});
 
 export default
 class SpecsEngine
@@ -46,7 +48,7 @@ class SpecsEngine
 	{
 		await TestHarness.initialize();
 
-		let dayNight = new DayNightEngine();
+		let dayNight = new DayNightThread();
 		await TestHarness.run('temple');
 	}
 }

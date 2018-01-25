@@ -16,7 +16,7 @@ const DayMask = Color.Transparent,
       NightMask = new Color(0.0, 0.0, 0.125, 0.5625);
 
 export
-class DayNightEngine extends Thread
+class DayNightThread extends Thread
 {
 	constructor()
 	{
