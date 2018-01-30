@@ -127,7 +127,7 @@ class BattleUnit
 		let unitType = this.ai === null ? "player" : "AI";
 		console.log(`create ${unitType} unit '${this.name}'`,
 			`hp: ${this.hp}/${this.maxHP}`,
-			`id: ${this.tag}`);
+			`iid: ${this.tag}`);
 	}
 
 	dispose()

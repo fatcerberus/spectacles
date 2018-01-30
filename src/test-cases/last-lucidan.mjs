@@ -19,5 +19,10 @@ TestHarness.addBattle('temple',
 			weapon: 'arsenRifle',
 			items: [],
 		},
+		amanda: {
+			level: 60,
+			weapon: 'templeSword',
+			items: [],
+		},
 	}
 });

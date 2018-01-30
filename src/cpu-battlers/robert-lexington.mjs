@@ -15,12 +15,12 @@ class Robert2AI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 9000, 6000, 3000, 1000 ], 50);
+		this.definePhases([ 8000, 6000, 4000, 2000 ], 50);
 		this.defaultSkill = 'swordSlash';
 
-		this.curatives = [ 'tonic', 'powerTonic', 'fullTonic' ];
 		this.doChargeSlashNext = false;
 		this.hasZombieHealedSelf = false;
+		this.healingItems = [ 'tonic', 'powerTonic', 'fullTonic' ];
 		this.isAlcoholPending = false;
 		this.isComboStarted = false;
 		this.isNecroTonicItemPending = false;
@@ -238,7 +238,7 @@ class Robert2AI extends AutoBattler
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
 			return;
 
-		if (userID == 'robert2' && from(this.curatives).anyIs(itemID) && this.unit.hasStatus('zombie')
+		if (userID == 'robert2' && from(this.healingItems).anyIs(itemID) && this.unit.hasStatus('zombie')
 			&& from(targetIDs).anyIs('robert2') && this.phase <= 4)
 		{
 			if (this.zombieHealFixState === null && this.isItemUsable('holyWater')) {
@@ -271,7 +271,7 @@ class Robert2AI extends AutoBattler
 				.talk("Robert", true, 2.0, Infinity, "If that's what you want, then so be it.")
 				.run();
 		} else if (userID == 'scott' && from(targetIDs).anyIs('robert2')) {
-			if (from(this.curatives).anyIs(itemID) && this.unit.hasStatus('zombie')
+			if (from(this.healingItems).anyIs(itemID) && this.unit.hasStatus('zombie')
 				&& !this.isSkillQueued('electrocute'))
 			{
 				if (this.phase <= 4 && this.zombieHealFixState === null) {
@@ -295,7 +295,7 @@ class Robert2AI extends AutoBattler
 				this.scottImmuneTurnsLeft = 6;
 			} else if (itemID == 'holyWater' && this.isScottZombie) {
 				this.isScottZombie = false;
-			} else if (this.phase <= 3 && from(this.curatives).anyIs(itemID) && !this.isNecromancyPending
+			} else if (this.phase <= 3 && from(this.healingItems).anyIs(itemID) && !this.isNecromancyPending
 				&& !this.isScottZombie && !this.isSkillQueued('necromancy') && !this.isSkillQueued('electrocute')
 				&& this.zombieHealFixState === null)
 			{

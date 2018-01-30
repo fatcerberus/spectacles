@@ -13,7 +13,7 @@ import './scenelets.mjs';
 
 export const console =
 new Console({
-	hotKey:      Key.Tilde,
+	hotKey: Key.Tilde,
 });
 
 export default
