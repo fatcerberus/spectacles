@@ -35,15 +35,4 @@ const Battles =
 			}
 		},
 	},
-
-	scottTemple:
-	{
-		title: "Scott Victor Temple",
-		isFinalBattle: true,
-		bgm: 'runawayTrain',
-		battleLevel: 60,
-		enemies: [
-			'scottTemple',
-		],
-	},
 };

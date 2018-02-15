@@ -10,8 +10,17 @@ TestHarness.addBattle('rsb2',
 	battleID: 'rsbFinal',
 	party: {
 		scott: {
-			level: 50, weapon: 'templeSword',
-			items: [ 'tonic', 'powerTonic', 'fullTonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
+			level: 50,
+			weapon: 'templeSword',
+			items: [
+				'tonic',
+				'powerTonic',
+				'fullTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+				'alcohol',
+			],
 		},
 	}
 });

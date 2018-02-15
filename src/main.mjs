@@ -49,7 +49,7 @@ class SpecsEngine
 		await TestHarness.initialize();
 
 		let dayNight = new DayNightThread();
-		await TestHarness.run('temple');
+		await TestHarness.run('rsb2');
 	}
 }
 
