@@ -281,7 +281,9 @@ class MoveMenu extends Thread
 			this.isExpanded = false;
 			this.showMoveList.stop();
 			this.hideMoveList.run();
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y) && this.stance != Stance.Guard) {
+		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)
+			&& this.stance != Stance.Guard && this.stance != Stance.Counter)
+		{
 			this.stance = this.stance == Stance.Attack ? Stance.Charge
 				: Stance.Guard;
 			this.updateTurnPreview();

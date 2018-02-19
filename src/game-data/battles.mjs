@@ -35,4 +35,15 @@ const Battles =
 			}
 		},
 	},
+
+	scottTemple:
+	{
+		title: "Scott Victor Temple",
+		isFinalBattle: true,
+		bgm: 'revelation',
+		battleLevel: 60,
+		enemies: [
+			'scottTemple',
+		],
+	},
 };

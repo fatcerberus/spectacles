@@ -35,4 +35,27 @@ const Enemies =
 			'alcohol',
 		],
 	},
+
+
+	scottTemple:
+	{
+		name: "S. Temple",
+		fullName: "Scott Victor Temple",
+		hasLifeBar: true,
+		tier: 3,
+		turnRatio: 3.0,
+		baseStats: {
+			vit: 100,
+			str: 85,
+			def: 80,
+			foc: 60,
+			mag: 90,
+			agi: 70,
+		},
+		immunities: [ 'zombie' ],
+		weapon: 'templeSword',
+		munchData: {
+			skill: 'omni',
+		},
+	},
 };
