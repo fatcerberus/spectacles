@@ -15,7 +15,7 @@ class Robert2AI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 8000, 6000, 4000, 2000 ], 100);
+		this.definePhases([ 3000, 2000, 1000, 500 ], 50);
 		this.defaultSkill = 'swordSlash';
 
 		this.doChargeSlashNext = false;

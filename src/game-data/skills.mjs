@@ -946,8 +946,8 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'revive',
-						healToFull: false,
-						element: 'cure'
+						healToFull: true,
+						element: 'cure',
 					}
 				]
 			}

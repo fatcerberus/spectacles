@@ -52,7 +52,7 @@ class ScottTempleAI extends AutoBattler
 				} else if (this.movesTillReGen <= 0 && this.isSkillUsable('rejuvenate')) {
 					this.queueSkill('rejuvenate');
 					this.queueSkill('chargeSlash');
-					this.movesTillReGen = 3 + Math.min(Math.floor(Math.random() * 3), 2);
+					this.movesTillReGen = Random.discrete(3, 5);
 				} else {
 					--this.movesTillReGen;
 					var skillToUse = this.unit.hasStatus('reGen')
@@ -76,7 +76,7 @@ class ScottTempleAI extends AutoBattler
 				if (this.isQSComboStarted) {
 					var qsTurns = this.predictSkillTurns('quickstrike');
 					this.queueSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
-				} else if (!this.battle.hasCondition('generalDisarray') && 0.5 > Math.random()) {
+				} else if (!this.battle.hasCondition('generalDisarray') && Random.chance(0.5)) {
 					this.queueSkill('tenPointFive');
 				} else {
 					var skillToUse = Random.sample([ 'quickstrike',
@@ -118,7 +118,7 @@ class ScottTempleAI extends AutoBattler
 				this.queueSkill('rejuvenate');
 				this.queueSkill(this.phase2Opener);
 				this.isQSComboStarted = false;
-				this.movesTillReGen = 3 + Math.min(Math.floor(Math.random() * 3), 2);
+				this.movesTillReGen = Random.discrete(3, 5);
 				break;
 			case 3:
 				this.queueSkill(this.isSkillUsable('renewal')
@@ -136,7 +136,7 @@ class ScottTempleAI extends AutoBattler
 		if (skillID == 'rejuvenate' && userID != 'scottTemple' && !from(targetIDs).anyIs('scottTemple')) {
 			if (this.phase <= 1 && !this.isSkillQueued('chargeSlash')) {
 				this.queueSkill('chargeSlash', targetIDs[0]);
-			} else if (this.phase >= 2 && 0.25 > Math.random) {
+			} else if (this.phase >= 2 && Random.chance(0.25)) {
 				this.queueSkill('necromancy', targetIDs[0]);
 			}
 		}
