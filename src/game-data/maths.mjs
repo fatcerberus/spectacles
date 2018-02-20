@@ -122,7 +122,7 @@ const Maths =
 			+ unitInfo.baseStats.mag
 			+ unitInfo.baseStats.agi) / 15);
 		statAverage = Maths.statValue(statAverage, level);
-		return 25 * tier**2 * statAverage;
+		return 25 * tier * statAverage;
 	},
 
 	mp: {

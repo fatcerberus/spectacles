@@ -3,7 +3,7 @@
   *           Copyright (c) 2012 Power-Command
 ***/
 
-import { Random } from 'sphere-runtime';
+import { from, Random } from 'sphere-runtime';
 
 import { AutoBattler } from '$/battle-system/auto-battler.mjs';
 import { Stance } from '$/battle-system/battle-unit.mjs';
@@ -15,8 +15,10 @@ class ScottTempleAI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 9000, 3000 ], 100);
+		this.definePhases([ 3000, 1000 ], 100);
 		this.defaultSkill = 'swordSlash';
+		
+		this.healingItems = [ 'tonic', 'powerTonic', 'fullTonic' ];
 	}
 
 	strategize(stance, phase)
@@ -96,10 +98,10 @@ class ScottTempleAI extends AutoBattler
 		if (this.unit.hasStatus('offGuard'))
 			return;
 
-		if (from([ 'tonic', 'powerTonic' ]).anyIs(itemID) && !from(targetIDs).anyIs('scottTemple')
+		if (from(this.healingItems).anyIs(itemID) && !from(targetIDs).anyIs('scottTemple')
 			&& Random.chance(0.5))
 		{
-			this.queueSkill('electrocute', targetIDs[0]);
+			this.queueSkill('jolt', targetIDs[0]);
 		}
 	}
 
@@ -109,7 +111,7 @@ class ScottTempleAI extends AutoBattler
 			case 1:
 				this.queueSkill('omni', 'elysia');
 				var spellID = Random.sample([ 'inferno', 'subzero' ]);
-				this.phase2Opener = spellID != 'inferno' ? 'inferno' : 'subzero';
+				this.phase2Opener = spellID === 'inferno' ? 'subzero' : 'inferno';
 				this.queueSkill(spellID);
 				break;
 			case 2:
@@ -126,7 +128,7 @@ class ScottTempleAI extends AutoBattler
 		}
 	}
 
-	onSkillUsed(userID, skillID, stance, targetIDs)
+	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
 		if (this.unit.hasStatus('offGuard'))
 			return;
@@ -141,7 +143,7 @@ class ScottTempleAI extends AutoBattler
 		else if (skillID == 'dispel' && from(targetIDs).anyIs('scottTemple')
 			&& this.unit.hasStatus('reGen'))
 		{
-			this.queueSkill('electrocute', userID);
+			this.queueSkill('jolt', userID);
 			this.queueSkill('heal', userID);
 		}
 	}

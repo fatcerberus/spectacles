@@ -583,14 +583,14 @@ const Skills =
 			}
 		]
 	},
-	bolt: {
-		name: "Bolt",
+	jolt: {
+		name: "Jolt",
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 10,
 		actions: [
 			{
-				announceAs: "Bolt",
+				announceAs: "Jolt",
 				rank: 2,
 				accuracyType: 'magic',
 				effects: [
@@ -913,7 +913,7 @@ const Skills =
 		name: "Heal",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 25,
+		baseMPCost: 10,
 		actions: [
 			{
 				announceAs: "Heal",
@@ -937,7 +937,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		allowDeadTarget: true,
-		baseMPCost: 150,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Lazarus",
@@ -977,7 +977,7 @@ const Skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 50,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -998,7 +998,7 @@ const Skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 85,
+		baseMPCost: 40,
 		actions: [
 			{
 				announceAs: "Renewal",

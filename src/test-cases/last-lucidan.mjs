@@ -12,16 +12,25 @@ TestHarness.addBattle('temple',
 		elysia: {
 			level: 60,
 			weapon: 'powerBow',
-			items: [],
+			items: [
+				'tonic',
+				'powerTonic',
+				'fullTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+			],
 		},
 		justin: {
 			level: 60,
-			weapon: 'arsenRifle',
-			items: [],
+			items: [
+				'fullTonic',
+				'lazarusPotion',
+			],
 		},
-		amanda: {
+		bruce: {
 			level: 60,
-			weapon: 'templeSword',
+			weapon: 'arsenRifle',
 			items: [],
 		},
 	}

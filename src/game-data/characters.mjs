@@ -58,7 +58,7 @@ const Characters =
 			'rejuvenate',
 			'renewal',
 			'protectiveAura'
-		]
+		],
 	},
 
 	// Elysia Ilapse
@@ -71,7 +71,7 @@ const Characters =
 			def: 50,
 			foc: 90,
 			mag: 65,
-			agi: 100
+			agi: 100,
 		},
 		startingWeapon: 'fireAndIce',
 		skills: [
@@ -81,10 +81,6 @@ const Characters =
 			'chillShot',
 			'joltShot',
 			'seismicShot',
-			'flare',
-			'chill',
-			'lightning',
-			'quake',
 			'hellfire',
 			'windchill',
 			'electrocute',
@@ -96,8 +92,9 @@ const Characters =
 			'heal',
 			'rejuvenate',
 			'renewal',
-			'lazarus'
-		]
+			'lazarus',
+			'omni',
+		],
 	},
 
 	// Justin Ilapse
@@ -114,7 +111,7 @@ const Characters =
 			def: 60,
 			foc: 75,
 			mag: 100,
-			agi: 60
+			agi: 60,
 		},
 		autoScan: true,
 		skills: [
@@ -123,9 +120,10 @@ const Characters =
 			'lightning',
 			'quake',
 			'heal',
-			'electrocute',
-			'upheaval',
-			'rejuvenate',
+			'ignite',
+			'frostbite',
+			'jolt',
+			'tremor',
 			'dispel',
 			'necromancy',
 			'crackdown',
@@ -231,7 +229,7 @@ const Characters =
 			'omni',
 			'protectiveAura',
 			'necromancy',
-			'crackdown'
+			'crackdown',
 		]
 	},
 
@@ -264,7 +262,7 @@ const Characters =
 			'upheaval',
 			'ignite',
 			'frostbite',
-			'bolt',
+			'jolt',
 			'tremor',
 			'necromancy',
 			'crackdown'

@@ -15,7 +15,7 @@ class Robert2AI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 8000, 6000, 4000, 2000 ], 50);
+		this.definePhases([ 8000, 6000, 4000, 2000 ], 100);
 		this.defaultSkill = 'swordSlash';
 
 		this.doChargeSlashNext = false;
@@ -145,7 +145,7 @@ class Robert2AI extends AutoBattler
 			} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
 				--this.elementalsTillRevenge;
 				if (this.elementalsTillRevenge <= 0) {
-					this.queueSkill('bolt');
+					this.queueSkill('jolt');
 					this.necroTonicItem = 'powerTonic';
 				} else {
 					if (this.unit.hasStatus('ignite')) {
@@ -301,7 +301,7 @@ class Robert2AI extends AutoBattler
 			{
 				this.necromancyChance += 0.25;
 				if (Random.chance(this.necromancyChance) && !this.isNecroTonicItemPending) {
-					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'bolt');
+					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'jolt');
 					this.necromancyChance = 0.0;
 				}
 			}
@@ -326,7 +326,7 @@ class Robert2AI extends AutoBattler
 				break;
 			case 3:
 				this.queueSkill('protectiveAura');
-				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'bolt', Stance.Charge);
+				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt', Stance.Charge);
 				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
 				this.doChargeSlashNext = false;
 				this.elementalsTillRevenge = 2;
@@ -358,8 +358,8 @@ class Robert2AI extends AutoBattler
 				this.nextElementalMove = 'windchill';
 			} else if (skillID == 'frostbite') {
 				this.nextElementalMove = 'hellfire';
-			} else if (skillID == 'necromancy' || skillID == 'bolt') {
-				this.isScottZombie = (skillID == 'necromancy' || skillID == 'bolt' && this.scottStance != Stance.Guard)
+			} else if (skillID == 'necromancy' || skillID == 'jolt') {
+				this.isScottZombie = (skillID == 'necromancy' || skillID == 'jolt' && this.scottStance != Stance.Guard)
 					&& this.scottImmuneTurnsLeft <= 0;
 				this.isNecroTonicItemPending = this.isScottZombie && this.necroTonicItem !== null
 					&& this.isItemUsable(this.necroTonicItem);
@@ -414,8 +414,8 @@ class Robert2AI extends AutoBattler
 					case 'retaliate':
 						switch (Math.ceil(this.zombieHealAlertLevel)) {
 							case 0.0:
-								if (this.isSkillUsable('bolt')) {
-									this.queueSkill('bolt');
+								if (this.isSkillUsable('jolt')) {
+									this.queueSkill('jolt');
 									this.necroTonicItem = 'tonic';
 								}
 								break;
