@@ -15,9 +15,9 @@ class ScottTempleAI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 3000, 1000 ], 100);
+		this.definePhases([ 15000, 3000 ], 100);
 		this.defaultSkill = 'swordSlash';
-		
+
 		this.healingItems = [ 'tonic', 'powerTonic', 'fullTonic' ];
 	}
 
@@ -98,7 +98,8 @@ class ScottTempleAI extends AutoBattler
 		if (this.unit.hasStatus('offGuard'))
 			return;
 
-		if (from(this.healingItems).anyIs(itemID) && !from(targetIDs).anyIs('scottTemple')
+		if (from(this.healingItems).anyIs(itemID)
+			&& !from(targetIDs).anyIs('scottTemple')
 			&& Random.chance(0.5))
 		{
 			this.queueSkill('jolt', targetIDs[0]);

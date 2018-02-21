@@ -44,7 +44,7 @@ async function main()
 	await TestHarness.initialize();
 
 	let dayNight = new DayNightThread();
-	await TestHarness.run('temple');
+	await TestHarness.run('rsb2');
 }
 
 export
