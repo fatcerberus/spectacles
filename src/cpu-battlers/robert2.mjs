@@ -40,7 +40,7 @@ class Robert2AI extends AutoBattler
 		let qsTurns;
 		switch (this.phase) {
 		case 1:
-			let magicks = [ 'hellfire', 'windchill', 'electrocute', 'upheaval' ];
+			let magicks = [ 'flare', 'quake', 'chill', 'lightning' ];
 			if (this.doChargeSlashNext) {
 				this.queueSkill('chargeSlash');
 				this.doChargeSlashNext = false;

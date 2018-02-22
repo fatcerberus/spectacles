@@ -94,7 +94,7 @@ const Items =
 	fullTonic: {
 		name: "Full Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 2,
+		uses: 1,
 		action: {
 			announceAs: "Full Tonic",
 			effects: [

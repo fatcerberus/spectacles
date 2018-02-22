@@ -444,291 +444,23 @@ const Skills =
 		]
 	},
 
-	// standard Tier 1 magic
-	chill: {
-		name: "Chill",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 5,
-		actions: [
-			{
-				announceAs: "Chill",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 20,
-						element: 'ice',
-					}
-				],
-			}
-		]
-	},
-	flare: {
-		name: "Flare",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 5,
-		actions: [
-			{
-				announceAs: "Flare",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 20,
-						element: 'fire',
-					}
-				],
-			}
-		]
-	},
-	lightning: {
-		name: "Lightning",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 5,
-		actions: [
-			{
-				announceAs: "Lightning",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 20,
-						element: 'lightning',
-					}
-				],
-			}
-		]
-	},
-	quake: {
-		name: "Quake",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 5,
-		actions: [
-			{
-				announceAs: "Quake",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 20,
-						element: 'earth',
-					}
-				]
-			}
-		]
-	},
+	// basic elemental magic spells
+	flare:     basicSpell("Flare", 'fire'),
+	quake:     basicSpell("Quake", 'earth'),
+	chill:     basicSpell("Chill", 'ice'),
+	lightning: basicSpell("Lightning", 'lightning'),
 
-	// special Tier 1 magic (inflict status)
-	frostbite: {
-		name: "Frostbite",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: "Frostbite",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 5,
-						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 100,
-					}
-				],
-			}
-		]
-	},
-	ignite: {
-		name: "Ignite",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: "Ignite",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 5,
-						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 100,
-					}
-				],
-			}
-		]
-	},
-	jolt: {
-		name: "Jolt",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: "Jolt",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 5,
-						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 100,
-					}
-				],
-			}
-		]
-	},
-	tremor: {
-		name: "Tremor",
-		category: 'strategy',
-		targetType: 'single',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: "Tremor",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 5,
-						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 100,
-					}
-				]
-			}
-		]
-	},
+	// status-inflicting magicks
+	ignite:    statusSpell("Ignite", 'fire', 'ignite'),
+	tremor:    statusSpell("Tremor", 'earth', 'disarray'),
+	frostbite: statusSpell("Frostbite", 'ice', 'frostbite'),
+	jolt:      statusSpell("Jolt", 'lightning', 'zombie'),
 
-	// second-tier magic
-	electrocute: {
-		name: "Electrocute",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 15,
-		actions: [
-			{
-				announceAs: "Electrocute",
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 40,
-						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 0,
-					}
-				]
-			}
-		]
-	},
-	hellfire: {
-		name: "Hellfire",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 15,
-		actions: [
-			{
-				announceAs: "Hellfire",
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 40,
-						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 0,
-					}
-				]
-			}
-		]
-	},
-	upheaval: {
-		name: "Upheaval",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 15,
-		actions: [
-			{
-				announceAs: "Upheaval",
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 40,
-						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 0,
-					}
-				]
-			}
-		]
-	},
-	windchill: {
-		name: "Windchill",
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 15,
-		actions: [
-			{
-				announceAs: "Windchill",
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 40,
-						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 0,
-					}
-				]
-			}
-		]
-	},
+	// powerful second-tier magicks
+	hellfire:    powerSpell("Hellfire", 'fire', 'ignite'),
+	upheaval:    powerSpell("Upheaval", 'earth', 'disarray'),
+	windchill:   powerSpell("Windchill", 'ice', 'frostbite'),
+	electrocute: powerSpell("Electrocute", 'lightning', 'zombie'),
 
 	// Rank 4 magic - damage + field condition, group-cast
 	inferno: {
@@ -1414,3 +1146,86 @@ const Skills =
 		]
 	}
 };
+
+function basicSpell(name, element)
+{
+	return {
+		name,
+		category: 'magic',
+		targetType: 'single',
+		baseMPCost: 5,
+		actions: [
+			{
+				announceAs: name,
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 20,
+						element,
+					}
+				],
+			}
+		]
+	};
+}
+
+function statusSpell(name, element, statusID)
+{
+	return {
+		name,
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: name,
+				rank: 2,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 5,
+						element,
+						addStatus: statusID,
+						statusChance: 100,
+						ignoreGuard: true,
+					}
+				],
+			}
+		]
+	};
+}
+
+function powerSpell(name, element, statusID)
+{
+	return {
+		name,
+		category: 'magic',
+		targetType: 'single',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: name,
+				rank: 3,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 40,
+						element: element,
+						addStatus: statusID,
+						statusChance: 0,
+					}
+				]
+			}
+		]
+	};
+}

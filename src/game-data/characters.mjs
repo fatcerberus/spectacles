@@ -264,8 +264,6 @@ const Characters =
 			'frostbite',
 			'jolt',
 			'tremor',
-			'necromancy',
-			'crackdown'
 		]
 	}
 };
