@@ -9,13 +9,13 @@ import { AutoBattler } from '$/battle-system/auto-battler.mjs';
 import { Stance } from '$/battle-system/battle-unit.mjs';
 
 export default
-class Robert2AI extends AutoBattler
+class RobertIIAI extends AutoBattler
 {
 	constructor(unit, battle)
 	{
 		super(unit, battle);
 
-		this.definePhases([ 9000, 6000, 3000, 1000 ], 50);
+		this.definePhases([ 8000, 5000, 3000, 1000 ], 50);
 		this.defaultSkill = 'swordSlash';
 
 		this.doChargeSlashNext = false;

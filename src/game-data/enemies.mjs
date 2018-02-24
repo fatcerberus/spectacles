@@ -11,7 +11,7 @@ const Enemies =
 		name: "Robert",
 		fullName: "Robert Spellbinder",
 		hasLifeBar: true,
-		tier: 3,
+		tier: 4,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 75,

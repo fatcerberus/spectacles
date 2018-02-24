@@ -15,7 +15,7 @@ class ScottTempleAI extends AutoBattler
 	{
 		super(unit, battle);
 
-		this.definePhases([ 15000, 3000 ], 100);
+		this.definePhases([ 9000, 3000 ], 100);
 		this.defaultSkill = 'swordSlash';
 
 		this.healingItems = [ 'tonic', 'powerTonic', 'fullTonic' ];
