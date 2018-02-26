@@ -92,7 +92,7 @@ class HPGauge
 		drawSegment(barEdgeX - fillWidth - damageWidth - emptyWidth, y + 1, emptyWidth, barHeight - 2, emptyColor);
 		let slotYSize = height - barHeight + 1;
 		let slotXSize = this.maxSectors === 'auto'
-			? Math.round(slotYSize * 1)
+			? Math.round(slotYSize * 1.25)
 			: Math.ceil(width / (this.maxSectors - 1));
 		let slotX;
 		let slotY = y + height - slotYSize;

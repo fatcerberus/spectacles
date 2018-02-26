@@ -316,7 +316,7 @@ class MoveMenu extends Thread
 	{
 		let yOrigin = -54 * (1.0 - this.fadeness) + 16;
 		let stanceText = this.stance == Stance.Charge ? "CS"
-			: this.stance == Stance.Counter ? "GS"
+			: this.stance == Stance.Counter ? "CA"
 			: this.stance == Stance.Guard ? "GS"
 			: "AS";
 		Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));

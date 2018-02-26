@@ -107,7 +107,7 @@ class BattleUnit
 			this.weapon = Weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			let aiFile = FS.fullPath(this.id + '.mjs', '$/AutoBattlers');
+			let aiFile = FS.fullPath(`${this.id}.mjs`, '$/autoBattlers');
 			let battlerClass = require(aiFile).default;
 			this.ai = new battlerClass(this, battle);
 			this.battle.registerAI(this.ai);

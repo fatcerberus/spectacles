@@ -46,4 +46,19 @@ const Battles =
 			'scottTemple',
 		],
 	},
+
+	scottStarcross:
+	{
+		title: "Scott Starcross",
+		isFinalBattle: true,
+		bgm: 'deathComeNearMe',
+		battleLevel: 60,
+		enemies: [
+			'starcross',
+		],
+		onStart() {
+			let scottUnit = this.findUnit('starcross');
+			scottUnit.addStatus('specsAura');
+		},
+	},
 };

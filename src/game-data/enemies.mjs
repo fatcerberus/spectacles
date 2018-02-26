@@ -11,7 +11,7 @@ const Enemies =
 		name: "Robert",
 		fullName: "Robert Spellbinder",
 		hasLifeBar: true,
-		tier: 4,
+		tier: 3,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 75,
@@ -43,7 +43,7 @@ const Enemies =
 		fullName: "Scott Victor Temple",
 		hasLifeBar: true,
 		tier: 4,
-		turnRatio: 3.0,
+		turnRatio: 1.0,
 		baseStats: {
 			vit: 100,
 			str: 85,
@@ -57,5 +57,23 @@ const Enemies =
 		munchData: {
 			skill: 'omni',
 		},
+	},
+
+	starcross: {
+		name: "Scott",
+		fullName: "Scott Starcross",
+		hasLifeBar: true,
+		tier: 4,
+		turnRatio: 1.0,
+		baseStats: {
+			vit: 80,
+			str: 80,
+			def: 80,
+			foc: 80,
+			mag: 80,
+			agi: 80
+		},
+		immunities: [],
+		weapon: 'templeSword'
 	},
 };

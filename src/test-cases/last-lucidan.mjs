@@ -35,3 +35,45 @@ TestHarness.addBattle('temple',
 		},
 	}
 });
+
+TestHarness.addBattle('starcross',
+{
+	battleID: 'scottStarcross',
+	party: {
+		bruce: {
+			level: 60,
+			weapon: 'arsenRifle',
+			items: [
+				'tonic',
+				'powerTonic',
+				'fullTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+			],
+		},
+		robert: {
+			level: 60,
+			weapon: 'rsbSword',
+			items: [
+				'tonic',
+				'powerTonic',
+				'fullTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+			],
+		},
+		amanda: {
+			level: 60,
+			items: [
+				'tonic',
+				'powerTonic',
+				'fullTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+			],
+		},
+	}
+});
