@@ -1,15 +1,15 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2017 Power-Command
+  *           Copyright (c) 2018 Power-Command
 ***/
 
 import { Console, Music, Scene } from 'sphere-runtime';
 
-import { DayNightThread } from './in-game-clock.mjs';
-import { Party } from './party-manager.mjs';
-import { TestHarness } from './test-harness.mjs';
+import { Party } from '$/battleSystem';
+import DayNightClock from '$/dayNightClock';
+import TestHarness from '$/testHarness';
 
-import './scenelets.mjs';
+import './scenelets';
 
 export const console =
 new Console({
@@ -43,7 +43,7 @@ async function main()
 
 	await TestHarness.initialize();
 
-	let dayNight = new DayNightThread();
+	let dayNight = new DayNightClock();
 	await TestHarness.run('starcross');
 }
 

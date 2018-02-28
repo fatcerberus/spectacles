@@ -1,13 +1,13 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2017 Power-Command
+  *           Copyright (c) 2018 Power-Command
 ***/
 
 import { Joypad, Music, Prim, Scene } from 'sphere-runtime';
 
-import { console } from '$/main.mjs';
-import { GameOverScreen, GameOverAction } from '$/game-over-screen.mjs';
-import { Battle, BattleResult } from './battle-system/battle.mjs';
+import { console } from '$/main';
+import { BattleContext, BattleResult } from '$/battleSystem';
+import { GameOverScreen, GameOverAction } from '$/gameOverScreen';
 
 Scene.defineOp('adjustBGM',
 {
@@ -28,7 +28,7 @@ Scene.defineOp('battle',
 {
 	start(scene, battleID, session) {
 		this.mode = 'battle';
-		this.battle = new Battle(session, battleID);
+		this.battle = new BattleContext(session, battleID);
 		this.battleThread = this.battle.go();
 	},
 
