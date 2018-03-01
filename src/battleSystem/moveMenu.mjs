@@ -5,7 +5,7 @@
 
 import { Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/main';
+import { drawTextEx } from '$/utility';
 import { Game, Elements, SkillCategories } from '$/gameDef';
 
 import ItemUsable from './itemUsable';

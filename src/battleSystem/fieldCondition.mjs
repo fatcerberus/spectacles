@@ -3,7 +3,6 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { console } from '$/main';
 import { Conditions } from '$/gameDef';
 
 export default

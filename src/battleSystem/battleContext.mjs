@@ -5,8 +5,8 @@
 
 import { from, Music, Random, Thread } from 'sphere-runtime';
 
-import { clone, console } from '$/main';
 import { Animations, Battles, Characters, Game, Maths, MoveEffects } from '$/gameDef';
+import { clone } from '$/utility';
 
 import BattleResult from './battleResult';
 import BattleScreen from './battleScreen';

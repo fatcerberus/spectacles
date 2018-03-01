@@ -5,7 +5,7 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-import { console, drawTextEx } from '$/main';
+import { drawTextEx } from '$/utility';
 
 export default
 class TurnPreview extends Thread

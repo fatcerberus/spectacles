@@ -5,8 +5,8 @@
 
 import { from } from 'sphere-runtime';
 
-import { clone, console } from '$/main';
 import { Game, Items } from '$/gameDef';
+import { clone } from '$/utility';
 
 import Stance from './stance';
 

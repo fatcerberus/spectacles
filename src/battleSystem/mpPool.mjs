@@ -5,8 +5,6 @@
 
 import { Delegate } from 'sphere-runtime';
 
-import { console } from '$/main';
-
 export default
 class MPPool
 {

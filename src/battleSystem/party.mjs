@@ -5,8 +5,6 @@
 
 import { from } from 'sphere-runtime';
 
-import { console } from '$/main';
-
 import PartyMember from './partyMember';
 
 export default

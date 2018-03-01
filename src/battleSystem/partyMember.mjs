@@ -5,7 +5,6 @@
 
 import { from } from 'sphere-runtime';
 
-import { console } from '$/main';
 import { Characters, Weapons } from '$/gameDef';
 
 import SkillUsable from './skillUsable';

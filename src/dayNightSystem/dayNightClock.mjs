@@ -8,8 +8,6 @@
 
 import { Prim, Thread } from 'sphere-runtime';
 
-import { console } from '$/main';
-
 import InGameTime from './inGameTime';
 
 const DayMask = Color.Transparent,

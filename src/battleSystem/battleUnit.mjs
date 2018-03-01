@@ -5,7 +5,7 @@
 
 import { from, Random, Scene } from 'sphere-runtime';
 
-import { console, clone } from '$/main';
+import { clone } from '$/utility';
 import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '$/gameDef';
 
 import ItemUsable from './itemUsable';

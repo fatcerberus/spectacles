@@ -5,7 +5,6 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { console } from '$/main';
 import { Stance } from '$/battleSystem';
 
 import { Game } from './game';

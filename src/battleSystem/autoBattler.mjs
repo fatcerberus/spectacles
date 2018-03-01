@@ -5,7 +5,6 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { console } from '$/main';
 import { Game, Items, Skills, Weapons } from '$/gameDef';
 
 import ItemUsable from './itemUsable';

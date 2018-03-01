@@ -5,7 +5,7 @@
 
 import { from, Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/main';
+import { drawTextEx } from '$/utility';
 
 export default
 class TargetMenu extends Thread

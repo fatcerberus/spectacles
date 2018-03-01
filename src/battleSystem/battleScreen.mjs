@@ -5,7 +5,7 @@
 
 import { from, Image, Prim, Scene, Thread } from 'sphere-runtime';
 
-import { console, drawTextEx, range } from '$/main';
+import { drawTextEx, range } from '$/utility';
 import { Game } from '$/gameDef';
 
 import HPGauge from './hpGauge';
