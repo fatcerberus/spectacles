@@ -4,22 +4,22 @@
 ***/
 
 Object.assign(Sphere.Game,
-{
-	name: "Spectacles: Bruce's Story",
-	saveID: 'fatCerberus.spectacles',
-	author: "Fat Cerberus",
-	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
-	resolution: '320x200',
-	main: '@/scripts/main.mjs',
+	{
+		name: "Spectacles: Bruce's Story",
+		saveID: 'fatCerberus.spectacles',
+		author: "Fat Cerberus",
+		summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
+		resolution: '320x200',
+		main: '@/scripts/main.mjs',
 
-	fullScreen: false,
+		fullScreen: false,
 
-	disableAnimations: false,
-	disableBattles: false,
-	disableSplash: false,
-	disableTalking: false,
-	disableTitleScreen: false,
-});
+		disableAnimations: false,
+		disableBattles: false,
+		disableSplash: false,
+		disableTalking: false,
+		disableTitleScreen: false,
+	});
 
 install('@/scripts', files('src/*.mjs', true));
 

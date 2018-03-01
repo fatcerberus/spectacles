@@ -5,7 +5,7 @@
 
 import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
-import Session from '$/session';
+import { Session } from '$/saveSystem';
 
 import MenuStrip from './menuStrip';
 

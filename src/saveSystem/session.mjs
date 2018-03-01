@@ -7,14 +7,7 @@ import { console } from '$/main';
 import { Party } from '$/battleSystem';
 import { Game } from '$/gameDef';
 
-export
-const Difficulty =
-{
-	Beginner: 1,
-	Standard: 2,
-	Proud:    3,
-	Critical: 4,
-};
+import Difficulty from './difficulty';
 
 export default
 class Session

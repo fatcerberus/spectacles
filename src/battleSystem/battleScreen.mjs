@@ -7,10 +7,10 @@ import { from, Image, Prim, Scene, Thread } from 'sphere-runtime';
 
 import { console, drawTextEx, range } from '$/main';
 import { Game } from '$/gameDef';
-import SpriteImage from '$/spriteImage';
 
 import HPGauge from './hpGauge';
 import MPGauge from './mpGauge';
+import SpriteImage from './spriteImage';
 import TurnPreview from './turnPreview';
 
 export default

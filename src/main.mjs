@@ -8,7 +8,7 @@ import { Console, Music, Scene } from 'sphere-runtime';
 import { DayNightClock } from '$/dayNightSystem';
 import { TestHarness } from '$/testSystem';
 
-import './scenelets';
+import './defineScenelets';
 
 export const console =
 	new Console({ hotKey: Key.Tilde });
