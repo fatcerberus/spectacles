@@ -5,16 +5,13 @@
 
 import { Console, Music, Scene } from 'sphere-runtime';
 
-import { Party } from '$/battleSystem';
 import DayNightClock from '$/dayNightClock';
 import TestHarness from '$/testHarness';
 
 import './scenelets';
 
 export const console =
-new Console({
-	hotKey: Key.Tilde,
-});
+	new Console({ hotKey: Key.Tilde });
 
 export default
 async function main()
@@ -27,7 +24,7 @@ async function main()
 		play(fileName) { Music.play(fileName); },
 		push(fileName) { Music.push(fileName); },
 		reset() { Music.reset(); },
-		stop(fileName) { Music.override(null); },
+		stop() { Music.override(null); },
 		volume(value) { Music.adjustVolume(value); },
 	});
 	console.defineObject('yap', null, {

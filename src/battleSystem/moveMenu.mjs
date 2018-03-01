@@ -3,14 +3,14 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from, Scene, Thread } from 'sphere-runtime';
+import { Scene, Thread } from 'sphere-runtime';
 
 import { drawTextEx } from '$/main';
 import { Game, Elements, SkillCategories } from '$/gameDef';
 
 import { Stance } from './battleUnit';
 import ItemUsable from './itemUsable';
-import TargetMenu from './targetMenu'
+import TargetMenu from './targetMenu';
 
 export default
 class MoveMenu extends Thread
@@ -346,7 +346,7 @@ class MoveMenu extends Thread
 				this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.running);
 				itemY += 18;
 			}
-			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height)
+			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
 		} else {
 			itemY = yOrigin + 34;
 		}

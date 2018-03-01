@@ -89,6 +89,6 @@ class InGameTime
 		let hourText = ("0" + this.hour).slice(-2);
 		let minuteText = ("0" + this.minute).slice(-2);
 		let secondText = ("0" + this.second).slice(-2);
-		return `${hourText}:${minuteText}`;
+		return `${hourText}:${minuteText}:${secondText}`;
 	}
 }

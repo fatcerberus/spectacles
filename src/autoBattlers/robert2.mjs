@@ -230,7 +230,7 @@ class RobertIIAI extends AutoBattler
 				}
 			}
 		}
-	};
+	}
 
 	async on_itemUsed(userID, itemID, targetIDs)
 	{

@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Prim, Scene, Thread } from 'sphere-runtime';
+import { Scene, Thread } from 'sphere-runtime';
 
 export default
 class MenuStrip extends Thread

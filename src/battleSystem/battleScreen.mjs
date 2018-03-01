@@ -350,7 +350,7 @@ class BattleHUD extends Thread
 			//this.drawText(this.font, x + 61, y + 2, 1, textColor, Math.round(memberInfo.hp), 'right');
 			Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
 			OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
-		}
+		};
 
 		this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
 		{

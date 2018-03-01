@@ -3,8 +3,6 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from } from 'sphere-runtime';
-
 import { console } from '$/main';
 import { Party } from '$/battleSystem';
 import { Game } from '$/gameDef';

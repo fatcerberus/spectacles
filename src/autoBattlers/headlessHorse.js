@@ -3,9 +3,9 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from, Random, Scene } from 'sphere-runtime';
+import { from, Random } from 'sphere-runtime';
 
-import { AutoBattler, Stance } from '$/battleSystem';
+import { AutoBattler } from '$/battleSystem';
 
 export default
 class HeadlessHorseAI extends AutoBattler
@@ -33,7 +33,6 @@ class HeadlessHorseAI extends AutoBattler
 				if (this.phase > lastPhase) {
 					this.queueSkill('flameBreath');
 				} else {
-					var kickTurns = this.predictSkillTurns('rearingKick');
 					var hellfireTurns = this.predictSkillTurns('hellfire');
 					if (!this.unit.hasStatus('ignite')) {
 						this.queueSkill('hellfire', 'headlessHorse');
@@ -52,11 +51,11 @@ class HeadlessHorseAI extends AutoBattler
 				if (this.spectralDrawPending) {
 					this.ghostTargetID = null;
 					var maxValue = 0;
-					for (unitID in this.damageTaken) {
+					for (let unitID in this.damageTaken) {
 						if (this.damageTaken[unitID] > maxValue) {
 							this.ghostTargetID = unitID;
 							maxValue = this.damageTaken[unitID];
-						} else if (this.damageTaken[unitID] == maxValue && 0.5 > Math.random()) {
+						} else if (this.damageTaken[unitID] == maxValue && Random.chance(0.5)) {
 							this.ghostTargetID = unitID;
 						}
 					}
@@ -112,7 +111,7 @@ class HeadlessHorseAI extends AutoBattler
 		if (unit === this.unit) {
 			var isPhysical = from(action.effects)
 				.where(it => it.type === 'damage')
-				.any(it => it.damageType === 'physical' || it.element === 'earth')
+				.any(it => it.damageType === 'physical' || it.element === 'earth');
 			if (isPhysical && this.unit.hasStatus('rearing')) {
 				if (this.trampleTarget === null) {
 					this.queueSkill('flameBreath');

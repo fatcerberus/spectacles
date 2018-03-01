@@ -5,8 +5,7 @@
 
 import TestHarness from '$/testHarness';
 
-TestHarness.addBattle('temple',
-{
+TestHarness.addBattle('temple', {
 	battleID: 'scottTemple',
 	party: {
 		elysia: {
@@ -36,8 +35,7 @@ TestHarness.addBattle('temple',
 	}
 });
 
-TestHarness.addBattle('starcross',
-{
+TestHarness.addBattle('starcross', {
 	battleID: 'scottStarcross',
 	party: {
 		bruce: {

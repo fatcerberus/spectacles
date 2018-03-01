@@ -5,8 +5,6 @@
 
 import { Prim } from 'sphere-runtime';
 
-import { console, drawTextEx } from '$/main';
-
 export default
 class HPGauge
 {

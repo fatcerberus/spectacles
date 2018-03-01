@@ -8,12 +8,10 @@ import { from, Random, Scene } from 'sphere-runtime';
 import { console, clone } from '$/main';
 import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '$/gameDef';
 
-import FieldCondition from './fieldCondition';
 import ItemUsable from './itemUsable';
 import MoveMenu from './moveMenu';
 import MPPool from './mpPool';
 import PartyMember from './partyMember';
-import SkillUsable from './skillUsable';
 import Stat from './stat';
 import StatusEffect from './statusEffect';
 
@@ -108,7 +106,7 @@ class BattleUnit
 			this.weapon = Weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			let aiFile = FS.fullPath(`${this.id}.mjs`, '$/autoBattlers');
+			let aiFile = FS.fullPath(`${this.id}`, '$/autoBattlers');
 			let battlerClass = require(aiFile).default;
 			this.ai = new battlerClass(this, battle);
 			this.battle.registerAI(this.ai);
@@ -411,7 +409,6 @@ class BattleUnit
 				action.accuracyRate = 2.0;
 			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
-				let allEnemies = this.battle.enemiesOf(this);
 				let experience = {};
 				for (let i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {

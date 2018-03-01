@@ -5,8 +5,7 @@
 
 import TestHarness from '$/testHarness';
 
-TestHarness.addBattle('rsb2',
-{
+TestHarness.addBattle('rsb2', {
 	battleID: 'rsbFinal',
 	party: {
 		scott: {

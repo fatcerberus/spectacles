@@ -5,7 +5,7 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { AutoBattler, Stance } from '$/battleSystem';
+import { AutoBattler } from '$/battleSystem';
 
 export default
 class ScottStarcrossAI extends AutoBattler

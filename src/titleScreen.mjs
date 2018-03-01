@@ -3,9 +3,10 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Music, Scene, Thread } from 'sphere-runtime';
+import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
 import MenuStrip from '$/menuStrip';
+import Session from '$/session';
 
 export
 class TitleScreen extends Thread
