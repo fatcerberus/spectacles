@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import TestHarness from '$/testHarness';
+import { TestHarness } from '$/testSystem';
 
 TestHarness.addBattle('rsb2', {
 	battleID: 'rsbFinal',

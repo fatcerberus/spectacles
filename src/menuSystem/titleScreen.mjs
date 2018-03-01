@@ -5,10 +5,11 @@
 
 import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
-import MenuStrip from '$/menuStrip';
 import Session from '$/session';
 
-export
+import MenuStrip from './menuStrip';
+
+export default
 class TitleScreen extends Thread
 {
 	constructor(themeTrack)

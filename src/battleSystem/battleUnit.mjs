@@ -12,26 +12,10 @@ import ItemUsable from './itemUsable';
 import MoveMenu from './moveMenu';
 import MPPool from './mpPool';
 import PartyMember from './partyMember';
+import Row from './row';
+import Stance from './stance';
 import Stat from './stat';
 import StatusEffect from './statusEffect';
-
-export
-const Row =
-{
-	Front:  -1,
-	Middle: 0,
-	Rear:   1,
-};
-
-export
-const Stance =
-{
-	Attack:  0,
-	Guard:   1,
-	Counter: 2,
-	Charge:  3,
-	Hippo:   4,
-};
 
 export default
 class BattleUnit

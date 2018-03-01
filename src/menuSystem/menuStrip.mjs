@@ -27,9 +27,9 @@ class MenuStrip extends Thread
 	addItem(text, tag = text)
 	{
 		this.menuItems.push({
-			text: text,
-			tag: tag
-		});
+				text: text,
+				tag: tag
+			});
 		return this;
 	}
 

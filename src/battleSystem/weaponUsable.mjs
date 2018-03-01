@@ -8,7 +8,7 @@ import { from } from 'sphere-runtime';
 import { clone, console } from '$/main';
 import { Game, Weapons } from '$/gameDef';
 
-import { Stance } from './battleUnit';
+import Stance from './stance';
 
 export default
 class WeaponUsable

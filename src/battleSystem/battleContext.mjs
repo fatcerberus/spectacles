@@ -8,18 +8,12 @@ import { from, Music, Random, Thread } from 'sphere-runtime';
 import { clone, console } from '$/main';
 import { Animations, Battles, Characters, Game, Maths, MoveEffects } from '$/gameDef';
 
+import BattleResult from './battleResult';
 import BattleScreen from './battleScreen';
-import BattleUnit, { Row } from './battleUnit';
+import BattleUnit from './battleUnit';
 import FieldCondition from './fieldCondition';
 import MPPool from './mpPool';
-
-export
-const BattleResult =
-{
-	Win:  1,
-	Flee: 2,
-	Lose: 3,
-};
+import Row from './row';
 
 export default
 class BattleContext extends Thread

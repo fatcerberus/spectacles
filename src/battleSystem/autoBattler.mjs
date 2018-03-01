@@ -8,9 +8,9 @@ import { from, Random } from 'sphere-runtime';
 import { console } from '$/main';
 import { Game, Items, Skills, Weapons } from '$/gameDef';
 
-import { Stance } from './battleUnit';
 import ItemUsable from './itemUsable';
 import SkillUsable from './skillUsable';
+import Stance from './stance';
 import WeaponUsable from './weaponUsable';
 
 export default

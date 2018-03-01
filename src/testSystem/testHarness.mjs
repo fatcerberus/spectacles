@@ -6,9 +6,8 @@
 import { from, Scene } from 'sphere-runtime';
 
 import { console } from '$/main';
+import { ItemUsable } from '$/battleSystem';
 import { Game } from '$/gameDef';
-
-import ItemUsable from '$/battleSystem/itemUsable';
 import Session from '$/session';
 
 export default

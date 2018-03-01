@@ -3,13 +3,14 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-// note: don't run more than one day/night clock at a time.  doing so
-//       will cause multiple overlays to be applied to the screen, which
-//       won't look too nice. :o)
+// note: don't run more than one day/night clock at a time.  doing so will cause multiple
+//       filters to be applied to the screen, which won't look too nice. :o)
 
 import { Prim, Thread } from 'sphere-runtime';
 
 import { console } from '$/main';
+
+import InGameTime from './inGameTime';
 
 const DayMask = Color.Transparent,
       TwilightMask = new Color(0.5, 0.125, 0.0625, 0.625),
@@ -71,24 +72,5 @@ class DayNightClock extends Thread
 			let alpha = now.minute / 60;
 			this.currentMask = Color.mix(toMask, fromMask, alpha, 1.0 - alpha);
 		}
-	}
-}
-
-export
-class InGameTime
-{
-	constructor(hour, minute, second)
-	{
-		this.hour = hour;
-		this.minute = minute;
-		this.second = second;
-	}
-
-	toString()
-	{
-		let hourText = ("0" + this.hour).slice(-2);
-		let minuteText = ("0" + this.minute).slice(-2);
-		let secondText = ("0" + this.second).slice(-2);
-		return `${hourText}:${minuteText}:${secondText}`;
 	}
 }

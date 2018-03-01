@@ -5,8 +5,8 @@
 
 import { Console, Music, Scene } from 'sphere-runtime';
 
-import DayNightClock from '$/dayNightClock';
-import TestHarness from '$/testHarness';
+import { DayNightClock } from '$/dayNightSystem';
+import { TestHarness } from '$/testSystem';
 
 import './scenelets';
 

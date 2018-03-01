@@ -8,8 +8,8 @@ import { Scene, Thread } from 'sphere-runtime';
 import { drawTextEx } from '$/main';
 import { Game, Elements, SkillCategories } from '$/gameDef';
 
-import { Stance } from './battleUnit';
 import ItemUsable from './itemUsable';
+import Stance from './stance';
 import TargetMenu from './targetMenu';
 
 export default
