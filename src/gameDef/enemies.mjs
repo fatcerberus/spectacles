@@ -66,12 +66,12 @@ const Enemies =
 		tier: 4,
 		turnRatio: 1.0,
 		baseStats: {
-			vit: 80,
-			str: 80,
-			def: 80,
-			foc: 80,
-			mag: 80,
-			agi: 80
+			vit: 70,
+			str: 70,
+			def: 70,
+			foc: 70,
+			mag: 70,
+			agi: 70,
 		},
 		immunities: [],
 		weapon: 'templeSword'

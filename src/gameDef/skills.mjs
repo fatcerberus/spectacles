@@ -22,7 +22,7 @@ const Skills =
 		name: "Berserk Charge",
 		category: 'attack',
 		weaponType: 'sword',
-		targetType: 'allEnemies',
+		targetType: 'single',
 		actions: [
 			{
 				announceAs: "Charging Up...",
@@ -38,15 +38,14 @@ const Skills =
 			},
 			{
 				announceAs: "Berserk Charge",
-				rank: 4,
+				rank: 5,
 				accuracyType: 'sword',
 				isMelee: false,
 				effects: [
 					{
 						targetHint: 'selected',
-						type: 'damage',
+						type: 'instaKill',
 						damageType: 'sword',
-						power: 100
 					}
 				]
 			}
@@ -573,7 +572,7 @@ const Skills =
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 100,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Omni",

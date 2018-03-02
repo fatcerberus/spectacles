@@ -5,6 +5,7 @@
 
 import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
+import GameOverAction from './gameOverAction';
 import MenuStrip from './menuStrip';
 
 export default

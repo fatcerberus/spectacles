@@ -8,6 +8,7 @@ export { default as BattleContext } from './battleContext';
 export { default as BattleResult } from './battleResult';
 export { default as ItemUsable } from './itemUsable';
 export { default as Party } from './party';
+export { default as PartyMember } from './partyMember';
 export { default as Row } from './row';
 export { default as Stance } from './stance';
 export { default as SkillUsable } from './skillUsable';

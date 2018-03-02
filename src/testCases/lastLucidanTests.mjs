@@ -39,39 +39,18 @@ TestHarness.addBattle('starcross', {
 	battleID: 'scottStarcross',
 	party: {
 		bruce: {
-			level: 60,
+			level: 100,
 			weapon: 'arsenRifle',
-			items: [
-				'tonic',
-				'powerTonic',
-				'fullTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-			],
+			items: [],
 		},
 		robert: {
-			level: 60,
+			level: 100,
 			weapon: 'rsbSword',
-			items: [
-				'tonic',
-				'powerTonic',
-				'fullTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-			],
+			items: [],
 		},
 		amanda: {
-			level: 60,
-			items: [
-				'tonic',
-				'powerTonic',
-				'fullTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-			],
+			level: 100,
+			items: [],
 		},
 	}
 });

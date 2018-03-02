@@ -52,7 +52,7 @@ const Battles =
 		title: "Scott Starcross",
 		isFinalBattle: true,
 		bgm: 'deathComeNearMe',
-		battleLevel: 60,
+		battleLevel: 100,
 		enemies: [
 			'starcross',
 		],

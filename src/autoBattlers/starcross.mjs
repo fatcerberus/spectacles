@@ -5,7 +5,7 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { AutoBattler } from '$/battleSystem';
+import { AutoBattler, Stance } from '$/battleSystem';
 
 export default
 class ScottStarcrossAI extends AutoBattler
@@ -46,7 +46,7 @@ class ScottStarcrossAI extends AutoBattler
 	strategize()
 	{
 		if (this.isOpenerPending) {
-			this.queueSkill('berserkCharge');
+			this.queueSkill('berserkCharge', Stance.Attack, 'bruce');
 			this.isOpenerPending = false;
 		} else {
 			if (this.tactics === null) {

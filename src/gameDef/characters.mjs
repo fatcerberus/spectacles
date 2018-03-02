@@ -19,15 +19,13 @@ const Characters =
 			agi: 50
 		},
 		skills: [
-			'flare',
-			'chill',
-			'lightning',
-			'quake',
-			'hellfire',
 			'inferno',
+			'tenPointFive',
+			'subzero',
+			'discharge',
 			'omni',
+			'heal',
 			'dispel',
-			'protectiveAura',
 			'curse'
 		]
 	},
@@ -51,13 +49,13 @@ const Characters =
 			'shootout',
 			'sharpshooter',
 			'flare',
+			'quake',
 			'chill',
 			'lightning',
-			'quake',
 			'heal',
 			'rejuvenate',
 			'renewal',
-			'protectiveAura'
+			'protectiveAura',
 		],
 	},
 
@@ -198,7 +196,7 @@ const Characters =
 			'munch',
 			'fatseat',
 			'fatSlam',
-			'flameBreath'
+			'flameBreath',
 		]
 	},
 
@@ -219,14 +217,18 @@ const Characters =
 			'swordSlash',
 			'quickstrike',
 			'flare',
+			'quake',
 			'chill',
 			'lightning',
-			'quake',
 			'hellfire',
+			'upheaval',
 			'windchill',
 			'electrocute',
-			'upheaval',
 			'omni',
+			'ignite',
+			'tremor',
+			'frostbite',
+			'jolt',
 			'protectiveAura',
 			'necromancy',
 			'crackdown',
@@ -253,17 +255,17 @@ const Characters =
 			'swordSlash',
 			'quickstrike',
 			'flare',
+			'quake',
 			'chill',
 			'lightning',
-			'quake',
 			'hellfire',
+			'upheaval',
 			'windchill',
 			'electrocute',
-			'upheaval',
 			'ignite',
+			'tremor',
 			'frostbite',
 			'jolt',
-			'tremor',
 		]
 	}
 };
