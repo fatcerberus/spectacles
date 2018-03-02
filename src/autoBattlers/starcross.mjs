@@ -14,7 +14,7 @@ class ScottStarcrossAI extends AutoBattler
 	{
 		super(battleContext, unit);
 
-		this.definePhases([ 18000, 10000, 4000 ], 100);
+		this.definePhases([ 14000, 9000, 4000 ], 100);
 		this.defaultSkill = 'swordSlash';
 
 		// Scott's move combos
@@ -36,9 +36,8 @@ class ScottStarcrossAI extends AutoBattler
 			{ phase: 4, moves: [ 'inferno', 'subzero', 'renewal' ], rating: 5 }
 		];
 
-		// AI state variables
-		this.tactics = null;
 		this.isOpenerPending = true;
+		this.tactics = null;
 		this.targetingMode = 'random';
 		this.weaponID = 'templeSword';
 	}
@@ -46,7 +45,7 @@ class ScottStarcrossAI extends AutoBattler
 	strategize()
 	{
 		if (this.isOpenerPending) {
-			this.queueSkill('berserkCharge', Stance.Attack, 'bruce');
+			this.queueSkill('berserkCharge', Stance.Charge, 'bruce');
 			this.isOpenerPending = false;
 		} else {
 			if (this.tactics === null) {

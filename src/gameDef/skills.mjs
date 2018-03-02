@@ -25,18 +25,6 @@ const Skills =
 		targetType: 'single',
 		actions: [
 			{
-				announceAs: "Charging Up...",
-				rank: 2,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'user',
-						type: 'addStatus',
-						status: 'offGuard'
-					}
-				]
-			},
-			{
 				announceAs: "Berserk Charge",
 				rank: 5,
 				accuracyType: 'sword',
@@ -48,8 +36,8 @@ const Skills =
 						damageType: 'sword',
 					}
 				]
-			}
-		]
+			},
+		],
 	},
 	chargeSlash: {
 		name: "Charge Slash",
@@ -656,8 +644,6 @@ const Skills =
 						type: 'heal',
 						power: 25,
 						element: 'cure',
-						addStatus: 'reGen',
-						statusChance: 0,
 					}
 				]
 			}
@@ -720,6 +706,8 @@ const Skills =
 						type: 'heal',
 						power: 60,
 						element: 'cure',
+						addStatus: 'reGen',
+						statusChance: 100,
 					}
 				]
 			}

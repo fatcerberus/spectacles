@@ -442,8 +442,10 @@ class BattleUnit
 			});
 		}
 		if (move.stance === Stance.Charge) {
+			let targetName = this.moveUsed.targets.length == 1
+				? this.moveUsed.targets[0].name : "Multi";
 			nextActions.splice(0, 0, {
-				announceAs: "Charge",
+				announceAs: `Charge (${targetName})`,
 				rank: 1,
 				preserveGuard: true,
 				effects: [
