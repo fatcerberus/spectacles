@@ -5,8 +5,8 @@
 
 import { Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/utility';
 import { Game, Elements, SkillCategories } from '$/gameDef';
+import { drawTextEx } from '$/utilities';
 
 import ItemUsable from './itemUsable';
 import Stance from './stance';
@@ -135,32 +135,16 @@ class MoveMenu extends Thread
 			Rectangle(x + 5, y + 2, 14, 14, rankBoxColor);
 			OutlinedRectangle(x + 5, y + 2, 14, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
 			drawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", rankColor, 1, 'center');
-			drawTextEx(this.font, x + 24, y + 3, item.name, textColor, 1 * isEnabled);
+
+			let shadowLength = isEnabled ? 1 : 0;
+			drawTextEx(this.font, x + 24, y + 3, item.name, textColor, shadowLength);
 			if (item.mpCost > 0) {
-				this.drawText(this.font, x + 141, y + 1, isEnabled, textColor, item.mpCost, 'right');
-				this.drawText(this.font, x + 142, y + 5, isEnabled, usageTextColor, "MP");
+				drawTextEx(this.font, x + 141, y + 1, item.mpCost, textColor, shadowLength, 'right');
+				drawTextEx(this.font, x + 142, y + 5, "MP", usageTextColor, shadowLength);
 			} else if (item.usable instanceof ItemUsable) {
-				this.drawText(this.font, x + 148, y + 3, isEnabled, textColor, item.usable.usesLeft, 'right');
-				this.drawText(this.font, x + 149, y + 3, isEnabled, usageTextColor, "x");
+				drawTextEx(this.font, x + 148, y + 3, item.usable.usesLeft, textColor, shadowLength, 'right');
+				drawTextEx(this.font, x + 149, y + 3, "x", usageTextColor, shadowLength);
 			}
-		};
-
-		this.drawText = function(font, x, y, shadowDistance, color, text, alignment = 'left')
-		{
-			const Align =
-			{
-				left:   (font, x, text) => x,
-				center: (font, x, text) => x - font.getStringWidth(text) / 2,
-				right:  (font, x, text) => x - font.getStringWidth(text),
-			};
-
-			if (!(alignment in Align))
-				throw new Error(`invalid text alignment '${alignment}'.`);
-			x = Align[alignment](font, x, text);
-			font.setColorMask(CreateColor(0, 0, 0, color.alpha));
-			font.drawText(x + shadowDistance, y + shadowDistance, text);
-			font.setColorMask(color);
-			font.drawText(x, y, text);
 		};
 
 		this.drawTopItem = function(x, y, width, item, isSelected)
@@ -169,7 +153,7 @@ class MoveMenu extends Thread
 			this.drawItemBox(x, y, width, 18, 144 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 			let textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
 			textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
-			this.drawText(this.font, x + width / 2, y + 3, isEnabled, textColor, item.name.substr(0, 3), 'center');
+			drawTextEx(this.font, x + width / 2, y + 3, item.name.substr(0, 3), textColor, isEnabled ? 1 : 0, 'center');
 		};
 
 		this.updateTurnPreview = function()
@@ -324,8 +308,8 @@ class MoveMenu extends Thread
 		OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
 		Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 176 * this.fadeness));
 		OutlinedRectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-		this.drawText(this.font, 68, yOrigin + 2, 1, CreateColor(160, 160, 160, 255 * this.fadeness), this.unit.fullName, 'center');
-		this.drawText(this.font, 148, yOrigin + 2, 1, CreateColor(255, 255, 128, 255 * this.fadeness), stanceText, 'center');
+		drawTextEx(this.font, 68, yOrigin + 2, this.unit.fullName, CreateColor(160, 160, 160, 255 * this.fadeness), 1, 'center');
+		drawTextEx(this.font, 148, yOrigin + 2, stanceText, CreateColor(255, 255, 128, 255 * this.fadeness), 1, 'center');
 		let itemWidth = 160 / this.drawers.length;
 		let litTextColor = CreateColor(255, 255, 255, 255);
 		let dimTextColor = CreateColor(192, 192, 192, 255);

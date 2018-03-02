@@ -502,7 +502,7 @@ const Statuses =
 		tags: [ 'special' ],
 		beginCycle: function(unit, eventData) {
 			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.heal(0.25 * vit, [ 'specs' ]);
+			unit.heal(0.01 * unit.maxHP, [ 'specs' ]);
 		}
 	},
 

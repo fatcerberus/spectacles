@@ -5,8 +5,8 @@
 
 import { from, Random, Scene } from 'sphere-runtime';
 
-import { clone } from '$/utility';
 import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '$/gameDef';
+import { clone } from '$/utilities';
 
 import ItemUsable from './itemUsable';
 import MoveMenu from './moveMenu';

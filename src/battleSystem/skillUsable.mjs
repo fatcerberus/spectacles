@@ -5,8 +5,8 @@
 
 import { from } from 'sphere-runtime';
 
-import { clone } from '$/utility';
 import { Maths, Skills } from '$/gameDef';
+import { clone } from '$/utilities';
 
 import Stance from './stance';
 
