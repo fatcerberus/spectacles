@@ -144,6 +144,6 @@ const Items =
 					status: 'immune'
 				}
 			]
-		}
+		},
 	}
 };

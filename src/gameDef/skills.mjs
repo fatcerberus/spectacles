@@ -23,6 +23,7 @@ const Skills =
 		category: 'attack',
 		weaponType: 'sword',
 		targetType: 'single',
+		forceCharge: true,
 		actions: [
 			{
 				announceAs: "Berserk Charge",
@@ -560,7 +561,7 @@ const Skills =
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "Omni",
@@ -627,6 +628,32 @@ const Skills =
 				]
 			}
 		]
+	},
+	immunize: {
+		name: "Immunize",
+		category: 'strategy',
+		targetType: 'single',
+		baseMPCost: 50,
+		allowAsCounter: false,
+		chargeable: false,
+		actions: [
+			{
+				announceAs: "Immunize",
+				rank: 3,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'liftStatusTags',
+						tags: [ 'ailment' ],
+					},
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'immune',
+					},
+				]
+			},
+		],
 	},
 	heal: {
 		name: "Heal",
@@ -802,9 +829,9 @@ const Skills =
 						type: 'addStatus',
 						status: 'zombie'
 					}
-				]
-			}
-		]
+				],
+			},
+		],
 	},
 	protectiveAura: {
 		name: "Protective Aura",

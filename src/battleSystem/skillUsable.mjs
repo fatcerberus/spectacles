@@ -123,7 +123,7 @@ class SkillUsable
 	use(unit, targets)
 	{
 		if (!this.isUsable(unit, unit.stance))
-			throw new Error(`${unit.name} tried to use unusable skill ${this.name}`);
+			throw new RangeError(`${unit.name} tried to use unusable skill ${this.name}`);
 		console.log(`${unit.name} is using ${this.name}`, `targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
 		if (unit.weapon != null && this.skillInfo.weaponType != null)
 			console.log(`weapon is ${unit.weapon.name}`, `lv: ${unit.weapon.level}`);

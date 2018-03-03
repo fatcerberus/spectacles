@@ -98,7 +98,7 @@ class HeadlessHorseAI extends AutoBattler
 	
 	on_unitReady(unitID)
 	{
-		if (unitID == 'headlessHorse' && !this.hasMovesQueued() && this.phase > 0) {
+		if (unitID == 'headlessHorse' && !this.hasMovesQueued && this.phase > 0) {
 			if (this.trampleTarget !== null) {
 				this.queueSkill('trample', this.trampleTarget);
 				this.trampleTarget = null;

@@ -279,7 +279,7 @@ class RobertIIAI extends AutoBattler
 						this.zombieHealAlertLevel = 2.0;
 					if (this.zombieHealAlertLevel > 1.0 || !this.isItemUsable('vaccine') && !this.isItemUsable('holyWater'))
 						this.zombieHealFixState = 'retaliate';
-				} else if (this.phase == 5 && !this.hasMovesQueued()) {
+				} else if (this.phase == 5 && !this.hasMovesQueued) {
 					if ((this.isItemUsable('powerTonic') || this.isItemUsable('tonic'))
 						&& this.unit.mpPool.availableMP >= 300)
 					{
@@ -388,7 +388,7 @@ class RobertIIAI extends AutoBattler
 
 		if (this.zombieHealFixState === null)
 			this.zombieHealAlertLevel = Math.max(0.0, this.zombieHealAlertLevel - 0.1);
-		if (unitID == 'robert2' && !this.hasMovesQueued()) {
+		if (unitID == 'robert2' && !this.hasMovesQueued) {
 			if (this.isNecromancyPending && this.scottImmuneTurnsLeft <= 0) {
 				if (!this.isScottZombie)
 					this.queueSkill('necromancy');

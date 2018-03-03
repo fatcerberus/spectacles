@@ -34,6 +34,11 @@ class AutoBattler
 		return this.defaultSkillID;
 	}
 
+	get hasMovesQueued()
+	{
+		return this.moveQueue.length > 0;
+	}
+
 	get phase()
 	{
 		return this.currentPhase;
@@ -107,11 +112,6 @@ class AutoBattler
 		} while (moveToUse === null);
 		++this.turnsTaken;
 		return moveToUse;
-	}
-
-	hasMovesQueued()
-	{
-		return this.moveQueue.length > 0;
 	}
 
 	hasStatus(statusID)
@@ -268,7 +268,7 @@ class AutoBattler
 	}
 
 	on_itemUsed      (userID, itemID, targetIDs) {}
-	on_skillUsed     (userID, skillID, targetIDs) {}
+	on_skillUsed     (userID, skillID, stance, targetIDs) {}
 	on_stanceChanged (userID, stance) {}
 	on_phaseChanged  (phase, lastPhase) {}
 	on_unitDamaged   (unitID, amount, tags, attacker) {}

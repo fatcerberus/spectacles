@@ -119,6 +119,11 @@ class BattleUnit
 			this.battle.unregisterAI(this.ai);
 		console.undefineObject(this.id);
 	}
+	
+	get busy()
+	{
+		return this.actionQueue.length > 0;
+	}
 
 	addStatus(statusID, isGuardable = false)
 	{
@@ -374,10 +379,10 @@ class BattleUnit
 
 	liftStatusTags(tags)
 	{
-		let activeStatuses = [ ...this.statuses ];
-		from(activeStatuses)
+		let statusEffects = from([ ...this.statuses ])
 			.where(it => from(it.statusDef.tags).anyIn(tags))
-			.each(it => this.liftStatus(it.statusID));
+		for (let it of statusEffects)
+			this.liftStatus(it.statusID);
 	}
 
 	async performAction(action, move)
@@ -431,21 +436,20 @@ class BattleUnit
 		}
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 		if (move.stance === Stance.Counter || move.stance === Stance.Charge) {
-			from(nextActions)
+			let damageEffects = from(nextActions)
 				.from(action => action.effects)
-				.where(effect => 'power' in effect)
-				.each(effect =>
-			{
+				.where(effect => 'power' in effect);
+			for (let effect of damageEffects) {
 				effect.power *= Game.bonusMultiplier;
 				effect.statusChance = 100;
-				console.log(`stance is Counter/Charge, boost attack`, `pow: ${effect.power}`);
-			});
+				console.log("boost applied for Counter/Charge", `pow: ${effect.power}`);
+			}
 		}
 		if (move.stance === Stance.Charge) {
 			let targetName = this.moveUsed.targets.length == 1
 				? this.moveUsed.targets[0].name : "Multi";
 			nextActions.splice(0, 0, {
-				announceAs: `Charge (${targetName})`,
+				announceAs: `Charge [${targetName}]`,
 				rank: 1,
 				preserveGuard: true,
 				effects: [
@@ -475,9 +479,11 @@ class BattleUnit
 		// the gamedef, they should be cloned first to prevent the event from inadvertantly
 		// modifying the original definition.
 
-		let statuses = [ ...this.statuses ];
-		from(statuses)
-			.each(it => it.invoke(eventID, data));
+		// clone the status array as it may be modified by an event
+		let statusEffects = [ ...this.statuses ];
+
+		for (let it of statusEffects)
+			it.invoke(eventID, data);
 	}
 
 	refreshInfo()
