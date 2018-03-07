@@ -320,10 +320,10 @@ class BattleContext extends Thread
 		++this.timer;
 		let isUnitDead = unit => !unit.isAlive();
 		let unitLists = [ this.enemyUnits, this.playerUnits ];
-		from(...unitLists)
-			.each(unit => unit.beginCycle());
-		from(this.conditions)
-			.each(condition => condition.beginCycle());
+		for (const unit of from(...unitLists))
+			unit.beginCycle();
+		for (const condition of this.conditions)
+			condition.beginCycle();
 		this.raiseEvent('beginCycle');
 		let actionTaken = false;
 		while (!actionTaken) {
@@ -384,8 +384,8 @@ class BattleContext extends Thread
 		}
 		if (this.result !== null) {
 			console.log("shut down battle engine");
-			from(this.battleUnits)
-				.each(unit => unit.dispose());
+			for (const unit of this.battleUnits)
+				unit.dispose();
 			this.ui.dispose();
 			Music.pop();
 			Music.adjustVolume(1.0, 0);

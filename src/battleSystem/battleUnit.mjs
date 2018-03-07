@@ -64,7 +64,8 @@ class BattleUnit
 			for (const statID in this.baseStats)
 				this.stats[statID] = this.partyMember.stats[statID];
 			this.weapon = Weapons[this.partyMember.weaponID];
-		} else {
+		}
+		else {
 			if (!(basis in Enemies))
 				throw new ReferenceError(`enemy template '${basis}' doesn't exist!`);
 			this.enemyInfo = Enemies[basis];
@@ -119,7 +120,7 @@ class BattleUnit
 			this.battle.unregisterAI(this.ai);
 		console.undefineObject(this.id);
 	}
-	
+
 	get busy()
 	{
 		return this.actionQueue.length > 0;
