@@ -5,8 +5,6 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/utilities';
-
 export default
 class TurnPreview extends Thread
 {
@@ -15,11 +13,10 @@ class TurnPreview extends Thread
 		super({ priority: 20 });
 
 		this.entries = {};
-		this.fadeness = 1.0;
+		this._fadeness = 1.0;
 		this.lastPrediction = null;
 
 		let font = Font.Default;
-		let outlineColor = Color.Black.fadeTo(0.25);
 		let surface = new Surface(160, 16);
 		let boxColor = Color.Black.fadeTo(0.75);
 		let borderColor = Color.Black.fadeTo(0.85);
@@ -30,9 +27,9 @@ class TurnPreview extends Thread
 		Prim.drawRectangle(surface, 48, 0, 112, 16, 1.0, borderColor);
 		Prim.drawSolidRectangle(surface, 49, 1, 110, 14, boxColor);
 		this.shader = new Shader({
-				vertexFile:   '#/shaders/image.vert.glsl',
-				fragmentFile: '#/shaders/image.frag.glsl'
-			});
+			vertexFile  : '#/shaders/image.vert.glsl',
+			fragmentFile: '#/shaders/image.frag.glsl'
+		});
 		this.transform = new Transform();
 		let shape = new Shape(ShapeType.TriStrip,
 			surface.toTexture(),
@@ -44,6 +41,16 @@ class TurnPreview extends Thread
 			]));
 		this.model = new Model([ shape ], this.shader);
 	}
+
+	set fadeness (value)
+	{
+		if (this._fadeness !== value) {
+			this._fadeness = value;
+			this.shader.setFloatVector('tintColor', [ 1.0, 1.0, 1.0, 1 - value ]);
+		}
+	}
+
+	get fadeness () { return this._fadeness; }
 
 	dispose()
 	{
@@ -57,7 +64,7 @@ class TurnPreview extends Thread
 				? Color.DarkSlateBlue
 				: Color.DarkRed;
 			let entry = {
-				icon:      new BattlerIcon(unit.name, iconColor, this.shader),
+				icon     : new BattlerIcon(unit.name, iconColor, this.shader),
 				turnBoxes: [],
 			};
 			for (let i = 0; i < 8; ++i)
@@ -111,12 +118,10 @@ class TurnPreview extends Thread
 
 	on_render()
 	{
-		let y = -16 * this.fadeness;
-		let alphaValue = 1.0 - this.fadeness;
+		let y = -16 * this._fadeness;
 		Surface.Screen.clipTo(0, y, 160, 16);
-		this.shader.setFloatVector('tintColor', [ 1.0, 1.0, 1.0, alphaValue ]);
 		this.model.transform.identity().translate(0, y);
-		this.model.draw(Surface.Screen);
+		this.model.draw();
 		for (const id in this.entries) {
 			let entry = this.entries[id];
 			for (let i = 0; i < entry.turnBoxes.length; ++i) {
@@ -155,21 +160,5 @@ class BattlerIcon
 	{
 		this.model.transform.identity().translate(x, y);
 		this.model.draw(surface);
-	}
-}
-
-class TintShader extends Shader
-{
-	constructor()
-	{
-		super({
-			vertexFile:   '#/shaders/image.vert.glsl',
-			fragmentFile: '#/shaders/image.frag.glsl',
-		});
-	}
-
-	setColor(color)
-	{
-		this.setColorVector('tintColor', color);
 	}
 }
