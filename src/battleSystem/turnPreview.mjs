@@ -31,7 +31,8 @@ class TurnPreview extends Thread
 			let entry = {
 				color: unit.isPartyMember() ? CreateColor(72, 61, 139, 255) : CreateColor(128, 0, 0, 255),
 				name: unit.name,
-				turnBoxes: []
+				icon: new BattlerIcon(unit.name, unit.isPartyMember() ? Color.DarkSlateBlue : Color.DarkRed),
+				turnBoxes: [],
 			};
 			for (let i = 0; i < 8; ++i) {
 				entry.turnBoxes[i] = { x: 160, tween: null };
@@ -87,7 +88,7 @@ class TurnPreview extends Thread
 	{
 		let alpha = 255 * (1.0 - this.fadeness);
 		let y = -16 * this.fadeness;
-		SetClippingRectangle(0, y, 160, 16);
+		Surface.Screen.clipTo(0, y, 160, 16);
 		Rectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.75));
 		OutlinedRectangle(0, y, 48, 16, CreateColor(0, 0, 0, alpha * 0.125));
 		drawTextEx(this.font, 24, y + 2, "next:", CreateColor(128, 128, 128, alpha), 1, 'center');
@@ -97,11 +98,36 @@ class TurnPreview extends Thread
 			let entry = this.entries[id];
 			for (let i = 0; i < entry.turnBoxes.length; ++i) {
 				let turnBox = entry.turnBoxes[i];
-				Rectangle(turnBox.x, y, 16, 16, entry.color);
-				OutlinedRectangle(turnBox.x, y, 16, 16, CreateColor(0, 0, 0, alpha * 0.25));
-				drawTextEx(this.font, turnBox.x + 4, y + 2, entry.name[0], BlendColors(entry.color, CreateColor(255, 255, 255, 255)), 1);
+				entry.icon.drawAt(Surface.Screen, turnBox.x, y);
 			}
 		}
-		SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
+		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
+	}
+}
+
+class BattlerIcon
+{
+	constructor(name, color)
+	{
+		let font = Font.Default;
+		let outlineColor = Color.Black.fadeTo(0.25);
+		let surface = new Surface(16, 16);
+		Prim.drawSolidRectangle(surface, 0, 0, 16, 16, color);
+		Prim.drawRectangle(surface, 0, 0, 16, 16, 1, outlineColor);
+		font.drawText(surface, 5, 3, name[0], Color.Black);
+		font.drawText(surface, 4, 2, name[0], Color.mix(Color.White, color));
+		this.shape = new Shape(ShapeType.TriStrip, surface.toTexture(),
+			new VertexList([
+				{ x: 0,  y: 0,  u: 0.0, v: 1.0 },
+				{ x: 16, y: 0,  u: 1.0, v: 1.0 },
+				{ x: 0,  y: 16, u: 0.0, v: 0.0 },
+				{ x: 16, y: 16, u: 1.0, v: 0.0 },
+			]));
+	}
+
+	drawAt(surface, x, y)
+	{
+		let transform = new Transform().translate(x, y);
+		this.shape.draw(surface, transform);
 	}
 }

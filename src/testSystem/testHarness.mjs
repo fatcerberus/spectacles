@@ -14,7 +14,7 @@ class TestHarness
 {
 	static async initialize()
 	{
-		console.log("initialize Specs Engine test harness");
+		console.log("initializing Specs Engine test harness");
 
 		console.defineObject('harness', this, {
 			run(testID) {
@@ -29,7 +29,7 @@ class TestHarness
 		let fileNames = from(new DirectoryStream('$/testCases'))
 			.where(it => it.fileName.endsWith('.mjs'))
 			.select(it => it.fullPath)
-			.besides(it => console.log(`found '${it}'`));
+			.besides(it => console.log(`loading tests from '${FS.relativePath(it, '$/testCases')}'`));
 		for (const fileName of fileNames)
 			await import(fileName);
 	}
@@ -43,7 +43,7 @@ class TestHarness
 					console.log("cannot start test battle, one is ongoing");
 					return;
 				}
-				console.log("initiate test battle", `battleID: ${this.setup.battleID}`);
+				console.log("preparing test battle", `battleID: ${this.setup.battleID}`);
 				let session = new Session();
 				for (const characterID of Game.initialParty)
 					session.party.remove(characterID);
@@ -62,7 +62,7 @@ class TestHarness
 				TestHarness.isBattleRunning = false;
 			}
 		};
-		console.log(`add battle test '${testID}'`);
+		console.log(`adding battle test '${testID}'`);
 	}
 
 	static addTest(testID, func)
@@ -77,12 +77,12 @@ class TestHarness
 		console.defineObject(testID, this.tests[testID], {
 			'test': TestHarness.run.bind(TestHarness, testID)
 		});
-		console.log(`add generic test '${testID}'`);
+		console.log(`adding generic test '${testID}'`);
 	}
 
 	static async run(testID)
 	{
-		console.log("test harness invoked", `testID: ${testID}`);
+		console.log(`launching test case '${testID}'`);
 		await this.tests[testID].run(this.tests[testID].setup, testID);
 	}
 }

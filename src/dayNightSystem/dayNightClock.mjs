@@ -21,7 +21,7 @@ class DayNightClock extends Thread
 	{
 		super({ priority: 1 });
 
-		console.log("initialize day/night engine", `time: ${this.now()}`);
+		console.log("initializing day/night clock", `time: ${this.now()}`);
 		this.currentMask = Color.Transparent;
 		this.start();
 	}

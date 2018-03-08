@@ -112,9 +112,8 @@ class HPGauge
 	endCombo()
 	{
 		--this.numCombosRunning;
-		if (this.numCombosRunning < 0) {
+		if (this.numCombosRunning < 0)
 			this.numCombosRunning = 0;
-		}
 	}
 
 	hide(duration = 0.0)
