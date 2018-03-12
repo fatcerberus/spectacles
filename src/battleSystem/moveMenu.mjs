@@ -304,6 +304,7 @@ class MoveMenu extends Thread
 			: this.stance == Stance.Counter ? "CA"
 			: this.stance == Stance.Guard ? "GS"
 			: "AS";
+		Surface.Screen.clipTo(0, 16, Surface.Screen.width, Surface.Screen.height - 16);
 		Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
 		OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
 		Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 176 * this.fadeness));
@@ -319,6 +320,7 @@ class MoveMenu extends Thread
 			let width = Math.floor((i + 1) * itemWidth) - x;
 			this.drawTopItem(x, yOrigin + 16, width, this.drawers[i], i == this.topCursor);
 		}
+		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 		let itemY;
 		if (this.expansion > 0.0) {
 			SetClippingRectangle(0, yOrigin + 34, 160, Surface.Screen.height - (yOrigin + 34));
