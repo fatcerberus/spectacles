@@ -28,7 +28,7 @@ class TurnPreview extends Thread
 		font.drawText(surface, 11, 3, "next:", TextShadowColor);
 		font.drawText(surface, 10, 2, "next:", TextColor);
 		this.shader = new Shader({
-			vertexFile  : '#/shaders/image.vert.glsl',
+			vertexFile:   '#/shaders/image.vert.glsl',
 			fragmentFile: '#/shaders/image.frag.glsl'
 		});
 		this.transform = new Transform();
