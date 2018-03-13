@@ -45,7 +45,7 @@ class ScottTempleAI extends AutoBattler
 					if (qsTurns[0].unit === this.unit) {
 						this.queueSkill('quickstrike');
 					} else {
-						var skillToUse = Random.sample([ 'flare', 'chill', 'lightning', 'quake' ])
+						var skillToUse = Random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 						this.queueSkill(this.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
 					}
 				} else if (this.movesTillReGen <= 0 && this.isSkillUsable('rejuvenate')) {

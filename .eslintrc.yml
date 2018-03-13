@@ -5,6 +5,8 @@ parserOptions:
   ecmaVersion: 8
   sourceType: module
 globals:
+  global: true
+  console: true
   Sphere: true
   Color: true
   DirectoryStream: true
@@ -55,10 +57,16 @@ rules:
         SwitchCase: 1
       }
   no-await-in-loop: warn
+  no-console: off
   no-floating-decimal: error
   no-implicit-coercion: error
   no-invalid-this: error
   no-lone-blocks: error
+  no-unused-vars:
+    - error
+    - {
+        args: none
+      }
   object-curly-spacing:
     - error
     - always

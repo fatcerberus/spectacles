@@ -3,8 +3,6 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from, Random } from 'sphere-runtime';
-
 import { AutoBattler, Stance } from '$/battleSystem';
 
 export default

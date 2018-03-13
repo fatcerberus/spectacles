@@ -17,11 +17,11 @@ const Conditions =
 	{
 		name: "Blackout",
 
-		initialize: function(battle) {
+		initialize(battle) {
 			this.actionsLeft = 10;
 		},
 
-		actionTaken: function(battle, eventData) {
+		actionTaken(battle, eventData) {
 			if (eventData.targets.length == 1 && Random.chance(0.5)) {
 				let target = eventData.targets[0];
 				let newTargets = Random.chance(0.5) ? battle.alliesOf(target) : battle.enemiesOf(target);
@@ -44,12 +44,12 @@ const Conditions =
 	{
 		name: "G. Disarray",
 
-		initialize: function(battle) {
+		initialize(battle) {
 			this.actionsLeft = 15;
 		},
 
-		actionTaken: function(battle, eventData) {
-			let oldRank = eventData.action.rank
+		actionTaken(battle, eventData) {
+			let oldRank = eventData.action.rank;
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log("Rank of action changed by G. Disarray to " + eventData.action.rank,
@@ -72,11 +72,11 @@ const Conditions =
 	{
 		name: "Healing Aura",
 
-		initialize: function(battle) {
+		initialize(battle) {
 			this.cyclesLeft = 25;
 		},
 
-		beginCycle: function(battle, eventData) {
+		beginCycle(battle, eventData) {
 			let units = from(battle.battleUnits)
 				.where(it => it.isAlive())
 				.toArray();
@@ -101,38 +101,36 @@ const Conditions =
 	{
 		name: "Inferno",
 
-		initialize: function(battle) {
-			from(battle.battleUnits)
+		initialize(battle) {
+			let frostbittenUnits = from(battle.battleUnits)
 				.where(it => it.isAlive())
-				.each(unit =>
-			{
-				if (unit.hasStatus('frostbite')) {
-					console.log(unit.name + "'s Frostbite nullified by Inferno installation");
-					unit.liftStatus('frostbite');
-				}
-			});
+				.where(it => it.hasStatus('frostbite'));
+			for (const unit of frostbittenUnits) {
+				console.log(unit.name + "'s Frostbite nullified by Inferno installation");
+				unit.liftStatus('frostbite');
+			}
 		},
 
-		actionTaken: function(battle, eventData) {
-			from(eventData.action.effects)
-				.where(it => it.type === 'damage')
-				.each(effect =>
-			{
+		actionTaken(battle, eventData) {
+			let damageEffects = from(eventData.action.effects)
+				.where(it => it.type === 'damage');
+			for (const effect of damageEffects) {
 				if (effect.element == 'fire') {
 					let oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
 					console.log("Fire attack strengthened by Inferno to " + effect.power + " POW",
 						"was: " + oldPower);
-				} else if (effect.element == 'ice') {
+				}
+				else if (effect.element == 'ice') {
 					let oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
 					console.log("Ice attack weakened by Inferno to " + effect.power + " POW",
 						"was: " + oldPower);
 				}
-			});
+			}
 		},
 
-		beginCycle: function(battle, eventData) {
+		beginCycle(battle, eventData) {
 			let units = from(battle.battleUnits)
 				.where(it => it.isAlive())
 				.toArray();
@@ -141,21 +139,18 @@ const Conditions =
 			unit.takeDamage(vit, [ 'special', 'fire' ]);
 		},
 
-		conditionInstalled: function(battle, eventData) {
+		conditionInstalled(battle, eventData) {
 			if (eventData.conditionID == 'subzero') {
 				console.log("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
 				from(battle.battleUnits)
 					.where(it => it.isAlive())
-					.each(unit =>
-				{
-					unit.addStatus('zombie', true);
-				});
+					.each(it => it.addStatus('zombie', true));
 			}
 		},
 
-		unitAfflicted: function(battle, eventData) {
+		unitAfflicted(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
 				console.log("Frostbite is incompatible with Inferno");
@@ -171,13 +166,12 @@ const Conditions =
 	{
 		name: "Subzero",
 
-		initialize: function(battle) {
+		initialize(battle) {
 			this.multiplier = 1.0;
 			this.rank = 0;
-			from(battle.battleUnits)
-				.where(it => it.isAlive())
-				.each(unit =>
-			{
+			let unitsAlive = from(battle.battleUnits)
+				.where(it => it.isAlive());
+			for (const unit of unitsAlive) {
 				if (unit.hasStatus('frostbite')) {
 					console.log(unit.name + "'s Frostbite overruled by Subzero installation");
 					unit.liftStatus('frostbite');
@@ -186,45 +180,41 @@ const Conditions =
 					console.log(unit.name + "'s Ignite nullified by Subzero installation");
 					unit.liftStatus('ignite');
 				}
-			});
+			}
 		},
 
-		actionTaken: function(battle, eventData) {
+		actionTaken(battle, eventData) {
 			this.rank = eventData.action.rank;
-			from(eventData.action.effects)
-				.where(it => it.type === 'damage')
-				.where(it => it.element === 'ice')
-				.each(effect =>
-			{
+			let damageEffects = from(eventData.action.effects)
+				.where(it => it.type === 'damage');
+			for (const effect of damageEffects) {
 				if (effect.element == 'ice') {
 					let oldPower = effect.power;
 					effect.power = Math.round(effect.power * Game.bonusMultiplier);
 					console.log("Ice attack strengthened by Subzero to " + effect.power + " POW",
 						"was: " + oldPower);
-				} else if (effect.element == 'fire') {
+				}
+				else if (effect.element == 'fire') {
 					let oldPower = effect.power;
 					effect.power = Math.round(effect.power / Game.bonusMultiplier);
 					console.log("Fire attack weakened by Subzero to " + effect.power + " POW",
 						"was: " + oldPower);
 				}
-			});
+			}
 		},
 
-		conditionInstalled: function(battle, eventData) {
+		conditionInstalled(battle, eventData) {
 			if (eventData.conditionID == 'inferno') {
 				console.log("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
 				from(battle.battleUnits)
 					.where(it => it.isAlive())
-					.each(unit =>
-				{
-					unit.addStatus('zombie', true);
-				});
+					.each(it => it.addStatus('zombie', true));
 			}
 		},
 
-		endTurn: function(battle, eventData) {
+		endTurn(battle, eventData) {
 			let unit = eventData.actingUnit;
 			if (unit.isAlive() && this.rank != 0) {
 				let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
@@ -235,7 +225,7 @@ const Conditions =
 			this.rank = 0;
 		},
 
-		unitAfflicted: function(battle, eventData) {
+		unitAfflicted(battle, eventData) {
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
 				console.log("Frostbite infliction overruled by Subzero");
@@ -253,11 +243,11 @@ const Conditions =
 	{
 		name: "Thunderstorm",
 
-		initialize: function(battle) {
+		initialize(battle) {
 			this.strikesLeft = 10;
 		},
 
-		endTurn: function(battle, eventData) {
+		endTurn(battle, eventData) {
 			if (Random.chance(0.5)) {
 				let unit = eventData.actingUnit;
 				console.log(unit.name + " struck by lightning from Thunderstorm");

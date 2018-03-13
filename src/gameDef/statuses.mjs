@@ -18,11 +18,11 @@ const Statuses =
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'debuff' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.lastSkillType = null;
 			this.multiplier = 1.0;
 		},
-		acting: function(unit, eventData) {
+		acting(unit, eventData) {
 			for (const effect of from(eventData.action.effects)
 				.where(it => it.type == 'damage'))
 			{
@@ -34,7 +34,7 @@ const Statuses =
 				}
 			}
 		},
-		useSkill: function(unit, eventData) {
+		useSkill(unit, eventData) {
 			let oldMultiplier = this.multiplier;
 			this.multiplier = eventData.skill.category == this.lastSkillType
 				? this.multiplier / Game.bonusMultiplier
@@ -56,18 +56,18 @@ const Statuses =
 	curse: {
 		name: "Curse",
 		tags: [ 'debuff' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			unit.liftStatusTags([ 'buff' ]);
 			this.turnsLeft = 5;
 		},
-		afflicted: function(unit, eventData) {
+		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('buff')) {
 				console.log("Status " + statusDef.name + " was blocked by Curse");
 				eventData.cancel = true;
 			}
 		},
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			if (this.turnsLeft <= 0) {
 				console.log(unit.name + "'s Curse has expired");
 				unit.liftStatus('curse');
@@ -92,10 +92,10 @@ const Statuses =
 	disarray: {
 		name: "Disarray",
 		tags: [ 'ailment', 'acute' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.actionsTaken = 0;
 		},
-		acting: function(unit, eventData) {
+		acting(unit, eventData) {
 			let oldRank = eventData.action.rank;
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
@@ -134,18 +134,17 @@ const Statuses =
 			this.turnsLeft = 7;
 		},
 		acting(unit, eventData) {
-			from(eventData.action.effects)
-				.where(it => it.targetHint == 'selected')
-				.where(it => it.type == 'damage')
-				.each(effect =>
-			{
+			let damageEffects = from(eventData.action.effects)
+				.where(it => it.targetHint === 'selected')
+				.where(it => it.type === 'damage');
+			for (const effect of damageEffects) {
 				let oldPower = effect.power;
 				effect.power *= Game.bonusMultiplier;
 				if (effect.power != oldPower) {
 					console.log("Outgoing POW modified by Drunk to " + effect.power,
 						"was: " + oldPower);
 				}
-			});
+			}
 		},
 		aiming(unit, eventData) {
 			if (eventData.action.accuracyType === 'devour')
@@ -180,32 +179,31 @@ const Statuses =
 		name: "Final Stand",
 		tags: [ 'special' ],
 		overrules: [ 'crackdown', 'disarray' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.fatigue = 1.0;
 			this.knockback = 5;
 		},
-		acting: function(unit, eventData) {
-			from(eventData.action.effects)
+		acting(unit, eventData) {
+			let damageEffects = from(eventData.action.effects)
 				.where(it => it.targetHint == 'selected')
-				.where(it => it.type == 'damage')
-				.each(effect =>
-			{
+				.where(it => it.type == 'damage');
+			for (const effect of damageEffects) {
 				let oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
 				if (effect.power != oldPower) {
 					console.log("Outgoing POW modified by Final Stand to " + effect.power,
 						"was: " + oldPower);
 				}
-			});
+			}
 		},
-		attacked: function(unit, eventData) {
+		attacked(unit, eventData) {
 			if (eventData.stance == Stance.Counter) {
 				this.fatigue *= Game.bonusMultiplier;
 				unit.resetCounter(this.knockback);
 				++this.knockback;
 			}
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIs('zombie')) {
 				eventData.amount *= this.fatigue;
 			}
@@ -219,33 +217,31 @@ const Statuses =
 		name: "Frostbite",
 		tags: [ 'ailment', 'damage' ],
 		overrules: [ 'ignite' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.multiplier = 1.0;
 		},
-		attacked: function(unit, eventData) {
-			from(eventData.action.effects)
-				.where(it => it.type === 'damage')
-				.each(effect =>
-			{
+		attacked(unit, eventData) {
+			let damageEffects = from(eventData.action.effects)
+				.where(it => it.type === 'damage');
+			for (const effect of damageEffects) {
 				if ('addStatus' in effect && effect.addStatus == 'ignite') {
 					delete effect.addStatus;
 				}
-			});
-			from(eventData.action.effects)
-				.where(it => it.type == 'addStatus' && it.status == 'ignite')
-				.each(effect =>
-			{
+			}
+			let igniteEffects = from(eventData.action.effects)
+				.where(it => it.type == 'addStatus' && it.status == 'ignite');
+			for (const effect of igniteEffects) {
 				effect.type = null;
-			});
+			}
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('fire') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				console.log("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
 			}
 		},
-		endTurn: function(unit, eventData) {
+		endTurn(unit, eventData) {
 			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(0.5 * vit * this.multiplier, [ 'ice', 'special' ]);
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
@@ -259,7 +255,7 @@ const Statuses =
 		name: "Ghost",
 		tags: [ 'ailment', 'undead' ],
 		overrules: [ 'zombie' ],
-		aiming: function(unit, eventData) {
+		aiming(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				let effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
@@ -270,7 +266,7 @@ const Statuses =
 				}
 			}
 		},
-		attacked: function(unit, eventData) {
+		attacked(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				let effect = eventData.action.effects[i];
 				if (effect.type != 'damage' || effect.damageType == 'magic') {
@@ -290,15 +286,15 @@ const Statuses =
 		name: "Ignite",
 		tags: [ 'ailment', 'damage' ],
 		overrules: [ 'frostbite' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.multiplier = 1.0;
 		},
-		beginCycle: function(unit, eventData) {
+		beginCycle(unit, eventData) {
 			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(0.5 * vit * this.multiplier, [ 'fire', 'special' ]);
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
-		attacked: function(unit, eventData) {
+		attacked(unit, eventData) {
 			from(eventData.action.effects)
 				.where(it => it.type === 'damage')
 				.each(effect =>
@@ -314,7 +310,7 @@ const Statuses =
 				effect.type = null;
 			});
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
 				eventData.amount *= Game.bonusMultiplier;
 				console.log("Ignite neutralized by ice, damage increased");
@@ -329,17 +325,17 @@ const Statuses =
 	immune: {
 		name: "Immune",
 		tags: [ 'buff' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.turnsLeft = 5;
 		},
-		afflicted: function(unit, eventData) {
+		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
 				console.log("Status " + statusDef.name + " was blocked by Immune");
 				eventData.cancel = true;
 			}
 		},
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			if (this.turnsLeft <= 0) {
 				console.log(unit.name + "'s Immune has expired");
 				unit.liftStatus('immune');
@@ -356,10 +352,10 @@ const Statuses =
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			unit.liftStatus('offGuard');
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;
 		}
@@ -371,11 +367,11 @@ const Statuses =
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.multiplier = 1 / Game.bonusMultiplier;
 			this.lossPerHit = (1.0 - this.multiplier) / 10;
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected) {
 				eventData.amount *= this.multiplier;
@@ -393,10 +389,10 @@ const Statuses =
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.turnsLeft = 10;
 		},
-		beginCycle: function(unit, eventData) {
+		beginCycle(unit, eventData) {
 			let unitInfo = unit.battlerInfo;
 			let cap = Maths.hp(unitInfo, unitInfo.level, 1);
 			unit.heal(cap / 10, [ 'cure' ]);
@@ -422,25 +418,25 @@ const Statuses =
 			str: 1 / Game.bonusMultiplier,
 			mag: 1 / Game.bonusMultiplier,
 		},
-		initialize: function(unit) {
+		initialize(unit) {
 			this.allowDeath = false;
 		},
-		cured: function(unit, eventData) {
+		cured(unit, eventData) {
 			if (eventData.statusID == 'skeleton') {
 				unit.heal(1, [], true);
 			}
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			this.allowDeath = from(eventData.tags)
 				.anyIn([ 'zombie', 'physical', 'sword', 'earth', 'omni' ]);
 			if (!this.allowDeath) {
 				eventData.cancel = true;
 			}
 		},
-		dying: function(unit, eventData) {
+		dying(unit, eventData) {
 			eventData.cancel = !this.allowDeath;
 		},
-		healed: function(unit, eventData) {
+		healed(unit, eventData) {
 			if (from(eventData.tags).anyIs('cure')) {
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
 			}
@@ -451,10 +447,10 @@ const Statuses =
 	sniper: {
 		name: "Sniper",
 		tags: [ 'special' ],
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			unit.liftStatus('sniper');
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIn([ 'special', 'zombie' ])) {
 				eventData.amount *= Game.bonusMultiplier;
 				unit.clearQueue();
@@ -468,21 +464,21 @@ const Statuses =
 		name: "Sleep",
 		tags: [ 'acute' ],
 		overrules: [ 'drunk', 'offGuard' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			unit.actor.animate('sleep');
 			this.wakeChance = 0.0;
 		},
-		beginCycle: function(unit, eventData) {
+		beginCycle(unit, eventData) {
 			if (Random.chance(this.wakeChance)) {
 				unit.liftStatus('sleep');
 			}
 			this.wakeChance += 0.01;
 		},
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			eventData.skipTurn = true;
 			unit.actor.animate('snore');
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			let healthLost = 100 * eventData.amount / unit.maxHP;
 			if (Random.chance(healthLost * 5 * this.wakeChance)
 				&& eventData.tags.indexOf('magic') === -1
@@ -500,8 +496,7 @@ const Statuses =
 	specsAura: {
 		name: "Specs Aura",
 		tags: [ 'special' ],
-		beginCycle: function(unit, eventData) {
-			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
+		beginCycle(unit, eventData) {
 			unit.heal(0.01 * unit.maxHP, [ 'specs' ]);
 		}
 	},
@@ -512,10 +507,10 @@ const Statuses =
 	winded: {
 		name: "Winded",
 		tags: [ 'special' ],
-		beginTurn: function(unit, eventData) {
+		beginTurn(unit, eventData) {
 			unit.liftStatus('winded');
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;
 		}
@@ -529,21 +524,21 @@ const Statuses =
 	zombie: {
 		name: "Zombie",
 		tags: [ 'ailment', 'undead' ],
-		initialize: function(unit) {
+		initialize(unit) {
 			this.allowDeath = false;
 		},
-		damaged: function(unit, eventData) {
+		damaged(unit, eventData) {
 			// don't allow Specs Aura to kill the afflicted.
 			this.allowDeath = from(eventData.tags).anyIs('zombie')
 				&& !from(eventData.tags).anyIs('specs');
 		},
-		dying: function(unit, eventData) {
+		dying(unit, eventData) {
 			if (!this.allowDeath) {
 				unit.addStatus('skeleton');
 				eventData.cancel = true;
 			}
 		},
-		healed: function(unit, eventData) {
+		healed(unit, eventData) {
 			if (from(eventData.tags).anyIn([ 'cure', 'specs' ])) {
 				let damageTags = from(eventData.tags).anyIs('specs')
 					? [ 'zombie', 'specs' ]

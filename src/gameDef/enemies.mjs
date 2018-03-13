@@ -42,7 +42,7 @@ const Enemies =
 		name: "S. Temple",
 		fullName: "Scott Victor Temple",
 		hasLifeBar: true,
-		tier: 4,
+		tier: 3,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 100,
@@ -63,7 +63,7 @@ const Enemies =
 		name: "Scott",
 		fullName: "Scott Starcross",
 		hasLifeBar: true,
-		tier: 4,
+		tier: 3,
 		turnRatio: 1.0,
 		baseStats: {
 			vit: 70,
