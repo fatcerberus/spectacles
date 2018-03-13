@@ -35,10 +35,10 @@ class DayNightClock extends Thread
 				{ x: width, y: height },
 			]));
 		this.shader = new Shader({
+			vertexFile:   '#/shaders/image.vert.glsl',
 			fragmentFile: '#/shaders/image.frag.glsl',
-			vertexFile  : '#/shaders/image.vert.glsl',
 		});
-		this.model = new Model ([ rectangle ], this.shader);
+		this.model = new Model([ rectangle ], this.shader);
 
 		this.inGameTime = new InGameTime(0, 0, 0);
 		this.offset = new Date().getTimezoneOffset() * 60 * 1000;

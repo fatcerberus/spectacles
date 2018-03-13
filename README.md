@@ -14,8 +14,9 @@ one.  But all may not be as it seems...
 Credits
 =======
 
-- *Bruce Pascoe* - Director / Writer / Lead Developer
-- *John Stanko* - Co-writer / Beta Tester
+- Bruce Pascoe - *Director / Writer / Lead Developer*
+- John Stanko - *Writer / Beta Tester*
+- Richard Lawrence - *Programming/Optimization*
 
 
 Building
