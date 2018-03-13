@@ -6,9 +6,9 @@
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
 const BoxColor = Color.Black.fadeTo(0.75),
-      BorderColor = Color.Black.fadeTo(0.85),
-      TextColor = Color.Gray,
-      TextShadowColor = Color.Black;
+	BorderColor = Color.Black.fadeTo(0.85),
+	TextColor = Color.Gray,
+	TextShadowColor = Color.Black;
 
 export default
 class TurnPreview extends Thread

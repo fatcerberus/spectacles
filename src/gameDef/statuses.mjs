@@ -295,20 +295,17 @@ const Statuses =
 			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
 		},
 		attacked(unit, eventData) {
-			from(eventData.action.effects)
-				.where(it => it.type === 'damage')
-				.each(effect =>
-			{
-				if ('addStatus' in effect && effect.addStatus == 'frostbite') {
+			let damageEffects = from(eventData.action.effects)
+				.where(it => it.type === 'damage');
+			for (const effect of damageEffects) {
+				if ('addStatus' in effect && effect.addStatus == 'frostbite')
 					delete effect.addStatus;
-				}
-			});
-			from(eventData.action.effects)
-				.where(it => it.type == 'addStatus' && it.status == 'frostbite')
-				.each(effect =>
-			{
+			}
+			let frostbiteEffects = from(eventData.action.effects)
+				.where(it => it.type == 'addStatus' && it.status == 'frostbite');
+			for (const effect of frostbiteEffects) {
 				effect.type = null;
-			});
+			}
 		},
 		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {

@@ -72,12 +72,11 @@ const MoveEffects =
 	},
 
 	fullRecover: function(actor, targets, effect) {
-		from(targets)
-			.where(it => !it.hasStatus('zombie'))
-			.each(unit =>
-		{
+		let nonZombieUnits = from(targets)
+			.where(it => !it.hasStatus('zombie'));
+		for (const unit of nonZombieUnits) {
 			unit.heal(unit.maxHP - unit.hp, [ 'cure' ]);
-		});
+		}
 	},
 
 	heal: function(actor, targets, effect) {

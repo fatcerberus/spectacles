@@ -38,197 +38,197 @@ class RobertIIAI extends AutoBattler
 	{
 		let qsTurns;
 		switch (this.phase) {
-		case 1:
-			let magicks = [ 'flare', 'quake', 'chill', 'lightning' ];
-			if (this.doChargeSlashNext) {
-				this.queueSkill('chargeSlash');
-				this.doChargeSlashNext = false;
-			} else if (this.scottStance == Stance.Attack || this.isComboStarted) {
-				qsTurns = this.predictSkillTurns('quickstrike');
-				if (qsTurns[0].unit === this.unit) {
-					this.queueSkill('quickstrike');
-					this.isComboStarted = true;
-				} else {
-					if (this.isComboStarted) {
-						this.queueSkill('swordSlash');
-						this.doChargeSlashNext = true;
-						this.isComboStarted = false;
+			case 1:
+				let magicks = [ 'flare', 'quake', 'chill', 'lightning' ];
+				if (this.doChargeSlashNext) {
+					this.queueSkill('chargeSlash');
+					this.doChargeSlashNext = false;
+				} else if (this.scottStance == Stance.Attack || this.isComboStarted) {
+					qsTurns = this.predictSkillTurns('quickstrike');
+					if (qsTurns[0].unit === this.unit) {
+						this.queueSkill('quickstrike');
+						this.isComboStarted = true;
 					} else {
-						let skillID = Random.sample(magicks);
-						if (this.isSkillUsable(skillID))
-							this.queueSkill(skillID);
-						else
+						if (this.isComboStarted) {
 							this.queueSkill('swordSlash');
+							this.doChargeSlashNext = true;
+							this.isComboStarted = false;
+						} else {
+							let skillID = Random.sample(magicks);
+							if (this.isSkillUsable(skillID))
+								this.queueSkill(skillID);
+							else
+								this.queueSkill('swordSlash');
+						}
 					}
-				}
-			} else {
-				let skillID = Random.sample(magicks);
-				if (this.isSkillUsable(skillID))
-					this.queueSkill(skillID);
-				else
-					this.queueSkill('swordSlash');
-			}
-			break;
-		case 2:
-			this.isStatusHealPending = (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
-				&& this.isStatusHealPending;
-			qsTurns = this.predictSkillTurns('quickstrike');
-			if (this.isStatusHealPending && this.hasZombieHealedSelf
-				&& !this.wasHolyWaterUsed && this.unit.hasStatus('zombie') && this.isItemUsable('holyWater'))
-			{
-				let holyWaterTurns = this.predictItemTurns('holyWater');
-				if (holyWaterTurns[0].unit === this.unit && this.isItemUsable('tonic')) {
-					this.queueItem('holyWater');
-					this.queueItem('tonic');
-					this.wasTonicUsed = true;
 				} else {
-					this.queueItem('holyWater');
-					this.wasTonicUsed = false;
+					let skillID = Random.sample(magicks);
+					if (this.isSkillUsable(skillID))
+						this.queueSkill(skillID);
+					else
+						this.queueSkill('swordSlash');
 				}
-				this.wasHolyWaterUsed = true;
-			} else if (this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
-				let skillID = this.unit.hasStatus('frostbite') ? 'ignite' : 'frostbite';
-				let spellTurns = this.predictSkillTurns(skillID);
-				let isTonicUsable = (!this.unit.hasStatus('zombie') || this.wasHolyWaterUsed || !this.hasZombieHealedSelf)
-					&& this.isItemUsable('tonic');
-				if (spellTurns[0].unit === this.unit && isTonicUsable || this.wasTonicUsed) {
-					this.queueSkill(skillID, Stance.Attack, 'robert2');
-					if (!this.wasTonicUsed && isTonicUsable) {
+				break;
+			case 2:
+				this.isStatusHealPending = (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
+					&& this.isStatusHealPending;
+				qsTurns = this.predictSkillTurns('quickstrike');
+				if (this.isStatusHealPending && this.hasZombieHealedSelf
+					&& !this.wasHolyWaterUsed && this.unit.hasStatus('zombie') && this.isItemUsable('holyWater'))
+				{
+					let holyWaterTurns = this.predictItemTurns('holyWater');
+					if (holyWaterTurns[0].unit === this.unit && this.isItemUsable('tonic')) {
+						this.queueItem('holyWater');
+						this.queueItem('tonic');
+						this.wasTonicUsed = true;
+					} else {
+						this.queueItem('holyWater');
+						this.wasTonicUsed = false;
+					}
+					this.wasHolyWaterUsed = true;
+				} else if (this.isStatusHealPending && (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))) {
+					let skillID = this.unit.hasStatus('frostbite') ? 'ignite' : 'frostbite';
+					let spellTurns = this.predictSkillTurns(skillID);
+					let isTonicUsable = (!this.unit.hasStatus('zombie') || this.wasHolyWaterUsed || !this.hasZombieHealedSelf)
+						&& this.isItemUsable('tonic');
+					if (spellTurns[0].unit === this.unit && isTonicUsable || this.wasTonicUsed) {
+						this.queueSkill(skillID, Stance.Attack, 'robert2');
+						if (!this.wasTonicUsed && isTonicUsable) {
+							this.queueItem('tonic');
+						} else {
+							this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove
+								: skillID == 'chill' ? 'ignite' : 'frostbite');
+						}
+					} else if (!this.wasTonicUsed && isTonicUsable) {
 						this.queueItem('tonic');
 					} else {
 						this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove
 							: skillID == 'chill' ? 'ignite' : 'frostbite');
 					}
-				} else if (!this.wasTonicUsed && isTonicUsable) {
-					this.queueItem('tonic');
-				} else {
-					this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove
-						: skillID == 'chill' ? 'ignite' : 'frostbite');
-				}
-				this.isStatusHealPending = false;
-				this.wasHolyWaterUsed = false;
-			} else if ((Random.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.unit) {
-				this.queueSkill('quickstrike');
-				this.isComboStarted = true;
-				this.wasHolyWaterUsed = false;
-			} else if (this.isComboStarted) {
-				let skillToUse = Random.chance(0.5)
-					? Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ])
-					: 'chargeSlash';
-				this.queueSkill(skillToUse);
-				if (skillToUse == 'upheaval')
-					this.queueSkill('tremor');
-				this.isComboStarted = false;
-				this.isStatusHealPending = skillToUse == 'upheaval';
-				this.wasHolyWaterUsed = false;
-			} else {
-				let skillToUse = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
-				this.queueSkill(skillToUse);
-				if (skillToUse == 'upheaval')
-					this.queueSkill('tremor');
-				this.isStatusHealPending = skillToUse == 'upheavel';
-				this.wasHolyWaterUsed = false;
-			}
-			break;
-		case 3:
-			let holyWaterTurns = this.predictItemTurns('holyWater');
-			if (this.isChargeSlashPending && !this.unit.hasStatus('protect')) {
-				this.queueSkill('chargeSlash');
-				this.isChargeSlashPending = false;
-			} else if (this.unit.hasStatus('zombie') && this.hasZombieHealedSelf
-				&& this.isItemUsable('holyWater') && this.isItemUsable('tonic')
-				&& holyWaterTurns[0].unit === this.unit)
-			{
-				this.queueItem('holyWater');
-				this.queueItem('tonic');
-			} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
-				--this.elementalsTillRevenge;
-				if (this.elementalsTillRevenge <= 0) {
-					this.queueSkill('jolt');
-					this.necroTonicItem = 'powerTonic';
-				} else {
-					if (this.unit.hasStatus('ignite')) {
-						this.queueSkill('frostbite', Stance.Attack, 'robert2');
-					} else if (this.unit.hasStatus('frostbite')) {
-						this.queueSkill('ignite', Stance.Attack, 'robert2');
-					}
-				}
-			} else if (Random.chance(0.5) || this.isComboStarted) {
-				let forecast = this.predictSkillTurns('chargeSlash');
-				if ((forecast[0].unit === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
-					this.isComboStarted = false;
-					if (forecast[0].unit === this.unit) {
-						this.queueSkill('chargeSlash');
-					} else {
-						this.queueSkill(this.nextElementalMove !== null
-							? this.nextElementalMove
-							: Random.sample([ 'ignite', 'frostbite' ]));
-					}
-				} else {
+					this.isStatusHealPending = false;
+					this.wasHolyWaterUsed = false;
+				} else if ((Random.chance(0.5) || this.isComboStarted) && qsTurns[0].unit === this.unit) {
+					this.queueSkill('quickstrike');
 					this.isComboStarted = true;
-					forecast = this.predictSkillTurns('quickstrike');
-					if (forecast[0].unit === this.unit) {
-						this.queueSkill('quickstrike');
+					this.wasHolyWaterUsed = false;
+				} else if (this.isComboStarted) {
+					let skillToUse = Random.chance(0.5)
+						? Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ])
+						: 'chargeSlash';
+					this.queueSkill(skillToUse);
+					if (skillToUse == 'upheaval')
+						this.queueSkill('tremor');
+					this.isComboStarted = false;
+					this.isStatusHealPending = skillToUse == 'upheaval';
+					this.wasHolyWaterUsed = false;
+				} else {
+					let skillToUse = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+					this.queueSkill(skillToUse);
+					if (skillToUse == 'upheaval')
+						this.queueSkill('tremor');
+					this.isStatusHealPending = skillToUse == 'upheavel';
+					this.wasHolyWaterUsed = false;
+				}
+				break;
+			case 3:
+				let holyWaterTurns = this.predictItemTurns('holyWater');
+				if (this.isChargeSlashPending && !this.unit.hasStatus('protect')) {
+					this.queueSkill('chargeSlash');
+					this.isChargeSlashPending = false;
+				} else if (this.unit.hasStatus('zombie') && this.hasZombieHealedSelf
+					&& this.isItemUsable('holyWater') && this.isItemUsable('tonic')
+					&& holyWaterTurns[0].unit === this.unit)
+				{
+					this.queueItem('holyWater');
+					this.queueItem('tonic');
+				} else if ((this.unit.hasStatus('ignite') || this.unit.hasStatus('frostbite')) && this.elementalsTillRevenge > 0) {
+					--this.elementalsTillRevenge;
+					if (this.elementalsTillRevenge <= 0) {
+						this.queueSkill('jolt');
+						this.necroTonicItem = 'powerTonic';
 					} else {
-						let skillToUse = Random.chance(0.5) ? 'upheaval' : 'swordSlash';
-						if (this.isSkillUsable(skillToUse)) {
-							this.queueSkill(skillToUse);
-							if (skillToUse == 'upheaval')
-								this.queueSkill('tremor');
-							this.doChargeSlashNext = skillToUse == 'swordSlash';
-							this.isComboStarted = false;
-						} else {
-							this.queueSkill('swordSlash');
-							this.doChargeSlashNext = true;
-							this.isComboStarted = false;
+						if (this.unit.hasStatus('ignite')) {
+							this.queueSkill('frostbite', Stance.Attack, 'robert2');
+						} else if (this.unit.hasStatus('frostbite')) {
+							this.queueSkill('ignite', Stance.Attack, 'robert2');
 						}
 					}
+				} else if (Random.chance(0.5) || this.isComboStarted) {
+					let forecast = this.predictSkillTurns('chargeSlash');
+					if ((forecast[0].unit === this.unit && !this.isComboStarted) || this.doChargeSlashNext) {
+						this.isComboStarted = false;
+						if (forecast[0].unit === this.unit) {
+							this.queueSkill('chargeSlash');
+						} else {
+							this.queueSkill(this.nextElementalMove !== null
+								? this.nextElementalMove
+								: Random.sample([ 'ignite', 'frostbite' ]));
+						}
+					} else {
+						this.isComboStarted = true;
+						forecast = this.predictSkillTurns('quickstrike');
+						if (forecast[0].unit === this.unit) {
+							this.queueSkill('quickstrike');
+						} else {
+							let skillToUse = Random.chance(0.5) ? 'upheaval' : 'swordSlash';
+							if (this.isSkillUsable(skillToUse)) {
+								this.queueSkill(skillToUse);
+								if (skillToUse == 'upheaval')
+									this.queueSkill('tremor');
+								this.doChargeSlashNext = skillToUse == 'swordSlash';
+								this.isComboStarted = false;
+							} else {
+								this.queueSkill('swordSlash');
+								this.doChargeSlashNext = true;
+								this.isComboStarted = false;
+							}
+						}
+					}
+				} else {
+					let skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
+					this.queueSkill(skillID);
+					if (skillID == 'upheaval')
+						this.queueSkill('tremor');
 				}
-			} else {
+				break;
+			case 4:
 				let skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
-				this.queueSkill(skillID);
-				if (skillID == 'upheaval')
-					this.queueSkill('tremor');
-			}
-			break;
-		case 4:
-			let skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
-			let finisherID = this.isSkillUsable(skillID) ? skillID : 'swordSlash';
-			qsTurns = this.predictSkillTurns('quickstrike');
-			this.queueSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : finisherID);
-			if (this.isSkillQueued(finisherID) && this.scottStance == Stance.Guard)
-				this.queueSkill('chargeSlash');
-			break;
-		case 5:
-			if (this.isAlcoholPending) {
-				this.isAlcoholPending = false;
-				if (!this.unit.hasStatus('zombie')) {
-					this.queueItem('alcohol');
-					this.queueSkill('chargeSlash');
-					this.queueSkill('hellfire');
-					this.queueSkill('upheaval');
-					this.queueSkill('windchill');
-					this.queueSkill('electrocute');
-					this.queueSkill('omni', Stance.Charge);
-				} else {
-					if (this.isSkillUsable('omni'))
-						this.queueSkill('omni', Stance.Charge);
-					this.queueSkill('chargeSlash');
-				}
-			} else {
+				let finisherID = this.isSkillUsable(skillID) ? skillID : 'swordSlash';
 				qsTurns = this.predictSkillTurns('quickstrike');
-				let moves = this.unit.mpPool.availableMP >= 200
-					? [ 'flare', 'chill', 'lightning', 'quake', 'quickstrike', 'chargeSlash' ]
-					: [ 'quickstrike', 'chargeSlash' ];
-				let skillID = Random.sample(moves);
-				if (skillID == 'quickstrike' || this.isComboStarted) {
-					skillID = qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash';
-					this.isComboStarted = skillID == 'quickstrike';
-					this.queueSkill(skillID);
+				this.queueSkill(qsTurns[0].unit == this.unit ? 'quickstrike' : finisherID);
+				if (this.isSkillQueued(finisherID) && this.scottStance == Stance.Guard)
+					this.queueSkill('chargeSlash');
+				break;
+			case 5:
+				if (this.isAlcoholPending) {
+					this.isAlcoholPending = false;
+					if (!this.unit.hasStatus('zombie')) {
+						this.queueItem('alcohol');
+						this.queueSkill('chargeSlash');
+						this.queueSkill('hellfire');
+						this.queueSkill('upheaval');
+						this.queueSkill('windchill');
+						this.queueSkill('electrocute');
+						this.queueSkill('omni', Stance.Charge);
+					} else {
+						if (this.isSkillUsable('omni'))
+							this.queueSkill('omni', Stance.Charge);
+						this.queueSkill('chargeSlash');
+					}
 				} else {
-					this.queueSkill(skillID);
+					qsTurns = this.predictSkillTurns('quickstrike');
+					let moves = this.unit.mpPool.availableMP >= 200
+						? [ 'flare', 'chill', 'lightning', 'quake', 'quickstrike', 'chargeSlash' ]
+						: [ 'quickstrike', 'chargeSlash' ];
+					let skillID = Random.sample(moves);
+					if (skillID == 'quickstrike' || this.isComboStarted) {
+						skillID = qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash';
+						this.isComboStarted = skillID == 'quickstrike';
+						this.queueSkill(skillID);
+					} else {
+						this.queueSkill(skillID);
+					}
 				}
-			}
 		}
 	}
 
@@ -379,7 +379,7 @@ class RobertIIAI extends AutoBattler
 
 		if (unitID == 'scott')
 			this.scottStance = stance;
-	};
+	}
 
 	on_unitReady(unitID)
 	{
@@ -423,7 +423,7 @@ class RobertIIAI extends AutoBattler
 									this.queueSkill('ignite');
 									this.queueSkill('windchill', Stance.Charge);
 								} else {
-									let firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill'
+									let firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill';
 									this.queueSkill(firstMoveID);
 									this.queueSkill(this.nextElementalMove);
 								}

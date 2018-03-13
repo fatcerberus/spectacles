@@ -381,7 +381,7 @@ class BattleUnit
 	liftStatusTags(tags)
 	{
 		let statusEffects = from([ ...this.statuses ])
-			.where(it => from(it.statusDef.tags).anyIn(tags))
+			.where(it => from(it.statusDef.tags).anyIn(tags));
 		for (let it of statusEffects)
 			this.liftStatus(it.statusID);
 	}
@@ -542,52 +542,54 @@ class BattleUnit
 				}
 				let itemCount, itemID;
 				switch (instruction) {
-				case 'add':
-					if (arguments.length < 2)
-						return console.log("'" + this.id + " inv add': Item ID required");
-					itemID = arguments[1];
-					if (!(itemID in Items))
-						return console.log("no such item ID '" + itemID + "'");
-					let defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
-					itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
-					let addCount = 0;
-					from(this.items)
-						.where(item => item.itemID === itemID)
-						.each(item =>
-					{
-						item.usesLeft += itemCount;
-						addCount += itemCount;
-					});
-					if (addCount == 0) {
-						let usable = new ItemUsable(itemID);
-						usable.usesLeft = itemCount;
-						this.items.push(usable);
-						addCount = itemCount;
-					}
-					console.log(addCount + "x " + Items[itemID].name + " added to " + this.name + "'s inventory");
-					break;
-				case 'munch':
-					new Scene().playSound('Munch.wav').run();
-					this.items.length = 0;
-					console.log("maggie ate " + this.name + "'s entire inventory");
-					break;
-				case 'rm':
-					if (arguments.length < 2)
-						return console.log("'" + this.id + " inv add': Item ID required");
-					itemID = arguments[1];
-					itemCount = 0;
-					from(this.items)
-						.where(it => it.itemID === itemID)
-						.besides(it => itemCount += it.usesLeft)
-						.remove();
-					if (itemCount > 0)
-						console.log(itemCount + "x " + Items[itemID].name
-							+ " deleted from " + this.name + "'s inventory");
-					else
-						console.log("No " + Items[itemID].name + " in " + this.name + "'s inventory");
-					break;
-				default:
-					return console.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
+					case 'add':
+						if (arguments.length < 2) {
+							console.log("'" + this.id + " inv add': Item ID required");
+							return;
+						}
+						itemID = arguments[1];
+						if (!(itemID in Items))
+							return console.log("no such item ID '" + itemID + "'");
+						let defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
+						itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
+						let addCount = 0;
+						from(this.items)
+							.where(item => item.itemID === itemID)
+							.each(item =>
+						{
+							item.usesLeft += itemCount;
+							addCount += itemCount;
+						});
+						if (addCount == 0) {
+							let usable = new ItemUsable(itemID);
+							usable.usesLeft = itemCount;
+							this.items.push(usable);
+							addCount = itemCount;
+						}
+						console.log(addCount + "x " + Items[itemID].name + " added to " + this.name + "'s inventory");
+						break;
+					case 'munch':
+						new Scene().playSound('Munch.wav').run();
+						this.items.length = 0;
+						console.log("maggie ate " + this.name + "'s entire inventory");
+						break;
+					case 'rm':
+						if (arguments.length < 2)
+							return console.log("'" + this.id + " inv add': Item ID required");
+						itemID = arguments[1];
+						itemCount = 0;
+						from(this.items)
+							.where(it => it.itemID === itemID)
+							.besides(it => itemCount += it.usesLeft)
+							.remove();
+						if (itemCount > 0)
+							console.log(itemCount + "x " + Items[itemID].name
+								+ " deleted from " + this.name + "'s inventory");
+						else
+							console.log("No " + Items[itemID].name + " in " + this.name + "'s inventory");
+						break;
+					default:
+						return console.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
 				}
 			},
 

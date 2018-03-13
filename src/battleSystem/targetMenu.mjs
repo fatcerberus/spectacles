@@ -61,9 +61,9 @@ class TargetMenu extends Thread
 			let unitToSelect = null;
 			while (unitToSelect === null) {
 				position += direction;
-				position = position > 2 ? 0 :
-					position < 0 ? 2 :
-					position;
+				position = position > 2 ? 0
+					: position < 0 ? 2
+					: position;
 				for (let i = 0; i < candidates.length; ++i) {
 					if (position == candidates[i].actor.position
 						&& (candidates[i].isAlive() || this.allowDeadUnits))

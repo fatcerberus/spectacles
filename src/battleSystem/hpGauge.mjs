@@ -345,7 +345,7 @@ class HPGauge
 				let g = tween(this.oldColor.g, this.colorFadeTimer, this.colorFadeDuration, this.newColor.g);
 				let b = tween(this.oldColor.b, this.colorFadeTimer, this.colorFadeDuration, this.newColor.b);
 				let a = tween(this.oldColor.a, this.colorFadeTimer, this.colorFadeDuration, this.newColor.a);
-				this.hpColor = {r, g, b, a};
+				this.hpColor = { r, g, b, a };
 			}
 			else {
 				this.hpColor = this.newColor;
@@ -440,7 +440,7 @@ class HPGauge
 		if (this._fadeness !== value) {
 			this._fadeness = value;
 			this.tintColor.a = this._hpColor.a * (1 - this._fadeness);
-			setVectorColor(this.shader, {r: 1, g: 1, b: 1, a: 1 - value}, 1);
+			setVectorColor(this.shader, { r: 1.0, g: 1.0, b: 1.0, a: 1.0 - value }, 1);
 			setVectorColor(this.hpShader, this.tintColor, 1);
 			setVectorColor(this.backgroundShader, this.tintColor, 0.25);
 		}
@@ -497,20 +497,19 @@ class Segment
 
 	model ()
 	{
-		switch (this._state)
-		{
-		case (full):
-			this._model = new Model([this._outer, this._full]);
-			this._model.shader = this._hpShader;
-			break;
-		case (damaged):
-			this._model = new Model([this._outer, this._damaged]);
-			this._model.shader = this._shader;
-			break;
-		case (empty):
-			this._model = new Model([this._outer, this._empty]);
-			this._model.shader = this._shader;
-			break;
+		switch (this._state) {
+			case (full):
+				this._model = new Model([ this._outer, this._full ]);
+				this._model.shader = this._hpShader;
+				break;
+			case (damaged):
+				this._model = new Model([ this._outer, this._damaged ]);
+				this._model.shader = this._shader;
+				break;
+			case (empty):
+				this._model = new Model([ this._outer, this._empty ]);
+				this._model.shader = this._shader;
+				break;
 		}
 		this._model.transform = this._transform;
 		this._needsModel = false;
@@ -634,10 +633,10 @@ class DynamicTwinBar
 		this.hpShader = hpShader;
 		this.shader = shader;
 
-		this._lifeBar = new Model([renderFilled(10, height - 2, white)]);
-		this._damageBar = new Model([renderFilled(10, height - 2, damageColour)]);
-		this._emptyBar = new Model([renderFilled(width - 2, height - 2, emptyColor)]);
-		this._borderBar = new Model([renderOutline(width, height, 1, borderColour)]);
+		this._lifeBar = new Model([ renderFilled(10, height - 2, white) ]);
+		this._damageBar = new Model([ renderFilled(10, height - 2, damageColour) ]);
+		this._emptyBar = new Model([ renderFilled(width - 2, height - 2, emptyColor) ]);
+		this._borderBar = new Model([ renderOutline(width, height, 1, borderColour) ]);
 		this._lifeBar.shader = hpShader;
 		this._damageBar.shader = shader;
 		this._borderBar.shader = shader;
@@ -690,10 +689,10 @@ class DynamicTwinBar
 
 	render()
 	{
-		this._lifeBar = new Model([renderFilled(10, this._height - 2, white)]);
-		this._damageBar = new Model([renderFilled(10, this._height - 2, this._damageColour)]);
-		this._emptyBar = new Model([renderFilled(this._width - 2, this._height - 2, emptyColor)]);
-		this._borderBar = new Model([renderOutline(this._width, this._height, 1, this._borderColour)]);
+		this._lifeBar = new Model([ renderFilled(10, this._height - 2, white) ]);
+		this._damageBar = new Model([ renderFilled(10, this._height - 2, this._damageColour) ]);
+		this._emptyBar = new Model([ renderFilled(this._width - 2, this._height - 2, emptyColor) ]);
+		this._borderBar = new Model([ renderOutline(this._width, this._height, 1, this._borderColour) ]);
 
 		this._lifeBar.shader = this.hpShader;
 		this._damageBar.shader = this.shader;
@@ -800,17 +799,17 @@ function renderFilled (width, height, colour)
 {
 	let dimColour = Color.mix(colour, black, 66, 33);
 	let vbo = new VertexList([
-		{x: 0,     y: 0,          z: 0, u: 0, v: 1, color: dimColour},
-		{x: width, y: 0,          z: 0, u: 1, v: 1, color: dimColour},
-		{x: 0,     y: height / 2, z: 0, u: 0, v: 0, color: colour},
-		{x: width, y: height / 2, z: 0, u: 1, v: 0, color: colour},
-		{x: 0,     y: height / 2, z: 0, u: 0, v: 1, color: colour},
-		{x: width, y: height / 2, z: 0, u: 1, v: 1, color: colour},
-		{x: 0,     y: height,     z: 0, u: 0, v: 0, color: dimColour},
-		{x: width, y: height,     z: 0, u: 1, v: 0, color: dimColour}
+		{ x: 0,     y: 0,          z: 0, u: 0, v: 1, color: dimColour },
+		{ x: width, y: 0,          z: 0, u: 1, v: 1, color: dimColour },
+		{ x: 0,     y: height / 2, z: 0, u: 0, v: 0, color: colour },
+		{ x: width, y: height / 2, z: 0, u: 1, v: 0, color: colour },
+		{ x: 0,     y: height / 2, z: 0, u: 0, v: 1, color: colour },
+		{ x: width, y: height / 2, z: 0, u: 1, v: 1, color: colour },
+		{ x: 0,     y: height,     z: 0, u: 0, v: 0, color: dimColour },
+		{ x: width, y: height,     z: 0, u: 1, v: 0, color: dimColour }
 	]);
 
-	return new Shape(ShapeType.TriStrip, null, vbo);
+	return new Shape(ShapeType.TriStrip, vbo);
 }
 
 function renderOutline(width, height, thickness, colour)

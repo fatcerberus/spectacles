@@ -3,8 +3,6 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from } from 'sphere-runtime';
-
 import { Game, Weapons } from '$/gameDef';
 import { clone } from '$/utilities';
 
@@ -56,12 +54,12 @@ class WeaponUsable
 
 	use(unit, targets)
 	{
-		if (!this.isUsable(unit, unit.stance)) {
-			Abort("WeaponUsable.use(): " + unit.name + " tried to change weapons, which is not currently possible.");
-		}
+		if (!this.isUsable(unit, unit.stance))
+			throw new RangeError(`${unit.name} tried to change weapons, which is not currently possible`);
+
 		console.log(unit.name + " is equipping " + this.name,
-			"targ: " + (targets.length > 1 ? "[multi]" : targets[0].name));
-		for (let target of targets)
+			`targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
+		for (const target of targets)
 			target.setWeapon(this.weaponID);
 		return null;
 	}

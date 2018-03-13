@@ -366,10 +366,10 @@ class BattleContext extends Thread
 				this.ui.hud.turnPreview.show();
 				if (!from(this.session.battlesSeen).anyIs(this.battleID)) {
 					this.session.battlesSeen.push(this.battleID);
-					 if ('onFirstStart' in this.parameters) {
+					if ('onFirstStart' in this.parameters) {
 						console.log(`call onFirstStart() for battle '${this.battleID}'`);
 						await this.parameters.onFirstStart.call(this);
-					 }
+					}
 				}
 				if ('onStart' in this.parameters) {
 					console.log(`call onStart() for battle '${this.battleID}'`);
