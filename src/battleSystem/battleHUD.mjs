@@ -52,21 +52,15 @@ class BattleHUD extends Thread
 		this.drawPartyElement = function(x, y, memberInfo, isHighlighted)
 		{
 			this.drawElementBox(x, y, 100, 20, Color.of('#002000'));
-			if (isHighlighted) {
+			if (isHighlighted)
 				this.drawHighlight(x, y, 100, 20, this.highlightColor);
-			}
 			this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
-			let headingColor = isHighlighted
-				? Color.mix(Color.Gold, Color.of('#c09000'), this.highlightColor.a, 1.0 - this.highlightColor.a)
-				: Color.of('#c09000');
 			let textColor = isHighlighted ?
 				Color.mix(Color.White, Color.Silver, this.highlightColor.a, 1.0 - this.highlightColor.a) :
 				Color.Silver;
 			memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 			drawTextEx(this.font, x + 34, y + 4, memberInfo.unit.name, textColor, 1);
-			//drawTextEx(this.font, x + 62, y + 6, "HP", headingColor, 1);
-			//drawTextEx(this.font, x + 61, y + 2, Math.round(memberInfo.hp), textColor, 1, 'right');
-			Prim.drawSolidRectangle(Surface.Screen, x + 81, y + 3, 14, 14, Color.SteelBlue);
+			Prim.drawSolidRectangle(Surface.Screen, x + 81, y + 3, 14, 14, Color.DarkSlateBlue);
 			Prim.drawRectangle(Surface.Screen, x + 81, y + 3, 14, 14, 1, Color.Black);
 		};
 	}
@@ -130,9 +124,8 @@ class BattleHUD extends Thread
 		}
 		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 			let gaugeInfo = this.hpGaugesInfo[i];
-			if (gaugeInfo.owner == unit) {
+			if (gaugeInfo.owner == unit)
 				gaugeInfo.gauge.set(hp);
-			}
 		}
 	}
 

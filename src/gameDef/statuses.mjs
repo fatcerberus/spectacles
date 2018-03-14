@@ -48,7 +48,7 @@ const Statuses =
 					console.log("Crackdown POW modifier reset to 100%");
 				}
 			}
-		}
+		},
 	},
 
 	// Curse status
@@ -77,7 +77,7 @@ const Statuses =
 				console.log(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
-		}
+		},
 	},
 
 	// Delusion status
@@ -111,7 +111,7 @@ const Statuses =
 			if (this.actionsTaken >= 3) {
 				unit.liftStatus('disarray');
 			}
-		}
+		},
 	},
 
 	// Drunk status
@@ -123,14 +123,14 @@ const Statuses =
 		tags: [ 'acute' ],
 		overrules: [ 'immune' ],
 		statModifiers: {
-			agi: 1 / Game.bonusMultiplier
+			agi: 1 / Game.bonusMultiplier,
 		},
 		ignoreEvents: [
 			'itemUsed',
 			'skillUsed',
 			'unitDamaged',
 			'unitHealed',
-			'unitTargeted'
+			'unitTargeted',
 		],
 		initialize(unit) {
 			this.turnsLeft = 7;
@@ -209,7 +209,7 @@ const Statuses =
 			if (!from(eventData.tags).anyIs('zombie')) {
 				eventData.amount *= this.fatigue;
 			}
-		}
+		},
 	},
 
 	// Frostbite status
@@ -247,7 +247,7 @@ const Statuses =
 			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
 			unit.takeDamage(0.5 * vit * this.multiplier, [ 'ice', 'special' ]);
 			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
-		}
+		},
 	},
 
 	// Ghost status
@@ -274,7 +274,7 @@ const Statuses =
 				if (!from(eventData.actingUnitInfo.statuses).anyIs('ghost'))
 					eventData.action.accuracyRate = 0.0;
 			}
-		}
+		},
 	},
 
 	// Ignite status
@@ -310,7 +310,7 @@ const Statuses =
 				console.log("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
 			}
-		}
+		},
 	},
 
 	// Immune status
@@ -338,7 +338,7 @@ const Statuses =
 				console.log(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
-		}
+		},
 	},
 
 	// Off Guard status
@@ -353,7 +353,7 @@ const Statuses =
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;
-		}
+		},
 	},
 
 	// Protect status
@@ -375,7 +375,7 @@ const Statuses =
 					unit.liftStatus('protect');
 				}
 			}
-		}
+		},
 	},
 
 	// ReGen status
@@ -399,7 +399,7 @@ const Statuses =
 			else {
 				console.log(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
 			}
-		}
+		},
 	},
 
 	// Skeleton status
@@ -437,7 +437,7 @@ const Statuses =
 				unit.takeDamage(eventData.amount, [ 'zombie' ]);
 			}
 			eventData.cancel = true;
-		}
+		},
 	},
 
 	sniper: {
@@ -453,7 +453,7 @@ const Statuses =
 				unit.liftStatus('sniper');
 				unit.resetCounter(1);
 			}
-		}
+		},
 	},
 
 	sleep: {
@@ -482,7 +482,7 @@ const Statuses =
 			{
 				unit.liftStatus('sleep');
 			}
-		}
+		},
 	},
 
 	// Specs Aura status
@@ -494,7 +494,7 @@ const Statuses =
 		tags: [ 'special' ],
 		beginCycle(unit, eventData) {
 			unit.heal(0.01 * unit.maxHP, [ 'specs' ]);
-		}
+		},
 	},
 
 	// Winded status
@@ -509,7 +509,7 @@ const Statuses =
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;
-		}
+		},
 	},
 
 	// Zombie status
@@ -542,6 +542,6 @@ const Statuses =
 				unit.takeDamage(eventData.amount, damageTags);
 				eventData.cancel = true;
 			}
-		}
+		},
 	},
 };

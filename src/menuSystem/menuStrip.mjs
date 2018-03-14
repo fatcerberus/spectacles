@@ -26,10 +26,7 @@ class MenuStrip extends Thread
 
 	addItem(text, tag = text)
 	{
-		this.menuItems.push({
-			text: text,
-			tag: tag,
-		});
+		this.menuItems.push({ text, tag });
 		return this;
 	}
 
@@ -120,11 +117,10 @@ class MenuStrip extends Thread
 		let itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
 		for (let i = -1; i <= this.menuItems.length; ++i) {
 			let itemIndex = i;
-			if (i >= this.menuItems.length) {
+			if (i >= this.menuItems.length)
 				itemIndex = i % this.menuItems.length;
-			} else if (i < 0) {
+			else if (i < 0)
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
-			}
 			let itemText = this.menuItems[itemIndex].text;
 			let textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
 			this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
@@ -152,18 +148,16 @@ class MenuStrip extends Thread
 	{
 		switch (this.mode) {
 			case 'open':
-				if (!this.animation.running) {
+				if (!this.animation.running)
 					this.mode = "idle";
-				}
 				break;
 			case 'changeItem':
 				if (!this.animation.running) {
 					let newSelection = this.selectedItem + this.scrollDirection;
-					if (newSelection < 0) {
+					if (newSelection < 0)
 						newSelection = this.menuItems.length - 1;
-					} else if (newSelection >= this.menuItems.length) {
+					else if (newSelection >= this.menuItems.length)
 						newSelection = 0;
-					}
 					this.selectedItem = newSelection;
 					this.scrollDirection = 0;
 					this.scrollProgress = 0.0;
@@ -173,6 +167,7 @@ class MenuStrip extends Thread
 			case 'close':
 				if (!this.animation.running)
 					this.stop();
+				break;
 		}
 	}
 }

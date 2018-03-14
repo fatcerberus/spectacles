@@ -19,9 +19,9 @@ class MoveMenu extends Thread
 	{
 		super({ priority: 10 });
 		
-		this.lockedCursorColor = Color.MidnightBlue;
+		this.lockedCursorColor = Color.of('#002448');
 		this.moveRankColor = Color.White;
-		this.normalCursorColor = Color.MediumBlue;
+		this.normalCursorColor = Color.of('#004890');
 		this.textColor = Color.White;
 		this.usageTextColor = Color.Gold;
 
@@ -122,13 +122,13 @@ class MoveMenu extends Thread
 
 		this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 		{
-			let alpha = 255 * this.fadeness * this.expansion;
+			let alpha = this.fadeness * this.expansion;
 			let isEnabled = item.isEnabled;
 			let textColor = isSelected ? this.textColor : Color.Gray.fadeTo(alpha);
 			let usageTextColor = isSelected ? this.usageTextColor : Color.mix(this.usageTextColor, Color.Black.fadeTo(this.usageTextColor.a));
 			textColor = isEnabled ? textColor : Color.Black.fadeTo(alpha / 8);
 			usageTextColor = isEnabled ? usageTextColor : Color.Black.fadeTo(alpha / 8);
-			this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
+			this.drawItemBox(x, y, 160, 18, alpha / 2, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
 			let rankBoxColor = isEnabled ? Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a))
 				: Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a), 25, 75);
 			let rankColor = isEnabled ? item.idColor : Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a), 33, 66);
@@ -150,7 +150,7 @@ class MoveMenu extends Thread
 		this.drawTopItem = function(x, y, width, item, isSelected)
 		{
 			let isEnabled = item.contents.length > 0;
-			this.drawItemBox(x, y, width, 18, 144 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
+			this.drawItemBox(x, y, width, 18, 0.55 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
 			let textColor = isSelected ? Color.White.fadeTo(this.fadeness) : Color.Gray.fadeTo(this.fadeness);
 			textColor = isEnabled ? textColor : Color.Black.fadeTo(this.fadeness / 8);
 			drawTextEx(this.font, x + width / 2, y + 3, item.name.substr(0, 3), textColor, isEnabled ? 1 : 0, 'center');
@@ -312,8 +312,6 @@ class MoveMenu extends Thread
 		drawTextEx(this.font, 68, yOrigin + 2, this.unit.fullName, Color.DarkGray.fadeTo(this.fadeness), 1, 'center');
 		drawTextEx(this.font, 148, yOrigin + 2, stanceText, Color.Khaki.fadeTo(this.fadeness), 1, 'center');
 		let itemWidth = 160 / this.drawers.length;
-		let litTextColor = Color.White;
-		let dimTextColor = Color.Silver;
 		Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, yOrigin - 16, Color.Black.fadeTo(0.75 * this.fadeness));
 		for (let i = 0; i < this.drawers.length; ++i) {
 			let x = Math.floor(i * itemWidth);
