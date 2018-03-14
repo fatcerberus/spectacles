@@ -50,7 +50,7 @@ class PartyMember
 		let info = {
 			characterID: this.characterID,
 			level: this.level,
-			tier: 1
+			tier: 1,
 		};
 		info.baseStats = {};
 		info.stats = {};

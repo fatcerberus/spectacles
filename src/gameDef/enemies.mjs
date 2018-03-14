@@ -74,6 +74,6 @@ const Enemies =
 			agi: 70,
 		},
 		immunities: [],
-		weapon: 'templeSword'
+		weapon: 'templeSword',
 	},
 };

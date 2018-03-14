@@ -15,20 +15,20 @@ const Items =
 			effects: [
 				{
 					targetHint: 'selected',
-					type: 'fullRecover'
+					type: 'fullRecover',
 				},
 				{
 					targetHint: 'selected',
 					type: 'recoverMP',
-					strength: 100
+					strength: 100,
 				},
 				{
 					targetHint: 'selected',
 					type: 'addStatus',
-					status: 'drunk'
-				}
-			]
-		}
+					status: 'drunk',
+				},
+			],
+		},
 	},
 	holyWater: {
 		name: "Holy Water",
@@ -40,10 +40,10 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'liftStatusTags',
-					tags: [ 'undead' ]
-				}
-			]
-		}
+					tags: [ 'undead' ],
+				},
+			],
+		},
 	},
 	lazarusPotion: {
 		name: "Lazarus Potion",
@@ -56,10 +56,10 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'revive',
-					healToFull: true
-				}
-			]
-		}
+					healToFull: true,
+				},
+			],
+		},
 	},
 	tonic: {
 		name: "Tonic",
@@ -72,9 +72,9 @@ const Items =
 					targetHint: 'selected',
 					type: 'recoverHP',
 					strength: 33,
-				}
-			]
-		}
+				},
+			],
+		},
 	},
 	powerTonic: {
 		name: "Power Tonic",
@@ -87,9 +87,9 @@ const Items =
 					targetHint: 'selected',
 					type: 'recoverHP',
 					strength: 66,
-				}
-			]
-		}
+				},
+			],
+		},
 	},
 	fullTonic: {
 		name: "Full Tonic",
@@ -108,8 +108,8 @@ const Items =
 					type: 'addStatus',
 					status: 'reGen',
 				},
-			]
-		}
+			],
+		},
 	},
 	redBull: {
 		name: "Red Bull",
@@ -121,10 +121,10 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'recoverMP',
-					strength: 100
-				}
-			]
-		}
+					strength: 100,
+				},
+			],
+		},
 	},
 	vaccine: {
 		name: "Vaccine",
@@ -136,14 +136,14 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'liftStatusTags',
-					tags: [ 'ailment' ]
+					tags: [ 'ailment' ],
 				},
 				{
 					targetHint: 'selected',
 					type: 'addStatus',
-					status: 'immune'
-				}
-			]
+					status: 'immune',
+				},
+			],
 		},
-	}
+	},
 };

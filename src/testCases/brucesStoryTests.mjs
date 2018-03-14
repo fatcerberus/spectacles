@@ -21,5 +21,5 @@ TestHarness.addBattle('rsb2', {
 				'alcohol',
 			],
 		},
-	}
+	},
 });

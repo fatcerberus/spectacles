@@ -9,78 +9,78 @@ export
 const Maths =
 {
 	accuracy: {
-		bow: function(userInfo, targetInfo) {
+		bow(userInfo, targetInfo) {
 			return userInfo.stats.foc / targetInfo.stats.agi;
 		},
-		breath: function(userInfo, targetInfo) {
+		breath(userInfo, targetInfo) {
 			return 1.0;
 		},
-		devour: function(userInfo, targetInfo) {
+		devour(userInfo, targetInfo) {
 			return (100 - targetInfo.health * targetInfo.tier) / 100
 				* userInfo.stats.agi / targetInfo.stats.agi;
 		},
-		gun: function(userInfo, targetInfo) {
+		gun(userInfo, targetInfo) {
 			return 1.0;
 		},
-		magic: function(userInfo, targetInfo) {
+		magic(userInfo, targetInfo) {
 			return 1.0;
 		},
-		physical: function(userInfo, targetInfo) {
+		physical(userInfo, targetInfo) {
 			return 1.0;
 		},
-		shuriken: function(userInfo, targetInfo) {
+		shuriken(userInfo, targetInfo) {
 			return 1.0;
 		},
-		sword: function(userInfo, targetInfo) {
+		sword(userInfo, targetInfo) {
 			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi;
-		}
+		},
 	},
 
 	damage: {
-		calculate: function(power, level, targetTier, attack, defense) {
+		calculate(power, level, targetTier, attack, defense) {
 			return power * level**0.5 * attack / defense;
 		},
-		bow: function(userInfo, targetInfo, power) {
+		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.str,
 				Maths.statValue(0, targetInfo.level));
 		},
-		breath: function(userInfo, targetInfo, power) {
+		breath(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3),
 				targetInfo.stats.vit);
 		},
-		magic: function(userInfo, targetInfo, power) {
+		magic(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
 				targetInfo.stats.foc);
 		},
-		gun: function(userInfo, targetInfo, power) {
+		gun(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				Maths.statValue(100, userInfo.level),
 				targetInfo.stats.def);
 		},
-		physical: function(userInfo, targetInfo, power) {
+		physical(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.str,
 				Math.round((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3));
 		},
-		physicalRecoil: function(userInfo, targetInfo, power) {
+		physicalRecoil(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power / 2, userInfo.level, targetInfo.tier,
 				targetInfo.stats.str, userInfo.stats.str);
 		},
-		shuriken: function(userInfo, targetInfo, power) {
+		shuriken(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.foc, targetInfo.stats.def);
 		},
-		sword: function(userInfo, targetInfo, power) {
+		sword(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.str, targetInfo.stats.def);
-		}
+		},
 	},
 
 	experience: {
-		skill: function(skillInfo, userInfo, targetsInfo) {
+		skill(skillInfo, userInfo, targetsInfo) {
 			let levelSum = 0;
 			let statSum = 0;
 			for (let i = 0; i < targetsInfo.length; ++i) {
@@ -91,30 +91,29 @@ const Maths =
 			let statAverage = Math.round(statSum / targetsInfo.length);
 			return levelAverage * statAverage;
 		},
-		stat: function(statID, enemyUnitInfo) {
+		stat(statID, enemyUnitInfo) {
 			return enemyUnitInfo.level * enemyUnitInfo.baseStats[statID];
-		}
+		},
 	},
 
 	guardStance: {
-		damageTaken: function(baseDamage, tags) {
-			if (from(tags).anyIs('deathblow')) {
+		damageTaken(baseDamage, tags) {
+			if (from(tags).anyIs('deathblow'))
 				return baseDamage - 1;
-			} else if (from(tags).anyIn([ 'bow', 'omni', 'special', 'zombie' ])) {
+			else if (from(tags).anyIn([ 'bow', 'omni', 'special', 'zombie' ]))
 				return baseDamage;
-			} else {
+			else
 				return baseDamage / 2;
-			}
-		}
+		},
 	},
 
-	healing: function(userInfo, targetInfo, power) {
+	healing(userInfo, targetInfo, power) {
 		return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 			Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
 			Maths.statValue(0, targetInfo.level));
 	},
 
-	hp: function(unitInfo, level, tier) {
+	hp(unitInfo, level, tier) {
 		let statAverage = Math.round((unitInfo.baseStats.vit * 10
 			+ unitInfo.baseStats.str
 			+ unitInfo.baseStats.def
@@ -126,7 +125,7 @@ const Maths =
 	},
 
 	mp: {
-		capacity: function(unitInfo) {
+		capacity(unitInfo) {
 			let statAverage = Math.round((unitInfo.baseStats.mag * 10
 				+ unitInfo.baseStats.vit
 				+ unitInfo.baseStats.str
@@ -136,17 +135,17 @@ const Maths =
 			statAverage = Maths.statValue(statAverage, unitInfo.level);
 			return 10 * unitInfo.tier * statAverage;
 		},
-		usage: function(skill, level, userInfo) {
+		usage(skill, level, userInfo) {
 			let baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
 			return baseCost * level**0.5 * userInfo.baseStats.mag / 100;
-		}
+		},
 	},
 
-	retreatChance: function(enemyUnitsInfo) {
+	retreatChance(enemyUnitsInfo) {
 		return 1.0;
 	},
 
-	skillRank: function(skill) {
+	skillRank(skill) {
 		let rankTotal = 0;
 		for (let i = 0; i < skill.actions.length; ++i) {
 			rankTotal += skill.actions[i].rank;
@@ -154,11 +153,11 @@ const Maths =
 		return rankTotal;
 	},
 
-	statValue: function(baseStat, level) {
+	statValue(baseStat, level) {
 		return Math.round((50 + 0.5 * baseStat) * (10 + level) / 110);
 	},
 
-	timeUntilNextTurn: function(unitInfo, rank) {
+	timeUntilNextTurn(unitInfo, rank) {
 		return rank * 10000 / unitInfo.stats.agi;
-	}
+	},
 };

@@ -43,7 +43,8 @@ const Statuses =
 			if (this.multiplier != oldMultiplier) {
 				if (this.multiplier < 1.0) {
 					console.log("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
-				} else {
+				}
+				else {
 					console.log("Crackdown POW modifier reset to 100%");
 				}
 			}
@@ -71,7 +72,8 @@ const Statuses =
 			if (this.turnsLeft <= 0) {
 				console.log(unit.name + "'s Curse has expired");
 				unit.liftStatus('curse');
-			} else {
+			}
+			else {
 				console.log(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
@@ -258,23 +260,19 @@ const Statuses =
 		aiming(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				let effect = eventData.action.effects[i];
-				if (effect.type != 'damage' || effect.damageType == 'magic') {
+				if (effect.type != 'damage' || effect.damageType == 'magic')
 					continue;
-				}
-				if (!from(eventData.targetInfo.statuses).anyIs('ghost')) {
+				if (!from(eventData.targetInfo.statuses).anyIs('ghost'))
 					eventData.aimRate = 0.0;
-				}
 			}
 		},
 		attacked(unit, eventData) {
 			for (let i = 0; i < eventData.action.effects.length; ++i) {
 				let effect = eventData.action.effects[i];
-				if (effect.type != 'damage' || effect.damageType == 'magic') {
+				if (effect.type != 'damage' || effect.damageType == 'magic')
 					continue;
-				}
-				if (!from(eventData.actingUnitInfo.statuses).anyIs('ghost')) {
+				if (!from(eventData.actingUnitInfo.statuses).anyIs('ghost'))
 					eventData.action.accuracyRate = 0.0;
-				}
 			}
 		}
 	},
@@ -303,9 +301,8 @@ const Statuses =
 			}
 			let frostbiteEffects = from(eventData.action.effects)
 				.where(it => it.type == 'addStatus' && it.status == 'frostbite');
-			for (const effect of frostbiteEffects) {
+			for (const effect of frostbiteEffects)
 				effect.type = null;
-			}
 		},
 		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
@@ -336,7 +333,8 @@ const Statuses =
 			if (this.turnsLeft <= 0) {
 				console.log(unit.name + "'s Immune has expired");
 				unit.liftStatus('immune');
-			} else {
+			}
+			else {
 				console.log(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
 			}
 			--this.turnsLeft;
@@ -397,7 +395,8 @@ const Statuses =
 			if (this.turnsLeft <= 0) {
 				console.log(unit.name + "'s ReGen has expired");
 				unit.liftStatus('reGen');
-			} else {
+			}
+			else {
 				console.log(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
 			}
 		}

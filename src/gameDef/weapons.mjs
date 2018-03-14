@@ -11,7 +11,7 @@ const WeaponTypes =
 	gun: "Gun",
 	staff: "Staff",
 	shuriken: "Shuriken",
-	sword: "Sword"
+	sword: "Sword",
 };
 
 export
@@ -24,8 +24,8 @@ const Weapons =
 		level: 1,
 		techniques: [
 			'swordSlash',
-			'quickstrike'
-		]
+			'quickstrike',
+		],
 	},
 	rsbSword: {
 		name: "Robert's Sword",
@@ -34,8 +34,8 @@ const Weapons =
 		techniques: [
 			'swordSlash',
 			'quickStrike',
-			'chargeSlash'
-		]
+			'chargeSlash',
+		],
 	},
 	templeSword: {
 		name: "Temple Sword",
@@ -44,8 +44,8 @@ const Weapons =
 		techniques: [
 			'swordSlash',
 			'quickstrike',
-			'chargeSlash'
-		]
+			'chargeSlash',
+		],
 	},
 
 	// Guns
@@ -56,8 +56,8 @@ const Weapons =
 		techniques: [
 			'potshot',
 			'sharpshooter',
-			'shootout'
-		]
+			'shootout',
+		],
 	},
 
 	// Bows
@@ -68,8 +68,8 @@ const Weapons =
 		techniques: [
 			'archery',
 			'flareShot',
-			'chillShot'
-		]
+			'chillShot',
+		],
 	},
 
 	powerBow: {
@@ -81,8 +81,8 @@ const Weapons =
 			'flareShot',
 			'chillShot',
 			'joltShot',
-			'seismicShot'
-		]
+			'seismicShot',
+		],
 	},
 
 	// Shuriken
@@ -92,14 +92,14 @@ const Weapons =
 		level: 1,
 		techniques: [
 			'starToss',
-			'starVolley'
-		]
+			'starVolley',
+		],
 	},
 
 	// Staves
 	luckyStaff: {
 		name: "Lucky Staff",
 		type: 'staff',
-		level: 1
-	}
+		level: 1,
+	},
 };

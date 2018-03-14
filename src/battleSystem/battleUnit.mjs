@@ -327,7 +327,7 @@ class BattleUnit
 				unit: this,
 				amount: Math.round(amount),
 				tags: tags,
-				cancel: false
+				cancel: false,
 			};
 			this.battle.raiseEvent('unitHealed', eventData);
 			if (!eventData.cancel)
@@ -362,7 +362,7 @@ class BattleUnit
 	{
 		let eventData = {
 			statusID: statusID,
-			cancel: false
+			cancel: false,
 		};
 		this.raiseEvent('unitCured', eventData);
 		if (!eventData.cancel)
@@ -457,9 +457,9 @@ class BattleUnit
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'offGuard'
-					}
-				]
+						status: 'offGuard',
+					},
+				],
 			});
 		}
 		if (nextActions !== null) {
@@ -672,7 +672,7 @@ class BattleUnit
 			let eventData = {
 				unit: this, amount: amount, tags: tags,
 				actingUnit: this.lastAttacker,
-				cancel: false
+				cancel: false,
 			};
 			this.battle.raiseEvent('unitDamaged', eventData);
 			if (!eventData.cancel) {
@@ -735,7 +735,7 @@ class BattleUnit
 		let eventData = {
 			actingUnitInfo: actingUnit.battlerInfo,
 			action: action,
-			stance: actingUnit.stance
+			stance: actingUnit.stance,
 		};
 		this.raiseEvent('attacked', eventData);
 		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;

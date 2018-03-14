@@ -11,7 +11,7 @@ const SkillCategories =
 	attack: "Attack",
 	magic: "Magic",
 	heal: "Heal",
-	strategy: "Strategy"
+	strategy: "Strategy",
 };
 
 export
@@ -35,8 +35,8 @@ const Skills =
 						targetHint: 'selected',
 						type: 'instaKill',
 						damageType: 'sword',
-					}
-				]
+					},
+				],
 			},
 		],
 	},
@@ -54,9 +54,9 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'offGuard'
-					}
-				]
+						status: 'offGuard',
+					},
+				],
 			},
 			{
 				announceAs: "Sword Slash",
@@ -69,10 +69,10 @@ const Skills =
 						type: 'damage',
 						damageType: 'sword',
 						power: 22.5,
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 	desperationSlash: {
 		name: "Desperation Slash",
@@ -88,9 +88,9 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'offGuard'
-					}
-				]
+						status: 'offGuard',
+					},
+				],
 			},
 			{
 				announceAs: "Desperation Slash",
@@ -100,11 +100,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'instaKill',
-						damageType: 'sword'
-					}
-				]
-			}
-		]
+						damageType: 'sword',
+					},
+				],
+			},
+		],
 	},
 	quickstrike: {
 		name: "Quickstrike",
@@ -125,10 +125,10 @@ const Skills =
 						type: 'damage',
 						damageType: 'sword',
 						power: 10,
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 	swordSlash: {
 		name: "Sword Slash",
@@ -147,10 +147,10 @@ const Skills =
 						type: 'damage',
 						damageType: 'sword',
 						power: 15,
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 
 	// Bow & Arrow techniques
@@ -170,10 +170,10 @@ const Skills =
 						type: 'damage',
 						damageType: 'bow',
 						power: 15,
-					}
+					},
 				],
-			}
-		]
+			},
+		],
 	},
 	chillShot: {
 		name: "Chill Shot",
@@ -194,11 +194,11 @@ const Skills =
 						power: 10,
 						element: 'ice',
 						addStatus: 'frostbite',
-						statusChance: 25
-					}
+						statusChance: 25,
+					},
 				],
-			}
-		]
+			},
+		],
 	},
 	flareShot: {
 		name: "Flare Shot",
@@ -219,11 +219,11 @@ const Skills =
 						power: 10,
 						element: 'fire',
 						addStatus: 'ignite',
-						statusChance: 25
-					}
+						statusChance: 25,
+					},
 				],
-			}
-		]
+			},
+		],
 	},
 	joltShot: {
 		name: "Jolt Shot",
@@ -244,11 +244,11 @@ const Skills =
 						power: 10,
 						element: 'lightning',
 						addStatus: 'zombie',
-						statusChance: 25
-					}
+						statusChance: 25,
+					},
 				],
-			}
-		]
+			},
+		],
 	},
 	seismicShot: {
 		name: "Seismic Shot",
@@ -269,11 +269,11 @@ const Skills =
 						power: 10,
 						element: 'earth',
 						addStatus: 'disarray',
-						statusChance: 25
-					}
+						statusChance: 25,
+					},
 				],
-			}
-		]
+			},
+		],
 	},
 	tripleShot: {
 		name: "Triple Shot",
@@ -292,23 +292,23 @@ const Skills =
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 25
+						power: 25,
 					},
 					{
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 25
+						power: 25,
 					},
 					{
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 25
+						power: 25,
 					},
 				],
-			}
-		]
+			},
+		],
 	},
 
 	// Gun techniques
@@ -327,11 +327,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 15
-					}
-				]
-			}
-		]
+						power: 15,
+					},
+				],
+			},
+		],
 	},
 	sharpshooter: {
 		name: "Sharpshooter",
@@ -346,9 +346,9 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'sniper'
-					}
-				]
+						status: 'sniper',
+					},
+				],
 			},
 			{
 				announceAs: "Sharpshooter",
@@ -359,11 +359,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 80
-					}
-				]
-			}
-		]
+						power: 80,
+					},
+				],
+			},
+		],
 	},
 	shootout: {
 		name: "Shootout",
@@ -380,11 +380,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 15
-					}
-				]
-			}
-		]
+						power: 15,
+					},
+				],
+			},
+		],
 	},
 
 	// Shuriken (throwing star) techniques
@@ -403,11 +403,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'shuriken',
-						power: 15
-					}
-				]
-			}
-		]
+						power: 15,
+					},
+				],
+			},
+		],
 	},
 	starVolley: {
 		name: "Star Volley",
@@ -425,11 +425,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'shuriken',
-						power: 10
-					}
-				]
-			}
-		]
+						power: 10,
+					},
+				],
+			},
+		],
 	},
 
 	// basic elemental magic spells
@@ -466,16 +466,16 @@ const Skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 40,
-						element: 'fire'
+						element: 'fire',
 					},
 					{
 						targetHint: 'selected',
 						type: 'addCondition',
-						condition: 'inferno'
-					}
-				]
-			}
-		]
+						condition: 'inferno',
+					},
+				],
+			},
+		],
 	},
 	subzero: {
 		name: "Subzero",
@@ -492,16 +492,16 @@ const Skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 40,
-						element: 'ice'
+						element: 'ice',
 					},
 					{
 						targetHint: 'selected',
 						type: 'addCondition',
-						condition: 'subzero'
-					}
-				]
-			}
-		]
+						condition: 'subzero',
+					},
+				],
+			},
+		],
 	},
 	tenPointFive: {
 		name: "10.5",
@@ -518,16 +518,16 @@ const Skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 40,
-						element: 'earth'
+						element: 'earth',
 					},
 					{
 						targetHint: 'selected',
 						type: 'addCondition',
-						condition: 'generalDisarray'
-					}
-				]
-			}
-		]
+						condition: 'generalDisarray',
+					},
+				],
+			},
+		],
 	},
 	discharge: {
 		name: "Discharge",
@@ -544,16 +544,16 @@ const Skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 40,
-						element: 'lightning'
+						element: 'lightning',
 					},
 					{
 						targetHint: 'selected',
 						type: 'addCondition',
-						condition: 'thunderstorm'
-					}
-				]
-			}
-		]
+						condition: 'thunderstorm',
+					},
+				],
+			},
+		],
 	},
 
 	// Omni - Rank 4 non-elemental magic
@@ -573,16 +573,16 @@ const Skills =
 						type: 'damage',
 						damageType: 'magic',
 						power: 100,
-						element: 'omni'
+						element: 'omni',
 					},
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'winded'
+						status: 'winded',
 					},
-				]
-			}
-		]
+				],
+			},
+		],
 	},
 
 	// Curative/healing magicks
@@ -602,11 +602,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'reGen',
-						element: 'cure'
-					}
-				]
-			}
-		]
+						element: 'cure',
+					},
+				],
+			},
+		],
 	},
 	dispel: {
 		name: "Dispel",
@@ -623,11 +623,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'liftStatusTags',
-						tags: [ 'buff' ]
-					}
-				]
-			}
-		]
+						tags: [ 'buff' ],
+					},
+				],
+			},
+		],
 	},
 	immunize: {
 		name: "Immunize",
@@ -651,7 +651,7 @@ const Skills =
 						type: 'addStatus',
 						status: 'immune',
 					},
-				]
+				],
 			},
 		],
 	},
@@ -671,10 +671,10 @@ const Skills =
 						type: 'heal',
 						power: 25,
 						element: 'cure',
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 	lazarus: {
 		name: "Lazarus",
@@ -692,10 +692,10 @@ const Skills =
 						type: 'revive',
 						healToFull: true,
 						element: 'cure',
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 	purify: {
 		name: "Purify",
@@ -711,11 +711,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'liftStatusTags',
-						tags: [ 'undead' ]
-					}
-				]
-			}
-		]
+						tags: [ 'undead' ],
+					},
+				],
+			},
+		],
 	},
 	rejuvenate: {
 		name: "Rejuvenate",
@@ -735,10 +735,10 @@ const Skills =
 						element: 'cure',
 						addStatus: 'reGen',
 						statusChance: 100,
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	},
 	renewal: {
 		name: "Renewal",
@@ -755,16 +755,16 @@ const Skills =
 						targetHint: 'selected',
 						type: 'heal',
 						power: 100,
-						element: 'cure'
+						element: 'cure',
 					},
 					{
 						targetHint: 'selected',
 						type: 'addCondition',
-						condition: 'healingAura'
-					}
-				]
-			}
-		]
+						condition: 'healingAura',
+					},
+				],
+			},
+		],
 	},
 
 	// Status-inducing techniques
@@ -784,11 +784,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'crackdown'
-					}
-				]
-			}
-		]
+						status: 'crackdown',
+					},
+				],
+			},
+		],
 	},
 	curse: {
 		name: "Curse",
@@ -806,11 +806,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'curse'
-					}
-				]
-			}
-		]
+						status: 'curse',
+					},
+				],
+			},
+		],
 	},
 	necromancy: {
 		name: "Necromancy",
@@ -827,8 +827,8 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'zombie'
-					}
+						status: 'zombie',
+					},
 				],
 			},
 		],
@@ -848,11 +848,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'protect'
-					}
-				]
-			}
-		]
+						status: 'protect',
+					},
+				],
+			},
+		],
 	},
 
 	// Physical-contact techniques
@@ -872,11 +872,11 @@ const Skills =
 						type: 'damage',
 						damageType: 'physical',
 						power: 75,
-						element: 'fat'
-					}
-				]
-			}
-		]
+						element: 'fat',
+					},
+				],
+			},
+		],
 	},
 	fatseat: {
 		name: "Fatseat",
@@ -894,11 +894,11 @@ const Skills =
 						type: 'damage',
 						damageType: 'physical',
 						power: 25,
-						element: 'fat'
-					}
-				]
-			}
-		]
+						element: 'fat',
+					},
+				],
+			},
+		],
 	},
 	munch: {
 		name: "Munch",
@@ -916,11 +916,11 @@ const Skills =
 						element: 'fat',
 						targetHint: 'selected',
 						type: 'devour',
-						successRate: 1.0
-					}
-				]
-			}
-		]
+						successRate: 1.0,
+					},
+				],
+			},
+		],
 	},
 
 	// Enemy techniques
@@ -939,11 +939,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 30
-					}
-				]
-			}
-		]
+						power: 30,
+					},
+				],
+			},
+		],
 	},
 	deathBite: {
 		name: "Death Bite",
@@ -961,11 +961,11 @@ const Skills =
 						type: 'damage',
 						damageType: 'physical',
 						power: 10,
-						addStatus: 'zombie'
-					}
-				]
-			}
-		]
+						addStatus: 'zombie',
+					},
+				],
+			},
+		],
 	},
 	delusion: {
 		name: "Delusion",
@@ -980,11 +980,11 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
-						status: 'delusion'
-					}
-				]
-			}
-		]
+						status: 'delusion',
+					},
+				],
+			},
+		],
 	},
 	flameBreath: {
 		name: "Flame Breath",
@@ -1004,11 +1004,11 @@ const Skills =
 						damageType: 'breath',
 						power: 20,
 						element: 'fire',
-						addStatus: 'ignite'
-					}
-				]
-			}
-		]
+						addStatus: 'ignite',
+					},
+				],
+			},
+		],
 	},
 	flareUp: {
 		name: "Flare Up",
@@ -1033,7 +1033,7 @@ const Skills =
 						element: 'fire',
 					},
 				],
-			}
+			},
 		],
 	},
 	rearingKick: {
@@ -1049,9 +1049,9 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'addStatus',
-						status: 'rearing'
-					}
-				]
+						status: 'rearing',
+					},
+				],
 			},
 			{
 				announceAs: "Rearing Kick",
@@ -1062,17 +1062,17 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'liftStatus',
-						statuses: [ 'ghost' ]
+						statuses: [ 'ghost' ],
 					},
 					{
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 25
-					}
-				]
-			}
-		]
+						power: 25,
+					},
+				],
+			},
+		],
 	},
 	spectralReversion: {
 		name: "Spectral Reversion",
@@ -1107,17 +1107,17 @@ const Skills =
 					{
 						targetHint: 'user',
 						type: 'liftStatus',
-						status: 'ghost'
+						status: 'ghost',
 					},
 					{
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 50
-					}
-				]
-			}
-		]
+						power: 50,
+					},
+				],
+			},
+		],
 	},
 	tackle: {
 		name: "Tackle",
@@ -1133,11 +1133,11 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 15
-					}
-				]
-			}
-		]
+						power: 15,
+					},
+				],
+			},
+		],
 	},
 	trample: {
 		name: "Trample",
@@ -1153,12 +1153,12 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'instaKill',
-						damageType: 'physical'
-					}
-				]
-			}
-		]
-	}
+						damageType: 'physical',
+					},
+				],
+			},
+		],
+	},
 };
 
 function basicSpell(name, element)
@@ -1180,10 +1180,10 @@ function basicSpell(name, element)
 						damageType: 'magic',
 						power: 20,
 						element,
-					}
+					},
 				],
-			}
-		]
+			},
+		],
 	};
 }
 
@@ -1209,10 +1209,10 @@ function statusSpell(name, element, statusID)
 						addStatus: statusID,
 						statusChance: 100,
 						ignoreGuard: true,
-					}
+					},
 				],
-			}
-		]
+			},
+		],
 	};
 }
 
@@ -1237,9 +1237,9 @@ function powerSpell(name, element, statusID)
 						element: element,
 						addStatus: statusID,
 						statusChance: 0,
-					}
-				]
-			}
-		]
+					},
+				],
+			},
+		],
 	};
 }

@@ -806,7 +806,7 @@ function renderFilled (width, height, colour)
 		{ x: 0,     y: height / 2, z: 0, u: 0, v: 1, color: colour },
 		{ x: width, y: height / 2, z: 0, u: 1, v: 1, color: colour },
 		{ x: 0,     y: height,     z: 0, u: 0, v: 0, color: dimColour },
-		{ x: width, y: height,     z: 0, u: 1, v: 0, color: dimColour }
+		{ x: width, y: height,     z: 0, u: 1, v: 0, color: dimColour },
 	]);
 
 	return new Shape(ShapeType.TriStrip, vbo);
@@ -852,6 +852,6 @@ function objectifyColour(colour)
 		r: colour.r,
 		g: colour.g,
 		b: colour.b,
-		a: colour.a
+		a: colour.a,
 	};
 }

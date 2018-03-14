@@ -16,7 +16,7 @@ const Characters =
 			def: 75,
 			foc: 80,
 			mag: 100,
-			agi: 50
+			agi: 50,
 		},
 		skills: [
 			'inferno',
@@ -26,8 +26,8 @@ const Characters =
 			'omni',
 			'heal',
 			'dispel',
-			'curse'
-		]
+			'curse',
+		],
 	},
 
 	// Bruce Arsen
@@ -40,7 +40,7 @@ const Characters =
 			def: 50,
 			foc: 80,
 			mag: 30,
-			agi: 55
+			agi: 55,
 		},
 		autoScan: true,
 		startingWeapon: 'arsenRifle',
@@ -125,8 +125,8 @@ const Characters =
 			'dispel',
 			'necromancy',
 			'crackdown',
-			'curse'
-		]
+			'curse',
+		],
 	},
 
 	// Katelyn Hippofoood
@@ -140,7 +140,7 @@ const Characters =
 			def: 30,
 			foc: 80,
 			mag: 65,
-			agi: 50
+			agi: 50,
 		},
 		skills: [
 			'potshot',
@@ -148,7 +148,7 @@ const Characters =
 			'subzero',
 			'discharge',
 			'tenPointFive',
-			'omni'
+			'omni',
 		],
 	},
 
@@ -166,7 +166,7 @@ const Characters =
 			def: 40,
 			foc: 90,
 			mag: 70,
-			agi: 70
+			agi: 70,
 		},
 		skills: [
 			'starToss',
@@ -174,7 +174,7 @@ const Characters =
 			'flare',
 			'chill',
 			'lightning',
-			'quake'
+			'quake',
 		],
 	},
 
@@ -190,14 +190,14 @@ const Characters =
 			def: 85,
 			foc: 65,
 			mag: 30,
-			agi: 35
+			agi: 35,
 		},
 		skills: [
 			'munch',
 			'fatseat',
 			'fatSlam',
 			'flameBreath',
-		]
+		],
 	},
 
 	// Robert Spellbinder
@@ -210,7 +210,7 @@ const Characters =
 			def: 75,
 			foc: 75,
 			mag: 75,
-			agi: 75
+			agi: 75,
 		},
 		startingWeapon: 'rsbSword',
 		skills: [
@@ -232,7 +232,7 @@ const Characters =
 			'protectiveAura',
 			'necromancy',
 			'crackdown',
-		]
+		],
 	},
 
 	// Scott Starcross
@@ -248,7 +248,7 @@ const Characters =
 			def: 70,
 			foc: 70,
 			mag: 70,
-			agi: 70
+			agi: 70,
 		},
 		startingWeapon: 'heirloom',
 		skills: [
@@ -266,6 +266,6 @@ const Characters =
 			'tremor',
 			'frostbite',
 			'jolt',
-		]
-	}
+		],
+	},
 };

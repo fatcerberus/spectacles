@@ -190,7 +190,7 @@ class BattleContext extends Thread
 					bias: bias,
 					remainingTime: timeUntilUp,
 					turnIndex: turnIndex,
-					unit: unit
+					unit: unit,
 				});
 			}
 		}
@@ -248,7 +248,7 @@ class BattleContext extends Thread
 				let eventData = {
 					action: clone(action),
 					aimRate: 1.0,
-					targetInfo: clone(targetUnits[i].battlerInfo)
+					targetInfo: clone(targetUnits[i].battlerInfo),
 				};
 				actingUnit.raiseEvent('aiming', eventData);
 				aimRate = eventData.aimRate;
@@ -286,7 +286,7 @@ class BattleContext extends Thread
 					MoveEffects[effect.type](actingUnit, targets, effect);
 				}
 				return this.pc < this.effects.length;
-			}
+			},
 		};
 		if (action.animation in Animations) {
 			Animations[action.animation]

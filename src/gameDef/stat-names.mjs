@@ -11,5 +11,5 @@ const StatNames =
 	def: "Defense",
 	foc: "Focus",
 	mag: "Magic",
-	agi: "Agility"
+	agi: "Agility",
 };

@@ -68,7 +68,7 @@ const Maps =
 					"The lights are out...",
 					"What's going on?")
 				.run(true);
-		}
+		},
 	},
 
 	testville: {
@@ -78,6 +78,6 @@ const Maps =
 		canvasColor: CreateColor(0, 96, 0, 255),
 
 		onEnter: function() {
-		}
-	}
+		},
+	},
 };

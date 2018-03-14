@@ -47,7 +47,7 @@ class MoveMenu extends Thread
 				drawerTable[category] = {
 					name: SkillCategories[category],
 					contents: [],
-					cursor: 0
+					cursor: 0,
 				};
 			}
 			drawerTable[category].contents.push(skill);
@@ -106,7 +106,7 @@ class MoveMenu extends Thread
 				color2 = mainColor;
 			}
 			let halfHeight = Math.round(height / 2);
-			GradientRectangle(x, y, width , halfHeight, color2, color2, color, color);
+			GradientRectangle(x, y, width, halfHeight, color2, color2, color, color);
 			GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
 			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
 		};
@@ -220,7 +220,7 @@ class MoveMenu extends Thread
 		return {
 			usable: this.selection,
 			stance: this.stance,
-			targets: chosenTargets
+			targets: chosenTargets,
 		};
 	}
 
@@ -238,7 +238,7 @@ class MoveMenu extends Thread
 						isEnabled: usables[i].isUsable(this.unit, this.stance),
 						mpCost: usables[i].mpCost(this.unit),
 						rank: usables[i].rank,
-						usable: usables[i]
+						usable: usables[i],
 					};
 					let actions = menuItem.usable.peekActions();
 					for (let i2 = 0; i2 < actions.length; ++i2) {

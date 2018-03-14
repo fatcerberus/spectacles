@@ -16,7 +16,7 @@ Scene.defineOp('adjustBGM',
 
 	update(scene) {
 		return Music.adjustingVolume;
-	}
+	},
 });
 
 // .battle() command
@@ -58,14 +58,14 @@ Scene.defineOp('battle',
 				break;
 		}
 		return true;
-	}
+	},
 });
 
 Scene.defineOp('changeBGM',
 {
 	start(scene, trackName, fadeTime) {
 		Music.play(trackName, fadeTime);
-	}
+	},
 });
 
 Scene.defineOp('marquee',
@@ -100,21 +100,21 @@ Scene.defineOp('marquee',
 
 	update(scene) {
 		return this.animation.running;
-	}
+	},
 });
 
 Scene.defineOp('popBGM',
 {
 	start(scene) {
 		Music.pop();
-	}
+	},
 });
 
 Scene.defineOp('pushBGM',
 {
 	start(scene, trackName) {
 		Music.push(trackName);
-	}
+	},
 });
 
 Scene.defineOp('talk',
@@ -327,5 +327,5 @@ Scene.defineOp('talk',
 				this.lineVisibility = 0.0;
 			}
 		}
-	}
+	},
 });

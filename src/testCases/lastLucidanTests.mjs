@@ -32,7 +32,7 @@ TestHarness.addBattle('temple', {
 			weapon: 'arsenRifle',
 			items: [],
 		},
-	}
+	},
 });
 
 TestHarness.addBattle('starcross', {
@@ -52,5 +52,5 @@ TestHarness.addBattle('starcross', {
 			level: 100,
 			items: [],
 		},
-	}
+	},
 });

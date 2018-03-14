@@ -44,20 +44,25 @@ rules:
   array-bracket-spacing:
     - error
     - always
+  comma-dangle:
+    - error
+    - always-multiline
   comma-spacing: error
+  complexity:
+    - warn
   func-style:
     - error
     - declaration
     - {
-        allowArrowFunctions: true
+        allowArrowFunctions: true,
       }
   indent:
     - error
     - tab
     - {
-        SwitchCase: 1
+        SwitchCase: 1,
+        flatTernaryExpressions: true,
       }
-  no-await-in-loop: warn
   no-console: off
   no-floating-decimal: error
   no-implicit-coercion: error
@@ -66,7 +71,7 @@ rules:
   no-unused-vars:
     - error
     - {
-        args: none
+        args: none,
       }
   object-curly-spacing:
     - error

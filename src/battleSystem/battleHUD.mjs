@@ -148,7 +148,7 @@ class BattleHUD extends Thread
 			hp: hp,
 			maxHP: maxHP,
 			hpGauge: hpGauge,
-			lightColor: CreateColor(255, 0, 0, 0)
+			lightColor: CreateColor(255, 0, 0, 0),
 		};
 	}
 

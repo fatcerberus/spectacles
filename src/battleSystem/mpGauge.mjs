@@ -5,6 +5,8 @@
 
 import { Prim, Scene } from 'sphere-runtime';
 
+import { drawTextEx } from '$/utilities';
+
 export default
 class MPGauge
 {
@@ -31,8 +33,8 @@ class MPGauge
 			let maxRadius = Math.ceil(size * Math.sqrt(2) / 2);
 			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt((this.reading + this.usage) / this.capacity), innerUsageColor, outerUsageColor);
 			Prim.drawSolidCircle(Surface.Screen, x + size / 2, y + size / 2, maxRadius * Math.sqrt(this.reading / this.capacity), innerFillColor, outerFillColor);
-			drawText(this.textFont, x + size - 21, y + size / 2 - 8, 1, Color.White, Math.round(this.reading), 'right');
-			drawText(this.textFont, x + size - 20, y + size / 2 - 4, 1, new Color(1, 0.75, 0), "MP");
+			drawTextEx(this.textFont, x + size - 21, y + size / 2 - 8, Math.round(this.reading), Color.White, 1, 'right');
+			drawTextEx(this.textFont, x + size - 20, y + size / 2 - 4, "MP", new Color(1, 0.75, 0), 1);
 		}
 		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 	}
@@ -64,19 +66,4 @@ class MPGauge
 			this.usage = 0;
 		}
 	}
-}
-
-function drawText(font, x, y, shadowDistance, color, text, alignment = 'left')
-{
-	const Align = {
-		left(font, x, text) { return x; },
-		center(font, x, text) { return x - font.getTextSize(text).width / 2; },
-		right(font, x, text) { return x - font.getTextSize(text).width; }
-	};
-
-	if (!(alignment in Align))
-		throw new Error(`invalid text alignment '${alignment}'.`);
-	x = Align[alignment](font, x, text);
-	font.drawText(Surface.Screen, x + shadowDistance, y + shadowDistance, text, Color.Black.fadeTo(color.a));
-	font.drawText(Surface.Screen, x, y, text, color);
 }

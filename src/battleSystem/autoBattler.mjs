@@ -218,7 +218,7 @@ class AutoBattler
 			usable: skillToUse,
 			stance: stance,
 			targets: targets,
-			predicate: predicate
+			predicate: predicate,
 		});
 		console.log(`${this.unit.name} queued use of skill ${skillToUse.name}`);
 	}

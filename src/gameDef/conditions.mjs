@@ -31,10 +31,11 @@ const Conditions =
 			if (this.actionsLeft <= 0) {
 				console.log("Blackout has expired");
 				battle.liftCondition('blackout');
-			} else {
+			}
+			else {
 				console.log("Blackout will expire in " + this.actionsLeft + " more action(s)");
 			}
-		}
+		},
 	},
 
 	// General Disarray field condition
@@ -58,11 +59,12 @@ const Conditions =
 			--this.actionsLeft;
 			if (this.actionsLeft > 0) {
 				console.log("G. Disarray will expire in " + this.actionsLeft + " more action(s)");
-			} else {
+			}
+			else {
 				console.log("G. Disarray has expired");
 				battle.liftCondition('generalDisarray');
 			}
-		}
+		},
 	},
 
 	// Healing Aura field condition
@@ -87,10 +89,11 @@ const Conditions =
 			if (this.cyclesLeft <= 0) {
 				console.log("Healing Aura has expired");
 				battle.liftCondition('healingAura');
-			} else {
+			}
+			else {
 				console.log("Healing Aura will expire in " + this.cyclesLeft + " more cycle(s)");
 			}
-		}
+		},
 	},
 
 	// Inferno field condition
@@ -155,7 +158,7 @@ const Conditions =
 				eventData.cancel = true;
 				console.log("Frostbite is incompatible with Inferno");
 			}
-		}
+		},
 	},
 
 	// Subzero field condition
@@ -229,11 +232,12 @@ const Conditions =
 			if (eventData.statusID == 'frostbite') {
 				eventData.cancel = true;
 				console.log("Frostbite infliction overruled by Subzero");
-			} else if (eventData.statusID == 'ignite') {
+			}
+			else if (eventData.statusID == 'ignite') {
 				eventData.cancel = true;
 				console.log("Ignite is incompatible with Subzero");
 			}
-		}
+		},
 	},
 
 	// Thunderstorm field condition
@@ -261,10 +265,11 @@ const Conditions =
 				if (this.strikesLeft <= 0) {
 					console.log("Thunderstorm has expired");
 					battle.liftCondition('thunderstorm');
-				} else {
+				}
+				else {
 					console.log("Thunderstorm will expire in " + this.strikesLeft + " more strike(s)");
 				}
 			}
-		}
-	}
+		},
+	},
 };
