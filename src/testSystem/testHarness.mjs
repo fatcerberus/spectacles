@@ -21,7 +21,7 @@ class TestHarness
 				if (!(testID in this.tests))
 					return console.log(`unknown test ID '${testID}'`);
 				this.run(testID);
-			}
+			},
 		});
 		this.tests = {};
 		this.isBattleRunning = false;
@@ -60,7 +60,7 @@ class TestHarness
 					.battle(this.setup.battleID, session)
 					.run();
 				TestHarness.isBattleRunning = false;
-			}
+			},
 		};
 		console.log(`adding battle test '${testID}'`);
 	}
@@ -72,10 +72,12 @@ class TestHarness
 			context: {},
 			run() {
 				this.func.call(this.context);
-			}
+			},
 		};
 		console.defineObject(testID, this.tests[testID], {
-			'test': TestHarness.run.bind(TestHarness, testID)
+			'test'(testID) {
+				TestHarness.run(testID);
+			},
 		});
 		console.log(`adding generic test '${testID}'`);
 	}

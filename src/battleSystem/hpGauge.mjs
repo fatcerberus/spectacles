@@ -517,8 +517,8 @@ class Segment
 	
 	translate ()
 	{
-		this._transform.identity();
-		this._transform.translate(this._x, this._y);
+		this._transform.identity()
+			.translate(this._x, this._y);
 		this._needsTranslate = false;
 	}
 

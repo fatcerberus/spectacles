@@ -11,12 +11,11 @@ export default
 class MPGauge
 {
 	constructor(capacity, color = Color.DodgerBlue, font = Font.Default) {
-		this.color = color;
-		this.textFont = font;
-
 		this.animation = null;
 		this.capacity = capacity;
+		this.color = color;
 		this.reading = capacity;
+		this.textFont = font;
 		this.usage = 0;
 		this.usageColor = Color.Transparent;
 		this.value = capacity;

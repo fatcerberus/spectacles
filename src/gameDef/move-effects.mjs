@@ -10,14 +10,14 @@ import { Maths } from './maths';
 export
 const Elements =
 {
-	fire: { name: "Fire", color: CreateColor(255, 0, 0, 255) },
-	ice: { name: "Ice", color: CreateColor(0, 128, 255, 255) },
-	lightning: { name: "Lightning", color: CreateColor(255, 192, 0, 255) },
-	earth: { name: "Earth", color: CreateColor(255, 128, 0, 255) },
-	cure: { name: "Cure", color: CreateColor(64, 255, 128, 255) },
-	omni: { name: "Omni", color: CreateColor(255, 255, 255, 255) },
-	fat: { name: "Fat", color: CreateColor(255, 0, 255, 255) },
-	zombie: { name: "Zombie", color: CreateColor(128, 255, 0, 255) },
+	fire: { name: "Fire", color: Color.Red },
+	ice: { name: "Ice", color: Color.DeepSkyBlue },
+	lightning: { name: "Lightning", color: Color.Gold },
+	earth: { name: "Earth", color: Color.DarkOrange },
+	cure: { name: "Cure", color: Color.SpringGreen },
+	omni: { name: "Omni", color: Color.White },
+	fat: { name: "Fat", color: Color.Magenta },
+	zombie: { name: "Zombie", color: Color.MediumSeaGreen },
 };
 
 export

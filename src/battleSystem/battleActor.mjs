@@ -20,7 +20,7 @@ class BattleActor
 		this.healings = [];
 		this.isEnemy = isEnemy;
 		this.isVisible = true;
-		this.messageFont = GetSystemFont();
+		this.messageFont = Font.Default;
 		this.name = name;
 		this.opacity = 1.0;
 		this.position = isEnemy ? position : 2 - position;
@@ -71,21 +71,21 @@ class BattleActor
 		this.sprite.blit(this.x, this.y, this.opacity * 255);
 		for (let i = 0; i < this.damages.length; ++i) {
 			let text = this.damages[i].text;
-			let x = this.x + 16 - this.messageFont.getStringWidth(text) / 2;
+			let x = this.x + 16 - this.messageFont.getTextSize(text).width / 2;
 			for (let i2 = 0; i2 < text.length; ++i2) {
 				let yName = 'y' + i2.toString();
 				let y = this.y + this.damages[i][yName];
-				let color = this.damages[i].color !== null ? this.damages[i].color
-					: CreateColor(255, 255, 255, 255);
+				let color = this.damages[i].color !== null
+					? this.damages[i].color : Color.White;
 				drawTextEx(this.messageFont, x, y, text[i2], color, 1);
-				x += this.messageFont.getStringWidth(text[i2]);
+				x += this.messageFont.getTextSize(text[i2]).width;
 			}
 		}
 		for (let i = 0; i < this.healings.length; ++i) {
 			let y = this.y + this.healings[i].y;
-			let color = this.healings[i].color !== null ? this.healings[i].color : CreateColor(64, 255, 128, 255);
-			let textColor = BlendColors(color, color);
-			textColor.alpha *= this.healings[i].alpha / 255;
+			let color = this.healings[i].color !== null
+				? this.healings[i].color : Color.GreenYellow;
+			let textColor = color.fadeTo(this.healings[i].alpha);
 			drawTextEx(this.messageFont, this.x + 16, y, this.healings[i].amount, textColor, 1, 'center');
 		}
 	}
@@ -155,10 +155,10 @@ class BattleActor
 
 	showHealing(amount, color = null)
 	{
-		let data = { amount: amount, color: color, y: 20, alpha: 255 };
+		let data = { amount: amount, color: color, y: 20, alpha: 1.0 };
 		data.scene = new Scene()
 			.tween(data, 60, 'easeOutExpo', { y: -11 * this.healings.length })
-			.tween(data, 30, 'easeInOutSine', { alpha: 0 });
+			.tween(data, 30, 'easeInOutSine', { alpha: 0.0 });
 		data.scene.run();
 		this.healings.push(data);
 	}

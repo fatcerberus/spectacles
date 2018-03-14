@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from, Scene, Thread } from 'sphere-runtime';
+import { from, Prim, Scene, Thread } from 'sphere-runtime';
 
 import { drawTextEx } from '$/utilities';
 
@@ -28,8 +28,8 @@ class TargetMenu extends Thread
 			: usable !== null ? usable.name
 			: unit.name;
 		this.statusNames = null;
-		this.cursorFont = GetSystemFont();
-		this.infoFont = GetSystemFont();
+		this.cursorFont = Font.Default;
+		this.infoFont = Font.Default;
 		this.targets = [];
 		this.unit = unit;
 		this.unitToShowInfo = null;
@@ -38,18 +38,18 @@ class TargetMenu extends Thread
 
 		this.drawCursor = function(unit)
 		{
-			let width = this.cursorFont.getStringWidth(this.name) + 10;
+			let width = this.cursorFont.getTextSize(this.name).width + 10;
 			let x = unit.actor.x < Surface.Screen.width / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
 			let y = unit.actor.y + 6;
-			Rectangle(x, y, width, 20, CreateColor(0, 0, 0, 128));
-			OutlinedRectangle(x, y, width, 20, CreateColor(0, 0, 0, 64));
-			drawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, CreateColor(255, 255, 255, 255), 1, 'center');
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, 20, Color.Black.fadeTo(0.5));
+			Prim.drawRectangle(Surface.Screen, x, y, width, 20, 1, Color.Black.fadeTo(0.25));
+			drawTextEx(this.cursorFont, x + width / 2, y + 4, this.name, Color.White, 1, 'center');
 		};
 
 		this.drawInfoBox = function(x, y, width, height, alpha)
 		{
-			Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha * (1.0 - this.infoBoxFadeness)));
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32 * (1.0 - this.infoBoxFadeness)));
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(alpha * (1.0 - this.infoBoxFadeness)));
+			Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.125 * (1.0 - this.infoBoxFadeness)));
 		};
 
 		this.moveCursor = function(direction)
@@ -198,31 +198,27 @@ class TargetMenu extends Thread
 			}
 		}
 		if (this.unitToShowInfo != null) {
-			SetClippingRectangle(0, 16, 160, Surface.Screen.height - 16);
-			let textAlpha = 255 * (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
+			Surface.Screen.clipTo(0, 16, 160, Surface.Screen.height - 16);
+			let textAlpha = (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
 			if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
 				let nameBoxHeight = 20 + 12 * this.statusNames.length;
 				let y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
-				Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
+				Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, y - 16, Color.Black.fadeTo(0.5 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, nameBoxHeight, 160);
-				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
-				let statusColor = this.statusNames.length == 0 ?
-					CreateColor(96, 192, 96, textAlpha) :
-					CreateColor(192, 192, 96, textAlpha);
-				for (let i = 0; i < this.statusNames.length; ++i) {
-					drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], CreateColor(192, 192, 96, textAlpha), 1, 'center');
-				}
+				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, Color.Silver.fadeTo(textAlpha), 1, 'center');
+				for (let i = 0; i < this.statusNames.length; ++i)
+					drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], Color.YellowGreen.fadeTo(textAlpha), 1, 'center');
 				this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 128);
-				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, Color.Khaki.fadeTo(textAlpha), 1, 'center');
 				this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 128);
-				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, CreateColor(192, 192, 144, textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, Color.Khaki.fadeTo(textAlpha), 1, 'center');
 			} else {
 				let y = 16 - 20 * this.infoBoxFadeness;
-				Rectangle(0, 16, 160, y - 16, CreateColor(0, 0, 0, 128 * (1.0 - this.infoBoxFadeness)));
+				Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, y - 16, Color.Black.fadeTo(0.5 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, 20, 160);
-				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, CreateColor(192, 192, 192, textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, Color.Silver.fadeTo(textAlpha), 1, 'center');
 			}
-			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
+			Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 		}
 	}
 

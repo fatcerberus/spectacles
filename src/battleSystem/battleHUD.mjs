@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Thread } from 'sphere-runtime';
 
 import { Game } from '$/gameDef';
 import { drawTextEx } from '$/utilities';
@@ -21,12 +21,12 @@ class BattleHUD extends Thread
 		
 		this.enemyHPGaugeColor = Color.PurwaBlue;
 		this.partyHPGaugeColor = Color.Lime;
-		this.partyHighlightColor = CreateColor(25, 25, 112, 255);
+		this.partyHighlightColor = Color.MidnightBlue;
 		this.partyMPGaugeColor = Color.DarkOrchid;
 
 		this.fadeness = 0.0;
-		this.font = GetSystemFont();
-		this.highlightColor = CreateColor(0, 0, 0, 0);
+		this.font = Font.Default;
+		this.highlightColor = Color.Transparent;
 		this.highlightedUnit = null;
 		this.hpGaugesInfo = [];
 		this.mpGauge = new MPGauge(partyMaxMP, this.partyMPGaugeColor);
@@ -35,39 +35,39 @@ class BattleHUD extends Thread
 
 		this.drawElementBox = function(x, y, width, height)
 		{
-			Rectangle(x, y, width, height, CreateColor(0, 0, 0, 192));
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 32));
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(0.75));
+			Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.125));
 		};
 
 		this.drawHighlight = function(x, y, width, height, color)
 		{
 			let outerColor = color;
-			let innerColor = BlendColors(outerColor, CreateColor(0, 0, 0, color.alpha));
+			let innerColor = Color.mix(outerColor, Color.Black.fadeTo(color.a));
 			let halfHeight = Math.round(height / 2);
-			GradientRectangle(x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
-			GradientRectangle(x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, color.alpha / 2));
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
+			Prim.drawSolidRectangle(Surface.Screen, x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, innerColor, innerColor);
+			Prim.drawRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(color.a / 2));
 		};
 
 		this.drawPartyElement = function(x, y, memberInfo, isHighlighted)
 		{
-			this.drawElementBox(x, y, 100, 20, CreateColor(0, 32, 0, 192));
+			this.drawElementBox(x, y, 100, 20, Color.of('#002000'));
 			if (isHighlighted) {
 				this.drawHighlight(x, y, 100, 20, this.highlightColor);
 			}
 			this.drawHighlight(x, y, 100, 20, memberInfo.lightColor);
-			let headingColor = isHighlighted ?
-				BlendColorsWeighted(CreateColor(255, 192, 0, 255), CreateColor(192, 144, 0, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-				CreateColor(192, 144, 0, 255);
+			let headingColor = isHighlighted
+				? Color.mix(Color.Gold, Color.of('#c09000'), this.highlightColor.a, 1.0 - this.highlightColor.a)
+				: Color.of('#c09000');
 			let textColor = isHighlighted ?
-				BlendColorsWeighted(CreateColor(255, 255, 255, 255), CreateColor(192, 192, 192, 255), this.highlightColor.alpha, 255 - this.highlightColor.alpha) :
-				CreateColor(192, 192, 192, 255);
+				Color.mix(Color.White, Color.Silver, this.highlightColor.a, 1.0 - this.highlightColor.a) :
+				Color.Silver;
 			memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 			drawTextEx(this.font, x + 34, y + 4, memberInfo.unit.name, textColor, 1);
 			//drawTextEx(this.font, x + 62, y + 6, "HP", headingColor, 1);
 			//drawTextEx(this.font, x + 61, y + 2, Math.round(memberInfo.hp), textColor, 1, 'right');
-			Rectangle(x + 81, y + 3, 14, 14, CreateColor(64, 96, 128, 255));
-			OutlinedRectangle(x + 81, y + 3, 14, 14, CreateColor(0, 0, 0, 255));
+			Prim.drawSolidRectangle(Surface.Screen, x + 81, y + 3, 14, 14, Color.SteelBlue);
+			Prim.drawRectangle(Surface.Screen, x + 81, y + 3, 14, 14, 1, Color.Black);
 		};
 	}
 
@@ -97,12 +97,12 @@ class BattleHUD extends Thread
 		if (unit !== null) {
 			this.highlightedUnit = unit;
 			new Scene()
-				.tween(this.highlightColor, 6, 'easeInQuad', BlendColors(this.partyHighlightColor, CreateColor(255, 255, 255, this.partyHighlightColor.alpha)))
+				.tween(this.highlightColor, 6, 'easeInQuad', Color.mix(this.partyHighlightColor, Color.Black.fadeTo(this.partyHighlightColor.a)))
 				.tween(this.highlightColor, 15, 'easeOutQuad', this.partyHighlightColor)
 				.run();
 		} else {
 			new Scene()
-				.tween(this.highlightColor, 6, 'easeInQuad', CreateColor(0, 0, 0, 0))
+				.tween(this.highlightColor, 6, 'easeInQuad', Color.Transparent)
 				.run();
 		}
 	}
@@ -118,11 +118,11 @@ class BattleHUD extends Thread
 					: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
 					: Color.Lime;
 				characterInfo.hpGauge.changeColor(gaugeColor, 0.5);
-				let flashColor = hp > characterInfo.hp ? CreateColor(0, 192, 0, 255) : CreateColor(192, 0, 0, 255);
+				let flashColor = hp > characterInfo.hp ? Color.LimeGreen : Color.DarkRed;
 				new Scene()
 					.fork()
 						.tween(characterInfo.lightColor, 15, 'easeOutQuad', flashColor)
-						.tween(characterInfo.lightColor, 15, 'easeOutQuad', CreateColor(0, 0, 0, 0))
+						.tween(characterInfo.lightColor, 15, 'easeOutQuad', Color.Transparent)
 					.end()
 					.tween(characterInfo, 15, 'easeInOutSine', { hp: hp })
 					.run();
@@ -148,7 +148,7 @@ class BattleHUD extends Thread
 			hp: hp,
 			maxHP: maxHP,
 			hpGauge: hpGauge,
-			lightColor: CreateColor(255, 0, 0, 0),
+			lightColor: Color.Red.fadeTo(0.0),
 		};
 	}
 
@@ -186,8 +186,8 @@ class BattleHUD extends Thread
 			if (this.highlightedUnit == gaugeInfo.owner) {
 				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
 			}
-			Rectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(128, 32, 32, 255));
-			OutlinedRectangle(itemX + 141, itemY + 3, 14, 14, CreateColor(0, 0, 0, 255));
+			Prim.drawSolidRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, Color.DarkRed);
+			Prim.drawRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, 1, Color.Black);
 			gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
 		}
 	}

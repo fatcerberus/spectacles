@@ -26,22 +26,19 @@ function clone(o, memo = [])
 }
 
 export
-function drawTextEx(font, x, y, text, color = CreateColor(255, 255, 255), shadowDistance = 0, alignment = 'left')
+function drawTextEx(font, x, y, text, color = Color.White, shadowLength = 0, alignment = 'left')
 {
 	const Align =
 	{
 		'left':   (font, x, text) => x,
-		'center': (font, x, text) => x - font.getStringWidth(text) / 2,
-		'right':  (font, x, text) => x - font.getStringWidth(text),
+		'center': (font, x, text) => x - font.getTextSize(text).width / 2,
+		'right':  (font, x, text) => x - font.getTextSize(text).width,
 	};
 
+	let shadowColor = Color.Black.fadeTo(color.a);
 	x = Align[alignment](font, x, text);
-	let oldColorMask = font.getColorMask();
-	font.setColorMask(CreateColor(0, 0, 0, color.alpha));
-	font.drawText(x + shadowDistance, y + shadowDistance, text);
-	font.setColorMask(color);
-	font.drawText(x, y, text);
-	font.setColorMask(oldColorMask);
+	font.drawText(Surface.Screen, x + shadowLength, y + shadowLength, text, shadowColor);
+	font.drawText(Surface.Screen, x, y, text, color);
 }
 
 export

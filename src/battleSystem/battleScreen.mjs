@@ -49,18 +49,18 @@ class BattleScreen extends Thread
 			text: actionName,
 			alignment: alignment,
 			color: bannerColor,
-			font: GetSystemFont(),
+			font: Font.Default,
 			fadeness: 1.0,
 			render() {
-				let width = this.font.getStringWidth(this.text) + 20;
-				let height = this.font.getHeight() + 10;
+				let width = this.font.getTextSize(this.text).width + 20;
+				let height = this.font.height + 10;
 				let x = (Surface.Screen.width - width) / 2;
 				let y = 112;
-				let textY = y + (height - this.font.getHeight()) / 2;
+				let textY = y + (height - this.font.height) / 2;
 				let boxColor = this.color.fadeTo(1.0 - this.fadeness);
 				Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, boxColor);
 				Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.25 * (1.0 - this.fadeness)));
-				drawTextEx(this.font, x + width / 2, textY, this.text, CreateColor(255, 255, 255, 255 * (1.0 - this.fadeness)), 1, 'center');
+				drawTextEx(this.font, x + width / 2, textY, this.text, Color.White.fadeTo(1.0 - this.fadeness), 1, 'center');
 			},
 		};
 		let job = Dispatch.onRender(() => announcement.render(), { priority: 10 });

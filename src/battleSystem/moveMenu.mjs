@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Thread } from 'sphere-runtime';
 
 import { Game, Elements, SkillCategories } from '$/gameDef';
 import { drawTextEx } from '$/utilities';
@@ -19,26 +19,26 @@ class MoveMenu extends Thread
 	{
 		super({ priority: 10 });
 		
-		this.lockedCursorColor = CreateColor(0, 36, 72, 255);
-		this.moveRankColor = CreateColor(255, 255, 255, 255);
-		this.normalCursorColor = CreateColor(0, 72, 144, 255);
-		this.textColor = CreateColor(255, 255, 255, 255);
-		this.usageTextColor = CreateColor(255, 192, 0, 255);
+		this.lockedCursorColor = Color.MidnightBlue;
+		this.moveRankColor = Color.White;
+		this.normalCursorColor = Color.MediumBlue;
+		this.textColor = Color.White;
+		this.usageTextColor = Color.Gold;
 
 		this.battle = battle;
 		this.drawers = null;
 		this.expansion = 0.0;
 		this.fadeness = 0.0;
-		this.font = GetSystemFont();
+		this.font = Font.Default;
 		this.isExpanded = false;
 		this.menuStance = stance;
 		this.moveCursor = 0;
-		this.moveCursorColor = CreateColor(0, 0, 0, 0);
+		this.moveCursorColor = Color.Transparent;
 		this.moveMenu = null;
 		this.selection = null;
 		this.stance = null;
 		this.topCursor = 0;
-		this.topCursorColor = CreateColor(0, 0, 0, 0);
+		this.topCursorColor = Color.Transparent;
 		this.unit = unit;
 		let drawerTable = {};
 		for (const skill of this.unit.skills) {
@@ -71,7 +71,7 @@ class MoveMenu extends Thread
 
 		this.hideMoveList = new Scene()
 			.fork()
-				.tween(this.moveCursorColor, 15, 'linear', CreateColor(0, 0, 0, 0))
+				.tween(this.moveCursorColor, 15, 'linear', Color.Transparent)
 			.end()
 			.fork()
 				.tween(this.topCursorColor, 15, 'easeInOutSine', this.normalCursorColor)
@@ -80,7 +80,7 @@ class MoveMenu extends Thread
 
 		this.showMenu = new Scene()
 			.fork()
-				.tween(this.topCursorColor, 15, 'easeOutQuad', CreateColor(192, 192, 192, 255))
+				.tween(this.topCursorColor, 15, 'easeOutQuad', Color.Silver)
 				.tween(this.topCursorColor, 15, 'easeOutQuad', this.normalCursorColor)
 			.end()
 			.tween(this, 30, 'easeOutBounce', { fadeness: 1.0 });
@@ -98,23 +98,23 @@ class MoveMenu extends Thread
 		{
 			let color;
 			let color2;
-			color = isEnabled ? cursorColor : CreateColor(96, 96, 96, cursorColor.alpha);
-			color2 = BlendColors(color, CreateColor(0, 0, 0, color.alpha));
+			color = isEnabled ? cursorColor : Color.Gray.fadeTo(cursorColor.a);
+			color2 = Color.mix(color, Color.Black.fadeTo(color.a));
 			if (isLockedIn) {
 				let mainColor = color;
 				color = color2;
 				color2 = mainColor;
 			}
 			let halfHeight = Math.round(height / 2);
-			GradientRectangle(x, y, width, halfHeight, color2, color2, color, color);
-			GradientRectangle(x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, cursorColor.alpha / 2));
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, halfHeight, color2, color2, color, color);
+			Prim.drawSolidRectangle(Surface.Screen, x, y + halfHeight, width, height - halfHeight, color, color, color2, color2);
+			Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(cursorColor.a / 2));
 		};
 
 		this.drawItemBox = function(x, y, width, height, alpha, isSelected, isLockedIn, cursorColor, isEnabled = true)
 		{
-			Rectangle(x, y, width, height, CreateColor(0, 0, 0, alpha));
-			OutlinedRectangle(x, y, width, height, CreateColor(0, 0, 0, 24));
+			Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(alpha));
+			Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.1));
 			if (isSelected) {
 				this.drawCursor(x, y, width, height, cursorColor, isLockedIn, isEnabled);
 			}
@@ -124,16 +124,16 @@ class MoveMenu extends Thread
 		{
 			let alpha = 255 * this.fadeness * this.expansion;
 			let isEnabled = item.isEnabled;
-			let textColor = isSelected ? this.textColor : CreateColor(128, 128, 128, alpha);
-			let usageTextColor = isSelected ? this.usageTextColor : BlendColors(this.usageTextColor, CreateColor(0, 0, 0, this.usageTextColor.alpha));
-			textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * alpha / 255);
-			usageTextColor = isEnabled ? usageTextColor : CreateColor(0, 0, 0, 32 * alpha / 255);
+			let textColor = isSelected ? this.textColor : Color.Gray.fadeTo(alpha);
+			let usageTextColor = isSelected ? this.usageTextColor : Color.mix(this.usageTextColor, Color.Black.fadeTo(this.usageTextColor.a));
+			textColor = isEnabled ? textColor : Color.Black.fadeTo(alpha / 8);
+			usageTextColor = isEnabled ? usageTextColor : Color.Black.fadeTo(alpha / 8);
 			this.drawItemBox(x, y, 160, 18, alpha * 128 / 255, isSelected, isLockedIn, this.moveCursorColor, isEnabled);
-			let rankBoxColor = isEnabled ? BlendColors(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha))
-				: BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 25, 75);
-			let rankColor = isEnabled ? item.idColor : BlendColorsWeighted(item.idColor, CreateColor(0, 0, 0, item.idColor.alpha), 33, 66);
-			Rectangle(x + 5, y + 2, 14, 14, rankBoxColor);
-			OutlinedRectangle(x + 5, y + 2, 14, 14, CreateColor(0, 0, 0, rankBoxColor.alpha / 2));
+			let rankBoxColor = isEnabled ? Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a))
+				: Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a), 25, 75);
+			let rankColor = isEnabled ? item.idColor : Color.mix(item.idColor, Color.Black.fadeTo(item.idColor.a), 33, 66);
+			Prim.drawSolidRectangle(Surface.Screen, x + 5, y + 2, 14, 14, rankBoxColor);
+			Prim.drawRectangle(Surface.Screen, x + 5, y + 2, 14, 14, 1, Color.Black.fadeTo(rankBoxColor.a / 2));
 			drawTextEx(this.font, x + 12, y + 3, isFinite(item.rank) ? item.rank : "?", rankColor, 1, 'center');
 
 			let shadowLength = isEnabled ? 1 : 0;
@@ -151,8 +151,8 @@ class MoveMenu extends Thread
 		{
 			let isEnabled = item.contents.length > 0;
 			this.drawItemBox(x, y, width, 18, 144 * this.fadeness, isSelected, this.isExpanded, this.topCursorColor, isEnabled);
-			let textColor = isSelected ? CreateColor(255, 255, 255, 255 * this.fadeness) : CreateColor(128, 128, 128, 255 * this.fadeness);
-			textColor = isEnabled ? textColor : CreateColor(0, 0, 0, 32 * this.fadeness);
+			let textColor = isSelected ? Color.White.fadeTo(this.fadeness) : Color.Gray.fadeTo(this.fadeness);
+			textColor = isEnabled ? textColor : Color.Black.fadeTo(this.fadeness / 8);
 			drawTextEx(this.font, x + width / 2, y + 3, item.name.substr(0, 3), textColor, isEnabled ? 1 : 0, 'center');
 		};
 
@@ -234,7 +234,7 @@ class MoveMenu extends Thread
 				for (let i = 0; i < usables.length; ++i) {
 					let menuItem = {
 						name: usables[i].name,
-						idColor: CreateColor(192, 192, 192, 255),
+						idColor: Color.Silver,
 						isEnabled: usables[i].isUsable(this.unit, this.stance),
 						mpCost: usables[i].mpCost(this.unit),
 						rank: usables[i].rank,
@@ -305,16 +305,16 @@ class MoveMenu extends Thread
 			: this.stance == Stance.Guard ? "GS"
 			: "AS";
 		Surface.Screen.clipTo(0, 16, Surface.Screen.width, Surface.Screen.height - 16);
-		Rectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 160 * this.fadeness));
-		OutlinedRectangle(0, yOrigin, 136, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-		Rectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 176 * this.fadeness));
-		OutlinedRectangle(136, yOrigin, 24, 16, CreateColor(0, 0, 0, 24 * this.fadeness));
-		drawTextEx(this.font, 68, yOrigin + 2, this.unit.fullName, CreateColor(160, 160, 160, 255 * this.fadeness), 1, 'center');
-		drawTextEx(this.font, 148, yOrigin + 2, stanceText, CreateColor(255, 255, 128, 255 * this.fadeness), 1, 'center');
+		Prim.drawSolidRectangle(Surface.Screen, 0, yOrigin, 136, 16, Color.Black.fadeTo(0.625 * this.fadeness));
+		Prim.drawRectangle(Surface.Screen, 0, yOrigin, 136, 16, 1, Color.Black.fadeTo(0.1 * this.fadeness));
+		Prim.drawSolidRectangle(Surface.Screen, 136, yOrigin, 24, 16, Color.Black.fadeTo(0.7 * this.fadeness));
+		Prim.drawRectangle(Surface.Screen, 136, yOrigin, 24, 16, 1, Color.Black.fadeTo(0.1 * this.fadeness));
+		drawTextEx(this.font, 68, yOrigin + 2, this.unit.fullName, Color.DarkGray.fadeTo(this.fadeness), 1, 'center');
+		drawTextEx(this.font, 148, yOrigin + 2, stanceText, Color.Khaki.fadeTo(this.fadeness), 1, 'center');
 		let itemWidth = 160 / this.drawers.length;
-		let litTextColor = CreateColor(255, 255, 255, 255);
-		let dimTextColor = CreateColor(192, 192, 192, 255);
-		Rectangle(0, 16, 160, yOrigin - 16, CreateColor(0, 0, 0, 192 * this.fadeness));
+		let litTextColor = Color.White;
+		let dimTextColor = Color.Silver;
+		Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, yOrigin - 16, Color.Black.fadeTo(0.75 * this.fadeness));
 		for (let i = 0; i < this.drawers.length; ++i) {
 			let x = Math.floor(i * itemWidth);
 			let width = Math.floor((i + 1) * itemWidth) - x;
@@ -323,16 +323,16 @@ class MoveMenu extends Thread
 		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 		let itemY;
 		if (this.expansion > 0.0) {
-			SetClippingRectangle(0, yOrigin + 34, 160, Surface.Screen.height - (yOrigin + 34));
+			Surface.Screen.clipTo(0, yOrigin + 34, 160, Surface.Screen.height - (yOrigin + 34));
 			let height = this.moveMenu.length * 16;
 			let y = yOrigin + 34 - height * (1.0 - this.expansion);
-			Rectangle(0, 34, 160, y - 34, CreateColor(0, 0, 0, 128 * this.expansion * this.fadeness));
+			Prim.drawSolidRectangle(Surface.Screen, 0, 34, 160, y - 34, Color.Black.fadeTo(0.5 * this.expansion * this.fadeness));
 			itemY = y;
 			for (let i = 0; i < this.moveMenu.length; ++i) {
 				this.drawMoveItem(0, itemY, this.moveMenu[i], i == this.moveCursor, this.chooseMove.running);
 				itemY += 18;
 			}
-			SetClippingRectangle(0, 0, Surface.Screen.width, Surface.Screen.height);
+			Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 		} else {
 			itemY = yOrigin + 34;
 		}

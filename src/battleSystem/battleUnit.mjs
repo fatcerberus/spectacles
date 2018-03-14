@@ -134,11 +134,11 @@ class BattleUnit
 				.any(it => it.overrules(statusID));
 			if (!this.isPartyMember() && from(this.enemyInfo.immunities).anyIs(statusID)) {
 				if (!isGuardable)
-					this.actor.showHealing("immune", CreateColor(192, 192, 192, 255));
+					this.actor.showHealing("immune", Color.Silver);
 				console.log(`${this.name} is immune to ${statusName}`);
 			} else if (isOverruled) {
 				if (!isGuardable)
-					this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
+					this.actor.showHealing("ward", Color.Silver);
 				console.log(`${statusName} overruled by another of ${this.name}'s statuses`);
 			} else if (this.stance !== Stance.Guard || !isGuardable) {
 				let eventData = { unit: this, statusID: statusID, cancel: false };
@@ -154,7 +154,7 @@ class BattleUnit
 					console.log(`status ${effect.name} installed on ${this.name}`);
 				} else {
 					if (!isGuardable)
-						this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
+						this.actor.showHealing("ward", Color.Silver);
 					console.log(`status ${statusName} for ${this.name} blocked per status/FC`);
 				}
 			} else {
@@ -259,7 +259,7 @@ class BattleUnit
 
 	evade(actingUnit, action)
 	{
-		this.actor.showHealing("miss", CreateColor(192, 192, 192, 255));
+		this.actor.showHealing("miss", Color.Silver);
 		console.log(`${this.name} evaded ${actingUnit.name}'s attack`);
 		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
 		let isMelee = 'isMelee' in action ? action.isMelee : false;
@@ -624,7 +624,7 @@ class BattleUnit
 	{
 		amount = Math.round(amount);
 		this.mpPool.restore(amount);
-		let color = BlendColorsWeighted(CreateColor(255, 0, 255, 255), CreateColor(255, 255, 255, 255), 33, 66);
+		let color = Color.mix(Color.Magenta, Color.White, 33, 66);
 		this.actor.showHealing(`${amount}MP`, color);
 	}
 
@@ -637,7 +637,7 @@ class BattleUnit
 			this.resetCounter(Game.reviveRank);
 			console.log(`${this.name} brought back from the dead`);
 		} else {
-			this.actor.showHealing("ward", CreateColor(192, 192, 192, 255));
+			this.actor.showHealing("ward", Color.Silver);
 		}
 	}
 
@@ -652,7 +652,7 @@ class BattleUnit
 	async setWeapon(weaponID)
 	{
 		let weaponDef = Weapons[weaponID];
-		await this.announce(`equip ${weaponDef.name}`);
+		await this.announce(`Equip: ${weaponDef.name}`);
 		this.weapon = weaponDef;
 		console.log(`${this.name} equipped weapon ${weaponDef.name}`);
 		this.resetCounter(Game.equipWeaponRank);
@@ -701,12 +701,12 @@ class BattleUnit
 				let damageColor = null;
 				for (const tag of elementTags) {
 					damageColor = damageColor !== null
-						? BlendColors(damageColor, Elements[tag].color)
+						? Color.mix(damageColor, Elements[tag].color)
 						: Elements[tag].color;
 				}
 				damageColor = damageColor !== null
-					? BlendColorsWeighted(damageColor, CreateColor(255, 255, 255, 255), 33, 66)
-					: CreateColor(255, 255, 255, 255);
+					? Color.mix(damageColor, Color.White, 33, 66)
+					: Color.White;
 				this.actor.showDamage(amount, damageColor);
 			}
 			this.battle.ui.hud.setHP(this, this.hp);
@@ -715,15 +715,13 @@ class BattleUnit
 				this.lazarusFlag = true;
 				let eventData = { unit: this, cancel: false };
 				this.battle.raiseEvent('unitDying', eventData);
-				if (!eventData.cancel) {
+				if (!eventData.cancel)
 					this.raiseEvent('dying', eventData);
-				}
 				this.lazarusFlag = eventData.cancel;
-				if (!this.lazarusFlag) {
+				if (!this.lazarusFlag)
 					this.die();
-				} else {
+				else
 					console.log(`suspend KO for ${this.name} per status/FC`);
-				}
 			}
 		} else if (amount < 0) {
 			this.heal(Math.abs(amount), tags);
