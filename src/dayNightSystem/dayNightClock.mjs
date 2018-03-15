@@ -82,24 +82,29 @@ class DayNightClock extends Thread
 				this.state = Night;
 				this.shader.setFloatVector('tintColor', NightMask);
 			}
-		} else if (now.hour >= 7 && now.hour < 17) {
+		}
+		else if (now.hour >= 7 && now.hour < 17) {
 			if (this.state !== Day) {
 				this.state = Day;
 				this.shader.setFloatVector('tintColor', DayMask);
 			}
-		} else if (now.hour >= 5 && now.hour < 6) {
+		}
+		else if (now.hour >= 5 && now.hour < 6) {
 			this.state = Fading;
 			let alpha = now.minute / 60;
 			this.mixMasks(TwilightMask, NightMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 6 && now.hour < 7) {
+		}
+		else if (now.hour >= 6 && now.hour < 7) {
 			this.state = Fading;
 			let alpha = now.minute / 60;
 			this.mixMasks(DayMask, TwilightMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 17 && now.hour < 18) {
+		}
+		else if (now.hour >= 17 && now.hour < 18) {
 			this.state = Fading;
 			let alpha = now.minute / 60;
 			this.mixMasks(TwilightMask, DayMask, alpha, 1.0 - alpha);
-		} else if (now.hour >= 18 && now.hour < 19) {
+		}
+		else if (now.hour >= 18 && now.hour < 19) {
 			this.state = Fading;
 			let alpha = now.minute / 60;
 			this.mixMasks(NightMask, TwilightMask, alpha, 1.0 - alpha);

@@ -89,11 +89,10 @@ class AutoBattler
 					await this.strategize();
 				if (this.moveQueue.length == 0) {
 					console.log(`no moves queued for ${this.unit.name}, using default`);
-					if (this.defaultSkillID !== null) {
+					if (this.defaultSkillID !== null)
 						this.queueSkill(this.defaultSkillID);
-					} else {
+					else
 						throw new Error("no moves queued and no default skill");
-					}
 				}
 			}
 			let candidateMove;

@@ -20,7 +20,8 @@ function clone(o, memo = [])
 				dolly[p] = clone(o[p], memo);
 		}
 		return dolly;
-	} else {
+	}
+	else {
 		return o;
 	}
 }

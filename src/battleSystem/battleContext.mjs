@@ -49,7 +49,8 @@ class BattleContext extends Thread
 			let effect = new FieldCondition(eventData.conditionID, this);
 			this.conditions.push(effect);
 			console.log(`install field condition ${effect.name}`);
-		} else {
+		}
+		else {
 			console.log(`cancel FC '${conditionID}' per existing FC`);
 		}
 	}
@@ -70,11 +71,10 @@ class BattleContext extends Thread
 
 	enemiesOf(unit)
 	{
-		if (unit.isPartyMember()) {
+		if (unit.isPartyMember())
 			return this.enemyUnits;
-		} else {
+		else
 			return this.playerUnits;
-		}
 	}
 
 	findUnit(unitID)
@@ -260,7 +260,8 @@ class BattleContext extends Thread
 			if (isHit) {
 				await this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);
 				targetsHit.push(targetUnits[i]);
-			} else {
+			}
+			else {
 				targetUnits[i].evade(actingUnit, action);
 			}
 		}

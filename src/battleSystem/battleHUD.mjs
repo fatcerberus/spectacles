@@ -94,7 +94,8 @@ class BattleHUD extends Thread
 				.tween(this.highlightColor, 6, 'easeInQuad', Color.mix(this.partyHighlightColor, Color.Black.fadeTo(this.partyHighlightColor.a)))
 				.tween(this.highlightColor, 15, 'easeOutQuad', this.partyHighlightColor)
 				.run();
-		} else {
+		}
+		else {
 			new Scene()
 				.tween(this.highlightColor, 6, 'easeInQuad', Color.Transparent)
 				.run();
@@ -165,20 +166,18 @@ class BattleHUD extends Thread
 		for (let i = 0; i < this.partyInfo.length; ++i) {
 			let itemX = 160;
 			let itemY = y + i * 20;
-			if (this.partyInfo[i] !== null) {
+			if (this.partyInfo[i] !== null)
 				this.drawPartyElement(itemX, itemY, this.partyInfo[i], this.highlightedUnit == this.partyInfo[i].unit);
-			} else {
+			else
 				this.drawElementBox(itemX, itemY, 100, 20);
-			}
 		}
 		for (let i = 0; i < this.hpGaugesInfo.length; ++i) {
 			let gaugeInfo = this.hpGaugesInfo[i];
 			let itemX = 160;
 			let itemY = y + this.partyInfo.length * 20 + i * 20;
 			this.drawElementBox(itemX, itemY, 160, 20);
-			if (this.highlightedUnit == gaugeInfo.owner) {
+			if (this.highlightedUnit == gaugeInfo.owner)
 				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
-			}
 			Prim.drawSolidRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, Color.DarkRed);
 			Prim.drawRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, 1, Color.Black);
 			gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);

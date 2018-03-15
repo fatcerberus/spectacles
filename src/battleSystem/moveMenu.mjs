@@ -141,7 +141,8 @@ class MoveMenu extends Thread
 			if (item.mpCost > 0) {
 				drawTextEx(this.font, x + 141, y + 1, item.mpCost, textColor, shadowLength, 'right');
 				drawTextEx(this.font, x + 142, y + 5, "MP", usageTextColor, shadowLength);
-			} else if (item.usable instanceof ItemUsable) {
+			}
+			else if (item.usable instanceof ItemUsable) {
 				drawTextEx(this.font, x + 148, y + 3, item.usable.usesLeft, textColor, shadowLength, 'right');
 				drawTextEx(this.font, x + 149, y + 3, "x", usageTextColor, shadowLength);
 			}
@@ -162,11 +163,13 @@ class MoveMenu extends Thread
 			if (this.stance != Stance.Guard) {
 				if (this.isExpanded) {
 					nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
-				} else {
+				}
+				else {
 					let drawer = this.drawers[this.topCursor];
 					nextMoveOrRank = drawer.contents.length > 0 ? drawer.contents[drawer.cursor] : Game.defaultItemRank;
 				}
-			} else {
+			}
+			else {
 				nextMoveOrRank = Game.stanceChangeRank;
 			}
 			let nextActions = isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : [ nextMoveOrRank ];
@@ -338,7 +341,8 @@ class MoveMenu extends Thread
 				itemY += 18;
 			}
 			Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
-		} else {
+		}
+		else {
 			itemY = yOrigin + 34;
 		}
 	}

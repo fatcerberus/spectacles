@@ -169,21 +169,19 @@ class TargetMenu extends Thread
 				break;
 			case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
 				if (!this.isTargetLocked && this.targets != null) {
-					if (!this.isGroupCast) {
+					if (!this.isGroupCast)
 						this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
-					} else {
+					else
 						this.targets = this.battle.enemiesOf(this.unit);
-					}
 					this.updateInfo();
 				}
 				break;
 			case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
 				if (!this.isTargetLocked && this.targets != null) {
-					if (!this.isGroupCast) {
+					if (!this.isGroupCast)
 						this.targets = [ this.unit ];
-					} else {
+					else
 						this.targets = this.battle.alliesOf(this.unit);
-					}
 					this.updateInfo();
 				}
 				break;
@@ -212,7 +210,8 @@ class TargetMenu extends Thread
 				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, Color.Khaki.fadeTo(textAlpha), 1, 'center');
 				this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 0.5);
 				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, Color.Khaki.fadeTo(textAlpha), 1, 'center');
-			} else {
+			}
+			else {
 				let y = 16 - 20 * this.infoBoxFadeness;
 				Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, y - 16, Color.Black.fadeTo(0.5 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, 20, 0.625);

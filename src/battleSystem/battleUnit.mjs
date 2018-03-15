@@ -136,11 +136,13 @@ class BattleUnit
 				if (!isGuardable)
 					this.actor.showHealing("immune", Color.Silver);
 				console.log(`${this.name} is immune to ${statusName}`);
-			} else if (isOverruled) {
+			}
+			else if (isOverruled) {
 				if (!isGuardable)
 					this.actor.showHealing("ward", Color.Silver);
 				console.log(`${statusName} overruled by another of ${this.name}'s statuses`);
-			} else if (this.stance !== Stance.Guard || !isGuardable) {
+			}
+			else if (this.stance !== Stance.Guard || !isGuardable) {
 				let eventData = { unit: this, statusID: statusID, cancel: false };
 				this.battle.raiseEvent('unitAfflicted', eventData);
 				if (!eventData.cancel)
@@ -152,12 +154,14 @@ class BattleUnit
 						.select(it => it.statusID)
 						.toArray();
 					console.log(`status ${effect.name} installed on ${this.name}`);
-				} else {
+				}
+				else {
 					if (!isGuardable)
 						this.actor.showHealing("ward", Color.Silver);
 					console.log(`status ${statusName} for ${this.name} blocked per status/FC`);
 				}
-			} else {
+			}
+			else {
 				console.log(`status ${statusName} for ${this.name} blocked by Guard`);
 			}
 		}
@@ -233,7 +237,8 @@ class BattleUnit
 				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 				console.log(`ask player for ${this.name}'s GS counterattack`);
 				chosenMove = await this.counterMenu.run();
-			} else {
+			}
+			else {
 				chosenMove = await this.ai.getNextMove();
 				chosenMove.targets = [ this.counterTarget ];
 			}
@@ -277,11 +282,10 @@ class BattleUnit
 
 	getLevel()
 	{
-		if (this.partyMember != null) {
+		if (this.partyMember != null)
 			return this.partyMember.level;
-		} else {
+		else
 			return this.battle.getLevel();
-		}
 	}
 
 	growSkill(skillID, experience)
@@ -309,7 +313,8 @@ class BattleUnit
 		if (this.actionQueue.length > 0) {
 			console.log(`${this.actionQueue.length} outstanding action(s) for ${this.name}`);
 			return this.actionQueue.shift();
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -343,7 +348,8 @@ class BattleUnit
 			this.battle.ui.hud.setHP(this, this.hp);
 			await this.battle.notifyAIs('unitHealed', this, amount, tags);
 			console.log(`heal ${this.name} for ${amount} HP`, `now: ${this.hp}`);
-		} else if (amount < 0) {
+		}
+		else if (amount < 0) {
 			this.takeDamage(-amount, [], true);
 		}
 	}
@@ -468,7 +474,8 @@ class BattleUnit
 				this.actionQueue.push(nextActions[i]);
 			if (this.actionQueue.length > 0)
 				console.log(`queue ${this.actionQueue.length} action(s) for ${this.moveUsed.usable.name}`);
-		} else {
+		}
+		else {
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns());
 		}
 	}
@@ -632,7 +639,8 @@ class BattleUnit
 			this.actor.animate('revive');
 			this.resetCounter(Game.reviveRank);
 			console.log(`${this.name} brought back from the dead`);
-		} else {
+		}
+		else {
 			this.actor.showHealing("ward", Color.Silver);
 		}
 	}
@@ -674,11 +682,10 @@ class BattleUnit
 			if (!eventData.cancel) {
 				this.raiseEvent('damaged', eventData);
 			}
-			if (!eventData.cancel) {
+			if (!eventData.cancel)
 				amount = Math.round(eventData.amount);
-			} else {
+			else
 				return;
-			}
 		}
 		if (amount >= 0) {
 			if (this.stance != Stance.Attack && this.lastAttacker !== null) {
@@ -719,7 +726,8 @@ class BattleUnit
 				else
 					console.log(`suspend KO for ${this.name} per status/FC`);
 			}
-		} else if (amount < 0) {
+		}
+		else if (amount < 0) {
 			this.heal(Math.abs(amount), tags);
 		}
 	}
@@ -754,7 +762,8 @@ class BattleUnit
 				this.stance = this.newStance = Stance.Attack;
 				await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				console.log(`${this.name}'s Guard Stance expired`);
-			} else if (this.stance === Stance.Counter) {
+			}
+			else if (this.stance === Stance.Counter) {
 				this.newStance = Stance.Attack;
 			}
 			console.log(`${this.name}'s turn is up`);
@@ -780,13 +789,15 @@ class BattleUnit
 					this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
 					console.log(`ask player for ${this.name}'s next move`);
 					chosenMove = await this.attackMenu.run();
-				} else {
+				}
+				else {
 					chosenMove = await this.ai.getNextMove();
 				}
 				if (chosenMove.stance != Stance.Guard) {
 					this.queueMove(chosenMove);
 					action = this.getNextAction();
-				} else {
+				}
+				else {
 					await this.setGuard();
 				}
 			}
@@ -802,7 +813,8 @@ class BattleUnit
 			console.log(`end of ${this.name}'s turn`);
 			this.battle.resume();
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -828,7 +840,8 @@ class BattleUnit
 				timeLeft += Math.max(Math.round(Maths.timeUntilNextTurn(this.battlerInfo, rank) / this.turnRatio), 1);
 			}
 			return timeLeft;
-		} else {
+		}
+		else {
 			return Infinity;
 		}
 	}

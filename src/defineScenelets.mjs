@@ -40,7 +40,8 @@ Scene.defineOp('battle',
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
 						this.gameOverThread = this.gameOver.show();
-					} else {
+					}
+					else {
 						return false;
 					}
 				}
@@ -51,7 +52,8 @@ Scene.defineOp('battle',
 						console.log("player asked to retry last battle");
 						this.mode = 'battle';
 						this.battleThread = this.battle.go();
-					} else {
+					}
+					else {
 						return false;
 					}
 				}
@@ -218,14 +220,14 @@ Scene.defineOp('talk',
 					if (this.topLine + 3 >= this.text[this.currentPage].length) {
 						this.timeoutLeft -= 1.0 / Sphere.frameRate;
 						if (this.timeoutLeft <= 0.0) {
-							if (this.currentPage < this.text.length - 1) {
+							if (this.currentPage < this.text.length - 1)
 								this.mode = "page";
-							} else {
+							else
 								this.mode = "hidetext";
-							}
 							this.timeoutLeft = this.timeout;
 						}
-					} else {
+					}
+					else {
 						this.mode = "nextline";
 						this.numLinesToDraw = 0;
 						this.lineVisibility = 0.0;
@@ -253,11 +255,10 @@ Scene.defineOp('talk',
 						if (this.lineToReveal - this.topLine == lineCount - 1) this.mode = "idle";
 						++this.lineToReveal;
 						++this.numLinesToDraw;
-						if (this.numLinesToDraw < 3 && this.lineToReveal < this.text[this.currentPage].length) {
+						if (this.numLinesToDraw < 3 && this.lineToReveal < this.text[this.currentPage].length)
 							this.mode = "nextline";
-						} else {
+						else
 							this.mode = "idle";
-						}
 						this.lineVisibility = 0.0;
 					}
 				}
@@ -316,12 +317,12 @@ Scene.defineOp('talk',
 			&& this.timeout == Infinity)
 		{
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
-				if (this.currentPage < this.text.length - 1) {
+				if (this.currentPage < this.text.length - 1)
 					this.mode = "page";
-				} else {
+				else
 					this.mode = "hidetext";
-				}
-			} else {
+			}
+			else {
 				this.mode = "nextline";
 				this.numLinesToDraw = 0;
 				this.lineVisibility = 0.0;

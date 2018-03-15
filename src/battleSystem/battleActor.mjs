@@ -127,7 +127,8 @@ class BattleActor
 			await new Scene()
 				.tween(this, 90, 'linear', { x: newX })
 				.run();
-		} else {
+		}
+		else {
 			this.x = newX;
 		}
 		this.sprite.stop();

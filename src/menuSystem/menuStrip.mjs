@@ -72,19 +72,22 @@ class MenuStrip extends Thread
 				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
 			this.animation.run();
 			this.mode = 'close';
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
+		}
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
 			this.chosenItem = null;
 			this.animation = new Scene()
 				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
 			this.animation.run();
 			this.mode = 'close';
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
+		}
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 			this.scrollDirection = -1;
 			this.animation = new Scene()
 				.tween(this, 15, 'linear', { scrollProgress: 1.0 });
 			this.animation.run();
 			this.mode = 'changeItem';
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
+		}
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 			this.scrollDirection = 1;
 			this.animation = new Scene()
 				.tween(this, 15, 'linear', { scrollProgress: 1.0 });

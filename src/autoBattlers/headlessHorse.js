@@ -32,7 +32,8 @@ class HeadlessHorseAI extends AutoBattler
 			case 1:
 				if (this.phase > lastPhase) {
 					this.queueSkill('flameBreath');
-				} else {
+				}
+				else {
 					var hellfireTurns = this.predictSkillTurns('hellfire');
 					if (!this.unit.hasStatus('ignite')) {
 						this.queueSkill('hellfire', 'headlessHorse');
@@ -42,7 +43,8 @@ class HeadlessHorseAI extends AutoBattler
 						{
 							this.queueSkill('spectralDraw', 'elysia');
 						}
-					} else {
+					}
+					else {
 						this.queueSkill('rearingKick');
 					}
 				}
@@ -55,14 +57,16 @@ class HeadlessHorseAI extends AutoBattler
 						if (this.damageTaken[unitID] > maxValue) {
 							this.ghostTargetID = unitID;
 							maxValue = this.damageTaken[unitID];
-						} else if (this.damageTaken[unitID] == maxValue && Random.chance(0.5)) {
+						}
+						else if (this.damageTaken[unitID] == maxValue && Random.chance(0.5)) {
 							this.ghostTargetID = unitID;
 						}
 					}
 					this.queueSkill('spectralDraw', this.ghostTargetID);
 					this.spectralDrawPending = false;
 					this.trampleTarget = null;
-				} else {
+				}
+				else {
 					this.queueSkill('flare');
 				}
 				break;
@@ -115,7 +119,8 @@ class HeadlessHorseAI extends AutoBattler
 			if (isPhysical && this.unit.hasStatus('rearing')) {
 				if (this.trampleTarget === null) {
 					this.queueSkill('flameBreath');
-				} else if (this.trampleTarget !== null) {
+				}
+				else if (this.trampleTarget !== null) {
 					this.trampleTarget = actingUnit.id;
 				}
 			}

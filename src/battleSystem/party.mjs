@@ -26,7 +26,8 @@ class Party
 			for (const member of from(this.members))
 				total += member.level;
 			return Math.floor(total / memberCount);
-		} else {
+		}
+		else {
 			return this.defaultLevel;
 		}
 	}
