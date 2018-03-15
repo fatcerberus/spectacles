@@ -357,7 +357,7 @@ class BattleContext extends Thread
 
 	async on_update() {
 		switch (this.mode) {
-			case 'setup':
+			case 'setup': {
 				let heading = ('isFinalBattle' in this.parameters && this.parameters.isFinalBattle)
 					? "Final Battle: " : "Boss Battle: ";
 				await this.ui.go('title' in this.parameters ? heading + this.parameters.title : null);
@@ -378,9 +378,11 @@ class BattleContext extends Thread
 				await this.ui.showTitle();
 				this.mode = 'battle';
 				break;
-			case 'battle':
+			}
+			case 'battle': {
 				await this.tick();
 				break;
+			}
 		}
 		if (this.result !== null) {
 			console.log("shut down battle engine");

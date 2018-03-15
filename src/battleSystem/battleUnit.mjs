@@ -20,7 +20,7 @@ import StatusEffect from './statusEffect';
 export default
 class BattleUnit
 {
-	constructor(battle, basis, position, startingRow, mpPool)
+	constructor(battle, basis, position, startingRow = Row.Middle, mpPool = null)
 	{
 		this.actionQueue = [];
 		this.actor = null;
@@ -35,7 +35,7 @@ class BattleUnit
 		this.lastAttacker = null;
 		this.lazarusFlag = false;
 		this.moveTargets = null;
-		this.mpPool = null;
+		this.mpPool = mpPool;
 		this.newSkills = [];
 		this.newStance = Stance.Attack;
 		this.partyMember = null;
@@ -99,8 +99,8 @@ class BattleUnit
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
 		this.counterMenu = new MoveMenu(this, battle, Stance.Counter);
 		this.refreshInfo();
-		this.mpPool = mpPool !== void null ? mpPool
-			: new MPPool(`${this.id}MP`, Math.round(Math.max(Maths.mp.capacity(this.battlerInfo), 0)));
+		if (this.mpPool === null)
+			this.mpPool = new MPPool(`${this.id}MP`, Math.round(Math.max(Maths.mp.capacity(this.battlerInfo), 0)));
 		this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 		if (this.isPartyMember())
 			this.battle.ui.hud.setPartyMember(position == 2 ? 0 : position == 0 ? 2 : position, this, this.hp, this.maxHP);
@@ -510,39 +510,34 @@ class BattleUnit
 	registerCommands()
 	{
 		console.defineObject(this.id, this, {
-
-			'add': function(statusID) {
+			'add'(statusID) {
 				if (statusID in Statuses)
 					this.addStatus(statusID);
 				else
 					console.log(`invalid status ID '${statusID}'`);
 			},
-
-			'lift': function(statusID) {
+			'lift'(statusID) {
 				if (statusID in Statuses)
 					this.liftStatus(statusID);
 				else
 					console.log(`invalid status ID '${statusID}'`);
 			},
-
-			'damage': function(amount, ...tags) {
+			'damage'(amount, ...tags) {
 				amount = Math.max(parseInt(amount), 0);
 				this.takeDamage(amount, tags);
 			},
-
-			'heal': function(amount, ...tags) {
+			'heal'(amount, ...tags) {
 				amount = Math.max(parseInt(amount), 0);
 				this.heal(amount, tags);
 			},
-
-			'inv': function(instruction) {
+			'inv'(instruction) {
 				if (instruction === undefined) {
 					console.log("'" + this.id + " inv': No instruction provided");
 					return;
 				}
 				let itemCount, itemID;
 				switch (instruction) {
-					case 'add':
+					case 'add': {
 						if (arguments.length < 2) {
 							console.log("'" + this.id + " inv add': Item ID required");
 							return;
@@ -552,14 +547,13 @@ class BattleUnit
 							return console.log("no such item ID '" + itemID + "'");
 						let defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
 						itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
+						let usables = from(this.items)
+							.where(it => it.itemID === itemID);
 						let addCount = 0;
-						from(this.items)
-							.where(item => item.itemID === itemID)
-							.each(item =>
-						{
-							item.usesLeft += itemCount;
+						for (const usable of usables) {
+							usable.usesLeft += itemCount;
 							addCount += itemCount;
-						});
+						}
 						if (addCount == 0) {
 							let usable = new ItemUsable(itemID);
 							usable.usesLeft = itemCount;
@@ -568,12 +562,14 @@ class BattleUnit
 						}
 						console.log(addCount + "x " + Items[itemID].name + " added to " + this.name + "'s inventory");
 						break;
-					case 'munch':
+					}
+					case 'munch': {
 						new Scene().playSound('Munch.wav').run();
 						this.items.length = 0;
 						console.log("maggie ate " + this.name + "'s entire inventory");
 						break;
-					case 'rm':
+					}
+					case 'rm': {
 						if (arguments.length < 2)
 							return console.log("'" + this.id + " inv add': Item ID required");
 						itemID = arguments[1];
@@ -588,16 +584,16 @@ class BattleUnit
 						else
 							console.log("No " + Items[itemID].name + " in " + this.name + "'s inventory");
 						break;
-					default:
+					}
+					default: {
 						return console.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
+					}
 				}
 			},
-
-			'revive': function() {
+			'revive'() {
 				this.resurrect();
 			},
-
-			'scan': function(flag) {
+			'scan'(flag) {
 				flag = flag.toLowerCase();
 				if (flag == 'on')
 					this.allowTargetScan = true;

@@ -76,6 +76,7 @@ rules:
   object-curly-spacing:
     - error
     - always
+  require-await: warn
   semi:
     - error
     - always

@@ -54,7 +54,7 @@ class SkillUsable
 	{
 		let target;
 		switch (this.skillInfo.targetType) {
-			case 'single':
+			case 'single': {
 				let enemies = user.battle.enemiesOf(user);
 				target = from(enemies)
 					.where(it => it.isAlive())
@@ -65,7 +65,8 @@ class SkillUsable
 						.sample(1).first();
 				}
 				return [ target ];
-			case 'ally':
+			}
+			case 'ally': {
 				let allies = user.battle.alliesOf(user);
 				target = user;
 				if (this.allowDeadTarget && from(allies).any(it => !it.isAlive())) {
@@ -74,16 +75,20 @@ class SkillUsable
 						.sample(1).first();
 				}
 				return [ target ];
-			case 'allEnemies':
+			}
+			case 'allEnemies': {
 				return from(user.battle.enemiesOf(user))
 					.where(it => it.isAlive() || this.allowDeadUnits)
 					.toArray();
-			case 'allAllies':
+			}
+			case 'allAllies': {
 				return from(user.battle.alliesOf(user))
 					.where(it => it.isAlive() || this.allowDeadUnits)
 					.toArray();
-			default:
+			}
+			default: {
 				return user;
+			}
 		}
 	}
 

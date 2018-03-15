@@ -255,18 +255,21 @@ class MoveMenu extends Thread
 				this.hideMoveList.stop();
 				this.showMoveList.run();
 				this.updateTurnPreview();
-			} else if (this.isExpanded && this.moveMenu[this.moveCursor].isEnabled) {
+			}
+			else if (this.isExpanded && this.moveMenu[this.moveCursor].isEnabled) {
 				this.drawers[this.topCursor].cursor = this.moveCursor;
 				this.selection = this.moveMenu[this.moveCursor].usable;
 				this.showMoveList.stop();
 				this.chooseMove.run();
 			}
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isExpanded) {
+		}
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isExpanded) {
 			this.drawers[this.topCursor].cursor = this.moveCursor;
 			this.isExpanded = false;
 			this.showMoveList.stop();
 			this.hideMoveList.run();
-		} else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)
+		}
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)
 			&& this.stance != Stance.Guard && this.stance != Stance.Counter)
 		{
 			this.stance = this.stance == Stance.Attack ? Stance.Charge
@@ -276,22 +279,26 @@ class MoveMenu extends Thread
 				this.showMoveList.stop();
 				this.chooseMove.run();
 			}
-		} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
+		}
+		else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
 			--this.topCursor;
 			if (this.topCursor < 0) {
 				this.topCursor = this.drawers.length - 1;
 			}
 			this.updateTurnPreview();
-		} else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
+		}
+		else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
 			++this.topCursor;
 			if (this.topCursor >= this.drawers.length) {
 				this.topCursor = 0;
 			}
 			this.updateTurnPreview();
-		} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
+		}
+		else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
 			this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
 			this.updateTurnPreview();
-		} else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
+		}
+		else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
 			this.moveCursor = (this.moveCursor + 1) % this.moveMenu.length;
 			this.updateTurnPreview();
 		}
