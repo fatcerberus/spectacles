@@ -346,20 +346,22 @@ class RobertIIAI extends AutoBattler
 	on_phaseChanged(newPhase, lastPhase)
 	{
 		switch (newPhase) {
-			case 1:
+			case 1: {
 				this.queueSkill('omni');
 				this.doChargeSlashNext = true;
 				this.isComboStarted = false;
 				this.isNecromancyPending = true;
 				break;
-			case 2:
+			}
+			case 2: {
 				this.queueSkill('upheaval', Stance.Charge);
 				this.isComboStarted = false;
 				this.isStatusHealPending = true;
 				this.wasHolyWaterUsed = false;
 				this.wasTonicUsed = false;
 				break;
-			case 3:
+			}
+			case 3: {
 				this.queueSkill('protectiveAura');
 				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt', Stance.Charge);
 				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
@@ -368,16 +370,19 @@ class RobertIIAI extends AutoBattler
 				this.isChargeSlashPending = true;
 				this.isComboStarted = false;
 				break;
-			case 4:
+			}
+			case 4: {
 				this.queueSkill('crackdown');
 				break;
-			case 5:
+			}
+			case 5: {
 				this.queueSkill('desperationSlash');
 				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine'))
 					this.queueItem('vaccine');
 				this.isAlcoholPending = true;
 				this.isComboStarted = false;
 				break;
+			}
 		}
 	}
 
@@ -456,13 +461,14 @@ class RobertIIAI extends AutoBattler
 					}
 					case 'retaliate': {
 						switch (Math.ceil(this.zombieHealAlertLevel)) {
-							case 0.0:
+							case 0.0: {
 								if (this.isSkillUsable('jolt')) {
 									this.queueSkill('jolt');
 									this.necroTonicItem = 'tonic';
 								}
 								break;
-							case 1.0:
+							}
+							case 1.0: {
 								if (this.nextElementalMove === null) {
 									this.queueSkill('ignite');
 									this.queueSkill('windchill', Stance.Charge);
@@ -473,11 +479,13 @@ class RobertIIAI extends AutoBattler
 									this.queueSkill(this.nextElementalMove);
 								}
 								break;
-							default:
+							}
+							default: {
 								if (this.isItemUsable('redBull'))
 									this.queueItem('redBull');
 								this.queueSkill('omni', Stance.Charge);
 								break;
+							}
 						}
 						this.zombieHealFixState = 'finish';
 						break;
