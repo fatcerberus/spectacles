@@ -38,7 +38,7 @@ class RobertIIAI extends AutoBattler
 	{
 		let qsTurns;
 		switch (this.phase) {
-			case 1:
+			case 1: {
 				let magicks = [ 'flare', 'quake', 'chill', 'lightning' ];
 				if (this.doChargeSlashNext) {
 					this.queueSkill('chargeSlash');
@@ -73,7 +73,8 @@ class RobertIIAI extends AutoBattler
 						this.queueSkill('swordSlash');
 				}
 				break;
-			case 2:
+			}
+			case 2: {
 				this.isStatusHealPending = (this.unit.hasStatus('frostbite') || this.unit.hasStatus('ignite'))
 					&& this.isStatusHealPending;
 				qsTurns = this.predictSkillTurns('quickstrike');
@@ -142,7 +143,8 @@ class RobertIIAI extends AutoBattler
 					this.wasHolyWaterUsed = false;
 				}
 				break;
-			case 3:
+			}
+			case 3: {
 				let holyWaterTurns = this.predictItemTurns('holyWater');
 				if (this.isChargeSlashPending && !this.unit.hasStatus('protect')) {
 					this.queueSkill('chargeSlash');
@@ -213,7 +215,8 @@ class RobertIIAI extends AutoBattler
 						this.queueSkill('tremor');
 				}
 				break;
-			case 4:
+			}
+			case 4: {
 				let skillID = Random.sample([ 'hellfire', 'windchill', 'electrocute', 'upheaval' ]);
 				let finisherID = this.isSkillUsable(skillID) ? skillID : 'swordSlash';
 				qsTurns = this.predictSkillTurns('quickstrike');
@@ -221,7 +224,8 @@ class RobertIIAI extends AutoBattler
 				if (this.isSkillQueued(finisherID) && this.scottStance == Stance.Guard)
 					this.queueSkill('chargeSlash');
 				break;
-			case 5:
+			}
+			case 5: {
 				if (this.isAlcoholPending) {
 					this.isAlcoholPending = false;
 					if (!this.unit.hasStatus('zombie')) {
@@ -254,6 +258,7 @@ class RobertIIAI extends AutoBattler
 						this.queueSkill(skillID);
 					}
 				}
+			}
 		}
 	}
 
@@ -442,13 +447,14 @@ class RobertIIAI extends AutoBattler
 			}
 			else if (this.zombieHealFixState !== null) {
 				switch (this.zombieHealFixState) {
-					case 'fixStatus':
+					case 'fixStatus': {
 						let itemID = (this.zombieHealAlertLevel > 0.0 || !this.isItemUsable('holyWater')) && this.isItemUsable('vaccine')
 							? 'vaccine' : 'holyWater';
 						this.queueItem(itemID);
 						this.zombieHealFixState = 'retaliate';
 						break;
-					case 'retaliate':
+					}
+					case 'retaliate': {
 						switch (Math.ceil(this.zombieHealAlertLevel)) {
 							case 0.0:
 								if (this.isSkillUsable('jolt')) {
@@ -475,10 +481,12 @@ class RobertIIAI extends AutoBattler
 						}
 						this.zombieHealFixState = 'finish';
 						break;
-					case 'finish':
+					}
+					case 'finish': {
 						this.zombieHealAlertLevel += 1.0;
 						this.zombieHealFixState = null;
 						break;
+					}
 				}
 			}
 		}

@@ -68,11 +68,7 @@ rules:
   no-implicit-coercion: error
   no-invalid-this: error
   no-lone-blocks: error
-  no-unused-vars:
-    - error
-    - {
-        args: none,
-      }
+  no-unused-vars: warn
   object-curly-spacing:
     - error
     - always

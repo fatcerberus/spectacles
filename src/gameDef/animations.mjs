@@ -16,14 +16,14 @@ const Animations =
 	//     targets:  The BattleUnit(s) targeted by the move.
 	//     doesMiss: true if the move was determined to have missed, false otherwise.
 
-	munch: async function(user, targets, doesMiss) {
+	async munch(user, targets, doesMiss) {
 		await new Scene()
 			.playSound('sounds/munch.wav')
 			.run();
 		this.nextEffect();
 	},
 
-	tripleShot: function(user, targets, doesMiss) {
+	tripleShot(user, targets, doesMiss) {
 		for (let i = 0; i < 3; ++i)
 			this.nextEffect();
 	},

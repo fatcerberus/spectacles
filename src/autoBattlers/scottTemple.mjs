@@ -23,8 +23,8 @@ class ScottTempleAI extends AutoBattler
 	strategize(stance, phase)
 	{
 		switch (phase) {
-			case 1:
-				var qsTurns = this.predictSkillTurns('quickstrike');
+			case 1: {
+				let qsTurns = this.predictSkillTurns('quickstrike');
 				if (qsTurns[0].unit === this.unit) {
 					this.queueSkill('quickstrike');
 				}
@@ -40,14 +40,15 @@ class ScottTempleAI extends AutoBattler
 					this.queueSkill(Random.sample([ 'flare', 'chill', 'lightning', 'quake', 'heal' ]));
 				}
 				break;
-			case 2:
+			}
+			case 2: {
 				if (this.isQSComboStarted) {
-					var qsTurns = this.predictSkillTurns('quickstrike');
+					let qsTurns = this.predictSkillTurns('quickstrike');
 					if (qsTurns[0].unit === this.unit) {
 						this.queueSkill('quickstrike');
 					}
 					else {
-						var skillToUse = Random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
+						let skillToUse = Random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 						this.queueSkill(this.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
 					}
 				}
@@ -58,7 +59,7 @@ class ScottTempleAI extends AutoBattler
 				}
 				else {
 					--this.movesTillReGen;
-					var skillToUse = this.unit.hasStatus('reGen')
+					let skillToUse = this.unit.hasStatus('reGen')
 						? Random.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike' ])
 						: Random.sample([ 'hellfire', 'windchill', 'upheaval', 'quickstrike', 'heal' ]);
 					skillToUse = this.isSkillUsable(skillToUse) ? skillToUse : 'quickstrike';
@@ -66,7 +67,7 @@ class ScottTempleAI extends AutoBattler
 						this.queueSkill(skillToUse);
 					}
 					else {
-						var qsTurns = this.predictSkillTurns(skillToUse);
+						let qsTurns = this.predictSkillTurns(skillToUse);
 						if (qsTurns[0].unit === this.unit) {
 							this.isQSComboStarted = true;
 							this.queueSkill(skillToUse);
@@ -77,26 +78,28 @@ class ScottTempleAI extends AutoBattler
 					}
 				}
 				break;
-			case 3:
+			}
+			case 3: {
 				if (this.isQSComboStarted) {
-					var qsTurns = this.predictSkillTurns('quickstrike');
+					let qsTurns = this.predictSkillTurns('quickstrike');
 					this.queueSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
 				}
 				else if (!this.battle.hasCondition('generalDisarray') && Random.chance(0.5)) {
 					this.queueSkill('tenPointFive');
 				}
 				else {
-					var skillToUse = Random.sample([ 'quickstrike',
+					let skillToUse = Random.sample([ 'quickstrike',
 						'hellfire', 'windchill', 'electrocute', 'upheaval',
 						'flare', 'chill', 'lightning', 'quake', 'heal' ]);
 					this.queueSkill(this.isSkillUsable(skillToUse) ? skillToUse
 						: Random.sample([ 'swordSlash', 'quickstrike', 'chargeSlash' ]));
 					if (this.isSkillQueued('quickstrike')) {
-						var qsTurns = this.predictSkillTurns('quickstrike');
+						let qsTurns = this.predictSkillTurns('quickstrike');
 						this.isQSComboStarted = qsTurns[0].unit === this.unit;
 					}
 				}
 				break;
+			}
 		}
 	}
 
@@ -116,23 +119,26 @@ class ScottTempleAI extends AutoBattler
 	on_phaseChanged(newPhase, lastPhase)
 	{
 		switch (newPhase) {
-			case 1:
+			case 1: {
 				this.queueSkill('omni', 'elysia');
-				var spellID = Random.sample([ 'inferno', 'subzero' ]);
+				let spellID = Random.sample([ 'inferno', 'subzero' ]);
 				this.phase2Opener = spellID === 'inferno' ? 'subzero' : 'inferno';
 				this.queueSkill(spellID);
 				break;
-			case 2:
+			}
+			case 2: {
 				this.queueSkill('rejuvenate');
 				this.queueSkill(this.phase2Opener);
 				this.isQSComboStarted = false;
 				this.movesTillReGen = Random.discrete(3, 5);
 				break;
-			case 3:
+			}
+			case 3: {
 				this.queueSkill(this.isSkillUsable('renewal')
 					? 'renewal' : 'chargeSlash');
 				this.isQSComboStarted = false;
 				break;
+			}
 		}
 	}
 
