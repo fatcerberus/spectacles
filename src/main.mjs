@@ -19,22 +19,22 @@ async function main()
 	Scene.defaultPriority = 99;
 
 	console.defineObject('bgm', null, {
-		override(fileName) { Music.override(fileName); },
-		pop() { Music.pop(); },
-		play(fileName) { Music.play(fileName); },
-		push(fileName) { Music.push(fileName); },
-		reset() { Music.reset(); },
-		stop() { Music.override(null); },
-		volume(value) { Music.adjustVolume(value); },
+		'override'(fileName) { Music.override(fileName); },
+		'pop'() { Music.pop(); },
+		'play'(fileName) { Music.play(fileName); },
+		'push'(fileName) { Music.push(fileName); },
+		'reset'() { Music.reset(); },
+		'stop'() { Music.override(null); },
+		'volume'(value) { Music.adjustVolume(value); },
 	});
 	console.defineObject('yap', null, {
-		'on': function() {
+		'on'() {
 			Sphere.Game.disableTalking = false;
-			console.log("oh, yappy times are here again...");
+			console.log("hey, so there's this talking pig behind you...");
 		},
-		'off': function() {
+		'off'() {
 			Sphere.Game.disableTalking = true;
-			console.log("the yappy times are OVER!");
+			console.log("hooray! now everyone will shut up FOREVER.");
 		},
 	});
 

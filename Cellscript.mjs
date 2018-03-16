@@ -22,8 +22,8 @@ Object.assign(Sphere.Game, {
 
 install('@/scripts', files('src/*.mjs', true));
 
-install('@/images',     files('images/*.png', true));
-install('@/music',      files('music/*.ogg', true));
+install('@/images', files('images/*.png', true));
+install('@/music', files('music/*.ogg', true));
 install('@/spritesets', files('spritesets/*.rss', true));
-install('@/sounds',     files('sounds/*.wav', true));
-install('@/',           files('icon.png'));
+install('@/sounds', files('sounds/*.wav', true));
+install('@/', files('icon.png'));

@@ -198,24 +198,27 @@ class TargetMenu extends Thread
 		if (this.unitToShowInfo != null) {
 			Surface.Screen.clipTo(0, 16, 160, Surface.Screen.height - 16);
 			let textAlpha = (1.0 - this.infoBoxFadeness) * (1.0 - this.infoFadeness);
+			let textColor = Color.Silver.fadeTo(textAlpha);
+			let statColor = Color.of('#c0c090').fadeTo(textAlpha);
+			let statusColor = Color.of('#c0c060').fadeTo(textAlpha);
 			if (this.isTargetScanOn || this.unitToShowInfo.isPartyMember()) {
 				let nameBoxHeight = 20 + 12 * this.statusNames.length;
 				let y = 16 - (nameBoxHeight + 20) * this.infoBoxFadeness;
 				Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, y - 16, Color.Black.fadeTo(0.5 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, nameBoxHeight, 0.625);
-				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, Color.Silver.fadeTo(textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, textColor, 1, 'center');
 				for (let i = 0; i < this.statusNames.length; ++i)
-					drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], Color.Goldenrod.fadeTo(textAlpha), 1, 'center');
+					drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], statusColor, 1, 'center');
 				this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 0.5);
-				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, Color.Khaki.fadeTo(textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, statColor, 1, 'center');
 				this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 0.5);
-				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, Color.Khaki.fadeTo(textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, statColor, 1, 'center');
 			}
 			else {
 				let y = 16 - 20 * this.infoBoxFadeness;
 				Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, y - 16, Color.Black.fadeTo(0.5 * (1.0 - this.infoBoxFadeness)));
 				this.drawInfoBox(0, y, 160, 20, 0.625);
-				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, Color.Silver.fadeTo(textAlpha), 1, 'center');
+				drawTextEx(this.infoFont, 80, y + 4, this.unitToShowInfo.fullName, textColor, 1, 'center');
 			}
 			Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
 		}

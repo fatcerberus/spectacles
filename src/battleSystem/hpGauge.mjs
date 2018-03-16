@@ -488,7 +488,7 @@ class Segment
 	reRender ()
 	{
 		this._full = renderFilled(this._width - 2, this._height - 2, white);
-		this._damaged = renderFilled(this._width - 2, this._height - 2, this._damageColour);
+		this._damaged = renderFilled(this._width - 2, this._height - 2, this._damageColour, false);
 		this._empty = renderFilled(this._width - 2, this._height - 2, this._emptyColour);
 		this._outer = renderOutline(this._width, this._height, 1, this._borderColour);
 		this._needsModel = true;
@@ -634,7 +634,7 @@ class DynamicTwinBar
 		this.shader = shader;
 
 		this._lifeBar = new Model([ renderFilled(10, height - 2, white) ]);
-		this._damageBar = new Model([ renderFilled(10, height - 2, damageColour) ]);
+		this._damageBar = new Model([ renderFilled(10, height - 2, damageColour, false) ]);
 		this._emptyBar = new Model([ renderFilled(width - 2, height - 2, emptyColor) ]);
 		this._borderBar = new Model([ renderOutline(width, height, 1, borderColour) ]);
 		this._lifeBar.shader = hpShader;
@@ -690,7 +690,7 @@ class DynamicTwinBar
 	render()
 	{
 		this._lifeBar = new Model([ renderFilled(10, this._height - 2, white) ]);
-		this._damageBar = new Model([ renderFilled(10, this._height - 2, this._damageColour) ]);
+		this._damageBar = new Model([ renderFilled(10, this._height - 2, this._damageColour, false) ]);
 		this._emptyBar = new Model([ renderFilled(this._width - 2, this._height - 2, emptyColor) ]);
 		this._borderBar = new Model([ renderOutline(this._width, this._height, 1, this._borderColour) ]);
 
@@ -795,21 +795,31 @@ class DynamicTwinBar
 }
 
 
-function renderFilled (width, height, colour)
+function renderFilled(width, height, color, shiny = true)
 {
-	let dimColour = Color.mix(colour, black, 66, 33);
-	let vbo = new VertexList([
-		{ x: 0,     y: 0,          z: 0, u: 0, v: 1, color: dimColour },
-		{ x: width, y: 0,          z: 0, u: 1, v: 1, color: dimColour },
-		{ x: 0,     y: height / 2, z: 0, u: 0, v: 0, color: colour },
-		{ x: width, y: height / 2, z: 0, u: 1, v: 0, color: colour },
-		{ x: 0,     y: height / 2, z: 0, u: 0, v: 1, color: colour },
-		{ x: width, y: height / 2, z: 0, u: 1, v: 1, color: colour },
-		{ x: 0,     y: height,     z: 0, u: 0, v: 0, color: dimColour },
-		{ x: width, y: height,     z: 0, u: 1, v: 0, color: dimColour },
-	]);
-
-	return new Shape(ShapeType.TriStrip, vbo);
+	if (shiny) {
+		let dimColor = Color.mix(color, black, 66, 33);
+		return new Shape(ShapeType.TriStrip,
+			new VertexList([
+				{ x: 0,     y: 0,          z: 0, u: 0, v: 1, color: dimColor },
+				{ x: width, y: 0,          z: 0, u: 1, v: 1, color: dimColor },
+				{ x: 0,     y: height / 8, z: 0, u: 0, v: 0, color: color },
+				{ x: width, y: height / 8, z: 0, u: 1, v: 0, color: color },
+				{ x: 0,     y: height / 8, z: 0, u: 0, v: 1, color: color },
+				{ x: width, y: height / 8, z: 0, u: 1, v: 1, color: color },
+				{ x: 0,     y: height,     z: 0, u: 0, v: 0, color: dimColor },
+				{ x: width, y: height,     z: 0, u: 1, v: 0, color: dimColor },
+			]));
+	}
+	else {
+		return new Shape(ShapeType.TriStrip,
+			new VertexList([
+				{ x: 0,     y: 0,      z: 0, u: 0, v: 1, color },
+				{ x: width, y: 0,      z: 0, u: 1, v: 1, color },
+				{ x: 0,     y: height, z: 0, u: 0, v: 0, color },
+				{ x: width, y: height, z: 0, u: 1, v: 0, color },
+			]));
+	}
 }
 
 function renderOutline(width, height, thickness, colour)

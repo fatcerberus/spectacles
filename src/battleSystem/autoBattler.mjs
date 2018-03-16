@@ -148,9 +148,8 @@ class AutoBattler
 	itemsLeft(itemID)
 	{
 		let item = from(this.unit.items)
-			.where(it => it.itemID === itemID)
-			.besides(it => console.log(`${this.unit.name} counting remaining ${it.name}`, `left: ${it.usesLeft}`))
-			.first();
+			.first(it => it.itemID === itemID);
+		console.log(`${this.unit.name} has ${item.usesLeft}x ${item.name} left`);
 		return item.usesLeft;
 	}
 

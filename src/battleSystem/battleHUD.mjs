@@ -20,7 +20,7 @@ class BattleHUD extends Thread
 		super({ priority: 20 });
 		
 		this.enemyHPGaugeColor = Color.PurwaBlue;
-		this.partyHPGaugeColor = Color.Lime;
+		this.partyHPGaugeColor = Color.Chartreuse;
 		this.partyHighlightColor = Color.MidnightBlue;
 		this.partyMPGaugeColor = Color.DarkOrchid;
 
@@ -111,7 +111,7 @@ class BattleHUD extends Thread
 				let gaugeColor =
 					hp / characterInfo.maxHP <= 0.1 ? Color.Red
 					: hp / characterInfo.maxHP <= 0.33 ? Color.Yellow
-					: Color.Lime;
+					: this.partyHPGaugeColor;
 				characterInfo.hpGauge.changeColor(gaugeColor, 0.5);
 				let flashColor = hp > characterInfo.hp ? Color.LimeGreen : Color.DarkRed;
 				new Scene()
