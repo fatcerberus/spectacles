@@ -119,7 +119,7 @@ class HPGauge
 		if (this._x !== value)
 		{
 			this._x = value;
-			
+
 			if ((this._numReservesFilled + this._numReservesDamaged) === this.numReserves)
 				this.mainBar.x = value + this._width - this.mainBar._width;
 			else
@@ -176,14 +176,14 @@ class HPGauge
 			this.slotXSize = this.maxSectors === 0
 				? this.slotXSize
 				: Math.ceil(this._width / (this.maxSectors - 1));
-					
+
 			if ((this._numReservesFilled + this._numReservesDamaged) === this.numReserves) {
 				this.mainBar.width = value * this.fraction;
 			}
 			else {
 				this.mainBar.width = value;
 			}
-			
+
 			this.backgroundBar.width = value;
 			for (let i = 0, length = this.reserves.length; i < length; ++i) {
 				this.reserves[i].parentX = value + this._x;
@@ -478,7 +478,7 @@ class Segment
 
 		//state
 		this._state = full;
-		
+
 		//housekeeping
 		this._needsRender = true;
 		this._needsTranslate = true;
@@ -514,7 +514,7 @@ class Segment
 		this._model.transform = this._transform;
 		this._needsModel = false;
 	}
-	
+
 	translate ()
 	{
 		this._transform.identity()
@@ -623,11 +623,11 @@ class DynamicTwinBar
 		this._width = width;
 		this._height = height;
 		this.drawEmpty = drawEmpty;
-		
+
 		this._damage = 0;
 		this._life = width - 2;
 
-		this._borderColour = borderColour; 
+		this._borderColour = borderColour;
 		this._damageColour = damageColour;
 
 		this.hpShader = hpShader;
@@ -641,7 +641,7 @@ class DynamicTwinBar
 		this._damageBar.shader = shader;
 		this._borderBar.shader = shader;
 		this._emptyBar.shader = shader;
-		
+
 		this._borderTransform = new Transform();
 		this._lifeTransform = new Transform();
 		this._damageTransform = new Transform();
@@ -703,7 +703,7 @@ class DynamicTwinBar
 		this._lifeBar.transform = this._lifeTransform;
 		this._damageBar.transform = this._damageTransform;
 		this._emptyBar.transform = this._emptyTransform;
-	
+
 		this._needsTransform = true;
 		this._needsBorderTransfrom = true;
 		this._needsRender = false;
@@ -724,8 +724,8 @@ class DynamicTwinBar
 		if (this._width !== value) {
 			let life = this._life / (this._width - 2);
 			let damage = this._damage / (this._width - 2);
-	
-			let rightX = this.x; 
+
+			let rightX = this.x;
 			this._width = value;
 			this.x = rightX;
 

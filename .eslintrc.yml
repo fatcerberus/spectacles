@@ -68,6 +68,8 @@ rules:
   no-implicit-coercion: error
   no-invalid-this: error
   no-lone-blocks: error
+  no-trailing-spaces: error
+  no-unused-expressions: error
   no-unused-vars: warn
   object-curly-spacing:
     - error

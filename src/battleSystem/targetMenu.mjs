@@ -13,7 +13,7 @@ class TargetMenu extends Thread
 	constructor(unit, battle, usable = null, moveName = null)
 	{
 		super({ priority: 10 });
-		
+
 		this.battle = battle;
 		this.doChangeInfo = null;
 		this.isChoiceMade = false;

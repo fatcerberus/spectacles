@@ -18,7 +18,7 @@ class MoveMenu extends Thread
 	constructor(unit, battle, stance)
 	{
 		super({ priority: 10 });
-		
+
 		this.lockedCursorColor = Color.of('#002448');
 		this.moveRankColor = Color.White;
 		this.normalCursorColor = Color.of('#004890');
