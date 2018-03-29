@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Image, Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Thread } from 'sphere-runtime';
 
 import { drawTextEx } from '$/utilities';
 
@@ -25,7 +25,7 @@ class BattleScreen extends Thread
 		this.actors = {};
 		for (const type in this.actorTypes)
 			this.actors[type] = [];
-		this.background = new Image('battleBackground');
+		this.background = new Texture('images/battleBackground.png');
 		this.hud = new BattleHUD(partyMaxMP);
 
 		this.startRunning = function()
@@ -122,7 +122,7 @@ class BattleScreen extends Thread
 
 	on_render()
 	{
-		this.background.blitTo(Surface.Screen, 0, -56);
+		Prim.blit(Surface.Screen, 0, -56, this.background);
 		for (const type in this.actorTypes) {
 			for (let i = 0; i < this.actors[type].length; ++i)
 				this.actors[type][i].render();

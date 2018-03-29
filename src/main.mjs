@@ -9,6 +9,7 @@ import { DayNightClock } from '$/dayNightSystem';
 import { TestHarness } from '$/testSystem';
 
 import './defineScenelets';
+//import './profiling.mjs';
 
 global.console =
 	new Console({ hotKey: Key.Tilde });
@@ -41,5 +42,5 @@ async function main()
 	await TestHarness.initialize();
 
 	let dayNight = new DayNightClock();
-	await TestHarness.run('starcross');
+	await TestHarness.run('rsb2');
 }
