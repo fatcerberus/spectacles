@@ -5,7 +5,7 @@
 
 import { Joypad, Music, Prim, Scene } from 'sphere-runtime';
 
-import { BattleContext, BattleResult } from '$/battleSystem';
+import { BattleEngine, BattleResult } from '$/battleSystem';
 import { GameOverScreen, GameOverAction } from '$/menuSystem';
 
 Scene.defineOp('adjustBGM',
@@ -27,7 +27,7 @@ Scene.defineOp('battle',
 {
 	start(scene, battleID, session) {
 		this.mode = 'battle';
-		this.battle = new BattleContext(session, battleID);
+		this.battle = new BattleEngine(session, battleID);
 		this.battleThread = this.battle.go();
 	},
 

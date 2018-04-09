@@ -16,7 +16,7 @@ import MPPool from './mpPool';
 import Row from './row';
 
 export default
-class BattleContext extends Thread
+class BattleEngine extends Thread
 {
 	constructor(session, battleID)
 	{
@@ -25,7 +25,7 @@ class BattleContext extends Thread
 
 		super();
 
-		console.log(`initialize battle context for '${battleID}'`);
+		console.log(`initialize battle engine for '${battleID}'`);
 		this.aiList = [];
 		this.battleID = battleID;
 		this.mode = null;
@@ -97,7 +97,7 @@ class BattleContext extends Thread
 			return null;
 		}
 		console.log("");
-		console.log("start battle engine", `battleID: ${this.battleID}`);
+		console.log("start up battle engine", `battleID: ${this.battleID}`);
 		let partyMaxMP = 0;
 		for (const key in this.session.party.members) {
 			let battlerInfo = this.session.party.members[key].getInfo();
@@ -132,9 +132,8 @@ class BattleContext extends Thread
 			++i;
 		}
 		let battleBGMTrack = Game.defaultBattleBGM;
-		if ('bgm' in this.parameters) {
+		if ('bgm' in this.parameters)
 			battleBGMTrack = this.parameters.bgm;
-		}
 		this.ui.hud.turnPreview.set(this.predictTurns());
 		Music.push(battleBGMTrack);
 		this.result = null;
@@ -184,14 +183,10 @@ class BattleContext extends Thread
 				.where(it => it !== actingUnit || turnIndex > 0);
 			for (const unit of candidates) {
 				++bias;
-				let timeUntilUp = unit.timeUntilTurn(turnIndex, Game.defaultMoveRank,
+				let remainingTime = unit.timeUntilTurn(turnIndex,
+					Game.defaultMoveRank,
 					actingUnit === unit ? nextActions : null);
-				forecast.push({
-					bias: bias,
-					remainingTime: timeUntilUp,
-					turnIndex: turnIndex,
-					unit: unit,
-				});
+				forecast.push({ bias, remainingTime, turnIndex, unit });
 			}
 		}
 		forecast.sort((a, b) => {

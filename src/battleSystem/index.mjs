@@ -4,7 +4,7 @@
 ***/
 
 export { default as AutoBattler } from './autoBattler';
-export { default as BattleContext } from './battleContext';
+export { default as BattleEngine } from './battleEngine';
 export { default as BattleResult } from './battleResult';
 export { default as ItemUsable } from './itemUsable';
 export { default as Party } from './party';
