@@ -3,7 +3,10 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-Object.assign(Sphere.Game, {
+Object.assign(Sphere.Game,
+{
+	version: 2, apiLevel: 1,
+
 	name: "Spectacles: Bruce's Story",
 	saveID: 'fatCerberus.spectacles',
 	author: "Fat Cerberus",

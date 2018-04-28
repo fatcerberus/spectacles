@@ -9,7 +9,6 @@ import { DayNightClock } from '$/dayNightSystem';
 import { TestHarness } from '$/testSystem';
 
 import './defineScenelets';
-//import './profiling.mjs';
 
 global.console =
 	new Console({ hotKey: Key.Tilde });
