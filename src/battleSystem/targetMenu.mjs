@@ -143,7 +143,7 @@ class TargetMenu extends Thread
 					.end()
 					.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 					.resync()
-					.call(function() { this.isChoiceMade = true; }.bind(this))
+					.call(() => { this.isChoiceMade = true; })
 					.run();
 				break;
 			case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
@@ -154,7 +154,7 @@ class TargetMenu extends Thread
 					.end()
 					.tween(this, 15, 'easeInOutSine', { infoFadeness: 1.0 })
 					.resync()
-					.call(function() { this.isChoiceMade = true; }.bind(this))
+					.call(() => { this.isChoiceMade = true; })
 					.run();
 				break;
 			case GetPlayerKey(PLAYER_1, PLAYER_KEY_UP):

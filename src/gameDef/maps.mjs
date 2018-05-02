@@ -9,7 +9,7 @@ export
 const Maps =
 {
 	main: {
-		onEnter: function() {
+		onEnter() {
 			new Scene()
 				.fadeTo(Color.Black, 0)
 				.playBGM('BruceTellsHisStory')
@@ -77,7 +77,7 @@ const Maps =
 		battleBGM: 'CreepFight',
 		canvasColor: Color.DarkGreen,
 
-		onEnter: function() {
+		onEnter() {
 		},
 	},
 };

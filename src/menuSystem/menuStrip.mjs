@@ -8,13 +8,13 @@ import { Scene, Thread } from 'sphere-runtime';
 export default
 class MenuStrip extends Thread
 {
-	constructor(title = "", isCancelable = true, items = null)
+	constructor(title = "", canCancel = true, items = null)
 	{
 		super({ priority: 100 });
 
 		this.carouselSurface = null;
 		this.font = GetSystemFont();
-		this.isCancelable = isCancelable;
+		this.canCancel = canCancel;
 		this.menuItems = [];
 		this.selectedItem = 0;
 		this.title = title;
@@ -73,7 +73,7 @@ class MenuStrip extends Thread
 			this.animation.run();
 			this.mode = 'close';
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isCancelable) {
+		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.canCancel) {
 			this.chosenItem = null;
 			this.animation = new Scene()
 				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
