@@ -667,21 +667,21 @@ class BattleUnit
 		amount = Math.round(amount);
 		let multiplier = 1.0;
 		for (let i = 0; i < tags.length; ++i) {
-			if (tags[i] in this.affinities) {
+			if (tags[i] in this.affinities)
 				multiplier *= this.affinities[tags[i]];
-			}
 		}
 		amount = Math.round(amount * multiplier);
 		if (amount > 0 && !isPriority) {
 			let eventData = {
-				unit: this, amount: amount, tags: tags,
+				unit: this,
+				amount,
+				tags,
 				actingUnit: this.lastAttacker,
 				cancel: false,
 			};
 			this.battle.raiseEvent('unitDamaged', eventData);
-			if (!eventData.cancel) {
+			if (!eventData.cancel)
 				this.raiseEvent('damaged', eventData);
-			}
 			if (!eventData.cancel)
 				amount = Math.round(eventData.amount);
 			else

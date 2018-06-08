@@ -19,8 +19,8 @@ class BattleHUD extends Thread
 	{
 		super({ priority: 20 });
 
-		this.enemyHPGaugeColor = Color.PurwaBlue;
-		this.partyHPGaugeColor = Color.Chartreuse;
+		this.enemyHPGaugeColor = Color.White;
+		this.partyHPGaugeColor = Color.Lime;
 		this.partyHighlightColor = Color.MidnightBlue;
 		this.partyMPGaugeColor = Color.DarkOrchid;
 

@@ -5,7 +5,8 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-const BoxColor = Color.Black.fadeTo(0.75),
+const
+	BoxColor = Color.Black.fadeTo(0.75),
 	BorderColor = Color.Black.fadeTo(0.85),
 	TextColor = Color.Gray,
 	TextShadowColor = Color.Black;
@@ -64,7 +65,7 @@ class TurnPreview extends Thread
 	ensureEntries(unit)
 	{
 		if (!(unit.tag in this.entries)) {
-			let iconColor = unit.isPartyMember() ? Color.DarkSlateBlue : Color.DarkRed;
+			let iconColor = unit.isPartyMember() ? Color.RoyalBlue : Color.FireBrick;
 			let entry = {
 				icon:      new BattlerIcon(unit.name, iconColor, this.shader),
 				turnBoxes: [],
