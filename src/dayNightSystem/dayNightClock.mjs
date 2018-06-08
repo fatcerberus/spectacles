@@ -10,11 +10,13 @@ import { Thread } from 'sphere-runtime';
 
 import InGameTime from './inGameTime';
 
-const DayMask    = [ 0.0, 0.0, 0.0, 0.0 ],
+const
+	DayMask      = [ 0.0, 0.0, 0.0, 0.0 ],
 	TwilightMask = [ 0.5, 0.125, 0.0625, 0.625 ],
 	NightMask    = [ 0.0, 0.0, 0.125, 0.5625 ];
 
-const Day  = 0,
+const
+	Day    = 0,
 	Night  = 1,
 	Fading = 2;
 

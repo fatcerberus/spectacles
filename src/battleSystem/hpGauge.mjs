@@ -61,13 +61,13 @@ class HPGauge
 		let barInUse;
 		if (numReservesFilled == numReserves) {
 			barInUse = this.capacity % this.sectorSize;
-			if (barInUse == 0)
+			if (barInUse === 0)
 				barInUse = this.sectorSize;
 		} else {
 			barInUse = this.sectorSize;
 		}
 		let barFilled = this.reading % this.sectorSize;
-		if (barFilled == 0 && this.reading > 0)
+		if (barFilled === 0 && this.reading > 0)
 			barFilled = barInUse;
 		let barDamaged = Math.min(damageShown, this.sectorSize - barFilled);
 		let barHeight = Math.ceil(height * 0.5 + 0.5);
@@ -188,7 +188,7 @@ function drawSegment(x, y, width, height, color)
 	let dimColor = Color.mix(color, Color.Black.fadeTo(color.a), 66, 33);
 	Prim.drawSolidRectangle(Surface.Screen, x, y, width, topHeight, dimColor, dimColor, color, color);
 	Prim.drawSolidRectangle(Surface.Screen, x, yBottom, width, bottomHeight, color, color, dimColor, dimColor);
-};
+}
 
 function fadeColor(color, fadeness)
 {

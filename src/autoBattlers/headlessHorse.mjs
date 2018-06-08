@@ -22,9 +22,9 @@ class HeadlessHorseAI extends AutoBattler
 		this.spectralDrawPending = true;
 		this.trampleTarget = null;
 	}
-	
+
 	strategize()
-	{				
+	{
 		switch (this.phase) {
 			case 1: {
 				let hellfireTurns = this.predictSkillTurns('hellfire');
@@ -62,11 +62,11 @@ class HeadlessHorseAI extends AutoBattler
 			}
 		}
 	}
-	
+
 	on_itemUsed(userID, itemID, targetIDs)
 	{
 	}
-	
+
 	on_phaseChanged(phase, lastPhase)
 	{
 		switch (phase) {
@@ -76,7 +76,7 @@ class HeadlessHorseAI extends AutoBattler
 			}
 		}
 	}
-	
+
 	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
 		if (from(targetIDs).anyIs('headlessHorse')) {
@@ -85,7 +85,7 @@ class HeadlessHorseAI extends AutoBattler
 				this.trampleTarget = userID;
 		}
 	}
-	
+
 	on_unitDamaged(unit, amount, tags, actingUnit)
 	{
 		if (unit === this.unit && actingUnit !== null) {
@@ -96,7 +96,7 @@ class HeadlessHorseAI extends AutoBattler
 			this.damageTaken[actingUnit.id] += amount;
 		}
 	}
-	
+
 	on_unitReady(unitID)
 	{
 		if (unitID == 'headlessHorse' && !this.hasMovesQueued && this.phase > 0) {
@@ -106,7 +106,7 @@ class HeadlessHorseAI extends AutoBattler
 			}
 		}
 	}
-	
+
 	on_unitTargeted(unit, action, actingUnit)
 	{
 		if (unit === this.unit) {
