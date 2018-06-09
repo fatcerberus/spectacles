@@ -45,7 +45,7 @@ class BattleHUD extends Thread
 			let innerColor = Color.mix(outerColor, Color.Black.fadeTo(color.a));
 			let halfHeight = Math.round(height / 2);
 			Prim.drawSolidRectangle(Surface.Screen, x, y, width, halfHeight, outerColor, outerColor, innerColor, innerColor);
-			Prim.drawSolidRectangle(Surface.Screen, x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, innerColor, innerColor);
+			Prim.drawSolidRectangle(Surface.Screen, x, y + halfHeight, width, height - halfHeight, innerColor, innerColor, outerColor, outerColor);
 			Prim.drawRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(color.a / 2));
 		};
 
@@ -60,7 +60,7 @@ class BattleHUD extends Thread
 				Color.Silver;
 			memberInfo.hpGauge.draw(x + 5, y + 5, 24, 10);
 			drawTextEx(this.font, x + 34, y + 4, memberInfo.unit.name, textColor, 1);
-			Prim.drawSolidRectangle(Surface.Screen, x + 81, y + 3, 14, 14, Color.DarkSlateBlue);
+			Prim.drawSolidRectangle(Surface.Screen, x + 81, y + 3, 14, 14, Color.RoyalBlue);
 			Prim.drawRectangle(Surface.Screen, x + 81, y + 3, 14, 14, 1, Color.Black);
 		};
 	}
@@ -178,7 +178,7 @@ class BattleHUD extends Thread
 			this.drawElementBox(itemX, itemY, 160, 20);
 			if (this.highlightedUnit == gaugeInfo.owner)
 				this.drawHighlight(itemX, itemY, 160, 20, this.highlightColor);
-			Prim.drawSolidRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, Color.DarkRed);
+			Prim.drawSolidRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, Color.FireBrick);
 			Prim.drawRectangle(Surface.Screen, itemX + 141, itemY + 3, 14, 14, 1, Color.Black);
 			gaugeInfo.gauge.draw(itemX + 5, itemY + 5, 131, 10);
 		}
