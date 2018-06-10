@@ -448,7 +448,7 @@ class BattleUnit
 				.where(effect => 'power' in effect);
 			for (let effect of damageEffects) {
 				effect.power *= Game.bonusMultiplier;
-				effect.statusChance = 100;
+				effect.statusChance = Infinity;
 				console.log("boost applied for Counter/Charge", `pow: ${effect.power}`);
 			}
 		}

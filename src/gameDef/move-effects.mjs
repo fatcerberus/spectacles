@@ -5,6 +5,7 @@
 
 import { from, Random } from 'sphere-runtime';
 
+import { Stance } from '$/battleSystem';
 import { Maths } from './maths';
 
 export
@@ -50,8 +51,9 @@ const MoveEffects =
 			}
 			if ('addStatus' in effect) {
 				let statusChance = 'statusChance' in effect ? effect.statusChance / 100 : 1.0;
+				let guardable = effect.statusChance < Infinity;
 				if (Random.chance(statusChance))
-					targets[i].addStatus(effect.addStatus, true);
+					targets[i].addStatus(effect.addStatus, guardable);
 			}
 		}
 	},
