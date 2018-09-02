@@ -236,8 +236,8 @@ const Characters =
 	},
 
 	// Scott Starcross
-	// The protagonist of the Spectacles Saga. Always tries to do what's right, but is
-	// naive to a fault. In battle, Scott wields a balanced set of sword techniques,
+	// the protagonist of the Spectacles Saga.  always tries to do what's right, but is
+	// naive to a fault.  in battle, Scott wields a balanced set of sword techniques,
 	// elemental and status-inducing magicks.
 	scott: {
 		name: "Scott",
@@ -266,6 +266,7 @@ const Characters =
 			'tremor',
 			'frostbite',
 			'jolt',
+			'crackdown',
 		],
 	},
 };

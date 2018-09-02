@@ -322,7 +322,8 @@ class BattleUnit
 	hasStatus(statusID)
 	{
 		return from(this.statuses)
-			.any(it => it.statusID === statusID);
+			.select(it => it.statusID)
+			.anyIs(statusID);
 	}
 
 	async heal(amount, tags = [], isPriority = false)
@@ -409,9 +410,8 @@ class BattleUnit
 				for (let i = 0; i < unitsHit.length; ++i) {
 					if (!unitsHit[i].isAlive() && this.battle.areEnemies(this, unitsHit[i])) {
 						for (const statID in unitsHit[i].baseStats) {
-							if (!(statID in experience)) {
+							if (!(statID in experience))
 								experience[statID] = 0;
-							}
 							experience[statID] += Maths.experience.stat(statID, unitsHit[i].battlerInfo);
 						}
 					}
@@ -436,7 +436,8 @@ class BattleUnit
 		this.moveUsed.targets = this.moveUsed.usable.isGroupCast
 			? this.moveUsed.usable.allowDeadTarget ? alliesInBattle : alliesAlive
 			: this.moveUsed.targets;
-		if (!this.moveUsed.usable.isGroupCast && !this.moveUsed.targets[0].isAlive()
+		if (!this.moveUsed.usable.isGroupCast
+			&& !this.moveUsed.targets[0].isAlive()
 			&& !this.moveUsed.usable.allowDeadTarget)
 		{
 			this.moveUsed.targets[0] = Random.sample(alliesAlive);
@@ -447,6 +448,7 @@ class BattleUnit
 				.from(action => action.effects)
 				.where(effect => 'power' in effect);
 			for (let effect of damageEffects) {
+				// note: statusChance being set to Infinity bypasses Guard
 				effect.power *= Game.bonusMultiplier;
 				effect.statusChance = Infinity;
 				console.log("boost applied for Counter/Charge", `pow: ${effect.power}`);

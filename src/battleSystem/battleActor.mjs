@@ -28,7 +28,7 @@ class BattleActor
 		this.sprite = new SpriteImage(`battlers/${name}.rss`);
 		this.sprite.direction = isEnemy ? 'east' : 'west';
 		this.x = isEnemy ? -32 : 320;
-		this.y = 168 - position * 32;
+		this.y = 208 - position * 32;
 	}
 
 	update()

@@ -11,7 +11,7 @@ Object.assign(Sphere.Game,
 	saveID: 'fatCerberus.spectacles',
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
-	resolution: '320x200',
+	resolution: '320x240',
 	main: '@/scripts/main.mjs',
 
 	fullScreen: false,
@@ -25,7 +25,9 @@ Object.assign(Sphere.Game,
 
 install('@/scripts', files('src/*.mjs', true));
 
+install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
+install('@/logos', files('logos/*.png', true));
 install('@/music', files('music/*.ogg', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds', files('sounds/*.wav', true));

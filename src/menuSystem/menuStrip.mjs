@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Scene, Thread } from 'sphere-runtime';
+import { from, Scene, Thread } from 'sphere-runtime';
 
 export default
 class MenuStrip extends Thread
@@ -37,11 +37,9 @@ class MenuStrip extends Thread
 		this.scrollProgress = 0.0;
 		this.brightness = 0.0;
 		this.mode = "open";
-		let carouselWidth = 0;
-		for (let i = 0; i < this.menuItems.length; ++i) {
-			let itemText = this.menuItems[i].text;
-			carouselWidth = Math.max(this.font.getStringWidth(itemText) + 10, carouselWidth);
-		}
+		let carouselWidth = from(this.menuItems)
+			.select(it => this.font.getStringWidth(it.text) + 10)
+			.reduce((a, v) => Math.max(a, v));
 		this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
 		while (AreKeysLeft())
 			GetKey();
