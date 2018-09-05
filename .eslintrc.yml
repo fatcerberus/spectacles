@@ -50,6 +50,10 @@ rules:
   comma-spacing: error
   complexity:
     - warn
+  curly:
+    - error
+    - multi-or-nest
+    - consistent
   func-style:
     - error
     - declaration
@@ -64,11 +68,17 @@ rules:
         flatTernaryExpressions: true,
       }
   no-console: off
+  no-debugger: error
   no-floating-decimal: error
   no-implicit-coercion: error
   no-invalid-this: error
   no-lone-blocks: error
   no-trailing-spaces: error
+  no-restricted-syntax:
+    - error
+    - BinaryExpression[operator='==']
+    - BinaryExpression[operator='!=']
+    - ForInStatement
   no-unused-expressions: error
   no-unused-vars: warn
   object-curly-spacing:
@@ -78,3 +88,4 @@ rules:
   semi:
     - error
     - always
+  space-infix-ops: error
