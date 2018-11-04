@@ -128,13 +128,13 @@ Scene.defineOp('talk',
 		this.textSpeed = textSpeed;
 		this.timeout = timeout;
 		this.timeoutLeft = this.timeout;
-		this.font = GetSystemFont();
+		this.font = Font.Default;
 		this.text = [];
-		let speakerTextWidth = this.font.getStringWidth(this.speakerText);
+		let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
 		let textAreaWidth = Surface.Screen.width - 16;
 		for (let i = 5; i < arguments.length; ++i) {
 			let lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
-			let wrappedText = this.font.wordWrapString(arguments[i], lineWidth);
+			let wrappedText = this.font.wordWrap(arguments[i], lineWidth);
 			let page = this.text.push([]) - 1;
 			for (let iLine = 0; iLine < wrappedText.length; ++iLine) {
 				this.text[page].push(wrappedText[iLine]);
@@ -149,35 +149,34 @@ Scene.defineOp('talk',
 		this.numLinesToDraw = 0;
 		this.topLine = 0;
 		this.lineToReveal = 0;
-		this.textSurface = CreateSurface(textAreaWidth, this.font.getHeight() * 3 + 1, CreateColor(0, 0, 0, 0));
+		this.textSurface = new Surface(textAreaWidth, this.font.height * 3 + 1);
 		this.transition = new Scene()
 			.tween(this, 20, 'easeOutBack', { boxVisibility: 1.0 });
 		this.transition.run();
 		this.mode = "fadein";
-		while (AreKeysLeft()) {
-			GetKey();
-		}
-		if (Sphere.Game.disableTalking) {
+		Keyboard.Default.clearQueue();
+		if (Sphere.Game.disableTalking)
 			this.mode = "finish";
-		}
 		return true;
 	},
 
 	render(scene) {
-		let lineHeight = this.font.getHeight();
+		let lineHeight = this.font.height;
 		let boxHeight = lineHeight * 3 + 11;
 		let finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
 		let boxY = finalBoxY + (Surface.Screen.height - finalBoxY) * (1.0 - this.boxVisibility);
-		OutlinedRectangle(-1, boxY - 1, Surface.Screen.width + 2, boxHeight + 2, CreateColor(0, 0, 0, 144 * this.boxVisibility));
-		Rectangle(0, boxY, Surface.Screen.width, boxHeight, CreateColor(0, 0, 0, 128 * this.boxVisibility));
-		this.textSurface.setBlendMode(REPLACE);
-		this.textSurface.rectangle(0, 0, this.textSurface.width, this.textSurface.height, CreateColor(0, 0, 0, 0));
-		this.textSurface.setBlendMode(BLEND);
+		Prim.drawRectangle(Surface.Screen, -1, boxY - 1, Surface.Screen.width + 2, boxHeight + 2,
+			Color.Black.fadeTo(0.55 * this.boxVisibility));
+		Prim.drawSolidRectangle(Surface.Screen, 0, boxY, Surface.Screen.width, boxHeight,
+			Color.Black.fadeTo(0.5 * this.boxVisibility));
+		this.textSurface.blendOp = BlendOp.Replace;
+		Prim.drawSolidRectangle(this.textSurface, 0, 0, this.textSurface.width, this.textSurface.height, Color.Transparent);
+		this.textSurface.blendOp = BlendOp.AlphaBlend;
 		let lineCount = this.text[this.currentPage].length;
 		let textAreaWidth = this.textSurface.width;
 		let textX = 0;
 		if (this.speakerName != null) {
-			let speakerTextWidth = this.font.getStringWidth(this.speakerText);
+			let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
 			textX = speakerTextWidth + 5;
 		}
 		textAreaWidth -= textX;
@@ -187,33 +186,36 @@ Scene.defineOp('talk',
 			let lineVisibility = iLine == 0 ? 1.0 - this.scrollOffset : 1.0;
 			if (this.lineVisibility > 0.0 || this.lineToReveal != trueLine) {
 				let lineText = this.text[this.currentPage][trueLine];
-				this.font.setColorMask(CreateColor(0, 0, 0, 255 * this.textVisibility * lineVisibility));
-				this.textSurface.drawText(this.font, textX + 1, textY + 1, lineText);
-				this.font.setColorMask(CreateColor(255, 255, 255, 255 * this.textVisibility * lineVisibility));
-				this.textSurface.drawText(this.font, textX, textY, lineText);
+				this.font.drawText(this.textSurface, textX + 1, textY + 1, lineText,
+					Color.Black.fadeTo(this.textVisibility * lineVisibility));
+				this.font.drawText(this.textSurface, textX, textY, lineText,
+					Color.White.fadeTo(this.textVisibility * lineVisibility));
 				if (this.lineToReveal == trueLine) {
 					let shownArea = textAreaWidth * this.lineVisibility;
-					this.textSurface.setBlendMode(SUBTRACT);
-					this.textSurface.gradientRectangle((textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1, CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 255), CreateColor(0, 0, 0, 255 * this.boxVisibility), CreateColor(0, 0, 0, 0));
-					this.textSurface.setBlendMode(REPLACE);
-					this.textSurface.rectangle(textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1, CreateColor(0, 0, 0, 0));
-					this.textSurface.setBlendMode(BLEND);
+					this.textSurface.blendOp = BlendOp.Subtract;
+					Prim.drawSolidRectangle(this.textSurface,
+						(textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1,
+						Color.Transparent, Color.Black, Color.Black.fadeTo(this.boxVisibility), Color.Transparent);
+					this.textSurface.blendOp = BlendOp.Replace;
+					Prim.drawSolidRectangle(this.textSurface,
+						textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1,
+						Color.Transparent);
+					this.textSurface.blendOp = BlendOp.AlphaBlend;
 				}
 			}
 			if (this.showSpeaker && this.speakerName != null && trueLine == 0) {
-				this.font.setColorMask(CreateColor(0, 0, 0, this.textVisibility * this.nameVisibility * 255));
-				this.textSurface.drawText(this.font, 1, textY + 1, this.speakerText);
-				this.font.setColorMask(CreateColor(255, 192, 0, this.textVisibility * this.nameVisibility * 255));
-				this.textSurface.drawText(this.font, 0, textY, this.speakerText);
+				this.font.drawText(this.textSurface, 1, textY + 1, this.speakerText, Color.Black.fadeTo(this.textVisibility * this.nameVisibility));
+				this.font.drawText(this.textSurface, 0, textY, this.speakerText, Color.Orange.fadeTo(this.textVisibility * this.nameVisibility));
 			}
 		}
-		this.textSurface.blit((Surface.Screen.width - this.textSurface.width) / 2, boxY + 5);
+		Prim.blit(Surface.Screen,
+			(Surface.Screen.width - this.textSurface.width) / 2, boxY + 5,
+			this.textSurface);
 	},
 
 	update(scene) {
-		if (Sphere.Game.disableTalking) {
+		if (Sphere.Game.disableTalking)
 			this.mode = "finish";
-		}
 		switch (this.mode) {
 			case "idle":
 				if (this.timeout !== Infinity) {
@@ -235,9 +237,8 @@ Scene.defineOp('talk',
 				}
 				break;
 			case "fadein":
-				if (!this.transition.running) {
+				if (!this.transition.running)
 					this.mode = "write";
-				}
 				break;
 			case "write":
 				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Sphere.frameRate, 1.0);
@@ -245,10 +246,10 @@ Scene.defineOp('talk',
 					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / Sphere.frameRate, 1.0);
 					let lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					let currentLineText = this.text[this.currentPage][this.lineToReveal];
-					let currentLineWidth = this.font.getStringWidth(currentLineText);
+					let currentLineWidth = this.font.getTextSize(currentLineText).width;
 					let textAreaWidth = this.textSurface.width;
 					if (this.speakerName != null) {
-						let speakerTextWidth = this.font.getStringWidth(this.speakerText);
+						let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
 						textAreaWidth -= speakerTextWidth + 5;
 					}
 					if (this.lineVisibility >= 1.0 || textAreaWidth * this.lineVisibility >= currentLineWidth + 20) {
@@ -300,9 +301,8 @@ Scene.defineOp('talk',
 				}
 				break;
 			case "fadeout":
-				if (!this.transition.running) {
+				if (!this.transition.running)
 					this.mode = "finish";
-				}
 				break;
 			case "finish":
 				return false;

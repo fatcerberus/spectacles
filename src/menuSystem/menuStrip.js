@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { from, Scene, Thread } from 'sphere-runtime';
+import { from, Prim, Scene, Thread } from 'sphere-runtime';
 
 export default
 class MenuStrip extends Thread
@@ -12,8 +12,8 @@ class MenuStrip extends Thread
 	{
 		super({ priority: 100 });
 
-		this.carouselSurface = null;
-		this.font = GetSystemFont();
+		this.carousel = null;
+		this.font = Font.Default;
 		this.canCancel = canCancel;
 		this.menuItems = [];
 		this.selectedItem = 0;
@@ -38,9 +38,9 @@ class MenuStrip extends Thread
 		this.brightness = 0.0;
 		this.mode = "open";
 		let carouselWidth = from(this.menuItems)
-			.select(it => this.font.getStringWidth(it.text) + 10)
+			.select(it => this.font.getTextSize(it.text).width + 10)
 			.reduce((a, v) => Math.max(a, v));
-		this.carouselSurface = CreateSurface(carouselWidth, this.font.getHeight() + 10, CreateColor(0, 0, 0, 0));
+		this.carousel = new Surface(carouselWidth, this.font.height + 10);
 		while (AreKeysLeft())
 			GetKey();
 		this.start();
@@ -96,26 +96,24 @@ class MenuStrip extends Thread
 
 	on_render()
 	{
-		let height = this.font.getHeight() + 10;
+		let height = this.font.height + 10;
 		let menuY = Surface.Screen.height - height * this.openness;
-		let normalStripColor = CreateColor(0, 0, 0, this.openness * 192);
-		let litStripColor = CreateColor(255, 255, 255, this.openness * 192);
-		let stripColor = BlendColorsWeighted(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
-		Rectangle(0, menuY, Surface.Screen.width, height, stripColor);
-		let normalTitleColor = CreateColor(64, 64, 64, this.openness * 255);
-		let litTitleColor = CreateColor(0, 0, 0, this.openness * 255);
-		let titleColor = BlendColorsWeighted(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
-		this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
-		this.font.drawText(6, menuY + 6, this.title);
-		this.font.setColorMask(titleColor);
-		this.font.drawText(5, menuY + 5, this.title);
-		this.carouselSurface.setBlendMode(REPLACE);
-		this.carouselSurface.rectangle(0, 0, this.carouselSurface.width, this.carouselSurface.height, CreateColor(0, 0, 0, 0));
-		this.carouselSurface.setBlendMode(BLEND);
-		let xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carouselSurface.width;
-		let normalItemColor = CreateColor(255, 192, 0, this.openness * 255);
-		let litItemColor = CreateColor(128, 128, 64, this.openness * 255);
-		let itemColor = BlendColorsWeighted(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
+		let normalStripColor = Color.Black.fadeTo(0.75 * this.openness);
+		let litStripColor = Color.White.fadeTo(0.75 * this.openness);
+		let stripColor = Color.mix(litStripColor, normalStripColor, this.brightness, 1.0 - this.brightness);
+		Prim.drawSolidRectangle(Surface.Screen, 0, menuY, Surface.Screen.width, height, stripColor);
+		let normalTitleColor = Color.of('#404040').fadeTo(this.openness);
+		let litTitleColor = Color.Black.fadeTo(this.openness);
+		let titleColor = Color.mix(litTitleColor, normalTitleColor, this.brightness, 1.0 - this.brightness);
+		this.font.drawText(Surface.Screen, 6, menuY + 6, this.title, Color.Black.fadeTo(this.openness));
+		this.font.drawText(Surface.Screen, 5, menuY + 5, this.title, titleColor);
+		this.carousel.blendOp = BlendOp.Replace;
+		Prim.drawSolidRectangle(this.carousel, 0, 0, this.carousel.width, this.carousel.height, Color.Transparent);
+		this.carousel.blendOp = BlendOp.AlphaBlend;
+		let xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carousel.width;
+		let normalItemColor = Color.Orange.fadeTo(this.openness);
+		let litItemColor = Color.of('#808040').fadeTo(this.openness);
+		let itemColor = Color.mix(litItemColor, normalItemColor, this.brightness, 1.0 - this.brightness);
 		for (let i = -1; i <= this.menuItems.length; ++i) {
 			let itemIndex = i;
 			if (i >= this.menuItems.length)
@@ -123,25 +121,23 @@ class MenuStrip extends Thread
 			else if (i < 0)
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
 			let itemText = this.menuItems[itemIndex].text;
-			let textX = i * this.carouselSurface.width + (this.carouselSurface.width / 2 - this.font.getStringWidth(itemText) / 2);
-			this.font.setColorMask(CreateColor(0, 0, 0, this.openness * 255));
-			this.carouselSurface.drawText(this.font, textX - xOffset + 1, 6, itemText);
-			this.font.setColorMask(itemColor);
-			this.carouselSurface.drawText(this.font, textX - xOffset, 5, itemText);
+			let textX = i * this.carousel.width + (this.carousel.width / 2 - this.font.getTextSize(itemText).width / 2);
+			this.font.drawText(this.carousel, textX - xOffset + 1, 6, itemText, Color.Black.fadeTo(this.openness));
+			this.font.drawText(this.carousel, textX - xOffset, 5, itemText, itemColor);
 		}
-		let carouselX = Surface.Screen.width - 5 - this.carouselSurface.width - this.font.getStringWidth(">") - 5;
-		this.carouselSurface.blit(carouselX, menuY);
-		this.font.setColorMask(CreateColor(128, 128, 128, this.openness * 255));
-		this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
+		let carouselX = Surface.Screen.width - 5 - this.carousel.width - this.font.getTextSize(">").width - 5;
+		Prim.blit(Surface.Screen, carouselX, menuY, this.carousel);
+		this.font.drawText(Surface.Screen, carouselX - this.font.getTextSize("<").width - 5, menuY + 5, "<",
+			Color.Gray.fadeTo(this.openness));
 		if (this.scrollDirection == -1) {
-			this.font.setColorMask(CreateColor(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
-			this.font.drawText(carouselX - this.font.getStringWidth("<") - 5, menuY + 5, "<");
+			this.font.drawText(Surface.Screen, carouselX - this.font.getTextSize("<").width - 5, menuY + 5, "<",
+				Color.Orange.fadeTo(this.openness * (1.0 - this.scrollProgress)));
 		}
-		this.font.setColorMask(CreateColor(128, 128, 128, this.openness * 255));
-		this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
+		this.font.drawText(Surface.Screen, carouselX + this.carousel.width + 5, menuY + 5, ">",
+			Color.Gray.fadeTo(this.openness));
 		if (this.scrollDirection == 1) {
-			this.font.setColorMask(CreateColor(255, 192, 0, this.openness * (1.0 - this.scrollProgress) * 255));
-			this.font.drawText(carouselX + this.carouselSurface.width + 5, menuY + 5, ">");
+			this.font.drawText(Surface.Screen, carouselX + this.carousel.width + 5, menuY + 5, ">",
+				Color.Orange.fadeTo(this.openness * (1.0 - this.scrollProgress)));
 		}
 	}
 
