@@ -38,7 +38,7 @@ class MenuStrip extends Thread
 		this.brightness = 0.0;
 		this.mode = "open";
 		let carouselWidth = from(this.menuItems)
-			.select(it => this.font.getTextSize(it.text).width + 10)
+			.select(it => this.font.widthOf(it.text) + 10)
 			.reduce((a, v) => Math.max(a, v));
 		this.carousel = new Surface(carouselWidth, this.font.height + 10);
 		while (AreKeysLeft())
@@ -121,16 +121,16 @@ class MenuStrip extends Thread
 			else if (i < 0)
 				itemIndex = this.menuItems.length - 1 - Math.abs(i + 1) % this.menuItems.length;
 			let itemText = this.menuItems[itemIndex].text;
-			let textX = i * this.carousel.width + (this.carousel.width / 2 - this.font.getTextSize(itemText).width / 2);
+			let textX = i * this.carousel.width + (this.carousel.width / 2 - this.font.widthOf(itemText) / 2);
 			this.font.drawText(this.carousel, textX - xOffset + 1, 6, itemText, Color.Black.fadeTo(this.openness));
 			this.font.drawText(this.carousel, textX - xOffset, 5, itemText, itemColor);
 		}
-		let carouselX = Surface.Screen.width - 5 - this.carousel.width - this.font.getTextSize(">").width - 5;
+		let carouselX = Surface.Screen.width - 5 - this.carousel.width - this.font.widthOf(">") - 5;
 		Prim.blit(Surface.Screen, carouselX, menuY, this.carousel);
-		this.font.drawText(Surface.Screen, carouselX - this.font.getTextSize("<").width - 5, menuY + 5, "<",
+		this.font.drawText(Surface.Screen, carouselX - this.font.widthOf("<") - 5, menuY + 5, "<",
 			Color.Gray.fadeTo(this.openness));
 		if (this.scrollDirection == -1) {
-			this.font.drawText(Surface.Screen, carouselX - this.font.getTextSize("<").width - 5, menuY + 5, "<",
+			this.font.drawText(Surface.Screen, carouselX - this.font.widthOf("<") - 5, menuY + 5, "<",
 				Color.Orange.fadeTo(this.openness * (1.0 - this.scrollProgress)));
 		}
 		this.font.drawText(Surface.Screen, carouselX + this.carousel.width + 5, menuY + 5, ">",

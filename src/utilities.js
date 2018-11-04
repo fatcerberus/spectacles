@@ -32,8 +32,8 @@ function drawTextEx(font, x, y, text, color = Color.White, shadowLength = 0, ali
 	const Align =
 	{
 		'left':   (font, x, text) => x,
-		'center': (font, x, text) => x - font.getTextSize(text).width / 2,
-		'right':  (font, x, text) => x - font.getTextSize(text).width,
+		'center': (font, x, text) => x - font.widthOf(text) / 2,
+		'right':  (font, x, text) => x - font.widthOf(text),
 	};
 
 	let shadowColor = Color.Black.fadeTo(color.a);

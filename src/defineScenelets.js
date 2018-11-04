@@ -77,7 +77,7 @@ Scene.defineOp('marquee',
 		this.color = color;
 		this.background = backgroundColor;
 		this.font = Font.Default;
-		this.windowSize = Surface.Screen.width + this.font.getTextSize(this.text).width;
+		this.windowSize = Surface.Screen.width + this.font.widthOf(this.text);
 		this.height = this.font.height + 10;
 		this.textHeight = this.font.height;
 		this.fadeness = 0.0;
@@ -130,7 +130,7 @@ Scene.defineOp('talk',
 		this.timeoutLeft = this.timeout;
 		this.font = Font.Default;
 		this.text = [];
-		let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
+		let speakerTextWidth = this.font.widthOf(this.speakerText);
 		let textAreaWidth = Surface.Screen.width - 16;
 		for (let i = 5; i < arguments.length; ++i) {
 			let lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
@@ -176,7 +176,7 @@ Scene.defineOp('talk',
 		let textAreaWidth = this.textSurface.width;
 		let textX = 0;
 		if (this.speakerName != null) {
-			let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
+			let speakerTextWidth = this.font.widthOf(this.speakerText);
 			textX = speakerTextWidth + 5;
 		}
 		textAreaWidth -= textX;
@@ -246,10 +246,10 @@ Scene.defineOp('talk',
 					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / Sphere.frameRate, 1.0);
 					let lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					let currentLineText = this.text[this.currentPage][this.lineToReveal];
-					let currentLineWidth = this.font.getTextSize(currentLineText).width;
+					let currentLineWidth = this.font.widthOf(currentLineText);
 					let textAreaWidth = this.textSurface.width;
 					if (this.speakerName != null) {
-						let speakerTextWidth = this.font.getTextSize(this.speakerText).width;
+						let speakerTextWidth = this.font.widthOf(this.speakerText);
 						textAreaWidth -= speakerTextWidth + 5;
 					}
 					if (this.lineVisibility >= 1.0 || textAreaWidth * this.lineVisibility >= currentLineWidth + 20) {

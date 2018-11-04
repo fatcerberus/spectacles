@@ -52,7 +52,7 @@ class BattleScreen extends Thread
 			font: Font.Default,
 			fadeness: 1.0,
 			render() {
-				let width = this.font.getTextSize(this.text).width + 20;
+				let width = this.font.widthOf(this.text) + 20;
 				let height = this.font.height + 10;
 				let x = (Surface.Screen.width - width) / 2;
 				let y = 112;

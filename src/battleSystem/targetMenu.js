@@ -38,7 +38,7 @@ class TargetMenu extends Thread
 
 		this.drawCursor = function(unit)
 		{
-			let width = this.cursorFont.getTextSize(this.name).width + 10;
+			let width = this.cursorFont.widthOf(this.name) + 10;
 			let x = unit.actor.x < Surface.Screen.width / 2 ? unit.actor.x + 37 : unit.actor.x - 5 - width;
 			let y = unit.actor.y + 6;
 			Prim.drawSolidRectangle(Surface.Screen, x, y, width, 20, Color.Black.fadeTo(0.5));

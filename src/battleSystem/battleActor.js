@@ -71,14 +71,14 @@ class BattleActor
 		this.sprite.blit(this.x, this.y, this.opacity * 255);
 		for (let i = 0; i < this.damages.length; ++i) {
 			let text = this.damages[i].text;
-			let x = this.x + 16 - this.messageFont.getTextSize(text).width / 2;
+			let x = this.x + 16 - this.messageFont.widthOf(text) / 2;
 			for (let i2 = 0; i2 < text.length; ++i2) {
 				let yName = 'y' + i2.toString();
 				let y = this.y + this.damages[i][yName];
 				let color = this.damages[i].color !== null
 					? this.damages[i].color : Color.White;
 				drawTextEx(this.messageFont, x, y, text[i2], color, 1);
-				x += this.messageFont.getTextSize(text[i2]).width;
+				x += this.messageFont.widthOf(text[i2]);
 			}
 		}
 		for (let i = 0; i < this.healings.length; ++i) {
