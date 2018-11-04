@@ -27,7 +27,7 @@ class TestHarness
 		this.isBattleRunning = false;
 
 		let fileNames = from(new DirectoryStream('$/testCases'))
-			.where(it => it.fileName.endsWith('.mjs'))
+			.where(it => /\.m?js$/.test(it.fileName))
 			.select(it => it.fullPath)
 			.besides(it => console.log(`loading tests from '${FS.relativePath(it, '$/testCases')}'`));
 		for (const fileName of fileNames)

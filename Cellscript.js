@@ -12,7 +12,7 @@ Object.assign(Sphere.Game,
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x240',
-	main: '@/scripts/main.mjs',
+	main: '@/scripts/main.js',
 
 	fullScreen: false,
 
@@ -23,7 +23,7 @@ Object.assign(Sphere.Game,
 	disableTitleScreen: false,
 });
 
-install('@/scripts', files('src/*.mjs', true));
+install('@/scripts', files('src/*.js', true));
 
 install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
