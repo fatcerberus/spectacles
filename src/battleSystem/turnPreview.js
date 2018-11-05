@@ -28,20 +28,16 @@ class TurnPreview extends Thread
 		Prim.drawRectangle(surface, 48, 0, 112, 16, 1.0, BorderColor);
 		font.drawText(surface, 11, 3, "next:", TextShadowColor);
 		font.drawText(surface, 10, 2, "next:", TextColor);
-		this.shader = new Shader({
-			vertexFile:   '#/shaders/image.vert.glsl',
-			fragmentFile: '#/shaders/image.frag.glsl',
-		});
 		this.transform = new Transform();
 		let shape = new Shape(ShapeType.TriStrip,
-			surface.toTexture(),
+			surface,
 			new VertexList([
 				{ x: 0,   y: 0,  u: 0.0, v: 1.0 },
 				{ x: 160, y: 0,  u: 1.0, v: 1.0 },
 				{ x: 0,   y: 16, u: 0.0, v: 0.0 },
 				{ x: 160, y: 16, u: 1.0, v: 0.0 },
 			]));
-		this.model = new Model([ shape ], this.shader);
+		this.model = new Model([ shape ]);
 	}
 
 	dispose()
@@ -58,7 +54,6 @@ class TurnPreview extends Thread
 	{
 		if (value !== this._fadeness) {
 			this._fadeness = value;
-			this.shader.setFloatVector('tintColor', [ 1.0, 1.0, 1.0, 1.0 - value ]);
 		}
 	}
 
@@ -67,7 +62,7 @@ class TurnPreview extends Thread
 		if (!(unit.tag in this.entries)) {
 			let iconColor = unit.isPartyMember() ? Color.RoyalBlue : Color.FireBrick;
 			let entry = {
-				icon:      new BattlerIcon(unit.name, iconColor, this.shader),
+				icon:      new BattlerIcon(unit.name, iconColor),
 				turnBoxes: [],
 			};
 			for (let i = 0; i < 8; ++i)
@@ -136,7 +131,7 @@ class TurnPreview extends Thread
 
 class BattlerIcon
 {
-	constructor(name, color, shader)
+	constructor(name, color)
 	{
 		let font = Font.Default;
 		let outlineColor = Color.Black.fadeTo(0.25);
@@ -146,14 +141,14 @@ class BattlerIcon
 		font.drawText(surface, 5, 3, name[0], Color.mix(Color.Black, color));
 		font.drawText(surface, 4, 2, name[0], Color.mix(Color.White, color));
 		let shape = new Shape(ShapeType.TriStrip,
-			surface.toTexture(),
+			surface,
 			new VertexList([
 				{ x: 0,  y: 0,  u: 0.0, v: 1.0 },
 				{ x: 16, y: 0,  u: 1.0, v: 1.0 },
 				{ x: 0,  y: 16, u: 0.0, v: 0.0 },
 				{ x: 16, y: 16, u: 1.0, v: 0.0 },
 			]));
-		this.model = new Model([ shape ], shader);
+		this.model = new Model([ shape ]);
 		this.transform = new Transform();
 		this.lastX = 0;
 		this.lastY = 0;

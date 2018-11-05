@@ -27,29 +27,16 @@ class DayNightClock extends Thread
 	{
 		super({ priority: 1 });
 
-		let width = Surface.Screen.width;
-		let height = Surface.Screen.height;
-		let rectangle = new Shape(ShapeType.TriStrip,
-			new VertexList([
-				{ x: 0,     y: 0 },
-				{ x: width, y: 0 },
-				{ x: 0,     y: height },
-				{ x: width, y: height },
-			]));
-		this.shader = new Shader({
-			vertexFile:   '#/shaders/image.vert.glsl',
-			fragmentFile: '#/shaders/image.frag.glsl',
-		});
-		this.model = new Model([ rectangle ], this.shader);
-
-		this.inGameTime = new InGameTime(0, 0, 0);
-		this.offset = new Date().getTimezoneOffset() * 60 * 1000;
-		this.state = Day;
-		this.currentMask = [ 0.0, 0.0, 0.0, 0.0 ];
-
-		this.on_update();
-		console.log("initializing day/night clock", `time: ${this.now()}`);
 		this.start();
+	}
+
+	mixMasks(mask1, mask2, proportion1, proportion2)
+	{
+		this.currentMask[0] = mask1[0] * proportion1 + mask2[0] * proportion2;
+		this.currentMask[1] = mask1[1] * proportion1 + mask2[1] * proportion2;
+		this.currentMask[2] = mask1[2] * proportion1 + mask2[2] * proportion2;
+		this.currentMask[3] = mask1[3] * proportion1 + mask2[3] * proportion2;
+		this.shader.setFloatVector('tintColor', this.currentMask);
 	}
 
 	now()
@@ -62,18 +49,34 @@ class DayNightClock extends Thread
 		return this.inGameTime;
 	}
 
+	async on_startUp()
+	{
+		let width = Surface.Screen.width;
+		let height = Surface.Screen.height;
+		let rectangle = new Shape(ShapeType.TriStrip,
+			new VertexList([
+				{ x: 0,     y: 0 },
+				{ x: width, y: 0 },
+				{ x: 0,     y: height },
+				{ x: width, y: height },
+			]));
+		this.shader = await Shader.fromFiles({
+			vertexFile:   '#/shaders/image.vert.glsl',
+			fragmentFile: '#/shaders/image.frag.glsl',
+		});
+		this.model = new Model([ rectangle ], this.shader);
+
+		this.inGameTime = new InGameTime(0, 0, 0);
+		this.offset = new Date().getTimezoneOffset() * 60 * 1000;
+		this.state = Day;
+		this.currentMask = [ 0.0, 0.0, 0.0, 0.0 ];
+
+		console.log("initializing day/night clock", `time: ${this.now()}`);
+	}
+
 	on_render()
 	{
 		this.model.draw();
-	}
-
-	mixMasks(mask1, mask2, proportion1, proportion2)
-	{
-		this.currentMask[0] = mask1[0] * proportion1 + mask2[0] * proportion2;
-		this.currentMask[1] = mask1[1] * proportion1 + mask2[1] * proportion2;
-		this.currentMask[2] = mask1[2] * proportion1 + mask2[2] * proportion2;
-		this.currentMask[3] = mask1[3] * proportion1 + mask2[3] * proportion2;
-		this.shader.setFloatVector('tintColor', this.currentMask);
 	}
 
 	on_update()

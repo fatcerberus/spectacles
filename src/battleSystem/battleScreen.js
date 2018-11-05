@@ -25,7 +25,6 @@ class BattleScreen extends Thread
 		this.actors = {};
 		for (const type in this.actorTypes)
 			this.actors[type] = [];
-		this.background = new Texture('images/battleBackground.png');
 		this.hud = new BattleHUD(partyMaxMP);
 
 		this.startRunning = function()
@@ -120,6 +119,11 @@ class BattleScreen extends Thread
 			.run();
 	}
 
+	async on_startUp()
+	{
+		this.background = await Texture.fromFile('images/battleBackground.png');
+	}
+	
 	on_render()
 	{
 		Prim.blit(Surface.Screen, 0, -16, this.background);

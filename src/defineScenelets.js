@@ -25,13 +25,13 @@ Scene.defineOp('adjustBGM',
 //     battleID: The ID of the battle definition to use to initialize the fight.
 Scene.defineOp('battle',
 {
-	start(scene, battleID, session) {
+	async start(scene, battleID, session) {
 		this.mode = 'battle';
 		this.battle = new BattleEngine(session, battleID);
-		this.battleThread = this.battle.go();
+		this.battleThread = await this.battle.go();
 	},
 
-	update(scene) {
+	async update(scene) {
 		switch (this.mode) {
 			case 'battle':
 				if (!this.battleThread.running) {
@@ -51,7 +51,7 @@ Scene.defineOp('battle',
 					if (this.gameOver.action === GameOverAction.Retry) {
 						console.log("player asked to retry last battle");
 						this.mode = 'battle';
-						this.battleThread = this.battle.go();
+						this.battleThread = await this.battle.go();
 					}
 					else {
 						return false;

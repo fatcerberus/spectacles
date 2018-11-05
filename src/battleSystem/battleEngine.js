@@ -89,7 +89,7 @@ class BattleEngine extends Thread
 		return this.battleLevel;
 	}
 
-	go()
+	async go()
 	{
 		if (Sphere.Game.disableBattles) {
 			console.log("battles disabled, automatic win", `battleID: ${this.battleID}`);
@@ -121,12 +121,14 @@ class BattleEngine extends Thread
 		for (let i = 0; i < this.parameters.enemies.length; ++i) {
 			let enemyID = this.parameters.enemies[i];
 			let unit = new BattleUnit(this, enemyID, i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle);
+			await unit.initialize();
 			this.battleUnits.push(unit);
 			this.enemyUnits.push(unit);
 		}
 		let i = 0;
 		for (const name in this.session.party.members) {
 			let unit = new BattleUnit(this, this.session.party.members[name], i == 0 ? 1 : i == 1 ? 0 : i, Row.Middle, partyMPPool);
+			await unit.initialize();
 			this.battleUnits.push(unit);
 			this.playerUnits.push(unit);
 			++i;

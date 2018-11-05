@@ -91,10 +91,7 @@ class BattleUnit
 			this.weapon = Weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			let aiFile = FS.fullPath(`${this.id}.js`, '$/autoBattlers');
-			let battlerClass = FS.require(aiFile).default;
-			this.ai = new battlerClass(this, battle);
-			this.battle.registerAI(this.ai);
+			this.aiFile = FS.fullPath(`${this.id}.js`, '$/autoBattlers');
 		}
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
 		this.counterMenu = new MoveMenu(this, battle, Stance.Counter);
@@ -108,10 +105,19 @@ class BattleUnit
 			this.actor.enter(true);
 		this.resetCounter(Game.defaultMoveRank, true);
 		this.registerCommands();
-		let unitType = this.ai === null ? "player" : "AI";
+		let unitType = this.aiFile === undefined ? "player" : "AI";
 		console.log(`create ${unitType} unit '${this.name}'`,
 			`hp: ${this.hp}/${this.maxHP}`,
 			`iid: ${this.tag}`);
+	}
+	
+	async initialize()
+	{
+		if (this.aiFile !== undefined) {
+			let battlerClass = (await import(this.aiFile)).default;
+			this.ai = new battlerClass(this, this.battle);
+			this.battle.registerAI(this.ai);
+		}
 	}
 
 	dispose()

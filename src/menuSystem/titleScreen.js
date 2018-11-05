@@ -16,24 +16,25 @@ class TitleScreen extends Thread
 
 		console.log(`initializing titlescreen`, `file: '${fileName}'`);
 
-		this.data = require(fileName);
-		this.fadeAlpha = 0.0;
-		this.fadeTime = this.data.titleFadeFrames;
-		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
-		this.texture = new Texture(this.data.titleScreen);
-		this.splashes = [];
-		for (const splash of this.data.splashScreens) {
-			console.log(`splash '${splash.fileName}'`, `hold: ${splash.holdFrames}f`);
-			let texture = new Texture(splash.fileName);
-			let thread = new SplashThread(texture, this.data.splashFadeFrames, splash.holdFrames);
-			this.splashes.push({ thread });
-		}
-
+		this.fileName = fileName;
 		this.start();
 	}
 
 	async run(showLogos = true)
 	{
+		this.data = await JSON.fromFile(this.fileName);
+		this.fadeAlpha = 0.0;
+		this.fadeTime = this.data.titleFadeFrames;
+		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
+		this.texture = await Texture.fromFile(this.data.titleScreen);
+		this.splashes = [];
+		for (const splash of this.data.splashScreens) {
+			console.log(`splash '${splash.fileName}'`, `hold: ${splash.holdFrames}f`);
+			let texture = await Texture.fromFile(splash.fileName);
+			let thread = new SplashThread(texture, this.data.splashFadeFrames, splash.holdFrames);
+			this.splashes.push({ thread });
+		}
+
 		if (this.data.musicOverSplash)
 			Music.play(this.data.music);
 		if (showLogos) {
