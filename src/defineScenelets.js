@@ -201,7 +201,7 @@ Scene.defineOp('talk', {
 			}
 		}
 		Prim.blit(Surface.Screen,
-			(Surface.Screen.width - this.textSurface.width) / 2, boxY + 5,
+			Math.floor((Surface.Screen.width - this.textSurface.width) / 2), Math.floor(boxY + 5),
 			this.textSurface);
 	},
 

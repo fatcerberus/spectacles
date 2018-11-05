@@ -59,8 +59,8 @@ class DayNightClock extends Thread
 				{ x: width, y: height },
 			]));
 		this.shader = await Shader.fromFiles({
-			vertexFile:   '#/shaders/image.vert.glsl',
-			fragmentFile: '#/shaders/image.frag.glsl',
+			vertexFile:   'shaders/tintColor.vert.glsl',
+			fragmentFile: 'shaders/tintColor.frag.glsl',
 		});
 		this.model = new Model([ rectangle ], this.shader);
 
