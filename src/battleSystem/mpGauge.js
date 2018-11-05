@@ -5,7 +5,7 @@
 
 import { Prim, Scene } from 'sphere-runtime';
 
-import { drawTextEx } from '$/utilities';
+import { drawTextEx } from '../utilities.js';
 
 export default
 class MPGauge

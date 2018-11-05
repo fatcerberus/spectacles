@@ -3,13 +3,11 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Party } from '$/battleSystem';
-import { Game } from '$/gameDef';
-
-import Difficulty from './difficulty';
+import { Party } from './battleSystem/index.js';
+import { Game } from './gameDef/index.js';
 
 export default
-class Session
+class GameSession
 {
 	static fromFile(fileName)
 	{
@@ -27,3 +25,12 @@ class Session
 		this.battlesSeen = [];
 	}
 }
+
+export
+const Difficulty =
+{
+	Beginner: 1,
+	Standard: 2,
+	Proud:    3,
+	Critical: 4,
+};

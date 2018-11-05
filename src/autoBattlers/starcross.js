@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { AutoBattler, Stance } from '$/battleSystem';
+import { AutoBattler, Stance } from '../battleSystem/index.js';
 
 export default
 class ScottStarcrossAI extends AutoBattler

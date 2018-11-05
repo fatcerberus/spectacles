@@ -3,10 +3,10 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Game, Weapons } from '$/gameDef';
-import { clone } from '$/utilities';
+import { Game, Weapons } from '../gameDef/index.js';
+import { clone } from '../utilities.js';
 
-import Stance from './stance';
+import Stance from './stance.js';
 
 export default
 class WeaponUsable

@@ -5,11 +5,10 @@
 
 import { Joypad, Music, Prim, Scene } from 'sphere-runtime';
 
-import { BattleEngine, BattleResult } from '$/battleSystem';
-import { GameOverScreen, GameOverAction } from '$/menuSystem';
+import { BattleEngine, BattleResult } from './battleSystem/index.js';
+import GameOverScreen, { GameOverAction } from './gameOverScreen.js';
 
-Scene.defineOp('adjustBGM',
-{
+Scene.defineOp('adjustBGM', {
 	start(scene, volume, numFrames = 0) {
 		Music.adjustVolume(volume, numFrames);
 	},
@@ -23,8 +22,7 @@ Scene.defineOp('adjustBGM',
 // Starts a battle.
 // Arguments:
 //     battleID: The ID of the battle definition to use to initialize the fight.
-Scene.defineOp('battle',
-{
+Scene.defineOp('battle', {
 	async start(scene, battleID, session) {
 		this.mode = 'battle';
 		this.battle = new BattleEngine(session, battleID);
@@ -35,7 +33,7 @@ Scene.defineOp('battle',
 		switch (this.mode) {
 			case 'battle':
 				if (!this.battleThread.running) {
-					if (this.battle.result == BattleResult.Lose) {
+					if (this.battle.result === BattleResult.Lose) {
 						console.log("player lost battle, showing Game Over screen");
 						this.mode = 'gameOver';
 						this.gameOver = new GameOverScreen();
@@ -63,15 +61,13 @@ Scene.defineOp('battle',
 	},
 });
 
-Scene.defineOp('changeBGM',
-{
+Scene.defineOp('changeBGM', {
 	start(scene, trackName, fadeTime) {
 		Music.play(trackName, fadeTime);
 	},
 });
 
-Scene.defineOp('marquee',
-{
+Scene.defineOp('marquee', {
 	start(scene, text, backgroundColor = Color.Black, color = Color.White) {
 		this.text = text;
 		this.color = color;
@@ -105,22 +101,19 @@ Scene.defineOp('marquee',
 	},
 });
 
-Scene.defineOp('popBGM',
-{
+Scene.defineOp('popBGM', {
 	start(scene) {
 		Music.pop();
 	},
 });
 
-Scene.defineOp('pushBGM',
-{
+Scene.defineOp('pushBGM', {
 	start(scene, trackName) {
 		Music.push(trackName);
 	},
 });
 
-Scene.defineOp('talk',
-{
+Scene.defineOp('talk', {
 	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
 		this.speakerName = speaker;
 		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
@@ -136,9 +129,8 @@ Scene.defineOp('talk',
 			let lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
 			let wrappedText = this.font.wordWrap(arguments[i], lineWidth);
 			let page = this.text.push([]) - 1;
-			for (let iLine = 0; iLine < wrappedText.length; ++iLine) {
+			for (let iLine = 0; iLine < wrappedText.length; ++iLine)
 				this.text[page].push(wrappedText[iLine]);
-			}
 		}
 		this.boxVisibility = 0.0;
 		this.textVisibility = 1.0;
@@ -294,7 +286,7 @@ Scene.defineOp('talk',
 			case "hidetext":
 				this.textVisibility = Math.max(this.textVisibility - (4.0 * this.textSpeed) / Sphere.frameRate, 0.0);
 				if (this.textVisibility <= 0.0) {
-				    this.transition = new Scene()
+					this.transition = new Scene()
 						.tween(this, 20, 'easeInBack', { boxVisibility: 0.0 });
 					this.transition.run();
 					this.mode = "fadeout";

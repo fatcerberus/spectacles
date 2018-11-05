@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { StatNames, Statuses } from '$/gameDef';
+import { StatNames, Statuses } from '../gameDef/index.js';
 
 export default
 class StatusEffect

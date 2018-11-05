@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Game } from './game';
+import { Game } from './game.js';
 
 export
 const SkillCategories =

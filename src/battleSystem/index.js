@@ -3,13 +3,13 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-export { default as AutoBattler } from './autoBattler';
-export { default as BattleEngine } from './battleEngine';
-export { default as BattleResult } from './battleResult';
-export { default as ItemUsable } from './itemUsable';
-export { default as Party } from './party';
-export { default as PartyMember } from './partyMember';
-export { default as Row } from './row';
-export { default as Stance } from './stance';
-export { default as SkillUsable } from './skillUsable';
-export { default as WeaponUsable } from './weaponUsable';
+export { default as AutoBattler } from './autoBattler.js';
+export { default as BattleEngine } from './battleEngine.js';
+export { default as BattleResult } from './battleResult.js';
+export { default as ItemUsable } from './itemUsable.js';
+export { default as Party } from './party.js';
+export { default as PartyMember } from './partyMember.js';
+export { default as Row } from './row.js';
+export { default as Stance } from './stance.js';
+export { default as SkillUsable } from './skillUsable.js';
+export { default as WeaponUsable } from './weaponUsable.js';

@@ -5,17 +5,17 @@
 
 import { from, Random, Scene } from 'sphere-runtime';
 
-import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '$/gameDef';
-import { clone } from '$/utilities';
+import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '../gameDef/index.js';
+import { clone } from '../utilities.js';
 
-import ItemUsable from './itemUsable';
-import MoveMenu from './moveMenu';
-import MPPool from './mpPool';
-import PartyMember from './partyMember';
-import Row from './row';
-import Stance from './stance';
-import Stat from './stat';
-import StatusEffect from './statusEffect';
+import ItemUsable from './itemUsable.js';
+import MoveMenu from './moveMenu.js';
+import MPPool from './mpPool.js';
+import PartyMember from './partyMember.js';
+import Row from './row.js';
+import Stance from './stance.js';
+import Stat from './stat.js';
+import StatusEffect from './statusEffect.js';
 
 export default
 class BattleUnit

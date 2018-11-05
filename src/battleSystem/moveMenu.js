@@ -5,12 +5,12 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-import { Game, Elements, SkillCategories } from '$/gameDef';
-import { drawTextEx } from '$/utilities';
+import { Game, Elements, SkillCategories } from '../gameDef/index.js';
+import { drawTextEx } from '../utilities.js';
 
-import ItemUsable from './itemUsable';
-import Stance from './stance';
-import TargetMenu from './targetMenu';
+import ItemUsable from './itemUsable.js';
+import Stance from './stance.js';
+import TargetMenu from './targetMenu.js';
 
 export default
 class MoveMenu extends Thread

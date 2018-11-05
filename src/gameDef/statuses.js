@@ -5,10 +5,10 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { Stance } from '$/battleSystem';
+import { Stance } from '../battleSystem/index.js';
 
-import { Game } from './game';
-import { Maths } from './maths';
+import { Game } from './game.js';
+import { Maths } from './maths.js';
 
 export
 const Statuses =

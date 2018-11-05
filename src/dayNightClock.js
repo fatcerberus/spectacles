@@ -8,8 +8,6 @@
 
 import { Thread } from 'sphere-runtime';
 
-import InGameTime from './inGameTime';
-
 const
 	DayMask      = [ 0.0, 0.0, 0.0, 0.0 ],
 	TwilightMask = [ 0.5, 0.125, 0.0625, 0.625 ],
@@ -114,5 +112,24 @@ class DayNightClock extends Thread
 			let alpha = now.minute / 60;
 			this.mixMasks(NightMask, TwilightMask, alpha, 1.0 - alpha);
 		}
+	}
+}
+
+export
+class InGameTime
+{
+	constructor(hour, minute, second)
+	{
+		this.hour = hour;
+		this.minute = minute;
+		this.second = second;
+	}
+
+	toString()
+	{
+		let hourText = ("0" + this.hour).slice(-2);
+		let minuteText = ("0" + this.minute).slice(-2);
+		let secondText = ("0" + this.second).slice(-2);
+		return `${hourText}:${minuteText}:${secondText}`;
 	}
 }

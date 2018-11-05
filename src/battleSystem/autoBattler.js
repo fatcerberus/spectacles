@@ -5,12 +5,12 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { Game, Items, Skills, Weapons } from '$/gameDef';
+import { Game, Items, Skills, Weapons } from '../gameDef/index.js';
 
-import ItemUsable from './itemUsable';
-import SkillUsable from './skillUsable';
-import Stance from './stance';
-import WeaponUsable from './weaponUsable';
+import ItemUsable from './itemUsable.js';
+import SkillUsable from './skillUsable.js';
+import Stance from './stance.js';
+import WeaponUsable from './weaponUsable.js';
 
 export default
 class AutoBattler

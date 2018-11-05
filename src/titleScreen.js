@@ -5,7 +5,8 @@
  */
 
 import { Music, Prim, Scene, Thread } from 'sphere-runtime';
-import MenuStrip from './menuStrip';
+
+import MenuStrip from './menuStrip.js';
 
 export default
 class TitleScreen extends Thread

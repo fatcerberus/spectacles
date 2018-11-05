@@ -3,17 +3,17 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-export { Animations } from './animations';
-export { Battles } from './battles';
-export { Characters } from './characters';
-export { Conditions } from './conditions';
-export { Enemies } from './enemies';
-export { Game } from './game';
-export { Items } from './items';
-export { Maps } from './maps';
-export { Maths } from './maths';
-export { MoveEffects, Elements } from './move-effects';
-export { Skills, SkillCategories } from './skills';
-export { StatNames } from './stat-names';
-export { Statuses } from './statuses';
-export { Weapons, WeaponTypes } from './weapons';
+export { Animations } from './animations.js';
+export { Battles } from './battles.js';
+export { Characters } from './characters.js';
+export { Conditions } from './conditions.js';
+export { Enemies } from './enemies.js';
+export { Game } from './game.js';
+export { Items } from './items.js';
+export { Maps } from './maps.js';
+export { Maths } from './maths.js';
+export { MoveEffects, Elements } from './move-effects.js';
+export { Skills, SkillCategories } from './skills.js';
+export { StatNames } from './stat-names.js';
+export { Statuses } from './statuses.js';
+export { Weapons, WeaponTypes } from './weapons.js';

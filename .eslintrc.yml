@@ -7,9 +7,10 @@ parserOptions:
 globals:
   global: true
   console: true
-  require: true
   Sphere: true
+  BlendOp: true
   Color: true
+  DepthOp: true
   DirectoryStream: true
   Dispatch: true
   FS: true

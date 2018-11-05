@@ -5,11 +5,11 @@
 
 import { Console, Music, Scene } from 'sphere-runtime';
 
-import { DayNightClock } from '$/dayNightSystem';
-import { TestHarness } from '$/testSystem';
-import { TitleScreen } from '$/menuSystem';
+import DayNightClock from './dayNightClock.js';
+import TestHarness from './testHarness.js';
+import TitleScreen from './titleScreen.js';
 
-import './defineScenelets';
+import './defineScenelets.js';
 
 global.console =
 	new Console({ hotKey: Key.Tilde });
@@ -40,9 +40,9 @@ async function main()
 	});
 
 	await TestHarness.initialize();
-	
-	//await new TitleScreen().run();
-	
+
+	await new TitleScreen().run();
+
 	let dayNight = new DayNightClock();
 	await TestHarness.run('rsb2');
 }

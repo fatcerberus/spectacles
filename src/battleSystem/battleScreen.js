@@ -5,10 +5,10 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/utilities';
+import { drawTextEx } from '../utilities.js';
 
-import BattleActor from './battleActor';
-import BattleHUD from './battleHUD';
+import BattleActor from './battleActor.js';
+import BattleHUD from './battleHUD.js';
 
 export default
 class BattleScreen extends Thread

@@ -3,17 +3,16 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-Object.assign(Sphere.Game,
-{
-	version: 2, apiLevel: 1,
-
+Object.assign(Sphere.Game, {
 	name: "Spectacles: Bruce's Story",
 	saveID: 'fatCerberus.spectacles',
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
-	resolution: '320x240',
+
+	version: 2, apiLevel: 1,
 	main: '@/scripts/main.js',
 
+	resolution: '320x240',
 	fullScreen: false,
 
 	disableAnimations: false,

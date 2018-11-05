@@ -5,7 +5,7 @@
 
 import { from } from 'sphere-runtime';
 
-import PartyMember from './partyMember';
+import PartyMember from './partyMember.js';
 
 export default
 class Party

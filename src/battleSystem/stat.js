@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Maths } from '$/gameDef';
+import { Maths } from '../gameDef/index.js';
 
 export default
 class Stat

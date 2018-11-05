@@ -5,12 +5,12 @@
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
-import { Game } from '$/gameDef';
-import { drawTextEx } from '$/utilities';
+import { Game } from '../gameDef/index.js';
+import { drawTextEx } from '../utilities.js';
 
-import HPGauge from './hpGauge';
-import MPGauge from './mpGauge';
-import TurnPreview from './turnPreview';
+import HPGauge from './hpGauge.js';
+import MPGauge from './mpGauge.js';
+import TurnPreview from './turnPreview.js';
 
 export default
 class BattleHUD extends Thread

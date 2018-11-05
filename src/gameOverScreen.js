@@ -5,8 +5,7 @@
 
 import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
-import GameOverAction from './gameOverAction';
-import MenuStrip from './menuStrip';
+import MenuStrip from './menuStrip.js';
 
 export default
 class GameOverScreen extends Thread
@@ -78,3 +77,10 @@ class GameOverScreen extends Thread
 		}
 	}
 }
+
+export
+const GameOverAction =
+{
+	Retry: 1,
+	Quit:  2,
+};

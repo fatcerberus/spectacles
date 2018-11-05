@@ -5,9 +5,9 @@
 
 import { from, Scene } from 'sphere-runtime';
 
-import { ItemUsable } from '$/battleSystem';
-import { Game } from '$/gameDef';
-import { Session } from '$/saveSystem';
+import { ItemUsable } from './battleSystem/index.js';
+import { Game } from './gameDef/index.js';
+import GameSession from './gameSession.js';
 
 export default
 class TestHarness
@@ -44,7 +44,7 @@ class TestHarness
 					return;
 				}
 				console.log("preparing test battle", `battleID: ${this.setup.battleID}`);
-				let session = new Session();
+				let session = new GameSession();
 				for (const characterID of Game.initialParty)
 					session.party.remove(characterID);
 				for (const id in this.setup.party) {

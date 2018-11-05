@@ -5,10 +5,10 @@
 
 import { from } from 'sphere-runtime';
 
-import { Game, Items } from '$/gameDef';
-import { clone } from '$/utilities';
+import { Game, Items } from '../gameDef/index.js';
+import { clone } from '../utilities.js';
 
-import Stance from './stance';
+import Stance from './stance.js';
 
 export default
 class ItemUsable

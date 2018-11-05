@@ -5,7 +5,7 @@
 
 import { from, Prim, Scene, Thread } from 'sphere-runtime';
 
-import { drawTextEx } from '$/utilities';
+import { drawTextEx } from '../utilities.js';
 
 export default
 class TargetMenu extends Thread

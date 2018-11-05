@@ -5,8 +5,8 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { Game } from './game';
-import { Maths } from './maths';
+import { Game } from './game.js';
+import { Maths } from './maths.js';
 
 export
 const Conditions =

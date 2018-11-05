@@ -5,10 +5,10 @@
 
 import { from } from 'sphere-runtime';
 
-import { Characters, Weapons } from '$/gameDef';
+import { Characters, Weapons } from '../gameDef/index.js';
 
-import SkillUsable from './skillUsable';
-import Stat from './stat';
+import SkillUsable from './skillUsable.js';
+import Stat from './stat.js';
 
 export default
 class PartyMember

@@ -5,7 +5,7 @@
 
 import { from, Random } from 'sphere-runtime';
 
-import { AutoBattler } from '$/battleSystem';
+import { AutoBattler } from '../battleSystem/index.js';
 
 export default
 class ScottTempleAI extends AutoBattler

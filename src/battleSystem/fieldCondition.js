@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Conditions } from '$/gameDef';
+import { Conditions } from '../gameDef/index.js';
 
 export default
 class FieldCondition

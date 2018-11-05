@@ -5,9 +5,9 @@
 
 import { from, Scene } from 'sphere-runtime';
 
-import { drawTextEx, range } from '$/utilities';
+import { drawTextEx, range } from '../utilities.js';
 
-import SpriteImage from './spriteImage';
+import SpriteImage from './spriteImage.js';
 
 export default
 class BattleActor

@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { TestHarness } from '$/testSystem';
+import TestHarness from '../testHarness.js';
 
 TestHarness.addBattle('temple', {
 	battleID: 'scottTemple',
