@@ -124,9 +124,7 @@ class TargetMenu extends Thread
 		}
 		this.isGroupCast = this.usable !== null ? this.usable.isGroupCast : false;
 		this.updateInfo();
-		while (AreKeysLeft()) {
-			GetKey();
-		}
+		Keyboard.Default.clearQueue();
 		this.start();
 		this.takeFocus();
 		await Thread.join(this);
@@ -135,8 +133,8 @@ class TargetMenu extends Thread
 
 	on_inputCheck()
 	{
-		switch (AreKeysLeft() ? GetKey() : null) {
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_A):
+		switch (Keyboard.Default.getKey()) {
+			case Key.Z:
 				new Scene()
 					.fork()
 						.tween(this, 15, 'easeInBack', { infoBoxFadeness: 1.0 })
@@ -146,7 +144,7 @@ class TargetMenu extends Thread
 					.call(() => { this.isChoiceMade = true; })
 					.run();
 				break;
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_B):
+			case Key.X:
 				this.targets = null;
 				new Scene()
 					.fork()
@@ -157,17 +155,17 @@ class TargetMenu extends Thread
 					.call(() => { this.isChoiceMade = true; })
 					.run();
 				break;
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_UP):
+			case Key.Up:
 				if (!this.isTargetLocked) {
 					this.moveCursor(-1);
 				}
 				break;
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN):
+			case Key.Down:
 				if (!this.isTargetLocked) {
 					this.moveCursor(1);
 				}
 				break;
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT):
+			case Key.Left:
 				if (!this.isTargetLocked && this.targets != null) {
 					if (!this.isGroupCast)
 						this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
@@ -176,7 +174,7 @@ class TargetMenu extends Thread
 					this.updateInfo();
 				}
 				break;
-			case GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT):
+			case Key.Right:
 				if (!this.isTargetLocked && this.targets != null) {
 					if (!this.isGroupCast)
 						this.targets = [ this.unit ];

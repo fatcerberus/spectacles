@@ -27,7 +27,7 @@ class SpriteImage
 		let index = this.spriteset.directions.length;
 		let wasFound = false;
 		while (--index >= 0) {
-			if (this.spriteset.directions[index].name == value) {
+			if (this.spriteset.directions[index].name === value) {
 				wasFound = true;
 				this.directionID = index;
 				this.reset();

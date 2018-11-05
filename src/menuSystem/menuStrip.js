@@ -41,8 +41,7 @@ class MenuStrip extends Thread
 			.select(it => this.font.widthOf(it.text) + 10)
 			.reduce((a, v) => Math.max(a, v));
 		this.carousel = new Surface(carouselWidth, this.font.height + 10);
-		while (AreKeysLeft())
-			GetKey();
+		Keyboard.Default.clearQueue();
 		this.start();
 		this.takeFocus();
 		this.animation = new Scene()
@@ -59,8 +58,8 @@ class MenuStrip extends Thread
 		if (this.mode != 'idle')
 			return;
 
-		let key = AreKeysLeft() ? GetKey() : null;
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
+		let key = Keyboard.Default.getKey();
+		if (key == Key.Z) {
 			this.chosenItem = this.selectedItem;
 			this.animation = new Scene()
 				.fork()
@@ -71,21 +70,21 @@ class MenuStrip extends Thread
 			this.animation.run();
 			this.mode = 'close';
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.canCancel) {
+		else if (key == Key.X && this.canCancel) {
 			this.chosenItem = null;
 			this.animation = new Scene()
 				.tween(this, 15, 'easeInQuad', { openness: 0.0 });
 			this.animation.run();
 			this.mode = 'close';
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
+		else if (key == Key.Left) {
 			this.scrollDirection = -1;
 			this.animation = new Scene()
 				.tween(this, 15, 'linear', { scrollProgress: 1.0 });
 			this.animation.run();
 			this.mode = 'changeItem';
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
+		else if (key == Key.Right) {
 			this.scrollDirection = 1;
 			this.animation = new Scene()
 				.tween(this, 15, 'linear', { scrollProgress: 1.0 });

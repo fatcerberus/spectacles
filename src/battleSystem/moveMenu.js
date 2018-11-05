@@ -55,7 +55,7 @@ class MoveMenu extends Thread
 		this.drawers = [];
 		for (const category in drawerTable)
 			this.drawers.push(drawerTable[category]);
-		if (stance == Stance.Attack) {
+		if (stance === Stance.Attack) {
 			this.drawers = this.drawers.concat([
 				{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 		}
@@ -115,9 +115,8 @@ class MoveMenu extends Thread
 		{
 			Prim.drawSolidRectangle(Surface.Screen, x, y, width, height, Color.Black.fadeTo(alpha));
 			Prim.drawRectangle(Surface.Screen, x, y, width, height, 1, Color.Black.fadeTo(0.1));
-			if (isSelected) {
+			if (isSelected)
 				this.drawCursor(x, y, width, height, cursorColor, isLockedIn, isEnabled);
-			}
 		};
 
 		this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
@@ -160,7 +159,7 @@ class MoveMenu extends Thread
 		this.updateTurnPreview = function()
 		{
 			let nextMoveOrRank;
-			if (this.stance != Stance.Guard) {
+			if (this.stance !== Stance.Guard) {
 				if (this.isExpanded) {
 					nextMoveOrRank = this.moveMenu[this.moveCursor].usable;
 				}
@@ -173,7 +172,7 @@ class MoveMenu extends Thread
 				nextMoveOrRank = Game.stanceChangeRank;
 			}
 			let nextActions = isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : [ nextMoveOrRank ];
-			if (this.stance == Stance.Charge)
+			if (this.stance === Stance.Charge)
 				nextActions = [ 1 ].concat(nextActions);
 			let prediction = this.battle.predictTurns(this.unit, nextActions);
 			this.battle.ui.hud.turnPreview.set(prediction);
@@ -191,7 +190,7 @@ class MoveMenu extends Thread
 			this.isExpanded = false;
 			this.selection = null;
 			this.stance = this.lastStance;
-			while (AreKeysLeft()) { GetKey(); }
+			Keyboard.Default.clearQueue();
 			this.showMenu.run();
 			this.updateTurnPreview();
 			this.start();
@@ -200,22 +199,25 @@ class MoveMenu extends Thread
 			let targetMenu;
 			switch (this.stance) {
 				case Stance.Attack:
-				case Stance.Charge:
-					let name = this.stance == Stance.Charge
+				case Stance.Charge: {
+					let name = this.stance === Stance.Charge
 						? `CS ${this.selection.name}`
 						: this.selection.name;
 					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).run();
 					break;
-				case Stance.Counter:
+				}
+				case Stance.Counter: {
 					targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
 					targetMenu.lockTargets([ this.unit.counterTarget ]);
 					chosenTargets = await targetMenu.run();
 					break;
-				case Stance.Guard:
+				}
+				case Stance.Guard: {
 					targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
 					targetMenu.lockTargets([ this.unit ]);
 					chosenTargets = await targetMenu.run();
 					break;
+				}
 			}
 		}
 		this.battle.ui.hud.highlight(null);
@@ -229,8 +231,8 @@ class MoveMenu extends Thread
 
 	on_inputCheck()
 	{
-		let key = AreKeysLeft() ? GetKey() : null;
-		if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_A)) {
+		let key = Keyboard.Default.getKey();
+		if (key == Key.Z) {
 			if (!this.isExpanded && this.drawers[this.topCursor].contents.length > 0) {
 				let usables = this.drawers[this.topCursor].contents;
 				this.moveMenu = [];
@@ -266,15 +268,13 @@ class MoveMenu extends Thread
 				this.chooseMove.run();
 			}
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_B) && this.isExpanded) {
+		else if (key == Key.X && this.isExpanded) {
 			this.drawers[this.topCursor].cursor = this.moveCursor;
 			this.isExpanded = false;
 			this.showMoveList.stop();
 			this.hideMoveList.run();
 		}
-		else if (key == GetPlayerKey(PLAYER_1, PLAYER_KEY_Y)
-			&& this.stance != Stance.Guard && this.stance != Stance.Counter)
-		{
+		else if (key == Key.V && this.stance != Stance.Guard && this.stance != Stance.Counter) {
 			this.stance = this.stance == Stance.Attack ? Stance.Charge
 				: Stance.Guard;
 			this.updateTurnPreview();
@@ -283,25 +283,25 @@ class MoveMenu extends Thread
 				this.chooseMove.run();
 			}
 		}
-		else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_LEFT)) {
+		else if (!this.isExpanded && key == Key.Left) {
 			--this.topCursor;
 			if (this.topCursor < 0) {
 				this.topCursor = this.drawers.length - 1;
 			}
 			this.updateTurnPreview();
 		}
-		else if (!this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_RIGHT)) {
+		else if (!this.isExpanded && key == Key.Right) {
 			++this.topCursor;
 			if (this.topCursor >= this.drawers.length) {
 				this.topCursor = 0;
 			}
 			this.updateTurnPreview();
 		}
-		else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_UP)) {
+		else if (this.isExpanded && key == Key.Up) {
 			this.moveCursor = this.moveCursor - 1 < 0 ? this.moveMenu.length - 1 : this.moveCursor - 1;
 			this.updateTurnPreview();
 		}
-		else if (this.isExpanded && key == GetPlayerKey(PLAYER_1, PLAYER_KEY_DOWN)) {
+		else if (this.isExpanded && key == Key.Down) {
 			this.moveCursor = (this.moveCursor + 1) % this.moveMenu.length;
 			this.updateTurnPreview();
 		}
@@ -310,9 +310,9 @@ class MoveMenu extends Thread
 	on_render()
 	{
 		let yOrigin = -54 * (1.0 - this.fadeness) + 16;
-		let stanceText = this.stance == Stance.Charge ? "CS"
-			: this.stance == Stance.Counter ? "CA"
-			: this.stance == Stance.Guard ? "GS"
+		let stanceText = this.stance === Stance.Charge ? "CS"
+			: this.stance === Stance.Counter ? "CA"
+			: this.stance === Stance.Guard ? "GS"
 			: "AS";
 		Surface.Screen.clipTo(0, 16, Surface.Screen.width, Surface.Screen.height - 16);
 		Prim.drawSolidRectangle(Surface.Screen, 0, yOrigin, 136, 16, Color.Black.fadeTo(0.625 * this.fadeness));
