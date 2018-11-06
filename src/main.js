@@ -22,8 +22,8 @@ async function main()
 	console.defineObject('bgm', null, {
 		'override'(fileName) { Music.override(fileName); },
 		'pop'() { Music.pop(); },
-		'play'(fileName) { Music.play(fileName); },
-		'push'(fileName) { Music.push(fileName); },
+		'play'(fileName) { Music.play(FS.fullPath(`${fileName}.ogg`, 'music')); },
+		'push'(fileName) { Music.push(FS.fullPath(`${fileName}.ogg`, 'music')); },
 		'reset'() { Music.reset(); },
 		'stop'() { Music.override(null); },
 		'volume'(value) { Music.adjustVolume(value); },

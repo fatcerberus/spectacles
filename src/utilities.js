@@ -37,7 +37,8 @@ function drawTextEx(font, x, y, text, color = Color.White, shadowLength = 0, ali
 	};
 
 	let shadowColor = Color.Black.fadeTo(color.a);
-	x = Align[alignment](font, x, text);
+	x = Math.trunc(Align[alignment](font, x, text));
+	y = Math.trunc(y);
 	font.drawText(Surface.Screen, x + shadowLength, y + shadowLength, text, shadowColor);
 	font.drawText(Surface.Screen, x, y, text, color);
 }

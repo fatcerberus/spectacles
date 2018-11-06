@@ -63,7 +63,7 @@ Scene.defineOp('battle', {
 
 Scene.defineOp('changeBGM', {
 	start(scene, trackName, fadeTime) {
-		Music.play(trackName, fadeTime);
+		Music.play(`@/music/${trackName}.ogg`, fadeTime);
 	},
 });
 
@@ -109,7 +109,7 @@ Scene.defineOp('popBGM', {
 
 Scene.defineOp('pushBGM', {
 	start(scene, trackName) {
-		Music.push(trackName);
+		Music.push(`@/music/${trackName}.ogg`);
 	},
 });
 

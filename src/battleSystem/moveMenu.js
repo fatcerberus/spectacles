@@ -121,6 +121,8 @@ class MoveMenu extends Thread
 
 		this.drawMoveItem = function(x, y, item, isSelected, isLockedIn)
 		{
+			x = Math.floor(x);
+			y = Math.floor(y);
 			let alpha = this.fadeness * this.expansion;
 			let isEnabled = item.isEnabled;
 			let textColor = isSelected ? this.textColor : Color.Gray.fadeTo(alpha);

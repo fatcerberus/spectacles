@@ -3,50 +3,90 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
+import { DataStream, Prim } from 'sphere-runtime';
+
 export default
 class SpriteImage
 {
+	static async fromFile(fileName)
+	{
+		const fs = await DataStream.open(fileName, FileOp.Read);
+		const rss = fs.readStruct({
+			signature:   { type: 'fstring', length: 4 },
+			version:     { type: 'uint16le' },
+			numImages:   { type: 'uint16le' },
+			frameWidth:  { type: 'uint16le' },
+			frameHeight: { type: 'uint16le' },
+			numPoses:    { type: 'uint16le' },
+			baseX1:      { type: 'uint16le' },
+			baseY1:      { type: 'uint16le' },
+			baseX2:      { type: 'uint16le' },
+			baseY2:      { type: 'uint16le' },
+			reserved:    { type: 'raw', size: 106 },
+		});
+		if (rss.signature !== '.rss' || rss.version !== 3)
+			throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
+		const images = [];
+		for (let i = 0; i < rss.numImages; ++i) {
+			const pixels = fs.read(4 * rss.frameWidth * rss.frameHeight);
+			images.push(new Texture(rss.frameWidth, rss.frameHeight, pixels));
+		}
+		const poses = {};
+		for (let i = 0; i < rss.numPoses; ++i) {
+			const poseInfo = fs.readStruct({
+				numFrames: { type: 'uint16le' },
+				reserved:  { type: 'raw', size: 6 },
+				name:      { type: 'lstr16le' },
+			});
+			const pose = { frames: [] };
+			for (let j = 0; j < poseInfo.numFrames; ++j) {
+				const frameInfo = fs.readStruct({
+					imageIndex: { type: 'uint16le' },
+					delay:      { type: 'uint16le' },
+					reserved:   { type: 'raw', size: 4 },
+				});
+				const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
+				pose.frames.push(frame);
+			}
+			poses[poseInfo.name] = pose;
+		}
+		fs.dispose();
+
+		const spriteset = Object.create(this.prototype);
+		spriteset.currentPose = Object.keys(poses)[0];
+		spriteset.elapsedFrames = 0;
+		spriteset.frame = 0;
+		spriteset.poses = poses;
+		return spriteset;
+	}
+	
 	constructor(filename)
 	{
-		this.spriteset = LoadSpriteset(filename);
-		this.xOff = 0; //-(this.spriteset.base.x1 + Math.round((this.spriteset.base.x2 + 1 - this.spriteset.base.x1) / 2));
-		this.yOff = 0; //-(this.spriteset.base.y2 + 1);
-		this.directionID = 0;
-		this.frameID = 0;
-		this.elapsedFrames = 0;
-		this.stopped = false;
+		throw new Error("'SpriteImage' constructor is unsupported, use 'SpriteImage.fromFile' instead");
 	}
 
-	get direction()
+	get pose()
 	{
-		return this.spriteset.directions[this.directionID].name;
+		return this.currentPose;
 	}
 
-	set direction(value)
+	set pose(value)
 	{
-		let index = this.spriteset.directions.length;
-		let wasFound = false;
-		while (--index >= 0) {
-			if (this.spriteset.directions[index].name === value) {
-				wasFound = true;
-				this.directionID = index;
-				this.reset();
-				break;
-			}
-		}
-		if (!wasFound)
-			throw new ReferenceError(`direction '${value}' not found in spriteset!`);
+		if (!(value in this.poses))
+			throw new ReferenceError(`Spriteset pose '${value}' doesn't exist`);
+		this.currentPose = value;
 	}
 
-	blit(x, y, alpha = 255)
+	blit(x, y, alpha = 1.0)
 	{
-		this.spriteset.images[this.spriteset.directions[this.directionID].frames[this.frameID].index]
-			.blitMask(x + this.xOff, y + this.yOff, CreateColor(255, 255, 255, alpha));
+		const pose = this.poses[this.currentPose]
+		const image = pose.frames[this.frame % pose.frames.length].image;
+		Prim.blit(Surface.Screen, x, y, image, Color.White.fadeTo(alpha));
 	}
 
 	reset()
 	{
-		this.frameID = 0;
+		this.frame = 0;
 		this.elapsedFrames = 0;
 	}
 
@@ -64,9 +104,9 @@ class SpriteImage
 	{
 		if (this.stopped)
 			return;
-		let frames = this.spriteset.directions[this.directionID].frames;
-		if (this.elapsedFrames >= frames[this.frameID].delay) {
-			this.frameID = (this.frameID + 1) % frames.length;
+		let frames = this.poses[this.currentPose].frames;
+		if (this.elapsedFrames >= frames[this.frame].delay) {
+			this.frame = (this.frame + 1) % frames.length;
 			this.elapsedFrames = 0;
 		}
 		else {

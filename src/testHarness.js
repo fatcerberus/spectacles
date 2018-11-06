@@ -26,12 +26,11 @@ class TestHarness
 		this.tests = {};
 		this.isBattleRunning = false;
 
-		let fileNames = from(new DirectoryStream('$/testCases'))
-			.where(it => /\.m?js$/.test(it.fileName))
-			.select(it => it.fullPath)
-			.besides(it => console.log(`loading tests from '${FS.relativePath(it, '$/testCases')}'`));
+		let fileNames = from([ 'brucesStoryTests.js', 'lastLucidanTests.js' ])
+			.besides(it => console.log(`loading testcases from '${it}'`))
+			.select(it => FS.fullPath(it, '$/testCases'));
 		for (const fileName of fileNames)
-			await import(fileName);
+			await FS.require(fileName);
 	}
 
 	static addBattle(testID, setupData)

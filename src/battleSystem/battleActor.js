@@ -25,10 +25,15 @@ class BattleActor
 		this.opacity = 1.0;
 		this.position = isEnemy ? position : 2 - position;
 		this.row = row;
-		this.sprite = new SpriteImage(`battlers/${name}.rss`);
-		this.sprite.direction = isEnemy ? 'east' : 'west';
+		this.spriteFileName = `spritesets/battlers/${name}.rss`;
 		this.x = isEnemy ? -32 : 320;
 		this.y = 208 - position * 32;
+	}
+
+	async initialize()
+	{
+		this.sprite = await SpriteImage.fromFile(this.spriteFileName);
+		this.sprite.pose = this.isEnemy ? 'east' : 'west';
 	}
 
 	update()
@@ -68,7 +73,7 @@ class BattleActor
 	{
 		if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0)
 			return;
-		this.sprite.blit(this.x, this.y, this.opacity * 255);
+		this.sprite.blit(this.x, this.y, this.opacity);
 		for (let i = 0; i < this.damages.length; ++i) {
 			let text = this.damages[i].text;
 			let x = this.x + 16 - this.messageFont.widthOf(text) / 2;
@@ -95,19 +100,19 @@ class BattleActor
 		// TODO: implement me!
 		switch (animationID) {
 			case 'die':
-				this.sprite.direction = 'north';
+				this.sprite.pose = 'north';
 				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 0.1 })
 					.run();
 				break;
 			case 'hippo':
 				this.sprite = new SpriteImage('battlers/maggie_hippo.rss');
-				this.sprite.direction = this.isEnemy ? 'east' : 'west';
+				this.sprite.pose = this.isEnemy ? 'east' : 'west';
 				break;
 			case 'revive':
 				new Scene()
 					.tween(this, 60, 'easeInOutSine', { opacity: 1.0 })
-					.call(() => { this.sprite.direction = this.isEnemy ? 'east' : 'west'; })
+					.call(() => { this.sprite.pose = this.isEnemy ? 'east' : 'west'; })
 					.run();
 				break;
 			case 'sleep':

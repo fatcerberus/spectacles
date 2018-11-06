@@ -101,8 +101,6 @@ class BattleUnit
 		this.actor = battle.ui.createActor(this.name, position, this.row, this.isPartyMember() ? 'party' : 'enemy');
 		if (this.isPartyMember())
 			this.battle.ui.hud.setPartyMember(position == 2 ? 0 : position == 0 ? 2 : position, this, this.hp, this.maxHP);
-		if (!this.isPartyMember())
-			this.actor.enter(true);
 		this.resetCounter(Game.defaultMoveRank, true);
 		this.registerCommands();
 		let unitType = this.aiFile === undefined ? "player" : "AI";
@@ -113,8 +111,11 @@ class BattleUnit
 	
 	async initialize()
 	{
+		await this.actor.initialize();
+		if (!this.isPartyMember())
+			this.actor.enter(true);
 		if (this.aiFile !== undefined) {
-			let battlerClass = (await import(this.aiFile)).default;
+			let battlerClass = (await FS.require(this.aiFile)).default;
 			this.ai = new battlerClass(this, this.battle);
 			this.battle.registerAI(this.ai);
 		}
