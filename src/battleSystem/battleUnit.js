@@ -115,7 +115,7 @@ class BattleUnit
 		if (!this.isPartyMember())
 			this.actor.enter(true);
 		if (this.aiFile !== undefined) {
-			let battlerClass = (await FS.require(this.aiFile)).default;
+			let battlerClass = (await import(this.aiFile)).default;
 			this.ai = new battlerClass(this, this.battle);
 			this.battle.registerAI(this.ai);
 		}
@@ -452,7 +452,7 @@ class BattleUnit
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 		if (move.stance === Stance.Counter || move.stance === Stance.Charge) {
 			let damageEffects = from(nextActions)
-				.from(action => action.effects)
+				.over(action => action.effects)
 				.where(effect => 'power' in effect);
 			for (let effect of damageEffects) {
 				// note: statusChance being set to Infinity bypasses Guard

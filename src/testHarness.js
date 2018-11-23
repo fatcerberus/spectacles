@@ -30,7 +30,7 @@ class TestHarness
 			.besides(it => console.log(`loading testcases from '${it}'`))
 			.select(it => FS.fullPath(it, '$/testCases'));
 		for (const fileName of fileNames)
-			await FS.require(fileName);
+			await import(fileName);
 	}
 
 	static addBattle(testID, setupData)
