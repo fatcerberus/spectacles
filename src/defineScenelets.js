@@ -197,7 +197,7 @@ Scene.defineOp('talk', {
 			Color.Black.fadeTo(0.5 * this.boxVisibility));
 		this.textSurface.blendOp = BlendOp.Replace;
 		Prim.drawSolidRectangle(this.textSurface, 0, 0, this.textSurface.width, this.textSurface.height, Color.Transparent);
-		this.textSurface.blendOp = BlendOp.AlphaBlend;
+		this.textSurface.blendOp = BlendOp.Default;
 		let lineCount = this.text[this.currentPage].length;
 		let textAreaWidth = this.textSurface.width;
 		let textX = 0;
@@ -221,12 +221,13 @@ Scene.defineOp('talk', {
 					this.textSurface.blendOp = BlendOp.Subtract;
 					Prim.drawSolidRectangle(this.textSurface,
 						(textX - lineHeight * 2) + shownArea, textY, lineHeight * 2, lineHeight + 1,
-						Color.Transparent, Color.Black, Color.Black.fadeTo(this.boxVisibility), Color.Transparent);
+						Color.Transparent, Color.Black.fadeTo(this.boxVisibility),
+						Color.Black.fadeTo(this.boxVisibility), Color.Transparent);
 					this.textSurface.blendOp = BlendOp.Replace;
 					Prim.drawSolidRectangle(this.textSurface,
 						textX + shownArea, textY, textAreaWidth - shownArea, lineHeight + 1,
 						Color.Transparent);
-					this.textSurface.blendOp = BlendOp.AlphaBlend;
+					this.textSurface.blendOp = BlendOp.Default;
 				}
 			}
 			if (this.showSpeaker && this.speakerName != null && trueLine == 0) {

@@ -108,7 +108,7 @@ class MenuStrip extends Thread
 		this.font.drawText(Surface.Screen, 5, menuY + 5, this.title, titleColor);
 		this.carousel.blendOp = BlendOp.Replace;
 		Prim.drawSolidRectangle(this.carousel, 0, 0, this.carousel.width, this.carousel.height, Color.Transparent);
-		this.carousel.blendOp = BlendOp.AlphaBlend;
+		this.carousel.blendOp = BlendOp.Default;
 		let xOffset = (this.selectedItem + this.scrollProgress * this.scrollDirection) * this.carousel.width;
 		let normalItemColor = Color.Orange.fadeTo(this.openness);
 		let litItemColor = Color.of('#808040').fadeTo(this.openness);
