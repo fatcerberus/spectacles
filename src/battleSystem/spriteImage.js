@@ -10,47 +10,48 @@ class SpriteImage
 {
 	static async fromFile(fileName)
 	{
-		const fs = await DataStream.open(fileName, FileOp.Read);
-		const rss = fs.readStruct({
-			signature:   { type: 'fstring', length: 4 },
-			version:     { type: 'uint16le' },
-			numImages:   { type: 'uint16le' },
-			frameWidth:  { type: 'uint16le' },
-			frameHeight: { type: 'uint16le' },
-			numPoses:    { type: 'uint16le' },
-			baseX1:      { type: 'uint16le' },
-			baseY1:      { type: 'uint16le' },
-			baseX2:      { type: 'uint16le' },
-			baseY2:      { type: 'uint16le' },
-			reserved:    { type: 'raw', size: 106 },
+		const fileData = await FS.readFile(fileName, DataType.Raw);
+		const dv = new DataStream(fileData);
+		const rss = dv.readStruct({
+			signature:   'string/4',
+			version:     'uint16-le',
+			numImages:   'uint16-le',
+			frameWidth:  'uint16-le',
+			frameHeight: 'uint16-le',
+			numPoses:    'uint16-le',
+			baseX1:      'uint16-le',
+			baseY1:      'uint16-le',
+			baseX2:      'uint16-le',
+			baseY2:      'uint16-le',
+			reserved:    'pad/106',
 		});
 		if (rss.signature !== '.rss' || rss.version !== 3)
 			throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
 		const images = [];
 		for (let i = 0; i < rss.numImages; ++i) {
-			const pixels = fs.read(4 * rss.frameWidth * rss.frameHeight);
+			const pixels = dv.readBytes(4 * rss.frameWidth * rss.frameHeight);
 			images.push(new Texture(rss.frameWidth, rss.frameHeight, pixels));
 		}
 		const poses = {};
 		for (let i = 0; i < rss.numPoses; ++i) {
-			const poseInfo = fs.readStruct({
-				numFrames: { type: 'uint16le' },
-				reserved:  { type: 'raw', size: 6 },
-				name:      { type: 'lstr16le' },
+			const poseInfo = dv.readStruct({
+				numFrames: 'uint16-le',
+				reserved:  'pad/6',
+				name:      'string16-le',
 			});
+			const name = stripNUL(poseInfo.name);
 			const pose = { frames: [] };
 			for (let j = 0; j < poseInfo.numFrames; ++j) {
-				const frameInfo = fs.readStruct({
-					imageIndex: { type: 'uint16le' },
-					delay:      { type: 'uint16le' },
-					reserved:   { type: 'raw', size: 4 },
+				const frameInfo = dv.readStruct({
+					imageIndex: 'uint16-le',
+					delay:      'uint16-le',
+					reserved:   'pad/4',
 				});
 				const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
 				pose.frames.push(frame);
 			}
-			poses[poseInfo.name] = pose;
+			poses[name] = pose;
 		}
-		fs.dispose();
 
 		const spriteset = Object.create(this.prototype);
 		spriteset.currentPose = Object.keys(poses)[0];
@@ -113,4 +114,13 @@ class SpriteImage
 			++this.elapsedFrames;
 		}
 	}
+}
+
+function stripNUL(string)
+{
+	const nulIndex = string.indexOf('\0');
+	if (nulIndex !== -1)
+		return string.slice(0, nulIndex);
+	else
+		return string;
 }

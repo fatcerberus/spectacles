@@ -11,6 +11,9 @@ Object.assign(Sphere.Game, {
 
 	version: 2, apiLevel: 1,
 	main: '@/scripts/main.js',
+	development: {
+		sandboxing: 'relaxed',
+	},
 
 	resolution: '320x240',
 	fullScreen: false,
