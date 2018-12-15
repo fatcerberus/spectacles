@@ -9,7 +9,7 @@ Object.assign(Sphere.Game, {
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 
-	version: 2, apiLevel: 1,
+	version: 2, apiLevel: 2,
 	main: '@/scripts/main.js',
 	development: {
 		sandboxing: 'relaxed',

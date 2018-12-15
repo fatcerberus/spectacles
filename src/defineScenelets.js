@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import { Joypad, Music, Prim, Scene } from 'sphere-runtime';
+import { Music, Prim, Scene } from 'sphere-runtime';
 
 import { BattleEngine, BattleResult } from './battleSystem/index.js';
 import AutoColorMask from './autoColorMask.js';
@@ -192,9 +192,9 @@ Scene.defineOp('talk', {
 		let finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
 		let boxY = finalBoxY + (Surface.Screen.height - finalBoxY) * (1.0 - this.boxVisibility);
 		Prim.drawRectangle(Surface.Screen, -1, boxY - 1, Surface.Screen.width + 2, boxHeight + 2,
-			Color.Black.fadeTo(0.55 * this.boxVisibility));
+			Color.Black.fadeTo(0.75 * this.boxVisibility));
 		Prim.drawSolidRectangle(Surface.Screen, 0, boxY, Surface.Screen.width, boxHeight,
-			Color.Black.fadeTo(0.5 * this.boxVisibility));
+			Color.Black.fadeTo(0.66 * this.boxVisibility));
 		this.textSurface.blendOp = BlendOp.Replace;
 		Prim.drawSolidRectangle(this.textSurface, 0, 0, this.textSurface.width, this.textSurface.height, Color.Transparent);
 		this.textSurface.blendOp = BlendOp.Default;
@@ -340,7 +340,7 @@ Scene.defineOp('talk', {
 	getInput(scene) {
 		if (this.mode != "idle")
 			return;
-		if ((Keyboard.Default.isPressed(Key.Z) || Joypad.P1.isPressed(0))
+		if ((Keyboard.Default.isPressed(Key.Z) || Joystick.P1.isPressed(0))
 			&& this.timeout == Infinity)
 		{
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
