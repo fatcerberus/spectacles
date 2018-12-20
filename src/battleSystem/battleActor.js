@@ -27,12 +27,12 @@ class BattleActor
 		this.row = row;
 		this.spriteFileName = `spritesets/battlers/${name}.rss`;
 		this.x = isEnemy ? -32 : 320;
-		this.y = 208 - position * 32;
+		this.y = 168 - position * 32;
 	}
 
 	async initialize()
 	{
-		this.sprite = await SpriteImage.fromFile(this.spriteFileName);
+		this.sprite = new SpriteImage(this.spriteFileName);
 		this.sprite.pose = this.isEnemy ? 'east' : 'west';
 	}
 

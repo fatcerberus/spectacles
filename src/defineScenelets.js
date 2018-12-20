@@ -127,7 +127,7 @@ Scene.defineOp('pause', {
 
 Scene.defineOp('playSound', {
 	async start(scene, fileName) {
-		this.sound = Sound.fromFile(fileName);
+		this.sound = new Sound(fileName);
 		this.sound.play();
 	},
 	update(scene) {

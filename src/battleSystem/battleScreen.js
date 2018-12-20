@@ -121,12 +121,12 @@ class BattleScreen extends Thread
 
 	async on_startUp()
 	{
-		this.background = await Texture.fromFile('images/battleBackground.png');
+		this.background = new Texture('images/battleBackground.png');
 	}
 	
 	on_render()
 	{
-		Prim.blit(Surface.Screen, 0, -16, this.background);
+		Prim.blit(Surface.Screen, 0, -56, this.background);
 		for (const type in this.actorTypes) {
 			for (let i = 0; i < this.actors[type].length; ++i)
 				this.actors[type][i].render();

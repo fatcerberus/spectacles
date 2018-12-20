@@ -1,7 +1,7 @@
-/*
- *  OFF: Puppetmaster  (c) 2018 Fat Cerberus
- *  based on OFF by Mortis Ghost  (c) 2008
- */
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *           Copyright (c) 2018 Power-Command
+***/
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
 
