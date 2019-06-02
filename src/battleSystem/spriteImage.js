@@ -8,54 +8,61 @@ import { DataStream, Prim } from 'sphere-runtime';
 export default
 class SpriteImage
 {
-	constructor(fileName)
+	static async fromFile(fileName)
 	{
-	    const fs = new DataStream(fileName, FileOp.Read);
-	    const rss = fs.readStruct({
-	        signature:   { type: 'fstring', length: 4 },
-	        version:     { type: 'uint16le' },
-	        numImages:   { type: 'uint16le' },
-	        frameWidth:  { type: 'uint16le' },
-	        frameHeight: { type: 'uint16le' },
-	        numPoses:    { type: 'uint16le' },
-	        baseX1:      { type: 'uint16le' },
-	        baseY1:      { type: 'uint16le' },
-	        baseX2:      { type: 'uint16le' },
-	        baseY2:      { type: 'uint16le' },
-	        reserved:    { type: 'raw', size: 106 },
-	    });
-	    if (rss.signature !== '.rss' || rss.version !== 3)
-	        throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
-	    const images = [];
-	    for (let i = 0; i < rss.numImages; ++i) {
-	        const pixels = fs.read(4 * rss.frameWidth * rss.frameHeight);
-	        images.push(new Texture(rss.frameWidth, rss.frameHeight, pixels));
-	    }
-	    const poses = {};
-	    for (let i = 0; i < rss.numPoses; ++i) {
-	        const poseInfo = fs.readStruct({
-	            numFrames: { type: 'uint16le' },
-	            reserved:  { type: 'raw', size: 6 },
-	            name:      { type: 'lstr16le' },
-	        });
-	        const pose = { frames: [] };
-	        for (let j = 0; j < poseInfo.numFrames; ++j) {
-	            const frameInfo = fs.readStruct({
-	                imageIndex: { type: 'uint16le' },
-	                delay:      { type: 'uint16le' },
-	                reserved:   { type: 'raw', size: 4 },
-	            });
-	            const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
-	            pose.frames.push(frame);
-	        }
-	        poses[poseInfo.name] = pose;
-	    }
-	    fs.dispose();
+		const fs = await DataStream.open(fileName, FileOp.Read);
+		const rss = fs.readStruct({
+			signature:   { type: 'fstring', length: 4 },
+			version:     { type: 'uint16le' },
+			numImages:   { type: 'uint16le' },
+			frameWidth:  { type: 'uint16le' },
+			frameHeight: { type: 'uint16le' },
+			numPoses:    { type: 'uint16le' },
+			baseX1:      { type: 'uint16le' },
+			baseY1:      { type: 'uint16le' },
+			baseX2:      { type: 'uint16le' },
+			baseY2:      { type: 'uint16le' },
+			reserved:    { type: 'raw', size: 106 },
+		});
+		if (rss.signature !== '.rss' || rss.version !== 3)
+			throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
+		const images = [];
+		for (let i = 0; i < rss.numImages; ++i) {
+			const pixels = fs.read(4 * rss.frameWidth * rss.frameHeight);
+			images.push(new Texture(rss.frameWidth, rss.frameHeight, pixels));
+		}
+		const poses = {};
+		for (let i = 0; i < rss.numPoses; ++i) {
+			const poseInfo = fs.readStruct({
+				numFrames: { type: 'uint16le' },
+				reserved:  { type: 'raw', size: 6 },
+				name:      { type: 'lstr16le' },
+			});
+			const pose = { frames: [] };
+			for (let j = 0; j < poseInfo.numFrames; ++j) {
+				const frameInfo = fs.readStruct({
+					imageIndex: { type: 'uint16le' },
+					delay:      { type: 'uint16le' },
+					reserved:   { type: 'raw', size: 4 },
+				});
+				const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
+				pose.frames.push(frame);
+			}
+			poses[poseInfo.name] = pose;
+		}
+		fs.dispose();
 
-	    this.currentPose = Object.keys(poses)[0];
-	    this.elapsedFrames = 0;
-	    this.frame = 0;
-	    this.poses = poses;
+		const spriteset = Object.create(this.prototype);
+		spriteset.currentPose = Object.keys(poses)[0];
+		spriteset.elapsedFrames = 0;
+		spriteset.frame = 0;
+		spriteset.poses = poses;
+		return spriteset;
+	}
+
+	constructor(filename)
+	{
+		throw new Error("'SpriteImage' constructor is unsupported, use 'SpriteImage.fromFile' instead");
 	}
 
 	get pose()

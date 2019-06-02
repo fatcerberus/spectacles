@@ -32,7 +32,7 @@ class BattleActor
 
 	async initialize()
 	{
-		this.sprite = new SpriteImage(this.spriteFileName);
+		this.sprite = await SpriteImage.fromFile(this.spriteFileName);
 		this.sprite.pose = this.isEnemy ? 'east' : 'west';
 	}
 
@@ -106,7 +106,7 @@ class BattleActor
 					.run();
 				break;
 			case 'hippo':
-				this.sprite = new SpriteImage('battlers/maggie_hippo.rss');
+				this.sprite = await SpriteImage.fromFile('battlers/maggie_hippo.rss');
 				this.sprite.pose = this.isEnemy ? 'east' : 'west';
 				break;
 			case 'revive':
