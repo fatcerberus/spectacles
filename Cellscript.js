@@ -18,7 +18,7 @@ Object.assign(Sphere.Game, {
 		sandbox: 'relaxed',
 	},
 
-	resolution: '320x200',
+	resolution: '320x240',
 	fullScreen: false,
 
 	disableAnimations: false,

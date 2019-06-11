@@ -148,7 +148,7 @@ class AutoBattler
 	itemsLeft(itemID)
 	{
 		let item = from(this.unit.items)
-			.find(it => it.itemID === itemID);
+			.first(it => it.itemID === itemID);
 		console.log(`${this.unit.name} has ${item.usesLeft}x ${item.name} left`);
 		return item.usesLeft;
 	}
@@ -253,8 +253,7 @@ class AutoBattler
 		let phaseToEnter = 1;
 		if (this.phasePoints !== null) {
 			let milestone = from(this.phasePoints)
-				.where(it => it >= this.unit.hp)
-				.last();
+				.last(it => it >= this.unit.hp)
 			phaseToEnter = 2 + this.phasePoints.indexOf(milestone);
 		}
 		let lastPhase = this.currentPhase;

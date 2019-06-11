@@ -62,7 +62,7 @@ class SpriteImage
 
 	constructor(filename)
 	{
-		throw new Error("'SpriteImage' constructor is unsupported, use 'SpriteImage.fromFile' instead");
+		throw new Error("'SpriteImage' constructor is unsupported");
 	}
 
 	get pose()

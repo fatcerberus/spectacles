@@ -11,28 +11,30 @@ import GameOverScreen, { GameOverAction } from './gameOverScreen.js';
 
 let fadeMask = new AutoColorMask();
 
-Scene.defineOp('adjustBGM', {
-	start(scene, volume, numFrames = 0) {
+Scene.defineOp('adjustBGM',
+{
+	start(scene, volume, numFrames = 0)
+	{
 		Music.adjustVolume(volume, numFrames);
 	},
 
-	update(scene) {
+	update(scene)
+	{
 		return Music.adjustingVolume;
 	},
 });
 
-// .battle() command
-// Starts a battle.
-// Arguments:
-//     battleID: The ID of the battle definition to use to initialize the fight.
-Scene.defineOp('battle', {
-	async start(scene, battleID, session) {
+Scene.defineOp('battle',
+{
+	async start(scene, battleID, session)
+	{
 		this.mode = 'battle';
 		this.battle = new BattleEngine(session, battleID);
 		this.battleThread = await this.battle.go();
 	},
 
-	async update(scene) {
+	async update(scene)
+	{
 		switch (this.mode) {
 			case 'battle':
 				if (!this.battleThread.running) {
@@ -64,26 +66,34 @@ Scene.defineOp('battle', {
 	},
 });
 
-Scene.defineOp('call', {
-	async start(scene, method, ...args) {
+Scene.defineOp('call',
+{
+	async start(scene, method, ...args)
+	{
 		await method.apply(null, ...args);
 	},
 });
 
-Scene.defineOp('changeBGM', {
-	start(scene, trackName, fadeTime) {
+Scene.defineOp('changeBGM',
+{
+	start(scene, trackName, fadeTime)
+	{
 		Music.play(`@/music/${trackName}.ogg`, fadeTime);
 	},
 });
 
-Scene.defineOp('fadeTo', {
-	async start(scene, color, numFrames) {
+Scene.defineOp('fadeTo',
+{
+	async start(scene, color, numFrames)
+	{
 		await fadeMask.fadeTo(color, numFrames);
 	},
 });
 
-Scene.defineOp('marquee', {
-	start(scene, text, backgroundColor = Color.Black, color = Color.White) {
+Scene.defineOp('marquee',
+{
+	start(scene, text, backgroundColor = Color.Black, color = Color.White)
+	{
 		this.text = text;
 		this.color = color;
 		this.background = backgroundColor;
@@ -101,7 +111,8 @@ Scene.defineOp('marquee', {
 		this.animation.run();
 	},
 
-	render(scene) {
+	render(scene)
+	{
 		let boxHeight = this.height * this.fadeness;
 		let boxY = (Surface.Screen.height - boxHeight) / 2;
 		let textX = Surface.Screen.width - this.scroll * this.windowSize;
@@ -111,44 +122,59 @@ Scene.defineOp('marquee', {
 		this.font.drawText(Surface.Screen, textX, textY, this.text, this.color);
 	},
 
-	update(scene) {
+	update(scene)
+	{
 		return this.animation.running;
 	},
 });
 
-Scene.defineOp('pause', {
-	start(scene, frames) {
+Scene.defineOp('pause',
+{
+	start(scene, frames)
+	{
 		this.timer = frames;
 	},
-	update(scene) {
+
+	update(scene)
+	{
 		return --this.timer > 0;
 	},
 });
 
-Scene.defineOp('playSound', {
-	async start(scene, fileName) {
+Scene.defineOp('playSound',
+{
+	async start(scene, fileName)
+	{
 		this.sound = new Sound(fileName);
 		this.sound.play();
 	},
-	update(scene) {
+
+	update(scene)
+	{
 		return this.sound.playing;
 	},
 });
 
-Scene.defineOp('popBGM', {
-	start(scene) {
+Scene.defineOp('popBGM',
+{
+	start(scene)
+	{
 		Music.pop();
 	},
 });
 
-Scene.defineOp('pushBGM', {
-	start(scene, trackName) {
+Scene.defineOp('pushBGM',
+{
+	start(scene, trackName)
+	{
 		Music.push(`@/music/${trackName}.ogg`);
 	},
 });
 
-Scene.defineOp('talk', {
-	start(scene, speaker, showSpeaker, textSpeed, timeout /*...pages*/) {
+Scene.defineOp('talk',
+{
+	start(scene, speaker, showSpeaker, textSpeed, timeout, ...pages)
+	{
 		this.speakerName = speaker;
 		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
 		this.showSpeaker = showSpeaker;
@@ -159,9 +185,9 @@ Scene.defineOp('talk', {
 		this.text = [];
 		let speakerTextWidth = this.font.widthOf(this.speakerText);
 		let textAreaWidth = Surface.Screen.width - 16;
-		for (let i = 5; i < arguments.length; ++i) {
+		for (let i = 0; i < pages.length; ++i) {
 			let lineWidth = this.speakerName != null ? textAreaWidth - (speakerTextWidth + 5) : textAreaWidth;
-			let wrappedText = this.font.wordWrap(arguments[i], lineWidth);
+			let wrappedText = this.font.wordWrap(pages[i], lineWidth);
 			let page = this.text.push([]) - 1;
 			for (let iLine = 0; iLine < wrappedText.length; ++iLine)
 				this.text[page].push(wrappedText[iLine]);
@@ -186,7 +212,8 @@ Scene.defineOp('talk', {
 		return true;
 	},
 
-	render(scene) {
+	render(scene)
+	{
 		let lineHeight = this.font.height;
 		let boxHeight = lineHeight * 3 + 11;
 		let finalBoxY = Surface.Screen.height * 0.85 - boxHeight / 2;
@@ -240,7 +267,8 @@ Scene.defineOp('talk', {
 			this.textSurface);
 	},
 
-	update(scene) {
+	update(scene)
+	{
 		if (Sphere.Game.disableTalking)
 			this.mode = "finish";
 		switch (this.mode) {
@@ -267,10 +295,11 @@ Scene.defineOp('talk', {
 				if (!this.transition.running)
 					this.mode = "write";
 				break;
-			case "write":
+			case "write": {
+				const textSpeed = Mouse.Default.isPressed(MouseKey.Left) ? this.textSpeed * 4.0 : this.textSpeed;
 				this.nameVisibility = Math.min(this.nameVisibility + 4.0 / Sphere.frameRate, 1.0);
 				if (this.nameVisibility >= 1.0) {
-					this.lineVisibility = Math.min(this.lineVisibility + this.textSpeed / Sphere.frameRate, 1.0);
+					this.lineVisibility = Math.min(this.lineVisibility + textSpeed / Sphere.frameRate, 1.0);
 					let lineCount = Math.min(3, this.text[this.currentPage].length - this.topLine);
 					let currentLineText = this.text[this.currentPage][this.lineToReveal];
 					let currentLineWidth = this.font.widthOf(currentLineText);
@@ -291,6 +320,7 @@ Scene.defineOp('talk', {
 					}
 				}
 				break;
+			}
 			case "nextline":
 				if (this.lineToReveal < 3) {
 					this.lineVisibility = 0.0;
@@ -337,10 +367,11 @@ Scene.defineOp('talk', {
 		return true;
 	},
 
-	getInput(scene) {
+	getInput(scene)
+	{
 		if (this.mode != "idle")
 			return;
-		if ((Keyboard.Default.isPressed(Key.Z) || Joystick.P1.isPressed(0))
+		if ((Keyboard.Default.isPressed(Key.Z) || Joystick.P1.isPressed(0) || Mouse.Default.isPressed(MouseKey.Left))
 			&& this.timeout == Infinity)
 		{
 			if (this.topLine + 3 >= this.text[this.currentPage].length) {
@@ -358,8 +389,10 @@ Scene.defineOp('talk', {
 	},
 });
 
-Scene.defineOp('tween', {
-	start(scene, object, frames, easingType, endValues) {
+Scene.defineOp('tween',
+{
+	start(scene, object, frames, easingType, endValues)
+	{
 		this.easers = {
 			linear(t, b, c, d) {
 				return c * t / d + b;
@@ -507,7 +540,9 @@ Scene.defineOp('tween', {
 		if (!isChanged)
 			this.elapsed = this.duration;
 	},
-	update(scene) {
+
+	update(scene)
+	{
 		++this.elapsed;
 		if (this.elapsed < this.duration) {
 			for (const p of this.keyList)
@@ -518,7 +553,9 @@ Scene.defineOp('tween', {
 			return false;
 		}
 	},
-	finish(scene) {
+
+	finish(scene)
+	{
 		for (const p of this.keyList)
 			this.object[p] = this.startValues[p] + this.change[p];
 	},
