@@ -39,7 +39,7 @@ class MenuStrip extends Thread
 		this.mode = "open";
 		let carouselWidth = from(this.menuItems)
 			.select(it => this.font.widthOf(it.text) + 10)
-			.reduce((a, v) => Math.max(a, v), 0);
+			.aggregate((a, v) => Math.max(a, v), 0);
 		this.carousel = new Surface(carouselWidth, this.font.height + 10);
 		Keyboard.Default.clearQueue();
 		this.start();

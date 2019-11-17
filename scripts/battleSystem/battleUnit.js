@@ -108,7 +108,7 @@ class BattleUnit
 			`hp: ${this.hp}/${this.maxHP}`,
 			`iid: ${this.tag}`);
 	}
-	
+
 	async initialize()
 	{
 		await this.actor.initialize();
@@ -452,7 +452,7 @@ class BattleUnit
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
 		if (move.stance === Stance.Counter || move.stance === Stance.Charge) {
 			let damageEffects = from(nextActions)
-				.over(action => action.effects)
+				.selectMany(action => action.effects)
 				.where(effect => 'power' in effect);
 			for (let effect of damageEffects) {
 				// note: statusChance being set to Infinity bypasses Guard

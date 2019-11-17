@@ -8,6 +8,9 @@ import { Prim, Scene, Thread } from 'sphere-runtime';
 export default
 class AutoColorMask extends Thread
 {
+	mask: Color;
+	scene: Scene | null;
+
 	constructor(initialMask = Color.Transparent)
 	{
 		super({ priority: Infinity });
@@ -23,11 +26,8 @@ class AutoColorMask extends Thread
 		Prim.fill(Surface.Screen, this.mask);
 	}
 
-	async fadeTo(newMask, numFrames = 60)
+	async fadeTo(newMask: Color, numFrames = 60)
 	{
-		if (!(newMask instanceof Color))
-			throw new TypeError(`'newMask' must be a Color object`);
-
 		if (this.scene !== null)
 			this.scene.stop();
 		this.scene = new Scene()

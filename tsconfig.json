@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"target": "es2017",
+		"module": "es2015",
+		"lib": [ "es2017" ],
+		"baseUrl": "lib",
+		"paths": {
+			"@/*": [ "../*" ],
+			"$/*": [ "../scripts/*" ]
+		},
+
+		// tsc can typecheck, but Cell should be used to build.  noEmit enforces this; Cell will
+		// temporarily disable the flag itself at build time.
+		"noEmit": true,
+
+		"allowJs": true,
+		"strict": true,
+	},
+	"exclude": [
+		"Cellscript.js",
+		"buildtime/**",
+		"dist/**",
+    ]
+}

@@ -3,6 +3,8 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
+import { compile } from './buildtime/ts-tool';
+
 Object.assign(Sphere.Game, {
 	name: "Spectacles: Bruce's Story",
 	saveID: 'fatCerberus.spectacles',
@@ -28,7 +30,7 @@ Object.assign(Sphere.Game, {
 	disableTitleScreen: false,
 });
 
-install('@/scripts', files('src/*.js', true));
+compile('$/tsconfig.json', '@/');
 
 install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
