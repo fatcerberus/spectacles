@@ -1,20 +1,25 @@
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *            Copyright (c) 2019 Fat Cerberus
+***/
+
 {
 	"compilerOptions": {
 		"target": "es2017",
-		"module": "es2015",
 		"lib": [ "es2017" ],
+		"module": "es2015",
 		"baseUrl": "lib",
 		"paths": {
 			"@/*": [ "../*" ],
 			"$/*": [ "../scripts/*" ]
 		},
 
-		// tsc can typecheck, but Cell should be used to build.  noEmit enforces this; Cell will
-		// temporarily disable the flag itself at build time.
-		"noEmit": true,
-
 		"allowJs": true,
+		"noEmitOnError": true,
 		"strict": true,
+
+		// ensure `tsc` will only type-check
+		"noEmit": true
 	},
 	"exclude": [
 		"Cellscript.js",

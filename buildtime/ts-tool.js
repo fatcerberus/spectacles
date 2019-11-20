@@ -112,17 +112,15 @@ const tsTool = new Tool((outFileName, inFileNames) => {
 	const basePath = FS.directoryOf(inFileNames[0]);
 	const configFile = ts.readConfigFile(inFileNames[0], FS.readFile);
 	const jobInfo = ts.parseJsonConfigFileContent(configFile.config, compilerHost, basePath);
-	jobInfo.options.incremental = true;
 	jobInfo.options.noEmit = false;
-	jobInfo.options.outDir = FS.directoryOf(outFileName);
+	jobInfo.options.outDir = outFileName;
 	jobInfo.options.rootDir = '$/';
-	jobInfo.options.tsBuildInfoFile = outFileName;
 
 	const program = ts.createProgram(jobInfo.fileNames, jobInfo.options, compilerHost);
     program.emit();
     const diags = ts.getPreEmitDiagnostics(program);
     for (const diag of diags) {
-		let message = ts.flattenDiagnosticMessageText(diag.messageText);
+		let message = ts.flattenDiagnosticMessageText(diag.messageText, '');
 		if (diag.file !== undefined) {
 			const fileName = FS.fullPath(diag.file.fileName);
 			const { line } = diag.file.getLineAndCharacterOfPosition(diag.start);
@@ -133,11 +131,10 @@ const tsTool = new Tool((outFileName, inFileNames) => {
 		else
 			warn(message);
     }
-}, "compiling TypeScript");
+}, "compiling TypeScript project");
 
 export
-function compile(fileName, outputDirName)
+function tsc(fileName, outputDirName)
 {
-	const outputFileName = FS.fullPath('tsc.json', outputDirName);
-	return tsTool.stage(outputFileName, files(fileName));
+	return tsTool.stage(`${outputDirName}/`, files(fileName));
 }

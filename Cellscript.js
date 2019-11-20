@@ -3,7 +3,7 @@
   *           Copyright (c) 2017 Power-Command
 ***/
 
-import { compile } from './buildtime/ts-tool';
+import { tsc } from './buildtime/ts-tool';
 
 Object.assign(Sphere.Game, {
 	name: "Spectacles: Bruce's Story",
@@ -13,6 +13,7 @@ Object.assign(Sphere.Game, {
 
 	version: 2,
 	apiLevel: 2,
+
 	main: '@/scripts/main.js',
 	development: {
 		emptyPromises: false,
@@ -30,8 +31,6 @@ Object.assign(Sphere.Game, {
 	disableTitleScreen: false,
 });
 
-compile('$/tsconfig.json', '@/');
-
 install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
 install('@/logos', files('logos/*.png', true));
@@ -40,3 +39,5 @@ install('@/shaders', files('shaders/*.glsl', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds', files('sounds/*.wav', true));
 install('@/', files('icon.png'));
+
+tsc('$/tsconfig.json', '@/');
