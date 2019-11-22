@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"baseUrl": "lib",
+		"paths": {
+			"@/*": [ "../*" ],
+			"$/*": [ "../src/*" ]
+		}
+	},
+	"exclude": [
+		"Cellscript.js",
+		"dist/**"
+    ]
+}
