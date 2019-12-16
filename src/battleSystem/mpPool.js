@@ -3,7 +3,7 @@
   *           Copyright (c) 2018 Power-Command
 ***/
 
-import Delegate from '$/delegate.js';
+import Delegate from '../delegate.js';
 
 export default
 class MPPool

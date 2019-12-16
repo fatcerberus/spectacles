@@ -17,6 +17,7 @@ Object.assign(Sphere.Game, {
 		emptyPromises: false,
 		retrograde: false,
 		sandbox: 'relaxed',
+		strictImports: true,
 	},
 
 	resolution: '320x240',
