@@ -44,5 +44,5 @@ async function main()
 	//await new TitleScreen().run();
 
 	let dayNight = new DayNightClock();
-	await TestHarness.run('starcross');
+	await TestHarness.run('rsb2');
 }

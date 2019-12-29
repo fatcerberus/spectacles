@@ -13,6 +13,10 @@ class GameOverScreen extends Thread
 	constructor()
 	{
 		super();
+
+		this.image = new Texture('images/gameOverScreen.png');
+		this.fadeness = 1.0;
+		this.transition = null;
 	}
 
 	show()
@@ -29,13 +33,6 @@ class GameOverScreen extends Thread
 		this.transition.run();
 		this.start();
 		return this;
-	}
-
-	async on_startUp()
-	{
-		this.image = new Texture('images/gameOverScreen.png');
-		this.fadeness = 1.0;
-		this.transition = null;
 	}
 
 	on_render()
