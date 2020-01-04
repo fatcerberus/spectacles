@@ -23,7 +23,7 @@ class TitleScreen extends Thread
 
 	async run(showLogos = true)
 	{
-	    this.data = JSON.parse(FS.readFile(this.fileName));
+	    this.data = await JSON.fromFile(this.fileName);
 		this.fadeAlpha = 0.0;
 		this.fadeTime = this.data.titleFadeFrames;
 		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
@@ -96,7 +96,9 @@ class SplashThread extends Thread
 
 	on_render()
 	{
-		Prim.blit(Surface.Screen, this.x, this.y, this.texture, this.fadeMask);
+		const x = (Surface.Screen.width - this.texture.width) / 2;
+		const y = (Surface.Screen.height - this.texture.height) / 2;
+		Prim.blit(Surface.Screen, x, y, this.texture, this.fadeMask);
 	}
 
 	async on_update()
