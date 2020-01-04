@@ -78,7 +78,10 @@ Scene.defineOp('changeBGM',
 {
 	start(scene, trackName, fadeTime)
 	{
-		Music.play(`@/music/${trackName}.ogg`, fadeTime);
+		const fileName = trackName !== null
+			? `@/music/${trackName}.ogg`
+			: null;
+		Music.play(fileName, fadeTime);
 	},
 });
 
