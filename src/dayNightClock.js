@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2018 Power-Command
+  *            Copyright (c) 2020 Fat Cerberus
 ***/
 
 // note: don't run more than one day/night clock at a time.  doing so will cause multiple

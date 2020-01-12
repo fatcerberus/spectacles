@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2018 Power-Command
+  *            Copyright (c) 2020 Fat Cerberus
 ***/
 
 import { Prim, Scene, Thread } from 'sphere-runtime';
@@ -123,7 +123,7 @@ class BattleScreen extends Thread
 	{
 		this.background = new Texture('images/battleBackground.png');
 	}
-	
+
 	on_render()
 	{
 		Prim.blit(Surface.Screen, 0, -16, this.background);

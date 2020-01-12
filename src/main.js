@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *           Copyright (c) 2018 Power-Command
+  *            Copyright (c) 2020 Fat Cerberus
 ***/
 
 import { Console, Music, Scene } from 'sphere-runtime';
@@ -44,5 +44,5 @@ async function main()
 	//await new TitleScreen().run();
 
 	let dayNight = new DayNightClock();
-	await TestHarness.run('rsb2');
+	await TestHarness.run('temple');
 }
