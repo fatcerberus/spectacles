@@ -147,9 +147,10 @@ const Conditions =
 				console.log("Inferno canceled by Subzero installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('inferno');
-				from(battle.battleUnits)
-					.where(it => it.isAlive())
-					.each(it => it.addStatus('zombie', true));
+				for (const unit of from(battle.battleUnits)
+						.where(it => it.isAlive())) {
+					unit.addStatus('zombie', true);
+				}
 			}
 		},
 
@@ -211,9 +212,10 @@ const Conditions =
 				console.log("Subzero canceled by Inferno installation, both suppressed");
 				eventData.cancel = true;
 				battle.liftCondition('subzero');
-				from(battle.battleUnits)
-					.where(it => it.isAlive())
-					.each(it => it.addStatus('zombie', true));
+				for (const unit of from(battle.battleUnits)
+						.where(it => it.isAlive())) {
+					unit.addStatus('zombie', true);
+				}
 			}
 		},
 
