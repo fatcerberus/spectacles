@@ -91,7 +91,7 @@ class BattleUnit
 			this.weapon = Weapons[this.enemyInfo.weapon];
 			if ('hasLifeBar' in this.enemyInfo && this.enemyInfo.hasLifeBar)
 				this.battle.ui.hud.createEnemyHPGauge(this);
-			this.aiFile = FS.fullPath(`${this.id}.js`, '$/autoBattlers');
+			this.aiFile = `../autoBattlers/${this.id}.js`;
 		}
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
 		this.counterMenu = new MoveMenu(this, battle, Stance.Counter);

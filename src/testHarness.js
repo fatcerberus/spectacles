@@ -28,7 +28,7 @@ class TestHarness
 
 		let fileNames = from([ 'brucesStoryTests.js', 'lastLucidanTests.js' ])
 			.besides(it => console.log(`loading testcases from '${it}'`))
-			.select(it => FS.fullPath(it, '$/testCases'));
+			.select(it => `./testCases/${it}`);
 		for (const fileName of fileNames)
 			await import(fileName);
 	}
