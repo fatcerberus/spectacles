@@ -130,6 +130,32 @@ const Skills =
 			},
 		],
 	},
+	knockBack: {
+		name: "Knock Back",
+		category: 'attack',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Knock Back",
+				rank: 2,
+				accuracyType: 'physical',
+				isMelee: true,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'physical',
+						power: 10,
+					},
+					{
+						targetHint: 'selected',
+						type: 'knockBack',
+						rank: 1,
+					},
+				],
+			},
+		],
+	},
 	swordSlash: {
 		name: "Sword Slash",
 		category: 'attack',

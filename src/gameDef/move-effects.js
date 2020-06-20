@@ -99,6 +99,11 @@ const MoveEffects =
 			targets[i].takeDamage(Math.max(targets[i].hp, 1), [ effect.damageType, 'deathblow' ]);
 	},
 
+	knockBack(actor, targets, effect) {
+		for (let i = 0; i < targets.length; ++i)
+			targets[i].knockBack(effect.rank);
+	},
+
 	liftStatus(actor, targets, effect) {
 		for (let i = 0; i < targets.length; ++i) {
 			for (let i2 = 0; i2 < effect.statuses.length; ++i2)

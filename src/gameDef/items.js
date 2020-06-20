@@ -33,7 +33,7 @@ const Items =
 	holyWater: {
 		name: "Holy Water",
 		tags: [ 'remedy' ],
-		uses: 5,
+		uses: 3,
 		action: {
 			announceAs: "Holy Water",
 			effects: [
@@ -49,7 +49,7 @@ const Items =
 		name: "Lazarus Potion",
 		tags: [ 'drink', 'curative' ],
 		allowDeadTarget: true,
-		uses: 3,
+		uses: 2,
 		action: {
 			announceAs: "Lazarus Potion",
 			effects: [
@@ -64,7 +64,7 @@ const Items =
 	tonic: {
 		name: "Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Tonic",
 			effects: [
@@ -79,7 +79,7 @@ const Items =
 	powerTonic: {
 		name: "Power Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 5,
+		uses: 3,
 		action: {
 			announceAs: "Power Tonic",
 			effects: [
@@ -114,7 +114,7 @@ const Items =
 	redBull: {
 		name: "Red Bull",
 		tags: [ 'drink', 'curative' ],
-		uses: 3,
+		uses: 2,
 		action: {
 			announceAs: "Red Bull",
 			effects: [

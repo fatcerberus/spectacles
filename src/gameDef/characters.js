@@ -113,6 +113,7 @@ const Characters =
 		},
 		autoScan: true,
 		skills: [
+			'knockBack',
 			'flare',
 			'chill',
 			'lightning',

@@ -14,7 +14,6 @@ TestHarness.addBattle('temple', {
 			items: [
 				'tonic',
 				'powerTonic',
-				'fullTonic',
 				'redBull',
 				'holyWater',
 				'vaccine',
@@ -23,14 +22,25 @@ TestHarness.addBattle('temple', {
 		justin: {
 			level: 60,
 			items: [
-				'fullTonic',
-				'lazarusPotion',
+				'tonic',
+				'powerTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+				'alcohol',
 			],
 		},
 		bruce: {
 			level: 60,
 			weapon: 'arsenRifle',
-			items: [],
+			items: [
+				'tonic',
+				'powerTonic',
+				'redBull',
+				'holyWater',
+				'vaccine',
+				'lazarusPotion',
+			],
 		},
 	},
 });

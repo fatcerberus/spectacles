@@ -372,6 +372,14 @@ class BattleUnit
 		return this.partyMember != null;
 	}
 
+	knockBack(rank)
+	{
+		const divisor = this.turnRatio;
+		const delay = Math.max(Math.round(Maths.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1);
+		this.cv += delay;
+		console.log(`knock back ${this.name} ${delay} ticks`, `rank: ${rank}`);
+	}
+
 	liftStatus(statusID)
 	{
 		let eventData = {
@@ -466,7 +474,7 @@ class BattleUnit
 				? this.moveUsed.targets[0].name : "Multi";
 			nextActions.splice(0, 0, {
 				announceAs: `Charge [${targetName}]`,
-				rank: 1,
+				rank: Game.chargeRank,
 				preserveGuard: true,
 				effects: [
 					{
@@ -625,7 +633,7 @@ class BattleUnit
 		// note: Rank 0 is treated as a special case; passing 0 or less for rank will always give
 		//       the unit its next turn immediately.
 
-		let divisor = isFirstTurn ? 1.0 : this.turnRatio;
+		const divisor = isFirstTurn ? 1.0 : this.turnRatio;
 		this.cv = rank > 0
 			? Math.max(Math.round(Maths.timeUntilNextTurn(this.battlerInfo, rank) / divisor), 1)
 			: 1;
