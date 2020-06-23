@@ -176,18 +176,33 @@ class BattleEngine extends Thread
 		}
 	}
 
-	predictTurns(actingUnit = null, nextActions = null)
+	predictTurns(actingUnit = null, nextActions = null, targetUnits = null)
 	{
+		const delayMap = new Map();
 		let forecast = [];
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
+			if (actingUnit !== null && targetUnits !== null) {
+				from(nextActions).skip(turnIndex).take(1)
+					.selectMany(action => action.effects)
+					.where(effect => effect.type === 'knockBack' && effect.targetHint === 'selected')
+					.forEach(effect => {
+						for (const target of targetUnits) {
+							const divisor = target.turnRatio;
+							let delay = delayMap.get(target) || 0;
+							delay += Math.max(Math.round(Maths.timeUntilNextTurn(target.battlerInfo, effect.rank) / divisor), 1);
+							delayMap.set(target, delay);
+						}
+					});
+			}
 			let bias = 0;
-			let candidates = from(this.enemyUnits, this.playerUnits)
+			const candidates = from(this.enemyUnits, this.playerUnits)
 				.where(it => it !== actingUnit || turnIndex > 0);
 			for (const unit of candidates) {
 				++bias;
 				let remainingTime = unit.timeUntilTurn(turnIndex,
 					Game.defaultMoveRank,
 					actingUnit === unit ? nextActions : null);
+				remainingTime += delayMap.get(unit) || 0;
 				forecast.push({ bias, remainingTime, turnIndex, unit });
 			}
 		}

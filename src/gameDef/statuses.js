@@ -440,6 +440,10 @@ const Statuses =
 		},
 	},
 
+	// Sniper status
+	// Battler is aiming a gun. Sniper lasts until the battler's next turn (when the trigger will be
+	// pulled); if the battler takes damage, the damage is increased and any attack that was being
+	// readied is cancelled.
 	sniper: {
 		name: "Sniper",
 		tags: [ 'special' ],

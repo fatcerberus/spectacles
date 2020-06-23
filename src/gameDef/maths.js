@@ -38,7 +38,7 @@ const Maths =
 
 	damage: {
 		calculate(power, level, targetTier, attack, defense) {
-			return power * level**0.5 * attack / defense;
+			return power * level * attack / defense;
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -50,15 +50,15 @@ const Maths =
 				Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3),
 				targetInfo.stats.vit);
 		},
-		magic(userInfo, targetInfo, power) {
-			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
-				targetInfo.stats.foc);
-		},
 		gun(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				Maths.statValue(100, userInfo.level),
 				targetInfo.stats.def);
+		},
+		magic(userInfo, targetInfo, power) {
+			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
+				Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
+				targetInfo.stats.foc);
 		},
 		physical(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,

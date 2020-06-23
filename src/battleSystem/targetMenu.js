@@ -7,6 +7,8 @@ import { from, Prim, Scene, Thread } from 'sphere-runtime';
 
 import { drawTextEx } from '../utilities.js';
 
+import Stance from './stance.js';
+
 export default
 class TargetMenu extends Thread
 {
@@ -77,6 +79,7 @@ class TargetMenu extends Thread
 				this.targets = [ unitToSelect ];
 				this.updateInfo();
 			}
+			this.updateTurnPreview();
 		};
 
 		this.updateInfo = function()
@@ -106,6 +109,15 @@ class TargetMenu extends Thread
 				.tween(this, 15, 'easeInOutSine', { infoFadeness: 0.0 });
 			this.doChangeInfo.run();
 		};
+
+		this.updateTurnPreview = function()
+		{
+			let nextActions = this.usable.peekActions();
+			if (this.unit.stance === Stance.Charge)
+				nextActions = [ 1 ].concat(nextActions);
+			let prediction = this.battle.predictTurns(this.unit, nextActions, this.targets);
+			this.battle.ui.hud.turnPreview.set(prediction);
+		}
 	}
 
 	lockTargets(targetUnits)
@@ -127,6 +139,7 @@ class TargetMenu extends Thread
 		Keyboard.Default.clearQueue();
 		this.start();
 		this.takeFocus();
+		this.updateTurnPreview();
 		await Thread.join(this);
 		return this.targets;
 	}
@@ -154,6 +167,7 @@ class TargetMenu extends Thread
 					.resync()
 					.call(() => { this.isChoiceMade = true; })
 					.run();
+				this.updateTurnPreview();
 				break;
 			case Key.Up:
 				if (!this.isTargetLocked) {
@@ -172,6 +186,7 @@ class TargetMenu extends Thread
 					else
 						this.targets = this.battle.enemiesOf(this.unit);
 					this.updateInfo();
+					this.updateTurnPreview();
 				}
 				break;
 			case Key.Right:
@@ -181,6 +196,7 @@ class TargetMenu extends Thread
 					else
 						this.targets = this.battle.alliesOf(this.unit);
 					this.updateInfo();
+					this.updateTurnPreview();
 				}
 				break;
 		}

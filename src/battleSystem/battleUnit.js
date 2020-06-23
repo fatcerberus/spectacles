@@ -473,7 +473,7 @@ class BattleUnit
 			let targetName = this.moveUsed.targets.length == 1
 				? this.moveUsed.targets[0].name : "Multi";
 			nextActions.splice(0, 0, {
-				announceAs: `Charge [${targetName}]`,
+				announceAs: `Charge -> ${targetName}`,
 				rank: Game.chargeRank,
 				preserveGuard: true,
 				effects: [
@@ -486,7 +486,7 @@ class BattleUnit
 			});
 		}
 		if (nextActions !== null) {
-			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions));
+			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions, this.moveUsed.targets));
 			for (let i = 0; i < nextActions.length; ++i)
 				this.actionQueue.push(nextActions[i]);
 			if (this.actionQueue.length > 0)
