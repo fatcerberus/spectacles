@@ -205,17 +205,17 @@ class MoveMenu extends Thread
 					let name = this.stance === Stance.Charge
 						? `CS ${this.selection.name}`
 						: this.selection.name;
-					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name).run();
+					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name, this.stance).run();
 					break;
 				}
 				case Stance.Counter: {
-					targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`);
+					targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`, this.stance);
 					targetMenu.lockTargets([ this.unit.counterTarget ]);
 					chosenTargets = await targetMenu.run();
 					break;
 				}
 				case Stance.Guard: {
-					targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard");
+					targetMenu = new TargetMenu(this.unit, this.battle, null, "Guard", this.stance);
 					targetMenu.lockTargets([ this.unit ]);
 					chosenTargets = await targetMenu.run();
 					break;

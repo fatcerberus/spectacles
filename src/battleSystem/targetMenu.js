@@ -7,12 +7,13 @@ import { from, Prim, Scene, Thread } from 'sphere-runtime';
 
 import { drawTextEx } from '../utilities.js';
 
+import { Game } from '../gameDef/index.js';
 import Stance from './stance.js';
 
 export default
 class TargetMenu extends Thread
 {
-	constructor(unit, battle, usable = null, moveName = null)
+	constructor(unit, battle, usable = null, moveName = null, stance = Stance.Attack)
 	{
 		super({ priority: 10 });
 
@@ -32,6 +33,7 @@ class TargetMenu extends Thread
 		this.statusNames = null;
 		this.cursorFont = Font.Default;
 		this.infoFont = Font.Default;
+		this.stance = stance;
 		this.targets = [];
 		this.unit = unit;
 		this.unitToShowInfo = null;
@@ -112,8 +114,10 @@ class TargetMenu extends Thread
 
 		this.updateTurnPreview = function()
 		{
-			let nextActions = this.usable.peekActions();
-			if (this.unit.stance === Stance.Charge)
+			let nextActions = this.stance === Stance.Guard
+				? [ Game.stanceChangeRank ]
+				: this.usable.peekActions();
+			if (this.stance === Stance.Charge)
 				nextActions = [ 1 ].concat(nextActions);
 			let prediction = this.battle.predictTurns(this.unit, nextActions, this.targets);
 			this.battle.ui.hud.turnPreview.set(prediction);

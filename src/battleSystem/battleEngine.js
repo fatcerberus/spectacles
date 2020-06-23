@@ -183,7 +183,7 @@ class BattleEngine extends Thread
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			if (actingUnit !== null && targetUnits !== null) {
 				from(nextActions).skip(turnIndex).take(1)
-					.selectMany(action => action.effects)
+					.selectMany(action => typeof action === 'object' ? action.effects : [])
 					.where(effect => effect.type === 'knockBack' && effect.targetHint === 'selected')
 					.forEach(effect => {
 						for (const target of targetUnits) {

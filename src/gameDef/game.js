@@ -15,7 +15,7 @@ const Game =
 	chargeRank: 1,
 	defaultBattleBGM: 'CreepFight',
 	defaultMoveRank: 2,
-	defaultItemRank: 2,
+	defaultItemRank: 1,
 	equipWeaponRank: 2,
 	guardBreakRank: 1,
 	reviveRank: 2,

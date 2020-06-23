@@ -150,7 +150,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'knockBack',
-						rank: 2,
+						rank: 1,
 					},
 				],
 			},
