@@ -60,7 +60,9 @@ class TurnPreview extends Thread
 	ensureEntries(unit)
 	{
 		if (!(unit.tag in this.entries)) {
-			let iconColor = unit.isPartyMember() ? Color.RoyalBlue : Color.FireBrick;
+			let iconColor = unit.isPartyMember()
+				? Color.RoyalBlue
+				: Color.FireBrick;
 			let entry = {
 				icon:      new BattlerIcon(unit.name, iconColor),
 				turnBoxes: [],
@@ -93,6 +95,7 @@ class TurnPreview extends Thread
 			let turnIndex = prediction[i].turnIndex;
 			this.ensureEntries(unit);
 			let turnBox = this.entries[unit.tag].turnBoxes[turnIndex];
+			turnBox.highlighted = prediction[i].acting;
 			if (turnBox.tween !== null)
 				turnBox.tween.stop();
 			turnBox.tween = new Scene()
@@ -122,7 +125,7 @@ class TurnPreview extends Thread
 			let entry = this.entries[id];
 			for (let i = 0; i < entry.turnBoxes.length; ++i) {
 				let turnBox = entry.turnBoxes[i];
-				entry.icon.drawAt(turnBox.x, y);
+				entry.icon.drawAt(turnBox.x, y, turnBox.highlighted);
 			}
 		}
 		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
@@ -134,10 +137,12 @@ class BattlerIcon
 	constructor(name, color)
 	{
 		let font = Font.Default;
-		let outlineColor = Color.Black.fadeTo(0.25);
+		this.name = name;
+		this.color = color;
+		this.outlineColor = Color.Black.fadeTo(0.25);
 		let surface = new Surface(16, 16);
 		Prim.drawSolidRectangle(surface, 0, 0, 16, 16, color);
-		Prim.drawRectangle(surface, 0, 0, 16, 16, 1, outlineColor);
+		Prim.drawRectangle(surface, 0, 0, 16, 16, 1, this.outlineColor);
 		font.drawText(surface, 5, 3, name[0], Color.mix(Color.Black, color));
 		font.drawText(surface, 4, 2, name[0], Color.mix(Color.White, color));
 		let shape = new Shape(ShapeType.TriStrip,
@@ -154,7 +159,7 @@ class BattlerIcon
 		this.lastY = 0;
 	}
 
-	drawAt(x, y)
+	drawAt(x, y, highlighted)
 	{
 		if (x !== this.lastX || y !== this.lastY) {
 			this.model.transform.identity()
@@ -162,6 +167,11 @@ class BattlerIcon
 			this.lastX = x;
 			this.lastY = y;
 		}
-		this.model.draw();
+		const font = Font.Default;
+		const color = highlighted ? Color.mix(Color.Yellow, this.color) : this.color;
+		Prim.drawSolidRectangle(Surface.Screen, x, y, 16, 16, color);
+		Prim.drawRectangle(Surface.Screen, x, y, 16, 16, 1, this.outlineColor);
+		font.drawText(Surface.Screen, x + 5, y + 3, this.name[0], Color.mix(Color.Black, color));
+		font.drawText(Surface.Screen, x + 4, y + 2, this.name[0], Color.mix(Color.White, color));
 	}
 }

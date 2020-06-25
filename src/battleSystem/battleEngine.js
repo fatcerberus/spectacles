@@ -209,7 +209,9 @@ class BattleEngine extends Thread
 					Game.defaultMoveRank,
 					actingUnit === unit ? nextActions : null);
 				remainingTime += delayMap.get(unit) || 0;
-				forecast.push({ bias, remainingTime, turnIndex, unit });
+				const acting = (actingUnit === unit && nextActions !== null && turnIndex < nextActions.length)
+					|| turnIndex < unit.actionQueue.length;
+				forecast.push({ bias, remainingTime, turnIndex, unit, acting });
 			}
 		}
 		forecast.sort((a, b) => {
