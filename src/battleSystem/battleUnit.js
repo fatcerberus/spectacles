@@ -12,10 +12,26 @@ import ItemUsable from './itemUsable.js';
 import MoveMenu from './moveMenu.js';
 import MPPool from './mpPool.js';
 import PartyMember from './partyMember.js';
-import Row from './row.js';
-import Stance from './stance.js';
 import Stat from './stat.js';
 import StatusEffect from './statusEffect.js';
+
+export
+const Row =
+{
+	Front:  -1,
+	Middle: 0,
+	Rear:   1,
+};
+
+export
+const Stance =
+{
+	Attack:  0,
+	Guard:   1,
+	Counter: 2,
+	Charge:  3,
+	Hippo:   4,
+};
 
 export default
 class BattleUnit

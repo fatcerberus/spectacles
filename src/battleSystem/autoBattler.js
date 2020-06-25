@@ -7,9 +7,9 @@ import { from, Random } from 'sphere-runtime';
 
 import { Game, Items, Skills, Weapons } from '../gameDef/index.js';
 
+import { Stance } from './battleUnit.js';
 import ItemUsable from './itemUsable.js';
 import SkillUsable from './skillUsable.js';
-import Stance from './stance.js';
 import WeaponUsable from './weaponUsable.js';
 
 export default

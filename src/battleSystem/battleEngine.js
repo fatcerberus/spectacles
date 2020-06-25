@@ -8,12 +8,18 @@ import { from, Music, Random, Thread } from 'sphere-runtime';
 import { Animations, Battles, Characters, Game, Maths, MoveEffects } from '../gameDef/index.js';
 import { clone } from '../utilities.js';
 
-import BattleResult from './battleResult.js';
 import BattleScreen from './battleScreen.js';
-import BattleUnit from './battleUnit.js';
+import BattleUnit, { Row } from './battleUnit.js';
 import FieldCondition from './fieldCondition.js';
 import MPPool from './mpPool.js';
-import Row from './row.js';
+
+export
+const BattleResult =
+{
+	Win:  1,
+	Flee: 2,
+	Lose: 3,
+};
 
 export default
 class BattleEngine extends Thread

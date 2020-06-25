@@ -6,7 +6,7 @@
 import { Game, Weapons } from '../gameDef/index.js';
 import { clone } from '../utilities.js';
 
-import Stance from './stance.js';
+import { Stance } from './battleUnit.js';
 
 export default
 class WeaponUsable

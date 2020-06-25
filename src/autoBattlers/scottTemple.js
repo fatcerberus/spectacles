@@ -50,6 +50,7 @@ class ScottTempleAI extends AutoBattler
 					else {
 						let skillToUse = Random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
 						this.queueSkill(this.isSkillUsable(skillToUse) ? skillToUse : 'swordSlash');
+						this.isQSComboStarted = false;
 					}
 				}
 				else if (this.movesTillReGen <= 0 && this.isSkillUsable('rejuvenate')) {
@@ -81,8 +82,10 @@ class ScottTempleAI extends AutoBattler
 			}
 			case 3: {
 				if (this.isQSComboStarted) {
-					let qsTurns = this.predictSkillTurns('quickstrike');
-					this.queueSkill(qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash');
+					const qsTurns = this.predictSkillTurns('quickstrike');
+					const moveID = qsTurns[0].unit === this.unit ? 'quickstrike' : 'swordSlash';
+					this.queueSkill(moveID);
+					this.isQSComboStarted = moveID === 'quickstrike';
 				}
 				else if (!this.battle.hasCondition('generalDisarray') && Random.chance(0.5)) {
 					this.queueSkill('tenPointFive');

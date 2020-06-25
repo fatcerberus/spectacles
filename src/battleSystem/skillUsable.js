@@ -8,7 +8,7 @@ import { from } from 'sphere-runtime';
 import { Maths, Skills } from '../gameDef/index.js';
 import { clone } from '../utilities.js';
 
-import Stance from './stance.js';
+import { Stance } from './battleUnit.js';
 
 export default
 class SkillUsable

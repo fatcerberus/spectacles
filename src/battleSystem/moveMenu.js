@@ -8,8 +8,8 @@ import { Prim, Scene, Thread } from 'sphere-runtime';
 import { Game, Elements, SkillCategories } from '../gameDef/index.js';
 import { drawTextEx } from '../utilities.js';
 
+import { Stance } from './battleUnit.js';
 import ItemUsable from './itemUsable.js';
-import Stance from './stance.js';
 import TargetMenu from './targetMenu.js';
 
 export default

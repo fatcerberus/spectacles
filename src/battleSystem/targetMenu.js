@@ -8,7 +8,7 @@ import { from, Prim, Scene, Thread } from 'sphere-runtime';
 import { drawTextEx } from '../utilities.js';
 
 import { Game } from '../gameDef/index.js';
-import Stance from './stance.js';
+import { Stance } from './battleUnit.js';
 
 export default
 class TargetMenu extends Thread
