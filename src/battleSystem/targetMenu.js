@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from, Prim, Scene, Thread } from 'sphere-runtime';
+import { from, Prim, Scene, Thread } from '/lib/sphere-runtime.js';
 
 import { drawTextEx } from '../utilities.js';
 

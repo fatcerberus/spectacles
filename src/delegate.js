@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from } from 'sphere-runtime';
+import { from } from '/lib/sphere-runtime.js';
 
 export default
 class Delegate

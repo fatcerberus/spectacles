@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Thread } from '/lib/sphere-runtime.js';
 
 const
 	BoxColor = Color.Black.fadeTo(0.75),

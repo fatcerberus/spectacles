@@ -6,7 +6,7 @@
 // note: don't run more than one day/night clock at a time.  doing so will cause multiple
 //       filters to be applied to the screen, which won't look too nice. :o)
 
-import { Thread } from 'sphere-runtime';
+import { Thread } from '/lib/sphere-runtime.js';
 
 const
 	DayMask      = [ 0.0, 0.0, 0.0, 0.0 ],

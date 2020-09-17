@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { Prim } from 'sphere-runtime';
+import { Prim } from '/lib/sphere-runtime.js';
 
 export default
 class HPGauge

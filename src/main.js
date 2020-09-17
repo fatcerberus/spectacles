@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { Console, Music, Scene } from 'sphere-runtime';
+import { Console, Music, Scene } from '/lib/sphere-runtime.js';
 
 import DayNightClock from './dayNightClock.js';
 import TestHarness from './testHarness.js';
@@ -44,5 +44,5 @@ async function main()
 	//await new TitleScreen().run();
 
 	let dayNight = new DayNightClock();
-	await TestHarness.run('temple');
+	await TestHarness.run('starcross');
 }

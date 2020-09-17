@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from, Scene } from 'sphere-runtime';
+import { from, Scene } from '/lib/sphere-runtime.js';
 
 import { drawTextEx, range } from '../utilities.js';
 

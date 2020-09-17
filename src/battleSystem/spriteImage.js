@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { DataStream, Prim } from 'sphere-runtime';
+import { DataStream, Prim } from '/lib/sphere-runtime.js';
 
 export default
 class SpriteImage

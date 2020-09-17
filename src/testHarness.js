@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from, Scene } from 'sphere-runtime';
+import { from, Scene } from '/lib/sphere-runtime.js';
 
 import { ItemUsable } from './battleSystem/index.js';
 import { Game } from './gameDef/index.js';

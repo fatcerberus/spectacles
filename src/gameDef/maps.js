@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { Scene } from 'sphere-runtime';
+import { Scene } from '/lib/sphere-runtime.js';
 
 export
 const Maps =

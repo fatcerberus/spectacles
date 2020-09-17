@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from } from 'sphere-runtime';
+import { from } from '/lib/sphere-runtime.js';
 
 import { Maths, Skills } from '../gameDef/index.js';
 import { clone } from '../utilities.js';

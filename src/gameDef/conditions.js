@@ -3,7 +3,7 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { from, Random } from 'sphere-runtime';
+import { from, Random } from '/lib/sphere-runtime.js';
 
 import { Game } from './game.js';
 import { Maths } from './maths.js';
