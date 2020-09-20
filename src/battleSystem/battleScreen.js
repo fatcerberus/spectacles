@@ -121,7 +121,7 @@ class BattleScreen extends Thread
 
 	async on_startUp()
 	{
-		this.background = new Texture('images/battleBackground.png');
+		this.background = await Texture.fromFile('images/battleBackground.png');
 	}
 
 	on_render()

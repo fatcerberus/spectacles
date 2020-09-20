@@ -14,7 +14,6 @@ class GameOverScreen extends Thread
 	{
 		super();
 
-		this.image = new Texture('images/gameOverScreen.png');
 		this.fadeness = 1.0;
 		this.transition = null;
 	}
@@ -35,6 +34,11 @@ class GameOverScreen extends Thread
 		return this;
 	}
 
+	async on_startUp()
+	{
+		this.image = await Texture.fromFile('images/gameOverScreen.png');
+	}
+	
 	on_render()
 	{
 		Prim.blit(Surface.Screen, 0, 0, this.image);

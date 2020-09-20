@@ -148,7 +148,7 @@ Scene.defineOp('playSound',
 {
 	async start(scene, fileName)
 	{
-		this.sound = new Sound(fileName);
+		this.sound = await Sound.fromFile(fileName);
 		this.sound.play();
 	},
 

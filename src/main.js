@@ -20,10 +20,10 @@ async function main()
 	Scene.defaultPriority = 99;
 
 	console.defineObject('bgm', null, {
-		'override'(fileName) { Music.override(fileName); },
+		async 'override'(fileName) { await Music.override(fileName); },
 		'pop'() { Music.pop(); },
-		'play'(fileName) { Music.play(FS.fullPath(`${fileName}.ogg`, 'music')); },
-		'push'(fileName) { Music.push(FS.fullPath(`${fileName}.ogg`, 'music')); },
+		async 'play'(fileName) { await Music.play(`music/${fileName}.ogg`); },
+		async 'push'(fileName) { await Music.push(`music/${fileName}.ogg`); },
 		'reset'() { Music.reset(); },
 		'stop'() { Music.override(null); },
 		'volume'(value) { Music.adjustVolume(value); },

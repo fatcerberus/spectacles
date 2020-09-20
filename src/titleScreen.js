@@ -27,11 +27,11 @@ class TitleScreen extends Thread
 		this.fadeAlpha = 0.0;
 		this.fadeTime = this.data.titleFadeFrames;
 		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
-		this.texture = new Texture(this.data.titleScreen);
+		this.texture = await Texture.fromFile(this.data.titleScreen);
 		this.splashes = [];
 		for (const splash of this.data.splashScreens) {
 			console.log(`splash '${splash.fileName}'`, `hold: ${splash.holdFrames}f`);
-			let texture = new Texture(splash.fileName);
+			let texture = await Texture.fromFile(splash.fileName);
 			let thread = new SplashThread(texture, this.data.splashFadeFrames, splash.holdFrames);
 			this.splashes.push({ thread });
 		}
