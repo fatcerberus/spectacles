@@ -10,7 +10,7 @@ Object.assign(Sphere.Game, {
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 
 	version: 2,
-	apiLevel: 3,
+	apiLevel: 4,
 
 	main: '@/scripts/main.js',
 	development: {

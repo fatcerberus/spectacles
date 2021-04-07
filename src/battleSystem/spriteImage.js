@@ -3,64 +3,66 @@
   *            Copyright (c) 2020 Fat Cerberus
 ***/
 
-import { DataStream, Prim } from '/lib/sphere-runtime.js';
+import { BufferStream, Prim } from 'sphere-runtime';
 
 export default
 class SpriteImage
 {
 	static async fromFile(fileName)
 	{
-		const fs = await DataStream.fromFile(fileName, FileOp.Read);
+		const data = await FS.readFile(fileName, DataType.Raw);
+		const fs = new BufferStream(data);
 		const rss = fs.readStruct({
-			signature:   { type: 'fstring', length: 4 },
-			version:     { type: 'uint16le' },
-			numImages:   { type: 'uint16le' },
-			frameWidth:  { type: 'uint16le' },
-			frameHeight: { type: 'uint16le' },
-			numPoses:    { type: 'uint16le' },
-			baseX1:      { type: 'uint16le' },
-			baseY1:      { type: 'uint16le' },
-			baseX2:      { type: 'uint16le' },
-			baseY2:      { type: 'uint16le' },
-			reserved:    { type: 'raw', size: 106 },
+			signature:   'string/4',
+			version:     'uint16-le',
+			numImages:   'uint16-le',
+			frameWidth:  'uint16-le',
+			frameHeight: 'uint16-le',
+			numPoses:    'uint16-le',
+			baseX1:      'uint16-le',
+			baseY1:      'uint16-le',
+			baseX2:      'uint16-le',
+			baseY2:      'uint16-le',
+			reserved:    'reserve/106',
 		});
 		if (rss.signature !== '.rss' || rss.version !== 3)
 			throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
 		const images = [];
 		for (let i = 0; i < rss.numImages; ++i) {
-			const pixels = fs.read(4 * rss.frameWidth * rss.frameHeight);
+			const pixels = fs.readBytes(4 * rss.frameWidth * rss.frameHeight);
 			images.push(new Texture(rss.frameWidth, rss.frameHeight, pixels));
 		}
 		const poses = {};
 		for (let i = 0; i < rss.numPoses; ++i) {
 			const poseInfo = fs.readStruct({
-				numFrames: { type: 'uint16le' },
-				reserved:  { type: 'raw', size: 6 },
-				name:      { type: 'lstr16le' },
+				numFrames: 'uint16-le',
+				reserved:  'reserve/6',
+				name:      'zstring16-le',
 			});
 			const pose = { frames: [] };
 			for (let j = 0; j < poseInfo.numFrames; ++j) {
 				const frameInfo = fs.readStruct({
-					imageIndex: { type: 'uint16le' },
-					delay:      { type: 'uint16le' },
-					reserved:   { type: 'raw', size: 4 },
+					imageIndex: 'uint16-le',
+					delay:      'uint16-le',
+					reserved:   'reserve/4',
 				});
 				const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
 				pose.frames.push(frame);
 			}
 			poses[poseInfo.name] = pose;
 		}
-		fs.dispose();
 
 		const spriteset = Object.create(this.prototype);
 		spriteset.currentPose = Object.keys(poses)[0];
 		spriteset.elapsedFrames = 0;
 		spriteset.frame = 0;
 		spriteset.poses = poses;
+		spriteset.xOffset = 0; //-(rss.baseX1 + Math.round((rss.baseX2 + 1 - rss.baseX1) / 2));
+		spriteset.yOffset = 0; //-(rss.baseY1 + Math.round((rss.baseY2 + 1 - rss.baseY1) / 2));
 		return spriteset;
 	}
 
-	constructor(filename)
+	constructor(fileName)
 	{
 		throw new Error("'SpriteImage' constructor is unsupported");
 	}
@@ -81,7 +83,7 @@ class SpriteImage
 	{
 		const pose = this.poses[this.currentPose]
 		const image = pose.frames[this.frame % pose.frames.length].image;
-		Prim.blit(Surface.Screen, x, y, image, Color.White.fadeTo(alpha));
+		Prim.blit(Surface.Screen, x + this.xOffset, y + this.yOffset, image, Color.White.fadeTo(alpha));
 	}
 
 	reset()
