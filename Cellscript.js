@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *            Copyright (c) 2020 Fat Cerberus
+  *            Copyright (c) 2021 Fat Cerberus
 ***/
 
 Object.assign(Sphere.Game, {
@@ -12,12 +12,11 @@ Object.assign(Sphere.Game, {
 	version: 2,
 	apiLevel: 4,
 
-	main: '@/scripts/main.js',
+	main: 'scripts/main.js',
 	development: {
 		emptyPromises: false,
 		retrograde: false,
 		sandbox: 'relaxed',
-		strictImports: true,
 	},
 
 	resolution: '320x240',
@@ -30,6 +29,9 @@ Object.assign(Sphere.Game, {
 	disableTitleScreen: false,
 });
 
+install('@/', files('icon.png'));
+
+install('@/scripts', files('scripts/*.js', true));
 install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
 install('@/logos', files('logos/*.png', true));
@@ -37,6 +39,3 @@ install('@/music', files('music/*.ogg', true));
 install('@/shaders', files('shaders/*.glsl', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds', files('sounds/*.wav', true));
-install('@/', files('icon.png'));
-
-install('@/scripts', files('src/*.js', true));
