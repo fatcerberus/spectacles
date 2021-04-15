@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Console, Music, Scene } from '/lib/sphere-runtime.js';
+import { Console, Music, Scene } from 'sphere-runtime';
 
 import DayNightClock from './dayNightClock.js';
 import TestHarness from './testHarness.js';
@@ -41,7 +41,7 @@ async function main()
 
 	await TestHarness.initialize();
 
-	//await new TitleScreen().run();
+	await new TitleScreen().run();
 
 	let dayNight = new DayNightClock();
 	await TestHarness.run('starcross');

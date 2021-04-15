@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from } from '/lib/sphere-runtime.js';
+import { from } from 'sphere-runtime';
 
 import { Game, Items } from '../gameDef/index.js';
 import { clone } from '../utilities.js';

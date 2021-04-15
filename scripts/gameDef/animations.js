@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Scene } from '/lib/sphere-runtime.js';
+import { Scene } from 'sphere-runtime';
 
 export
 const Animations =

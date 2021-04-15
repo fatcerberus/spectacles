@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from, Random } from '/lib/sphere-runtime.js';
+import { from, Random } from 'sphere-runtime';
 
 import { Stance } from '../battleSystem/index.js';
 import { Maths } from './maths.js';

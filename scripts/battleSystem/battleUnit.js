@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from, Random, Scene } from '/lib/sphere-runtime.js';
+import { from, Random, Scene } from 'sphere-runtime';
 
 import { Characters, Elements, Enemies, Game, Items, Maths, StatNames, Statuses, Weapons } from '../gameDef/index.js';
 import { clone } from '../utilities.js';

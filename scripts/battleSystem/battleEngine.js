@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from, Music, Random, Thread } from '/lib/sphere-runtime.js';
+import { from, Music, Random, Thread } from 'sphere-runtime';
 
 import { Animations, Battles, Characters, Game, Maths, MoveEffects } from '../gameDef/index.js';
 import { clone } from '../utilities.js';

@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from } from '/lib/sphere-runtime.js';
+import { from } from 'sphere-runtime';
 
 import { Characters, Weapons } from '../gameDef/index.js';
 

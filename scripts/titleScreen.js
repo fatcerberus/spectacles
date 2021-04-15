@@ -1,10 +1,9 @@
-/*
- *  OFF: Puppetmaster by Fat Cerberus
- *  (c) 2018, based on OFF by Mortis Ghost (c) 2008
- *  titleScreen.mjs
- */
+/***
+ * Specs Engine v6: Spectacles Saga Game Engine
+  *            Copyright (c) 2021 Fat Cerberus
+***/
 
-import { Music, Prim, Scene, Thread } from '/lib/sphere-runtime.js';
+import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
 import MenuStrip from './menuStrip.js';
 

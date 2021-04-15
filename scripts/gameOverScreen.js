@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Music, Prim, Scene, Thread } from '/lib/sphere-runtime.js';
+import { Music, Prim, Scene, Thread } from 'sphere-runtime';
 
 import MenuStrip from './menuStrip.js';
 

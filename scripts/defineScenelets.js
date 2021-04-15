@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Music, Prim, Scene } from '/lib/sphere-runtime.js';
+import { Music, Prim, Scene } from 'sphere-runtime';
 
 import { BattleEngine, BattleResult } from './battleSystem/index.js';
 import AutoColorMask from './autoColorMask.js';

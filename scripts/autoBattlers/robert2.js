@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from, Random, Scene } from '/lib/sphere-runtime.js';
+import { from, Random, Scene } from 'sphere-runtime';
 
 import { AutoBattler, Stance } from '../battleSystem/index.js';
 
