@@ -21,7 +21,7 @@ const Weapons =
 	heirloom: {
 		name: "Heirloom",
 		type: 'sword',
-		level: 1,
+		level: 10,
 		techniques: [
 			'swordSlash',
 			'quickstrike',
@@ -30,7 +30,7 @@ const Weapons =
 	rsbSword: {
 		name: "Robert's Sword",
 		type: 'sword',
-		level: 50,
+		level: 80,
 		techniques: [
 			'swordSlash',
 			'quickStrike',
@@ -40,7 +40,7 @@ const Weapons =
 	templeSword: {
 		name: "Temple Sword",
 		type: 'sword',
-		level: 75,
+		level: 100,
 		techniques: [
 			'swordSlash',
 			'quickstrike',
@@ -52,7 +52,7 @@ const Weapons =
 	arsenRifle: {
 		name: "Arsen's Rifle",
 		type: 'gun',
-		level: 1,
+		level: 100,
 		techniques: [
 			'potshot',
 			'sharpshooter',
@@ -64,7 +64,7 @@ const Weapons =
 	fireAndIce: {
 		name: "Fire & Ice",
 		type: 'bow',
-		level: 1,
+		level: 25,
 		techniques: [
 			'archery',
 			'flareShot',
@@ -75,7 +75,7 @@ const Weapons =
 	powerBow: {
 		name: "Power Bow",
 		type: 'bow',
-		level: 75,
+		level: 100,
 		techniques: [
 			'archery',
 			'flareShot',
@@ -89,7 +89,7 @@ const Weapons =
 	risingSun: {
 		name: "Rising Sun",
 		type: 'shuriken',
-		level: 75,
+		level: 100,
 		techniques: [
 			'starToss',
 			'starVolley',
@@ -100,6 +100,10 @@ const Weapons =
 	luckyStaff: {
 		name: "Lucky Staff",
 		type: 'staff',
-		level: 1,
+		level: 100,
+		techniques: [
+			'whack',
+			'whipstaff',
+		]
 	},
 };

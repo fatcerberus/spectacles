@@ -68,7 +68,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 37.5,
+						power: 50,
 					},
 				],
 			},
@@ -145,12 +145,12 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 10,
+						power: 25,
 					},
 					{
 						targetHint: 'selected',
 						type: 'knockBack',
-						rank: 1,
+						rank: 2,
 					},
 				],
 			},
@@ -173,6 +173,55 @@ const Skills =
 						type: 'damage',
 						damageType: 'sword',
 						power: 25,
+					},
+				],
+			},
+		],
+	},
+
+	// Staff techniques
+	whack: {
+		name: "Whack",
+		category: 'attack',
+		weaponType: 'staff',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Whack",
+				rank: 2,
+				accuracyType: 'staff',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'staff',
+						power: 25,
+					},
+				],
+			},
+		],
+	},
+	whipstaff: {
+		name: "Whipstaff",
+		category: 'attack',
+		weaponType: 'staff',
+		targetType: 'single',
+		actions: [
+			{
+				announceAs: "Whipstaff",
+				rank: 2,
+				accuracyType: 'staff',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'staff',
+						power: 10,
+					},
+					{
+						targetHint: 'selected',
+						type: 'knockBack',
+						rank: 1,
 					},
 				],
 			},
@@ -487,7 +536,7 @@ const Skills =
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 80,
 		actions: [
 			{
 				announceAs: "Omni",
@@ -512,23 +561,22 @@ const Skills =
 	},
 
 	// Curative/healing magicks
-	convalesce: {
-		name: "Convalesce",
-		category: 'heal',
+	salve: {
+		name: "Salve",
+		category: 'strategy',
 		targetType: 'ally',
-		baseMPCost: 75,
+		baseMPCost: 25,
 		allowAsCounter: false,
 		actions: [
 			{
-				announceAs: "Convalesce",
-				rank: 3,
+				announceAs: "Salve",
+				rank: 2,
 				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'addStatus',
 						status: 'reGen',
-						element: 'cure',
 					},
 				],
 			},
@@ -585,7 +633,7 @@ const Skills =
 		name: "Heal",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Heal",
@@ -607,7 +655,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		allowDeadTarget: true,
-		baseMPCost: 100,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Lazarus",
@@ -647,7 +695,7 @@ const Skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 25,
+		baseMPCost: 13,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -670,7 +718,7 @@ const Skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 50,
+		baseMPCost: 25,
 		actions: [
 			{
 				announceAs: "Renewal",
@@ -683,30 +731,6 @@ const Skills =
 						element: 'cure',
 						addStatus: 'reGen',
 						statusChance: 25,
-					},
-				],
-			},
-		],
-	},
-
-	salve: {
-		name: "Salve",
-		category: 'strategy',
-		targetType: 'ally',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: "Salve",
-				rank: 2,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'heal',
-						power: 10,
-						element: 'cure',
-						addStatus: 'reGen',
-						statusChance: 100,
 					},
 				],
 			},
@@ -783,7 +807,7 @@ const Skills =
 		name: "Protect",
 		category: 'strategy',
 		targetType: 'ally',
-		baseMPCost: 10,
+		baseMPCost: 25,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [

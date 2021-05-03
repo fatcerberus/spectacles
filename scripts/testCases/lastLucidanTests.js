@@ -20,7 +20,7 @@ TestHarness.addBattle('temple', {
 		},
 		abigail: {
 			level: 60,
-			weapon: 'risingSun',
+			weapon: 'luckyStaff',
 			items: [
 				'tonic',
 				'powerTonic',

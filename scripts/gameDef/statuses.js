@@ -17,7 +17,7 @@ const Statuses =
 	// Progressively lowers attack power when the same type of attack is used in succession.
 	crackdown: {
 		name: "Crackdown",
-		tags: [ 'debuff' ],
+		tags: [ 'ailment' ],
 		initialize(unit) {
 			this.lastSkillType = null;
 			this.multiplier = 1.0;
@@ -56,7 +56,7 @@ const Statuses =
 	// Wears off after 5 turns.
 	curse: {
 		name: "Curse",
-		tags: [ 'debuff' ],
+		tags: [ 'ailment' ],
 		initialize(unit) {
 			unit.liftStatusTags([ 'buff' ]);
 			this.turnsLeft = 5;
@@ -363,18 +363,16 @@ const Statuses =
 		name: "Protect",
 		tags: [ 'buff' ],
 		initialize(unit) {
-			this.multiplier = 1 / Game.bonusMultiplier;
-			this.lossPerTurn = (1.0 - this.multiplier) / 3;
+			this.turnCount = 3;
 		},
 		beginTurn(unit, eventData) {
-			this.multiplier += this.lossPerHit;
-			if (this.multiplier >= 1.0)
+			if (--this.turnCount <= 0)
 				unit.liftStatus('protect');
 		},
 		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected)
-				eventData.amount *= this.multiplier;
+				eventData.amount /= Game.bonusMultiplier;
 		},
 	},
 
@@ -384,21 +382,10 @@ const Statuses =
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
-		initialize(unit) {
-			this.turnsLeft = 10;
-		},
 		beginCycle(unit, eventData) {
 			let unitInfo = unit.battlerInfo;
 			let cap = Maths.hp(unitInfo, unitInfo.level, 1);
-			unit.heal(cap / 10, [ 'cure' ]);
-			--this.turnsLeft;
-			if (this.turnsLeft <= 0) {
-				console.log(unit.name + "'s ReGen has expired");
-				unit.liftStatus('reGen');
-			}
-			else {
-				console.log(unit.name + "'s ReGen will expire in " + this.turnsLeft + " more cycle(s)");
-			}
+			unit.heal(cap / 25, [ 'cure' ]);
 		},
 	},
 
@@ -491,8 +478,7 @@ const Statuses =
 
 	// Specs Aura status
 	// Restores a tiny amount of HP to the affected unit at the beginning of each
-	// cycle. Similar to ReGen, except the effect is perpetual and less HP is recovered per
-	// cycle.
+	// cycle. Similar to ReGen, but less HP is recovered per cycle.
 	specsAura: {
 		name: "Specs Aura",
 		tags: [ 'special' ],

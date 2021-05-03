@@ -32,9 +32,9 @@ class ScottTempleAI extends AutoBattler
 		switch (newPhase) {
 		case 1:
 			this.queueSkill('omni', Stance.Attack, 'elysia');
-			this.joltTarget = 'abigail';
 			break;
 		case 2:
+			this.queueSkill('rejuvenate');
 			break;
 		case 3:
 			break;

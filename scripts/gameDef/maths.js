@@ -31,6 +31,9 @@ const Maths =
 		shuriken(userInfo, targetInfo) {
 			return 1.0;
 		},
+		staff(userInfo, targetInfo) {
+			return 1.0;
+		},
 		sword(userInfo, targetInfo) {
 			return userInfo.stats.agi * 1.5 / targetInfo.stats.agi;
 		},
@@ -72,6 +75,11 @@ const Maths =
 		shuriken(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.foc, targetInfo.stats.def);
+		},
+		staff(userInfo, targetInfo, power) {
+			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
+				(userInfo.stats.str + userInfo.stats.agi) / 2,
+				targetInfo.stats.def);
 		},
 		sword(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
