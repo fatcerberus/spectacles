@@ -71,7 +71,7 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 33,
+					strength: 35,
 				},
 			],
 		},
@@ -79,29 +79,14 @@ const Items =
 	powerTonic: {
 		name: "Power Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 3,
+		uses: 2,
 		action: {
 			announceAs: "Power Tonic",
 			effects: [
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 66,
-				},
-			],
-		},
-	},
-	fullTonic: {
-		name: "Full Tonic",
-		tags: [ 'drink', 'curative' ],
-		uses: 1,
-		action: {
-			announceAs: "Full Tonic",
-			effects: [
-				{
-					targetHint: 'selected',
-					type: 'recoverHP',
-					strength: 100,
+					strength: 50,
 				},
 				{
 					targetHint: 'selected',

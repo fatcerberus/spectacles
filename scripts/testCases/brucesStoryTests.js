@@ -14,7 +14,6 @@ TestHarness.addBattle('horse', {
 			items: [
 				'tonic',
 				'powerTonic',
-				'fullTonic',
 				'redBull',
 				'holyWater',
 				'vaccine',
@@ -33,7 +32,6 @@ TestHarness.addBattle('rsb2', {
 			items: [
 				'tonic',
 				'powerTonic',
-				'fullTonic',
 				'redBull',
 				'holyWater',
 				'vaccine',

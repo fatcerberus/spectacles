@@ -51,7 +51,7 @@ const Battles =
 	{
 		title: "Scott Starcross",
 		isFinalBattle: true,
-		bgm: 'deathComeNearMe',
+		bgm: 'sixthDimension',
 		battleLevel: 100,
 		enemies: [
 			'starcross',
@@ -60,20 +60,9 @@ const Battles =
 			let scottUnit = this.findUnit('starcross');
 			scottUnit.addStatus('specsAura');
 			await new Scene()
-				.talk("Elysia", true, 1.0, Infinity, "And here I was thinking Hades had set this all up for his own benefit. Instead I just find YOU, wallowing in your own self-pity. I wish I could say I was surprised.")
-				.talk("Abigail", true, 1.0, Infinity, "THIS is what my choices have wrought? I can't say I don't deserve to see it...")
-				.pause(60)
-				.talk("Bruce", true, 2.0, Infinity, "Abby? What are you...?")
-				.pause(60)
-				.talk("Abigail", true, 1.0, Infinity, "It would have been enough just knowing that my choices had left a scar I could never hope to heal, even with all the magic in Lucida...")
-				.pause(120)
-				.talk("Bruce", true, 0.5, Infinity, "Abigail...")
-				.pause(60)
-				.talk("Abigail", true, 1.0, Infinity, "But to see now the full weight of the repercussions standing in front of me...")
-				.pause(30)
-				.talk("Abigail", true, 0.5, Infinity, "It's...")
-				.talk("Abigail", true, 1.0, Infinity, "It's almost too much to bear.")
-				.talk("Elysia", true, 1.0, Infinity, "Great. Let's just have a pity party for Scott and Abigail while the void hangs over all of us. That'll solve all our problems!")
+				.talk("Elysia", true, 1.0, Infinity,
+					"And here I was thinking Hades had set this all up for his own benefit. Instead I just find you, wallowing in your own self-pity...",
+					"I wish I could say I was surprised.")
 				.run();
 		},
 	},

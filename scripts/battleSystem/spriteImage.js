@@ -79,11 +79,11 @@ class SpriteImage
 		this.currentPose = value;
 	}
 
-	blit(x, y, alpha = 1.0)
+	blit(surface, x, y, alpha = 1.0)
 	{
 		const pose = this.poses[this.currentPose]
 		const image = pose.frames[this.frame % pose.frames.length].image;
-		Prim.blit(Surface.Screen, x + this.xOffset, y + this.yOffset, image, Color.White.fadeTo(alpha));
+		Prim.blit(surface, x + this.xOffset, y + this.yOffset, image, Color.White.fadeTo(alpha));
 	}
 
 	reset()

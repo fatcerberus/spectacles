@@ -64,7 +64,7 @@ class TurnPreview extends Thread
 				? Color.RoyalBlue
 				: Color.FireBrick;
 			let entry = {
-				icon:      new BattlerIcon(unit.name, iconColor),
+				icon:      new BattlerIcon(unit, iconColor),
 				turnBoxes: [],
 			};
 			for (let i = 0; i < 8; ++i)
@@ -134,44 +134,22 @@ class TurnPreview extends Thread
 
 class BattlerIcon
 {
-	constructor(name, color)
+	constructor(unit, color)
 	{
 		let font = Font.Default;
-		this.name = name;
+		this.name = unit.name;
+		this.sprite = unit.actor.sprite;
 		this.color = color;
 		this.outlineColor = Color.Black.fadeTo(0.25);
-		let surface = new Surface(16, 16);
-		Prim.drawSolidRectangle(surface, 0, 0, 16, 16, color);
-		Prim.drawRectangle(surface, 0, 0, 16, 16, 1, this.outlineColor);
-		font.drawText(surface, 5, 3, name[0], Color.mix(Color.Black, color));
-		font.drawText(surface, 4, 2, name[0], Color.mix(Color.White, color));
-		let shape = new Shape(ShapeType.TriStrip,
-			surface,
-			new VertexList([
-				{ x: 0,  y: 0,  u: 0.0, v: 1.0 },
-				{ x: 16, y: 0,  u: 1.0, v: 1.0 },
-				{ x: 0,  y: 16, u: 0.0, v: 0.0 },
-				{ x: 16, y: 16, u: 1.0, v: 0.0 },
-			]));
-		this.model = new Model([ shape ]);
-		this.transform = new Transform();
-		this.lastX = 0;
-		this.lastY = 0;
 	}
 
 	drawAt(x, y, highlighted)
 	{
-		if (x !== this.lastX || y !== this.lastY) {
-			this.model.transform.identity()
-				.translate(Math.round(x), Math.round(y));
-			this.lastX = x;
-			this.lastY = y;
-		}
 		const font = Font.Default;
 		const color = highlighted ? Color.mix(Color.Yellow, this.color) : this.color;
 		Prim.drawSolidRectangle(Surface.Screen, x, y, 16, 16, color);
 		Prim.drawRectangle(Surface.Screen, x, y, 16, 16, 1, this.outlineColor);
-		font.drawText(Surface.Screen, x + 5, y + 3, this.name[0], Color.mix(Color.Black, color));
-		font.drawText(Surface.Screen, x + 4, y + 2, this.name[0], Color.mix(Color.White, color));
+		font.drawText(Surface.Screen, x + 5, y + 3, this.name[0], Color.Black);
+		font.drawText(Surface.Screen, x + 4, y + 2, this.name[0], Color.White);
 	}
 }

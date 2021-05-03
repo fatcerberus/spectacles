@@ -357,24 +357,24 @@ const Statuses =
 	},
 
 	// Protect status
-	// Reduces damage from attacks. Each time the Protected unit is damaged by an attack,
-	// the effectiveness of Protect is reduced.
+	// Reduces damage from attacks. The effect lasts for 3 turns and gradually
+	// loses effectiveness.
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
 		initialize(unit) {
 			this.multiplier = 1 / Game.bonusMultiplier;
-			this.lossPerHit = (1.0 - this.multiplier) / 10;
+			this.lossPerTurn = (1.0 - this.multiplier) / 3;
+		},
+		beginTurn(unit, eventData) {
+			this.multiplier += this.lossPerHit;
+			if (this.multiplier >= 1.0)
+				unit.liftStatus('protect');
 		},
 		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
-			if (isProtected) {
+			if (isProtected)
 				eventData.amount *= this.multiplier;
-				this.multiplier += this.lossPerHit;
-				if (this.multiplier >= 1.0) {
-					unit.liftStatus('protect');
-				}
-			}
 		},
 	},
 

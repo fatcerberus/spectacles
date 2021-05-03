@@ -143,7 +143,7 @@ class BattleEngine extends Thread
 		if ('bgm' in this.parameters)
 			battleBGMTrack = this.parameters.bgm;
 		this.ui.hud.turnPreview.set(this.predictTurns());
-		Music.push(`@/music/${battleBGMTrack}.ogg`);
+		Music.push(`music/${battleBGMTrack}.ogg`);
 		this.result = null;
 		this.timer = 0;
 		this.mode = 'setup';

@@ -73,7 +73,7 @@ class BattleActor
 	{
 		if (!this.isVisible && this.damages.length == 0 && this.healings.length == 0)
 			return;
-		this.sprite.blit(this.x, this.y, this.opacity);
+		this.sprite.blit(Surface.Screen, this.x, this.y, this.opacity);
 		for (let i = 0; i < this.damages.length; ++i) {
 			let text = this.damages[i].text;
 			let x = this.x + 16 - this.messageFont.widthOf(text) / 2;

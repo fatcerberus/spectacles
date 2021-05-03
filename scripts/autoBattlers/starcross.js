@@ -31,9 +31,9 @@ class ScottStarcrossAI extends AutoBattler
 			{ phase: 1, moves: [ 'windchill', 'hellfire' ], rating: 2 },
 			{ phase: 2, weaponID: 'powerBow', moves: [ 'flareShot', 'chillShot' ], rating: 2 },
 			{ phase: 2, moves: [ 'necromancy', 'rejuvenate' ], rating: 3 },
-			{ phase: 3, moves: [ 'necromancy', 'rejuvenate', 'renewal' ], rating: 4 },
+			{ phase: 3, moves: [ 'necromancy', 'rejuvenate', 'renew' ], rating: 4 },
 			{ phase: 3, moves: [ 'electrocute', 'heal', 'rejuvenate' ], rating: 4 },
-			{ phase: 4, moves: [ 'inferno', 'subzero', 'renewal' ], rating: 5 }
+			{ phase: 4, moves: [ 'inferno', 'subzero', 'renew' ], rating: 5 }
 		];
 
 		this.isOpenerPending = true;

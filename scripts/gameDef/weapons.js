@@ -89,7 +89,7 @@ const Weapons =
 	risingSun: {
 		name: "Rising Sun",
 		type: 'shuriken',
-		level: 1,
+		level: 75,
 		techniques: [
 			'starToss',
 			'starVolley',

@@ -145,7 +145,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'physical',
-						power: 25,
+						power: 10,
 					},
 					{
 						targetHint: 'selected',
@@ -206,7 +206,7 @@ const Skills =
 		category: 'attack',
 		weaponType: 'bow',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Chill Shot",
@@ -217,7 +217,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 						element: 'ice',
 						addStatus: 'frostbite',
 						statusChance: 25,
@@ -231,7 +231,7 @@ const Skills =
 		category: 'attack',
 		weaponType: 'bow',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Flare Shot",
@@ -242,7 +242,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 						element: 'fire',
 						addStatus: 'ignite',
 						statusChance: 25,
@@ -256,7 +256,7 @@ const Skills =
 		category: 'attack',
 		weaponType: 'bow',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Jolt Shot",
@@ -267,7 +267,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 						element: 'lightning',
 						addStatus: 'zombie',
 						statusChance: 25,
@@ -281,7 +281,7 @@ const Skills =
 		category: 'attack',
 		weaponType: 'bow',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 5,
 		actions: [
 			{
 				announceAs: "Seismic Shot",
@@ -292,7 +292,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 						element: 'earth',
 						addStatus: 'disarray',
 						statusChance: 25,
@@ -318,19 +318,19 @@ const Skills =
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 					},
 					{
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 					},
 					{
 						targetHint: 'random',
 						type: 'damage',
 						damageType: 'bow',
-						power: 20,
+						power: 10,
 					},
 				],
 			},
@@ -366,7 +366,7 @@ const Skills =
 		targetType: 'single',
 		actions: [
 			{
-				announceAs: "Lining up...",
+				announceAs: "Line Up",
 				rank: 2,
 				effects: [
 					{
@@ -385,7 +385,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 80,
+						power: 50,
 					},
 				],
 			},
@@ -406,7 +406,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'gun',
-						power: 15,
+						power: 10,
 					},
 				],
 			},
@@ -451,7 +451,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'shuriken',
-						power: 5,
+						power: 10,
 					},
 				],
 			},
@@ -477,105 +477,17 @@ const Skills =
 	electrocute: powerSpell("Electrocute", 'lightning', 'zombie'),
 
 	// Rank 4 magic - damage + field condition, group-cast
-	inferno: {
-		name: "Inferno",
-		category: 'magic',
-		targetType: 'allEnemies',
-		baseMPCost: 35,
-		actions: [
-			{
-				announceAs: "Inferno",
-				rank: 4,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 75,
-						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 100,
-					},
-				],
-			},
-		],
-	},
-	subzero: {
-		name: "Subzero",
-		category: 'magic',
-		targetType: 'allEnemies',
-		baseMPCost: 35,
-		actions: [
-			{
-				announceAs: "Subzero",
-				rank: 4,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 75,
-						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 100,
-					},
-				],
-			},
-		],
-	},
-	tenPointFive: {
-		name: "10.5",
-		category: 'magic',
-		targetType: 'allEnemies',
-		baseMPCost: 35,
-		actions: [
-			{
-				announceAs: "10.5",
-				rank: 4,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 75,
-						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 100,
-					},
-				],
-			},
-		],
-	},
-	discharge: {
-		name: "Discharge",
-		category: 'magic',
-		targetType: 'allEnemies',
-		baseMPCost: 35,
-		actions: [
-			{
-				announceAs: "Discharge",
-				rank: 4,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 75,
-						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 100,
-					},
-				],
-			},
-		],
-	},
+	inferno:      ultraSpell("Inferno", 'fire', 'ignite'),
+	subzero:      ultraSpell("Subzero", 'ice', 'frostbite'),
+	tenPointFive: ultraSpell("10.5", 'earth', 'disarray'),
+	discharge:    ultraSpell("Discharge", 'lightning', 'zombie'),
 
 	// Omni - Rank 4 non-elemental magic
 	omni: {
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 100,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Omni",
@@ -624,7 +536,7 @@ const Skills =
 	},
 	dispel: {
 		name: "Dispel",
-		category: 'heal',
+		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 25,
 		allowAsCounter: false,
@@ -683,7 +595,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 30,
+						power: 15,
 						element: 'cure',
 					},
 				],
@@ -695,7 +607,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		allowDeadTarget: true,
-		baseMPCost: 50,
+		baseMPCost: 100,
 		actions: [
 			{
 				announceAs: "Lazarus",
@@ -715,7 +627,7 @@ const Skills =
 		name: "Purify",
 		category: 'heal',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 25,
 		actions: [
 			{
 				announceAs: "Purify",
@@ -725,7 +637,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'liftStatusTags',
-						tags: [ 'undead' ],
+						tags: [ 'ailment' ],
 					},
 				],
 			},
@@ -735,7 +647,7 @@ const Skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 20,
+		baseMPCost: 25,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -745,10 +657,10 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 60,
+						power: 50,
 						element: 'cure',
 						addStatus: 'reGen',
-						statusChance: 0,
+						statusChance: 10,
 					},
 				],
 			},
@@ -758,17 +670,40 @@ const Skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 40,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Renewal",
 				rank: 4,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'heal',
+						power: 80,
+						element: 'cure',
+						addStatus: 'reGen',
+						statusChance: 25,
+					},
+				],
+			},
+		],
+	},
+
+	salve: {
+		name: "Salve",
+		category: 'strategy',
+		targetType: 'ally',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Salve",
+				rank: 2,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 100,
+						power: 10,
 						element: 'cure',
 						addStatus: 'reGen',
 						statusChance: 100,
@@ -827,7 +762,7 @@ const Skills =
 		name: "Necromancy",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 10,
+		baseMPCost: 15,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [
@@ -844,17 +779,17 @@ const Skills =
 			},
 		],
 	},
-	protectiveAura: {
-		name: "Protective Aura",
+	protect: {
+		name: "Protect",
 		category: 'strategy',
-		targetType: 'allAllies',
-		baseMPCost: 40,
+		targetType: 'ally',
+		baseMPCost: 10,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [
 			{
-				announceAs: "Protective Aura",
-				rank: 3,
+				announceAs: "Protect",
+				rank: 2,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -1178,7 +1113,7 @@ function basicSpell(name, element)
 		name,
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 5,
+		baseMPCost: 10,
 		actions: [
 			{
 				announceAs: name,
@@ -1198,6 +1133,61 @@ function basicSpell(name, element)
 	};
 }
 
+function powerSpell(name, element, statusID)
+{
+	return {
+		name,
+		category: 'magic',
+		targetType: 'single',
+		baseMPCost: 25,
+		actions: [
+			{
+				announceAs: name,
+				rank: 3,
+				accuracyType: 'magic',
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 50,
+						element: element,
+						addStatus: statusID,
+						statusChance: 10,
+					},
+				],
+			},
+		],
+	};
+}
+
+function ultraSpell(name, element, statusID)
+{
+	return {
+		name,
+		category: 'magic',
+		targetType: 'allEnemies',
+		baseMPCost: 50,
+		actions: [
+			{
+				announceAs: name,
+				rank: 4,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'damage',
+						damageType: 'magic',
+						power: 80,
+						element,
+						addStatus: statusID,
+						statusChance: 25,
+					},
+				],
+			},
+		],
+	}
+}
+
 function statusSpell(name, element, statusID)
 {
 	return {
@@ -1215,39 +1205,11 @@ function statusSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 10,
+						power: 5,
 						element,
 						addStatus: statusID,
 						statusChance: 100,
 						ignoreGuard: true,
-					},
-				],
-			},
-		],
-	};
-}
-
-function powerSpell(name, element, statusID)
-{
-	return {
-		name,
-		category: 'magic',
-		targetType: 'single',
-		baseMPCost: 10,
-		actions: [
-			{
-				announceAs: name,
-				rank: 3,
-				accuracyType: 'magic',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'magic',
-						power: 50,
-						element: element,
-						addStatus: statusID,
-						statusChance: 0,
 					},
 				],
 			},

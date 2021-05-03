@@ -16,18 +16,16 @@ TestHarness.addBattle('temple', {
 				'powerTonic',
 				'redBull',
 				'holyWater',
-				'vaccine',
 			],
 		},
-		justin: {
+		abigail: {
 			level: 60,
+			weapon: 'risingSun',
 			items: [
 				'tonic',
 				'powerTonic',
 				'redBull',
 				'holyWater',
-				'vaccine',
-				'alcohol',
 			],
 		},
 		bruce: {
@@ -38,8 +36,7 @@ TestHarness.addBattle('temple', {
 				'powerTonic',
 				'redBull',
 				'holyWater',
-				'vaccine',
-				'lazarusPotion',
+				'alcohol',
 			],
 		},
 	},
@@ -50,6 +47,7 @@ TestHarness.addBattle('starcross', {
 	party: {
 		elysia: {
 			level: 100,
+			weapon: 'powerBow',
 			items: [ 'tonic', 'powerTonic', 'redBull' ],
 		},
 		bruce: {
@@ -59,7 +57,6 @@ TestHarness.addBattle('starcross', {
 		},
 		abigail: {
 			level: 100,
-			weapon: 'rsbSword',
 			items: [ 'tonic', 'powerTonic', 'redBull' ],
 		},
 	},
