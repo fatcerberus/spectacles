@@ -180,27 +180,6 @@ const Skills =
 	},
 
 	// Staff techniques
-	whack: {
-		name: "Whack",
-		category: 'attack',
-		weaponType: 'staff',
-		targetType: 'single',
-		actions: [
-			{
-				announceAs: "Whack",
-				rank: 2,
-				accuracyType: 'staff',
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'damage',
-						damageType: 'staff',
-						power: 25,
-					},
-				],
-			},
-		],
-	},
 	whipstaff: {
 		name: "Whipstaff",
 		category: 'attack',

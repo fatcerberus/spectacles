@@ -13,8 +13,6 @@ import { Maths } from './maths.js';
 export
 const Statuses =
 {
-	// CRACKDOWN status
-	// reduces damage from melee attacks
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'ailment' ],
@@ -34,15 +32,11 @@ const Statuses =
 		},
 	},
 
-	// Curse status
-	// Prevents the affected unit from taking on beneficial statuses such as ReGen and Protect.
-	// Wears off after 5 turns.
 	curse: {
 		name: "Curse",
 		tags: [ 'ailment' ],
 		initialize(unit) {
 			unit.liftStatusTags([ 'buff' ]);
-			this.turnsLeft = 5;
 		},
 		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
@@ -50,16 +44,6 @@ const Statuses =
 				console.log("Status " + statusDef.name + " was blocked by Curse");
 				eventData.cancel = true;
 			}
-		},
-		beginTurn(unit, eventData) {
-			if (this.turnsLeft <= 0) {
-				console.log(unit.name + "'s Curse has expired");
-				unit.liftStatus('curse');
-			}
-			else {
-				console.log(unit.name + "'s Curse will expire in " + this.turnsLeft + " more turns");
-			}
-			--this.turnsLeft;
 		},
 	},
 
@@ -71,28 +55,17 @@ const Statuses =
 		//TODO: implement Delusion status
 	},
 
-	// Disarray status
-	// Randomizes the rank of any action, excluding stance changes, taken by the affected unit.
-	// Expires after 3 actions.
 	disarray: {
 		name: "Disarray",
 		tags: [ 'ailment', 'acute' ],
-		initialize(unit) {
-			this.actionsTaken = 0;
-		},
+		expiration: { endTurn: 3 },
 		acting(unit, eventData) {
 			let oldRank = eventData.action.rank;
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
-				console.log("Rank of action changed by Disarray to " + eventData.action.rank,
-					"was: " + oldRank);
-			}
-			++this.actionsTaken;
-			console.log(this.actionsTaken < 3
-				? unit.name + "'s Disarray will expire in " + (3 - this.actionsTaken) + " more action(s)"
-				: unit.name + "'s Disarray has expired");
-			if (this.actionsTaken >= 3) {
-				unit.liftStatus('disarray');
+				console.log(
+					`Rank of action changed by Disarray to ${eventData.action.rank}`,
+					`was: ${oldRank}`);
 			}
 		},
 	},
@@ -104,6 +77,7 @@ const Statuses =
 	drunk: {
 		name: "Drunk",
 		tags: [ 'acute' ],
+		expiration: { beginTurn: 7 },
 		overrules: [ 'immune' ],
 		statModifiers: {
 			agi: 1 / Game.bonusMultiplier,
@@ -115,9 +89,6 @@ const Statuses =
 			'unitHealed',
 			'unitTargeted',
 		],
-		initialize(unit) {
-			this.turnsLeft = 7;
-		},
 		acting(unit, eventData) {
 			let damageEffects = from(eventData.action.effects)
 				.where(it => it.targetHint === 'selected')
@@ -136,11 +107,6 @@ const Statuses =
 				eventData.aimRate *= Game.bonusMultiplier;
 			else
 				eventData.aimRate /= Game.bonusMultiplier;
-		},
-		beginTurn(unit, eventData) {
-			--this.turnsLeft;
-			if (this.turnsLeft <= 0)
-				unit.liftStatus('drunk');
 		},
 		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('earth'))
@@ -296,15 +262,10 @@ const Statuses =
 		},
 	},
 
-	// Immune status
-	// Grants the affected unit full immunity to most negative status afflictions.
-	// Wears off after 5 turns.
 	immune: {
 		name: "Immune",
 		tags: [ 'buff' ],
-		initialize(unit) {
-			this.turnsLeft = 5;
-		},
+		expiration: { beginTurn: 3 },
 		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
@@ -312,45 +273,22 @@ const Statuses =
 				eventData.cancel = true;
 			}
 		},
-		beginTurn(unit, eventData) {
-			if (this.turnsLeft <= 0) {
-				console.log(unit.name + "'s Immune has expired");
-				unit.liftStatus('immune');
-			}
-			else {
-				console.log(unit.name + "'s Immune will expire in " + this.turnsLeft + " more turns");
-			}
-			--this.turnsLeft;
-		},
 	},
 
-	// Off Guard status
-	// Inflicted during the first turn of an attack launched from Charge Stance. If
-	// the unit is attacked while Off Guard, damage will be increased.
 	offGuard: {
 		name: "Off Guard",
 		tags: [ 'special' ],
-		beginTurn(unit, eventData) {
-			unit.liftStatus('offGuard');
-		},
+		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;
 		},
 	},
 
-	// PROTECT status
-	// this status reduces damage from attacks for 3 turns.
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
-		initialize(unit) {
-			this.turnCount = 3;
-		},
-		beginTurn(unit, eventData) {
-			if (--this.turnCount < 0)
-				unit.liftStatus('protect');
-		},
+		expiration: { beginTurn: 3 },
 		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected)
@@ -358,14 +296,14 @@ const Statuses =
 		},
 	},
 
-	// ReGen status
-	// Restores a small amount of HP to the affected unit at the beginning of each
-	// cycle.
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
+		expiration: { beginTurn: 10 },
 		beginCycle(unit, eventData) {
-			unit.heal(0.02 * unit.maxHP, [ 'cure' ]);
+			const unitInfo = unit.battlerInfo;
+			const cap = Maths.hp(unitInfo, unitInfo.level, 1);
+			unit.heal(0.02 * cap, [ 'cure' ]);
 		},
 	},
 
@@ -414,9 +352,7 @@ const Statuses =
 	sniper: {
 		name: "Sniper",
 		tags: [ 'special' ],
-		beginTurn(unit, eventData) {
-			unit.liftStatus('sniper');
-		},
+		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIn([ 'special', 'zombie' ])) {
 				eventData.amount *= Game.bonusMultiplier;
@@ -467,15 +403,10 @@ const Statuses =
 		},
 	},
 
-	// Winded status
-	// Inflicted after a using a particularly powerful attack, takes one turn
-	// to recover from.  Increases damage taken from attacks.
 	winded: {
 		name: "Winded",
 		tags: [ 'special' ],
-		beginTurn(unit, eventData) {
-			unit.liftStatus('winded');
-		},
+		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
 				eventData.amount *= Game.bonusMultiplier;

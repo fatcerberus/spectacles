@@ -13,11 +13,13 @@ class StatusEffect
 		if (!(statusID in Statuses))
 			throw new ReferenceError(`no such status '${statusID}'`);
 
-		this.context = {};
 		this.name = Statuses[statusID].name;
 		this.statusDef = Statuses[statusID];
 		this.statusID = statusID;
 		this.unit = unit;
+		this.timers = { ...this.statusDef.expiration };
+		this.context = {};
+
 		console.log(`initialize status effect ${unit.name}->${this.name}`);
 		if ('overrules' in this.statusDef) {
 			for (let i = 0; i < this.statusDef.overrules.length; ++i)
@@ -41,12 +43,27 @@ class StatusEffect
 
 	invoke(eventID, data = null)
 	{
-		if (!(eventID in this.statusDef))
-			return;  // no-op if no handler
-		console.log(`invoke ${this.unit.name}->${this.name}`, `evt: ${eventID}`);
-		this.unit.battle.suspend();
-		this.statusDef[eventID].call(this.context, this.unit, data);
-		this.unit.battle.resume();
+		if (eventID in this.timers || eventID in this.statusDef)
+			console.log(`invoke ${this.unit.name}->${this.name}`, `evt: ${eventID}`);
+
+		// check if the status has expired yet
+		if (eventID in this.timers) {
+			if (--this.timers[eventID] <= 0) {
+				console.log(`${this.unit.name}->${this.name} expired`);
+				this.unit.liftStatus(this.statusID);
+			}
+			else {
+				const left = this.timers[eventID];
+				console.log(`${this.unit.name}->${this.name} expires in ${left} more ticks`);
+			}
+		}
+
+		// call the event handler, if one exists
+		if (eventID in this.statusDef) {
+			this.unit.battle.suspend();
+			this.statusDef[eventID].call(this.context, this.unit, data);
+			this.unit.battle.resume();
+		}
 	}
 
 	overrules(statusID)
