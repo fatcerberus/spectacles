@@ -13,39 +13,22 @@ import { Maths } from './maths.js';
 export
 const Statuses =
 {
-	// Crackdown status
-	// Progressively lowers attack power when the same type of attack is used in succession.
+	// CRACKDOWN status
+	// reduces damage from melee attacks
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'ailment' ],
-		initialize(unit) {
-			this.lastSkillType = null;
-			this.multiplier = 1.0;
-		},
 		acting(unit, eventData) {
+			if (!eventData.action.isMelee)
+				return;
 			for (const effect of from(eventData.action.effects)
 				.where(it => it.type == 'damage'))
 			{
 				let oldPower = effect.power;
-				effect.power = Math.max(Math.round(effect.power * this.multiplier), 1);
+				effect.power = Math.max(Math.round(effect.power * Game.bonusMultiplier), 1);
 				if (effect.power != oldPower) {
 					console.log(`outgoing POW modified by Crackdown to ${effect.power}`,
 						`was: ${oldPower}`);
-				}
-			}
-		},
-		useSkill(unit, eventData) {
-			let oldMultiplier = this.multiplier;
-			this.multiplier = eventData.skill.category == this.lastSkillType
-				? this.multiplier / Game.bonusMultiplier
-				: 1.0;
-			this.lastSkillType = eventData.skill.category;
-			if (this.multiplier != oldMultiplier) {
-				if (this.multiplier < 1.0) {
-					console.log("Crackdown POW modifier dropped to ~" + Math.round(this.multiplier * 100) + "%");
-				}
-				else {
-					console.log("Crackdown POW modifier reset to 100%");
 				}
 			}
 		},
@@ -356,9 +339,8 @@ const Statuses =
 		},
 	},
 
-	// Protect status
-	// Reduces damage from attacks. The effect lasts for 3 turns and gradually
-	// loses effectiveness.
+	// PROTECT status
+	// this status reduces damage from attacks for 3 turns.
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
@@ -366,7 +348,7 @@ const Statuses =
 			this.turnCount = 3;
 		},
 		beginTurn(unit, eventData) {
-			if (--this.turnCount <= 0)
+			if (--this.turnCount < 0)
 				unit.liftStatus('protect');
 		},
 		damaged(unit, eventData) {
@@ -378,14 +360,12 @@ const Statuses =
 
 	// ReGen status
 	// Restores a small amount of HP to the affected unit at the beginning of each
-	// cycle. Wears off after 10 cycles.
+	// cycle.
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
 		beginCycle(unit, eventData) {
-			let unitInfo = unit.battlerInfo;
-			let cap = Maths.hp(unitInfo, unitInfo.level, 1);
-			unit.heal(cap / 25, [ 'cure' ]);
+			unit.heal(0.02 * unit.maxHP, [ 'cure' ]);
 		},
 	},
 

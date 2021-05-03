@@ -606,7 +606,7 @@ const Skills =
 	immunize: {
 		name: "Immunize",
 		category: 'strategy',
-		targetType: 'single',
+		targetType: 'ally',
 		baseMPCost: 50,
 		allowAsCounter: false,
 		chargeable: false,
