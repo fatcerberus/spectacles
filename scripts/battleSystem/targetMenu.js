@@ -114,11 +114,9 @@ class TargetMenu extends Thread
 
 		this.updateTurnPreview = function()
 		{
-			let nextActions = this.stance === Stance.Guard
+			const nextActions = this.stance === Stance.Guard
 				? [ Game.stanceChangeRank ]
 				: this.usable.peekActions();
-			if (this.stance === Stance.Charge)
-				nextActions = [ 1 ].concat(nextActions);
 			let prediction = this.battle.predictTurns(this.unit, nextActions, this.targets);
 			this.battle.ui.hud.turnPreview.set(prediction);
 		}

@@ -275,7 +275,7 @@ class BattleEngine extends Thread
 			}
 			let odds = Math.min(Math.max(baseOdds * accuracyRate * aimRate, 0.0), 1.0);
 			let isHit = Random.chance(odds);
-			console.log(`odds of hitting ${targetUnits[i].name} at ~${Math.round(odds * 100)}%`,
+			console.log(`odds of hitting ${targetUnits[i].name} ~${Math.round(odds * 100)}%`,
 				isHit ? "hit" : "miss");
 			if (isHit) {
 				await this.notifyAIs('unitTargeted', targetUnits[i].id, action, actingUnit.id);

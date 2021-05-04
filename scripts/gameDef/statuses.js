@@ -47,14 +47,6 @@ const Statuses =
 		},
 	},
 
-	// Delusion status
-	// ...
-	delusion: {
-		name: "Delusion",
-		tags: [ 'ailment', 'acute' ],
-		//TODO: implement Delusion status
-	},
-
 	disarray: {
 		name: "Disarray",
 		tags: [ 'ailment', 'acute' ],
@@ -70,14 +62,10 @@ const Statuses =
 		},
 	},
 
-	// Drunk status
-	// Increases attack power, but reduces the affected unit's speed and accuracy and
-	// creates a weakness to Earth damage. Also ups the success rate of eaty moves
-	// (e.g. Munch).
 	drunk: {
 		name: "Drunk",
 		tags: [ 'acute' ],
-		expiration: { beginTurn: 7 },
+		expiration: { beginTurn: 5 },
 		overrules: [ 'immune' ],
 		statModifiers: {
 			agi: 1 / Game.bonusMultiplier,
@@ -114,32 +102,21 @@ const Statuses =
 		},
 	},
 
-	// Fear status
-	// Causes the affected unit to automatically Guard or use healing items instead
-	// of attacking.
-	fear: {
-		name: "Fear",
-		tags: [ 'ailment' ],
-		//TODO: implement Fear status
-	},
-
-	// Final Stand status
-	// Progressively weakens and causes knockback delay to the affected unit when an
-	// attack is countered.
 	finalStand: {
 		name: "Final Stand",
 		tags: [ 'special' ],
 		overrules: [ 'crackdown', 'disarray' ],
 		initialize(unit) {
 			this.fatigue = 1.0;
-			this.knockback = 5;
+			this.knockback = 1;
 		},
 		acting(unit, eventData) {
-			let damageEffects = from(eventData.action.effects)
+			eventData.action.rank += this.knockback;
+			const damageEffects = from(eventData.action.effects)
 				.where(it => it.targetHint == 'selected')
 				.where(it => it.type == 'damage');
 			for (const effect of damageEffects) {
-				let oldPower = effect.power;
+				const oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
 				if (effect.power != oldPower) {
 					console.log("Outgoing POW modified by Final Stand to " + effect.power,
@@ -148,11 +125,8 @@ const Statuses =
 			}
 		},
 		attacked(unit, eventData) {
-			if (eventData.stance == Stance.Counter) {
-				this.fatigue *= Game.bonusMultiplier;
-				unit.resetCounter(this.knockback);
-				++this.knockback;
-			}
+			this.fatigue *= Game.bonusMultiplier;
+			++this.knockback;
 		},
 		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIs('zombie')) {
@@ -161,9 +135,6 @@ const Statuses =
 		},
 	},
 
-	// Frostbite status
-	// Inflicts a small amount of Ice damage at the end of the affected unit's turn.
-	// The effect progressively worsens, up to double its original severity.
 	frostbite: {
 		name: "Frostbite",
 		tags: [ 'ailment', 'damage' ],
@@ -199,9 +170,6 @@ const Statuses =
 		},
 	},
 
-	// Ghost status
-	// Prevents the affected unit from being hit with physical or projectile attacks
-	// from a non-Ghost and vice versa.
 	ghost: {
 		name: "Ghost",
 		tags: [ 'ailment', 'undead' ],
@@ -226,9 +194,6 @@ const Statuses =
 		},
 	},
 
-	// Ignite status
-	// Inflicts a small amount of Fire damage on the affected unit once per cycle. The
-	// effect progressively diminishes, ultimately settling at half of its initial severity.
 	ignite: {
 		name: "Ignite",
 		tags: [ 'ailment', 'damage' ],
@@ -307,10 +272,6 @@ const Statuses =
 		},
 	},
 
-	// Skeleton status
-	// The affected unit is still able to battle at 0 HP, but with reduced STR and MAG stats.
-	// Taking physical or slash damage, or being hit with an HP restorative, while in this state will
-	// result in death.
 	skeleton: {
 		name: "Skeleton",
 		tags: [ 'ailment', 'undead' ],
@@ -345,10 +306,6 @@ const Statuses =
 		},
 	},
 
-	// Sniper status
-	// Battler is aiming a gun. Sniper lasts until the battler's next turn (when the trigger will be
-	// pulled); if the battler takes damage, the damage is increased and any attack that was being
-	// readied is cancelled.
 	sniper: {
 		name: "Sniper",
 		tags: [ 'special' ],
@@ -392,9 +349,6 @@ const Statuses =
 		},
 	},
 
-	// Specs Aura status
-	// Restores a tiny amount of HP to the affected unit at the beginning of each
-	// cycle. Similar to ReGen, but less HP is recovered per cycle.
 	specsAura: {
 		name: "Specs Aura",
 		tags: [ 'special' ],
@@ -413,11 +367,6 @@ const Statuses =
 		},
 	},
 
-	// Zombie status
-	// Causes magic and items which restore HP to inflict an equal amount of damage instead.
-	// If the affected unit reaches 0 HP, this status will progress to Skeleton and
-	// the unit will be allowed to continue battling. Converted HP restoratives will
-	// kill outright, however.
 	zombie: {
 		name: "Zombie",
 		tags: [ 'ailment', 'undead' ],

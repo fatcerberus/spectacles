@@ -26,11 +26,9 @@ const Row =
 export
 const Stance =
 {
-	Attack:  0,
-	Guard:   1,
-	Counter: 2,
-	Charge:  3,
-	Hippo:   4,
+	Attack: 0,
+	Guard:  1,
+	Hippo:  2,
 };
 
 export default
@@ -110,7 +108,6 @@ class BattleUnit
 			this.aiFile = `../autoBattlers/${this.id}.js`;
 		}
 		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
-		this.counterMenu = new MoveMenu(this, battle, Stance.Counter);
 		this.refreshInfo();
 		if (this.mpPool === null)
 			this.mpPool = new MPPool(`${this.id}MP`, Math.round(Math.max(Maths.mp.capacity(this.battlerInfo), 0)));
@@ -252,31 +249,12 @@ class BattleUnit
 		if (!this.isAlive())
 			return;
 
-		if (this.stance === Stance.Counter) {
-			this.cv = 0;
-			let chosenMove;
-			if (this.ai == null) {
-				this.actor.animate('active');
-				this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this));
-				console.log(`ask player for ${this.name}'s GS counterattack`);
-				chosenMove = await this.counterMenu.run();
-			}
-			else {
-				chosenMove = await this.ai.getNextMove();
-				chosenMove.targets = [ this.counterTarget ];
-			}
-			this.queueMove(chosenMove);
-			await this.performAction(this.getNextAction(), chosenMove);
-			this.actor.animate('dormant');
-			this.newStance = Stance.Attack;
-		}
 		if (this.newStance !== this.stance) {
 			this.stance = this.newStance;
 			await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 			let stanceName = this.stance === Stance.Guard ? "Guard"
-				: this.stance === Stance.Counter ? "Counter"
-				: "Attack";
-			console.log(`${this.name} now in ${stanceName} Stance`);
+				: "Normal";
+			console.log(`${this.name} now in ${stanceName} stance`);
 		}
 	}
 
@@ -287,15 +265,8 @@ class BattleUnit
 
 	evade(actingUnit, action)
 	{
-		this.actor.showHealing("miss", Color.Silver);
+		this.actor.showHealing("miss", Color.StankyBean);
 		console.log(`${this.name} evaded ${actingUnit.name}'s attack`);
-		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
-		let isMelee = 'isMelee' in action ? action.isMelee : false;
-		if (isMelee && this.stance === Stance.Guard && isGuardBroken) {
-			this.stance = Stance.Counter;
-			this.counterTarget = actingUnit;
-			console.log(`${this.name}'s Counter Stance activated`);
-		}
 	}
 
 	getHealth()
@@ -433,8 +404,6 @@ class BattleUnit
 		this.raiseEvent('acting', eventData);
 		eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 		if (this.isAlive()) {
-			if (this.stance === Stance.Counter)
-				action.accuracyRate = 2.0;
 			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
 				let experience = {};
@@ -474,33 +443,6 @@ class BattleUnit
 			this.moveUsed.targets[0] = Random.sample(alliesAlive);
 		}
 		let nextActions = this.moveUsed.usable.use(this, this.moveUsed.targets);
-		if (move.stance === Stance.Counter || move.stance === Stance.Charge) {
-			let damageEffects = from(nextActions)
-				.selectMany(action => action.effects)
-				.where(effect => 'power' in effect);
-			for (let effect of damageEffects) {
-				// note: statusChance being set to Infinity bypasses Guard
-				effect.power *= Game.bonusMultiplier;
-				effect.statusChance = Infinity;
-				console.log("boost applied for Counter/Charge", `pow: ${effect.power}`);
-			}
-		}
-		if (move.stance === Stance.Charge) {
-			let targetName = this.moveUsed.targets.length == 1
-				? this.moveUsed.targets[0].name : "Multi";
-			nextActions.splice(0, 0, {
-				announceAs: `Charge -> ${targetName}`,
-				rank: Game.chargeRank,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'user',
-						type: 'addStatus',
-						status: 'offGuard',
-					},
-				],
-			});
-		}
 		if (nextActions !== null) {
 			this.battle.ui.hud.turnPreview.set(this.battle.predictTurns(this, nextActions, this.moveUsed.targets));
 			for (let i = 0; i < nextActions.length; ++i)
@@ -795,9 +737,6 @@ class BattleUnit
 				this.stance = this.newStance = Stance.Attack;
 				await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				console.log(`${this.name}'s Guard Stance expired`);
-			}
-			else if (this.stance === Stance.Counter) {
-				this.newStance = Stance.Attack;
 			}
 			console.log(`${this.name}'s turn is up`);
 			this.actor.animate('active');

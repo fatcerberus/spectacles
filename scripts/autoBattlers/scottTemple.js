@@ -23,8 +23,18 @@ class ScottTempleAI extends AutoBattler
 
 	strategize(stance, phase)
 	{
-		const skillID = Random.sample([ 'hellfire', 'upheaval', 'windchill', 'electrocute' ]);
-		this.queueSkill(skillID, Stance.Attack);
+		if (this.joltTarget !== null) {
+			this.queueSkill('jolt', Stance.Attack, this.joltTarget);
+		}
+		else {
+			const healChance = 0.25 * (phase - 1);
+			const healMove = phase >= 3 ? 'heal' : 'rejuvenate';
+			const moveSet = [ 'hellfire', 'upheaval', 'windchill', 'electrocute' ];
+			if (Random.chance(0.25 * (phase - 1)))
+				this.queueSkill(healMove);
+			else
+				this.queueSkill(Random.sample(moveSet));
+		}
 	}
 
 	on_phaseChanged(newPhase, lastPhase)
@@ -34,18 +44,12 @@ class ScottTempleAI extends AutoBattler
 			this.queueSkill('omni', Stance.Attack, 'elysia');
 			break;
 		case 2:
+			this.moveSet.push('heal');
 			this.queueSkill('rejuvenate');
 			break;
 		case 3:
+			this.queueGuard();
 			break;
-		}
-	}
-
-	on_unitReady(userID)
-	{
-		if (userID === 'scottTemple') {
-			if (this.joltTarget !== null && !this.hasMovesQueued)
-				this.queueSkill('jolt', Stance.Attack, this.joltTarget);
 		}
 	}
 

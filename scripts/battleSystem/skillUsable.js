@@ -105,13 +105,7 @@ class SkillUsable
 		let skillWeaponType = this.skillInfo.weaponType;
 		if (skillWeaponType != null && userWeaponType != skillWeaponType)
 			return false;
-		let canCharge = ('chargeable' in this.skillInfo ? this.skillInfo.chargeable : true)
-			&& this.skillInfo.actions.length == 1;
-		let isValidCounter = ('allowAsCounter' in this.skillInfo ? this.skillInfo.allowAsCounter : true)
-			&& this.skillInfo.targetType == 'single' && this.skillInfo.actions.length == 1;
 		return this.mpCost(user) <= user.mpPool.availableMP
-			&& (stance != Stance.Charge || canCharge)
-			&& (stance != Stance.Counter || isValidCounter)
 			&& stance != Stance.Guard;
 	}
 

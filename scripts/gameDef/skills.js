@@ -22,8 +22,7 @@ const Skills =
 		name: "Berserk Charge",
 		category: 'attack',
 		weaponType: 'sword',
-		targetType: 'single',
-		forceCharge: true,
+		targetType: 'allEnemies',
 		actions: [
 			{
 				announceAs: "Berserk Charge",
@@ -33,8 +32,14 @@ const Skills =
 				effects: [
 					{
 						targetHint: 'selected',
-						type: 'instaKill',
+						type: 'damage',
 						damageType: 'sword',
+						power: 100,
+					},
+					{
+						targetHint: 'user',
+						type: 'addStatus',
+						status: 'winded',
 					},
 				],
 			},
@@ -47,7 +52,7 @@ const Skills =
 		targetType: 'single',
 		actions: [
 			{
-				announceAs: "Charging...",
+				announceAs: "wait for it...",
 				rank: 1,
 				preserveGuard: true,
 				effects: [
@@ -59,7 +64,7 @@ const Skills =
 				],
 			},
 			{
-				announceAs: "Sword Slash",
+				announceAs: "Charge Slash",
 				rank: 2,
 				accuracyType: 'sword',
 				isMelee: true,
@@ -510,13 +515,24 @@ const Skills =
 	tenPointFive: ultraSpell("10.5", 'earth', 'disarray'),
 	discharge:    ultraSpell("Discharge", 'lightning', 'zombie'),
 
-	// Omni - Rank 4 non-elemental magic
 	omni: {
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
 		baseMPCost: 80,
 		actions: [
+			{
+				announceAs: "charging Omni...",
+				rank: 2,
+				preserveGuard: true,
+				effects: [
+					{
+						targetHint: 'user',
+						type: 'addStatus',
+						status: 'offGuard',
+					},
+				],
+			},
 			{
 				announceAs: "Omni",
 				rank: 4,

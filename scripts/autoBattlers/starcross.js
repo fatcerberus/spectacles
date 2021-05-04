@@ -45,7 +45,7 @@ class ScottStarcrossAI extends AutoBattler
 	strategize()
 	{
 		if (this.isOpenerPending) {
-			this.queueSkill('berserkCharge', Stance.Charge, 'bruce');
+			this.queueSkill('berserkCharge', 'bruce');
 			this.isOpenerPending = false;
 		} else {
 			if (this.tactics === null) {

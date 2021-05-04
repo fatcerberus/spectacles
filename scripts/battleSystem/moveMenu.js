@@ -174,8 +174,6 @@ class MoveMenu extends Thread
 				nextMoveOrRank = Game.stanceChangeRank;
 			}
 			let nextActions = isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : [ nextMoveOrRank ];
-			if (this.stance === Stance.Charge)
-				nextActions = [ 1 ].concat(nextActions);
 			let prediction = this.battle.predictTurns(this.unit, nextActions);
 			this.battle.ui.hud.turnPreview.set(prediction);
 		};
@@ -200,18 +198,8 @@ class MoveMenu extends Thread
 			await Thread.join(this);
 			let targetMenu;
 			switch (this.stance) {
-				case Stance.Attack:
-				case Stance.Charge: {
-					let name = this.stance === Stance.Charge
-						? `CS ${this.selection.name}`
-						: this.selection.name;
-					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, name, this.stance).run();
-					break;
-				}
-				case Stance.Counter: {
-					targetMenu = new TargetMenu(this.unit, this.battle, null, `GS ${this.selection.name}`, this.stance);
-					targetMenu.lockTargets([ this.unit.counterTarget ]);
-					chosenTargets = await targetMenu.run();
+				case Stance.Attack: {
+					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, this.selection.name, this.stance).run();
 					break;
 				}
 				case Stance.Guard: {
@@ -276,14 +264,11 @@ class MoveMenu extends Thread
 			this.showMoveList.stop();
 			this.hideMoveList.run();
 		}
-		else if (key == Key.V && this.stance != Stance.Guard && this.stance != Stance.Counter) {
-			this.stance = this.stance == Stance.Attack ? Stance.Charge
-				: Stance.Guard;
+		else if (key == Key.V && this.stance == Stance.Attack) {
+			this.stance = Stance.Guard;
 			this.updateTurnPreview();
-			if (this.stance == Stance.Guard) {
-				this.showMoveList.stop();
-				this.chooseMove.run();
-			}
+			this.showMoveList.stop();
+			this.chooseMove.run();
 		}
 		else if (!this.isExpanded && key == Key.Left) {
 			--this.topCursor;
@@ -312,10 +297,7 @@ class MoveMenu extends Thread
 	on_render()
 	{
 		let yOrigin = -54 * (1.0 - this.fadeness) + 16;
-		let stanceText = this.stance === Stance.Charge ? "CS"
-			: this.stance === Stance.Counter ? "CA"
-			: this.stance === Stance.Guard ? "GS"
-			: "AS";
+		let stanceText = this.stance === Stance.Guard ? "GS" : "NS";
 		Surface.Screen.clipTo(0, 16, Surface.Screen.width, Surface.Screen.height - 16);
 		Prim.drawSolidRectangle(Surface.Screen, 0, yOrigin, 136, 16, Color.Black.fadeTo(0.625 * this.fadeness));
 		Prim.drawRectangle(Surface.Screen, 0, yOrigin, 136, 16, 1, Color.Black.fadeTo(0.1 * this.fadeness));

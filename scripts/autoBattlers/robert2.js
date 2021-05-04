@@ -235,11 +235,11 @@ class RobertIIAI extends AutoBattler
 						this.queueSkill('upheaval');
 						this.queueSkill('windchill');
 						this.queueSkill('electrocute');
-						this.queueSkill('omni', Stance.Charge);
+						this.queueSkill('omni');
 					}
 					else {
 						if (this.isSkillUsable('omni'))
-							this.queueSkill('omni', Stance.Charge);
+							this.queueSkill('omni');
 						this.queueSkill('chargeSlash');
 					}
 				}
@@ -354,7 +354,7 @@ class RobertIIAI extends AutoBattler
 				break;
 			}
 			case 2: {
-				this.queueSkill('upheaval', Stance.Charge);
+				this.queueSkill('upheaval');
 				this.isComboStarted = false;
 				this.isStatusHealPending = true;
 				this.wasHolyWaterUsed = false;
@@ -363,7 +363,7 @@ class RobertIIAI extends AutoBattler
 			}
 			case 3: {
 				this.queueSkill('protectiveAura');
-				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt', Stance.Charge);
+				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt');
 				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
 				this.doChargeSlashNext = false;
 				this.elementalsTillRevenge = 2;
@@ -471,7 +471,7 @@ class RobertIIAI extends AutoBattler
 							case 1.0: {
 								if (this.nextElementalMove === null) {
 									this.queueSkill('ignite');
-									this.queueSkill('windchill', Stance.Charge);
+									this.queueSkill('windchill');
 								}
 								else {
 									let firstMoveID = this.nextElementalMove != 'hellfire' ? 'hellfire' : 'windchill';
@@ -483,7 +483,7 @@ class RobertIIAI extends AutoBattler
 							default: {
 								if (this.isItemUsable('redBull'))
 									this.queueItem('redBull');
-								this.queueSkill('omni', Stance.Charge);
+								this.queueSkill('omni');
 								break;
 							}
 						}
