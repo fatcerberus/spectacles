@@ -179,7 +179,7 @@ Scene.defineOp('talk',
 	start(scene, speaker, showSpeaker, textSpeed, timeout, ...pages)
 	{
 		this.speakerName = speaker;
-		this.speakerText = this.speakerName != null ? this.speakerName + ":" : null;
+		this.speakerText = this.speakerName != null ? `${this.speakerName}:` : null;
 		this.showSpeaker = showSpeaker;
 		this.textSpeed = textSpeed;
 		this.timeout = timeout;

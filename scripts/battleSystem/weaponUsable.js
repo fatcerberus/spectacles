@@ -57,7 +57,8 @@ class WeaponUsable
 		if (!this.isUsable(unit, unit.stance))
 			throw new RangeError(`${unit.name} tried to change weapons, which is not currently possible`);
 
-		console.log(unit.name + " is equipping " + this.name,
+		console.log(
+			`${unit.name} is equipping ${this.name}`,
 			`targ: ${targets.length > 1 ? "[multi]" : targets[0].name}`);
 		for (const target of targets)
 			target.setWeapon(this.weaponID);

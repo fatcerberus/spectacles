@@ -10,7 +10,6 @@ import { clone } from '../utilities.js';
 
 import BattleScreen from './battleScreen.js';
 import BattleUnit, { Row } from './battleUnit.js';
-import FieldCondition from './fieldCondition.js';
 import MPPool from './mpPool.js';
 
 export
@@ -43,22 +42,6 @@ class BattleEngine extends Thread
 		this.battleLevel = 'battleLevel' in this.parameters
 			? this.parameters.battleLevel
 			: session.party.level;
-	}
-
-	addCondition(conditionID)
-	{
-		if (this.hasCondition(conditionID))
-			return;  // nop if already installed
-		let eventData = { conditionID: conditionID, cancel: false };
-		this.raiseEvent('conditionInstalled', eventData);
-		if (!eventData.cancel) {
-			let effect = new FieldCondition(eventData.conditionID, this);
-			this.conditions.push(effect);
-			console.log(`install field condition ${effect.name}`);
-		}
-		else {
-			console.log(`cancel FC '${conditionID}' per existing FC`);
-		}
 	}
 
 	alliesOf(unit)
@@ -109,7 +92,7 @@ class BattleEngine extends Thread
 			let battlerInfo = this.session.party.members[key].getInfo();
 			let mpDonated = Math.round(Maths.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
-			console.log(Characters[battlerInfo.characterID].name + " donated " + mpDonated + " MP to shared pool");
+			console.log(`${Characters[battlerInfo.characterID].name} contributes ${mpDonated} MP`);
 		}
 		partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 		let partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));

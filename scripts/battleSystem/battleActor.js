@@ -117,7 +117,7 @@ class BattleActor
 				break;
 			case 'sleep':
 				await new Scene()
-					.talk("maggie", 2.0, this.name + " fell asleep! Hey, does that mean I get to eat him now?")
+					.talk("maggie", 1.0, Infinity, `${this.name} fell asleep! Hey, does that mean I get to eat him now?`)
 					.run();
 				break;
 		}

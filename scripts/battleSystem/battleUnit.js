@@ -514,19 +514,19 @@ class BattleUnit
 			},
 			'inv'(instruction) {
 				if (instruction === undefined) {
-					console.log("'" + this.id + " inv': No instruction provided");
+					console.log(`'${this.id} inv' - no instruction provided`);
 					return;
 				}
 				let itemCount, itemID;
 				switch (instruction) {
 					case 'add': {
 						if (arguments.length < 2) {
-							console.log("'" + this.id + " inv add': Item ID required");
+							console.log(`'${this.id} inv add' - item ID required`);
 							return;
 						}
 						itemID = arguments[1];
 						if (!(itemID in Items))
-							return console.log("no such item ID '" + itemID + "'");
+							return console.log(`no such item ID '${itemID}'`);
 						let defaultUses = 'uses' in Items[itemID] ? Items[itemID].uses : 1;
 						itemCount = arguments[2] > 0 ? arguments[2] : defaultUses;
 						let usables = from(this.items)
@@ -542,18 +542,18 @@ class BattleUnit
 							this.items.push(usable);
 							addCount = itemCount;
 						}
-						console.log(addCount + "x " + Items[itemID].name + " added to " + this.name + "'s inventory");
+						console.log(`${addCount}x ${Items[itemID].name} added to ${this.name}'s inventory`);
 						break;
 					}
 					case 'munch': {
 						new Scene().playSound('Munch.wav').run();
 						this.items.length = 0;
-						console.log("maggie ate " + this.name + "'s entire inventory");
+						console.log(`maggie ate ${this.name}'s entire inventory`);
 						break;
 					}
 					case 'rm': {
 						if (arguments.length < 2)
-							return console.log("'" + this.id + " inv add': Item ID required");
+							return console.log(`'${this.id} inv add' - item ID required`);
 						itemID = arguments[1];
 						itemCount = 0;
 						from(this.items)
@@ -561,14 +561,13 @@ class BattleUnit
 							.besides(it => itemCount += it.usesLeft)
 							.remove();
 						if (itemCount > 0)
-							console.log(itemCount + "x " + Items[itemID].name
-								+ " deleted from " + this.name + "'s inventory");
+							console.log(`${itemCount}x ${Items[itemID].name} removed from ${this.name}'s inventory`);
 						else
-							console.log("No " + Items[itemID].name + " in " + this.name + "'s inventory");
+							console.log(`no ${Items[itemID].name} in ${this.name}'s inventory`);
 						break;
 					}
 					default: {
-						return console.log("'" + this.id + " inv': Unknown instruction '" + instruction + "'");
+						return console.log(`'${this.id} inv' - unknown instruction '${instruction}'`);
 					}
 				}
 			},

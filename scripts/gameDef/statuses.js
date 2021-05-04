@@ -25,7 +25,8 @@ const Statuses =
 				let oldPower = effect.power;
 				effect.power = Math.max(Math.round(effect.power * Game.bonusMultiplier), 1);
 				if (effect.power != oldPower) {
-					console.log(`outgoing POW modified by Crackdown to ${effect.power}`,
+					console.log(
+						`effect Power changed by Crackdown to ${effect.power}`,
 						`was: ${oldPower}`);
 				}
 			}
@@ -41,7 +42,7 @@ const Statuses =
 		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('buff')) {
-				console.log("Status " + statusDef.name + " was blocked by Curse");
+				console.log(`status ${statusDef.name} blocked by Curse`);
 				eventData.cancel = true;
 			}
 		},
@@ -56,7 +57,7 @@ const Statuses =
 			eventData.action.rank = Random.discrete(1, 5);
 			if (eventData.action.rank != oldRank) {
 				console.log(
-					`Rank of action changed by Disarray to ${eventData.action.rank}`,
+					`action Rank changed by Disarray to ${eventData.action.rank}`,
 					`was: ${oldRank}`);
 			}
 		},
@@ -85,8 +86,9 @@ const Statuses =
 				let oldPower = effect.power;
 				effect.power *= Game.bonusMultiplier;
 				if (effect.power != oldPower) {
-					console.log("Outgoing POW modified by Drunk to " + effect.power,
-						"was: " + oldPower);
+					console.log(
+						`effect Power changed by Drunk to ${effect.power}`,
+						`was: ${oldPower}`);
 				}
 			}
 		},
@@ -108,10 +110,10 @@ const Statuses =
 		overrules: [ 'crackdown', 'disarray' ],
 		initialize(unit) {
 			this.fatigue = 1.0;
-			this.knockback = 1;
+			this.rankPenalty = 0;
 		},
 		acting(unit, eventData) {
-			eventData.action.rank += this.knockback;
+			eventData.action.rank += this.rankPenalty;
 			const damageEffects = from(eventData.action.effects)
 				.where(it => it.targetHint == 'selected')
 				.where(it => it.type == 'damage');
@@ -119,14 +121,15 @@ const Statuses =
 				const oldPower = effect.power;
 				effect.power = Math.round(effect.power / this.fatigue);
 				if (effect.power != oldPower) {
-					console.log("Outgoing POW modified by Final Stand to " + effect.power,
-						"was: " + oldPower);
+					console.log(
+						`effect Power changed by Final Stand to ${effect.power}`,
+						`was: ${oldPower}`);
 				}
 			}
 		},
 		attacked(unit, eventData) {
 			this.fatigue *= Game.bonusMultiplier;
-			++this.knockback;
+			++this.rankPenalty;
 		},
 		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIs('zombie')) {
@@ -234,7 +237,7 @@ const Statuses =
 		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
-				console.log("Status " + statusDef.name + " was blocked by Immune");
+				console.log(`status ${statusDef.name} was blocked by Immune`);
 				eventData.cancel = true;
 			}
 		},

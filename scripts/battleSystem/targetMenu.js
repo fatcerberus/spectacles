@@ -226,9 +226,9 @@ class TargetMenu extends Thread
 				for (let i = 0; i < this.statusNames.length; ++i)
 					drawTextEx(this.infoFont, 80, y + 16 + 12 * i, this.statusNames[i], statusColor, 1, 'center');
 				this.drawInfoBox(0, y + nameBoxHeight, 80, 20, 0.5);
-				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, "HP: " + this.unitToShowInfo.hp, statColor, 1, 'center');
+				drawTextEx(this.infoFont, 40, y + nameBoxHeight + 4, `${this.unitToShowInfo.hp} HP`, statColor, 1, 'center');
 				this.drawInfoBox(80, y + nameBoxHeight, 80, 20, 0.5);
-				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, "MP: " + this.unitToShowInfo.mpPool.availableMP, statColor, 1, 'center');
+				drawTextEx(this.infoFont, 120, y + nameBoxHeight + 4, `${this.unitToShowInfo.mpPool.availableMP} MP`, statColor, 1, 'center');
 			}
 			else {
 				let y = 16 - 20 * this.infoBoxFadeness;

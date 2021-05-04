@@ -41,5 +41,5 @@ async function main()
 	await TestHarness.initialize();
 
 	let dayNight = new DayNightClock();
-	await TestHarness.run('rsb2');
+	await TestHarness.run('temple');
 }

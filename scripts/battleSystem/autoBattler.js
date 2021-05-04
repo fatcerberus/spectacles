@@ -259,7 +259,8 @@ class AutoBattler
 		let lastPhase = this.currentPhase;
 		this.currentPhase = Math.max(phaseToEnter, this.currentPhase);  // ratcheting
 		if (this.currentPhase > lastPhase) {
-			console.log(`${this.unit.name} is entering phase ${this.currentPhase}`,
+			console.log(
+				`${this.unit.name} is entering Phase ${this.currentPhase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
 			this.on_phaseChanged(this.currentPhase, lastPhase);
 		}

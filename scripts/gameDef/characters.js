@@ -6,7 +6,6 @@
 export
 const Characters =
 {
-	// Abigail Adora
 	abigail: {
 		name: "Abigail",
 		fullName: "Abigail Adora",
@@ -31,7 +30,6 @@ const Characters =
 		],
 	},
 
-	// Amanda Spellbinder
 	amanda: {
 		name: "Amanda",
 		fullName: "Amanda Spellbinder",
@@ -55,7 +53,6 @@ const Characters =
 		],
 	},
 
-	// Bruce Arsen
 	bruce: {
 		name: "Bruce",
 		fullName: "Bruce Arsen",
@@ -83,7 +80,6 @@ const Characters =
 		],
 	},
 
-	// Elysia Ilapse
 	elysia: {
 		name: "Elysia",
 		fullName: "Elysia Ilapse",
@@ -115,11 +111,6 @@ const Characters =
 		],
 	},
 
-	// Justin Ilapse
-	// Father of Elysia Ilapse. Justin has good intentions, but doesn't always know the right
-	// way to act on them and often makes poor decisions as a result. In battle, he plays the
-	// dual role of healer and saboteur, removing the enemy's enhancements while piling on
-	// status afflictions of his own.
 	justin: {
 		name: "Justin",
 		fullName: "Justin Ilapse",
@@ -150,34 +141,6 @@ const Characters =
 		],
 	},
 
-	// Katelyn Hippofoood
-	// Doesn't actually exist.
-	katelyn: {
-		name: "Katelyn",
-		fullName: "Katelyn Hippofoood",
-		baseStats: {
-			vit: 40,
-			str: 5,
-			def: 30,
-			foc: 80,
-			mag: 65,
-			agi: 50,
-		},
-		skills: [
-			'potshot',
-			'inferno',
-			'subzero',
-			'discharge',
-			'tenPointFive',
-			'omni',
-		],
-	},
-
-	// Lauren Adora
-	// Scott's love interest and one of the three initial party members. She tends keep to herself
-	// (except where maggie is involved) and often keeps quiet about things she really should
-	// divulge in a misguided attempt to prevent what she sees as unnecessary turmoil. In battle,
-	// she assails her enemies with throwing stars.
 	lauren: {
 		name: "Lauren",
 		fullName: "Lauren Adora",
@@ -199,10 +162,6 @@ const Characters =
 		],
 	},
 
-	// maggie
-	// An overweight hunger-pig and former leader of the neo-Hippos. She has renounced her role in the
-	// group due to disagreement over their methods, particularly her sister's stubborn persecution of
-	// Elysia Ilapse. In battle, maggie can devour her enemies, often gaining new skills in the process.
 	maggie: {
 		name: "maggie",
 		baseStats: {
@@ -221,7 +180,6 @@ const Characters =
 		],
 	},
 
-	// Robert Spellbinder
 	robert: {
 		name: "Robert",
 		fullName: "Robert Spellbinder",

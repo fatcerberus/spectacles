@@ -262,6 +262,49 @@ class RobertIIAI extends AutoBattler
 		}
 	}
 
+	on_phaseChanged(newPhase, lastPhase)
+	{
+		switch (newPhase) {
+			case 1: {
+				this.queueSkill('omni');
+				this.doChargeSlashNext = true;
+				this.isComboStarted = false;
+				this.isNecromancyPending = true;
+				break;
+			}
+			case 2: {
+				this.queueSkill('upheaval');
+				this.isComboStarted = false;
+				this.isStatusHealPending = true;
+				this.wasHolyWaterUsed = false;
+				this.wasTonicUsed = false;
+				break;
+			}
+			case 3: {
+				this.queueSkill('protectiveAura');
+				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt');
+				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
+				this.doChargeSlashNext = false;
+				this.elementalsTillRevenge = 2;
+				this.isChargeSlashPending = true;
+				this.isComboStarted = false;
+				break;
+			}
+			case 4: {
+				this.queueSkill('crackdown');
+				break;
+			}
+			case 5: {
+				this.queueSkill('desperationSlash');
+				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine'))
+					this.queueItem('vaccine');
+				this.isAlcoholPending = true;
+				this.isComboStarted = false;
+				break;
+			}
+		}
+	}
+
 	async on_itemUsed(userID, itemID, targetIDs)
 	{
 		if (this.unit.hasStatus('drunk') || this.unit.hasStatus('offGuard'))
@@ -339,49 +382,6 @@ class RobertIIAI extends AutoBattler
 					this.queueSkill(this.phase <= 2 ? 'necromancy' : 'jolt');
 					this.necromancyChance = 0.0;
 				}
-			}
-		}
-	}
-
-	on_phaseChanged(newPhase, lastPhase)
-	{
-		switch (newPhase) {
-			case 1: {
-				this.queueSkill('omni');
-				this.doChargeSlashNext = true;
-				this.isComboStarted = false;
-				this.isNecromancyPending = true;
-				break;
-			}
-			case 2: {
-				this.queueSkill('upheaval');
-				this.isComboStarted = false;
-				this.isStatusHealPending = true;
-				this.wasHolyWaterUsed = false;
-				this.wasTonicUsed = false;
-				break;
-			}
-			case 3: {
-				this.queueSkill('protectiveAura');
-				this.queueSkill(this.nextElementalMove !== null ? this.nextElementalMove : 'jolt');
-				this.necroTonicItem = this.nextElementalMove === null ? 'tonic' : null;
-				this.doChargeSlashNext = false;
-				this.elementalsTillRevenge = 2;
-				this.isChargeSlashPending = true;
-				this.isComboStarted = false;
-				break;
-			}
-			case 4: {
-				this.queueSkill('crackdown');
-				break;
-			}
-			case 5: {
-				this.queueSkill('desperationSlash');
-				if (this.unit.hasStatus('zombie') && this.isItemUsable('vaccine'))
-					this.queueItem('vaccine');
-				this.isAlcoholPending = true;
-				this.isComboStarted = false;
-				break;
 			}
 		}
 	}
