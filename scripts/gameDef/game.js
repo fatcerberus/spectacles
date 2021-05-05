@@ -12,12 +12,11 @@ const Game =
 	partyHPPerBar: 250,
 
 	bonusMultiplier: 1.5,
-	chargeRank: 1,
-	defaultBattleBGM: 'CreepFight',
+	defaultBattleBGM: 'creepFight',
 	defaultMoveRank: 2,
 	defaultItemRank: 1,
 	equipWeaponRank: 2,
-	guardBreakRank: 1,
+	guardBreakRank: 2,
 	reviveRank: 2,
 	stanceChangeRank: 5,
 

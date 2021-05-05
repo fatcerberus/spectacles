@@ -55,7 +55,7 @@ class MoveMenu extends Thread
 		this.drawers = [];
 		for (const category in drawerTable)
 			this.drawers.push(drawerTable[category]);
-		if (stance === Stance.Attack) {
+		if (stance === Stance.Normal) {
 			this.drawers = this.drawers.concat([
 				{ name: "Item", contents: this.unit.items, cursor: 0 } ]);
 		}
@@ -198,7 +198,7 @@ class MoveMenu extends Thread
 			await Thread.join(this);
 			let targetMenu;
 			switch (this.stance) {
-				case Stance.Attack: {
+				case Stance.Normal: {
 					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, this.selection.name, this.stance).run();
 					break;
 				}
@@ -264,7 +264,7 @@ class MoveMenu extends Thread
 			this.showMoveList.stop();
 			this.hideMoveList.run();
 		}
-		else if (key == Key.V && this.stance == Stance.Attack) {
+		else if (key == Key.V && this.stance == Stance.Normal) {
 			this.stance = Stance.Guard;
 			this.updateTurnPreview();
 			this.showMoveList.stop();

@@ -99,7 +99,7 @@ class AutoBattler
 			let isUsable;
 			do {
 				candidateMove = this.moveQueue.shift();
-				let isLegal = candidateMove.stance != Stance.Attack || candidateMove.usable.isUsable(this.unit, this.unit.stance);
+				let isLegal = candidateMove.stance != Stance.Normal || candidateMove.usable.isUsable(this.unit, this.unit.stance);
 				isUsable = isLegal && candidateMove.predicate();
 				if (!isUsable)
 					console.log(`discard ${this.unit.name}'s ${candidateMove.usable.name}, not usable`);
@@ -198,14 +198,14 @@ class AutoBattler
 			: itemToUse.defaultTargets(this.unit);
 		this.moveQueue.push({
 			usable: itemToUse,
-			stance: Stance.Attack,
+			stance: Stance.Normal,
 			targets,
 			predicate: () => true,
 		});
 		console.log(`${this.unit.name} queued use of item ${itemToUse.name}`);
 	}
 
-	queueSkill(skillID, stance = Stance.Attack, unitID = null, predicate = () => true)
+	queueSkill(skillID, stance = Stance.Normal, unitID = null, predicate = () => true)
 	{
 		let skillToUse = new SkillUsable(skillID, 100);
 		let targetUnit = unitID !== null ? this.battle.findUnit(unitID) : null;
@@ -226,7 +226,7 @@ class AutoBattler
 		let weaponUsable = new WeaponUsable(weaponID);
 		this.moveQueue.push({
 			usable: weaponUsable,
-			stance: Stance.Attack,
+			stance: Stance.Normal,
 			targets: weaponUsable.defaultTargets(this.unit),
 			predicate: () => true,
 		});

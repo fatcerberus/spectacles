@@ -373,25 +373,10 @@ const Statuses =
 	zombie: {
 		name: "Zombie",
 		tags: [ 'ailment', 'undead' ],
-		initialize(unit) {
-			this.allowDeath = false;
-		},
-		damaged(unit, eventData) {
-			// don't allow Specs Aura to kill the afflicted.
-			this.allowDeath = from(eventData.tags).anyIs('zombie')
-				&& !from(eventData.tags).anyIs('specs');
-		},
-		dying(unit, eventData) {
-			if (!this.allowDeath) {
-				unit.addStatus('skeleton');
-				eventData.cancel = true;
-			}
-		},
 		healed(unit, eventData) {
 			if (from(eventData.tags).anyIn([ 'cure', 'specs' ])) {
 				let damageTags = from(eventData.tags).anyIs('specs')
-					? [ 'zombie', 'specs' ]
-					: [ 'zombie' ];
+					? [ 'zombie', 'specs' ] : [ 'zombie' ];
 				unit.takeDamage(eventData.amount, damageTags);
 				eventData.cancel = true;
 			}

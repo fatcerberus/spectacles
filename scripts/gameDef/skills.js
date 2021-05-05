@@ -522,18 +522,6 @@ const Skills =
 		baseMPCost: 80,
 		actions: [
 			{
-				announceAs: "charging Omni...",
-				rank: 2,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'user',
-						type: 'addStatus',
-						status: 'offGuard',
-					},
-				],
-			},
-			{
 				announceAs: "Omni",
 				rank: 4,
 				accuracyType: 'magic',

@@ -57,7 +57,7 @@ battler into Guard, which reduces the damage taken from attacks and prevents
 secondary effects, such as the Zombie affliction caused by Electrocute.  Guard
 cannot block statuses inflicted as a primary effect, however, such as that from
 Necromancy.  Guard is a Rank 5 action; if the cooldown expires before the
-character is attacked, they will automatically return to Attack Stance.
+character is attacked, they will automatically return to Normal stance.
 
 Note that when a melee (sword or contact) move is Guarded, the attack will
 always miss outright.  The opening thus created will allow the Guarding

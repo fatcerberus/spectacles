@@ -5,6 +5,8 @@
 
 import { from } from 'sphere-runtime';
 
+import { Game } from './game.js';
+
 export
 const Maths =
 {
@@ -111,7 +113,7 @@ const Maths =
 			else if (from(tags).anyIn([ 'bow', 'omni', 'special', 'zombie' ]))
 				return baseDamage;
 			else
-				return baseDamage / 2;
+				return baseDamage / Game.bonusMultiplier;
 		},
 	},
 

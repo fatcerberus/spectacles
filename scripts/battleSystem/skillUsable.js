@@ -99,7 +99,7 @@ class SkillUsable
 		console.log(`skill ${this.name} gained ${amount} EXP`, `lv: ${this.level}`);
 	}
 
-	isUsable(user, stance = Stance.Attack)
+	isUsable(user, stance = Stance.Normal)
 	{
 		let userWeaponType = user.weapon != null ? user.weapon.type : null;
 		let skillWeaponType = this.skillInfo.weaponType;

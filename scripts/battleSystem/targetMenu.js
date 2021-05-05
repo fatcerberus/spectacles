@@ -13,7 +13,7 @@ import { Stance } from './battleUnit.js';
 export default
 class TargetMenu extends Thread
 {
-	constructor(unit, battle, usable = null, moveName = null, stance = Stance.Attack)
+	constructor(unit, battle, usable = null, moveName = null, stance = Stance.Normal)
 	{
 		super({ priority: 10 });
 

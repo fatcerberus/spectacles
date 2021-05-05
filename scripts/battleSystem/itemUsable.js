@@ -58,10 +58,10 @@ class ItemUsable
 		return [ target ];
 	}
 
-	isUsable(user, stance = Stance.Attack)
+	isUsable(user, stance = Stance.Normal)
 	{
 		return (this.isUnlimited || this.usesLeft > 0)
-			&& stance == Stance.Attack;
+			&& stance == Stance.Normal;
 	}
 
 	mpCost(user)

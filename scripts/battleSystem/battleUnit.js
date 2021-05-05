@@ -26,7 +26,7 @@ const Row =
 export
 const Stance =
 {
-	Attack: 0,
+	Normal: 0,
 	Guard:  1,
 	Hippo:  2,
 };
@@ -51,11 +51,11 @@ class BattleUnit
 		this.moveTargets = null;
 		this.mpPool = mpPool;
 		this.newSkills = [];
-		this.newStance = Stance.Attack;
+		this.newStance = Stance.Normal;
 		this.partyMember = null;
 		this.row = startingRow;
 		this.skills = [];
-		this.stance = Stance.Attack;
+		this.stance = Stance.Normal;
 		this.stats = {};
 		this.statuses = [];
 		this.tag = Random.string();
@@ -107,7 +107,7 @@ class BattleUnit
 				this.battle.ui.hud.createEnemyHPGauge(this);
 			this.aiFile = `../autoBattlers/${this.id}.js`;
 		}
-		this.attackMenu = new MoveMenu(this, battle, Stance.Attack);
+		this.attackMenu = new MoveMenu(this, battle, Stance.Normal);
 		this.refreshInfo();
 		if (this.mpPool === null)
 			this.mpPool = new MPPool(`${this.id}MP`, Math.round(Math.max(Maths.mp.capacity(this.battlerInfo), 0)));
@@ -218,6 +218,8 @@ class BattleUnit
 		this.battlerInfo.statAverage = Math.round(statSum / numStats);
 		this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
 		this.mpPool.restore(this.battlerInfo.statAverage / 10);
+		if (this.stance === Stance.Guard)
+			this.restoreMP(this.battlerInfo.statAverage);
 	}
 
 	beginTargeting(actingUnit)
@@ -662,7 +664,7 @@ class BattleUnit
 				return;
 		}
 		if (amount >= 0) {
-			if (this.stance != Stance.Attack && this.lastAttacker !== null) {
+			if (this.stance != Stance.Normal && this.lastAttacker !== null) {
 				amount = Math.round(Maths.guardStance.damageTaken(amount, tags));
 				console.log(`${this.name} hit in Guard Stance, reduce damage`);
 			}
@@ -714,16 +716,6 @@ class BattleUnit
 			stance: actingUnit.stance,
 		};
 		this.raiseEvent('attacked', eventData);
-		let isGuardBroken = 'preserveGuard' in action ? !action.preserveGuard : true;
-		let isMelee = 'isMelee' in action ? action.isMelee : false;
-		if (this.stance === Stance.Guard && isMelee && isGuardBroken) {
-			action.accuracyRate = 0.0; //'accuracyRate' in action ? 0.5 * action.accuracyRate : 0.5;
-		}
-		if (this.stance === Stance.Guard && isGuardBroken) {
-			console.log(`${this.name}'s Guard Stance broken`, `by: ${actingUnit.name}`);
-			this.newStance = Stance.Attack;
-			this.resetCounter(Game.guardBreakRank);
-		}
 	}
 
 	async tick()
@@ -733,7 +725,7 @@ class BattleUnit
 		if (--this.cv == 0) {
 			this.battle.suspend();
 			if (this.stance === Stance.Guard) {
-				this.stance = this.newStance = Stance.Attack;
+				this.stance = this.newStance = Stance.Normal;
 				await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 				console.log(`${this.name}'s Guard Stance expired`);
 			}

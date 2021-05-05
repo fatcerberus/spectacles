@@ -24,7 +24,7 @@ class ScottTempleAI extends AutoBattler
 	strategize(stance, phase)
 	{
 		if (this.joltTarget !== null) {
-			this.queueSkill('jolt', Stance.Attack, this.joltTarget);
+			this.queueSkill('jolt', Stance.Normal, this.joltTarget);
 		}
 		else {
 			const healChance = 0.25 * (phase - 1);
@@ -41,7 +41,7 @@ class ScottTempleAI extends AutoBattler
 	{
 		switch (newPhase) {
 		case 1:
-			this.queueSkill('omni', Stance.Attack, 'elysia');
+			this.queueSkill('omni', Stance.Normal, 'elysia');
 			break;
 		case 2:
 			this.moveSet.push('heal');
@@ -69,6 +69,6 @@ class ScottTempleAI extends AutoBattler
 		if ((skillID === 'heal' || skillID === 'rejuvenate') && userID !== 'scottTemple')
 			this.joltTarget = targetIDs[0];
 		else if (skillID === 'renewal' && userID !== 'scottTemple')
-			this.queueSkill('omni', Stance.Attack, userID);
+			this.queueSkill('omni', Stance.Normal, userID);
 	}
 }

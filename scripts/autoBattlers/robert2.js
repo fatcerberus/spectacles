@@ -28,7 +28,7 @@ class RobertIIAI extends AutoBattler
 		this.necroTonicItem = null;
 		this.necromancyChance = 0.0;
 		this.nextElementalMove = null;
-		this.scottStance = Stance.Attack;
+		this.scottStance = Stance.Normal;
 		this.scottImmuneTurnsLeft = 0;
 		this.zombieHealAlertLevel = 0.0;
 		this.zombieHealFixState = null;
@@ -44,7 +44,7 @@ class RobertIIAI extends AutoBattler
 					this.queueSkill('chargeSlash');
 					this.doChargeSlashNext = false;
 				}
-				else if (this.scottStance == Stance.Attack || this.isComboStarted) {
+				else if (this.scottStance == Stance.Normal || this.isComboStarted) {
 					qsTurns = this.predictSkillTurns('quickstrike');
 					if (qsTurns[0].unit === this.unit) {
 						this.queueSkill('quickstrike');
@@ -99,7 +99,7 @@ class RobertIIAI extends AutoBattler
 					let isTonicUsable = (!this.unit.hasStatus('zombie') || this.wasHolyWaterUsed || !this.hasZombieHealedSelf)
 						&& this.isItemUsable('tonic');
 					if (spellTurns[0].unit === this.unit && isTonicUsable || this.wasTonicUsed) {
-						this.queueSkill(skillID, Stance.Attack, 'robert2');
+						this.queueSkill(skillID, Stance.Normal, 'robert2');
 						if (!this.wasTonicUsed && isTonicUsable) {
 							this.queueItem('tonic');
 						}
@@ -165,10 +165,10 @@ class RobertIIAI extends AutoBattler
 					}
 					else {
 						if (this.unit.hasStatus('ignite')) {
-							this.queueSkill('frostbite', Stance.Attack, 'robert2');
+							this.queueSkill('frostbite', Stance.Normal, 'robert2');
 						}
 						else if (this.unit.hasStatus('frostbite')) {
-							this.queueSkill('ignite', Stance.Attack, 'robert2');
+							this.queueSkill('ignite', Stance.Normal, 'robert2');
 						}
 					}
 				}

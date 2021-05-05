@@ -42,9 +42,9 @@ class WeaponUsable
 		return [ user ];
 	}
 
-	isUsable(user, stance = Stance.Attack)
+	isUsable(user, stance = Stance.Normal)
 	{
-		return stance == Stance.Attack;
+		return stance == Stance.Normal;
 	}
 
 	mpCost(user)
