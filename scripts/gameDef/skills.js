@@ -129,7 +129,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 10,
+						power: 15,
 					},
 				],
 			},
@@ -250,10 +250,8 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 10,
+						power: 20,
 						element: 'ice',
-						addStatus: 'frostbite',
-						statusChance: 25,
 					},
 				],
 			},
@@ -275,10 +273,8 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 10,
+						power: 20,
 						element: 'fire',
-						addStatus: 'ignite',
-						statusChance: 25,
 					},
 				],
 			},
@@ -300,10 +296,8 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 10,
+						power: 20,
 						element: 'lightning',
-						addStatus: 'zombie',
-						statusChance: 25,
 					},
 				],
 			},
@@ -325,10 +319,8 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'bow',
-						power: 10,
+						power: 20,
 						element: 'earth',
-						addStatus: 'disarray',
-						statusChance: 25,
 					},
 				],
 			},
@@ -519,7 +511,7 @@ const Skills =
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 80,
+		baseMPCost: 50,
 		actions: [
 			{
 				announceAs: "Omni",
@@ -548,7 +540,7 @@ const Skills =
 		name: "Salve",
 		category: 'strategy',
 		targetType: 'ally',
-		baseMPCost: 25,
+		baseMPCost: 20,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -569,7 +561,7 @@ const Skills =
 		name: "Dispel",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 25,
+		baseMPCost: 40,
 		allowAsCounter: false,
 		actions: [
 			{
@@ -658,7 +650,7 @@ const Skills =
 		name: "Purify",
 		category: 'heal',
 		targetType: 'single',
-		baseMPCost: 25,
+		baseMPCost: 30,
 		actions: [
 			{
 				announceAs: "Purify",
@@ -678,7 +670,7 @@ const Skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 13,
+		baseMPCost: 10,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -701,7 +693,7 @@ const Skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 25,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Renewal",
@@ -747,7 +739,7 @@ const Skills =
 		name: "Curse",
 		category: 'strategy',
 		targetType: 'single',
-		baseMPCost: 70,
+		baseMPCost: 50,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [
@@ -790,7 +782,7 @@ const Skills =
 		name: "Protect",
 		category: 'strategy',
 		targetType: 'ally',
-		baseMPCost: 25,
+		baseMPCost: 20,
 		allowAsCounter: false,
 		chargeable: false,
 		actions: [
@@ -1131,7 +1123,7 @@ function basicSpell(name, element)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 25,
+						power: 35,
 						element,
 					},
 				],
@@ -1146,7 +1138,7 @@ function powerSpell(name, element, statusID)
 		name,
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 25,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: name,
@@ -1174,7 +1166,7 @@ function ultraSpell(name, element, statusID)
 		name,
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 50,
+		baseMPCost: 30,
 		actions: [
 			{
 				announceAs: name,

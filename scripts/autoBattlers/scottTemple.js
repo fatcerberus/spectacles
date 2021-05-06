@@ -17,23 +17,42 @@ class ScottTempleAI extends AutoBattler
 		this.definePhases([ 9000, 3000 ], 100);
 		this.defaultSkill = 'swordSlash';
 
+		this.inQSCombo = false;
 		this.healingItems = from([ 'tonic', 'powerTonic' ]);
-		this.joltTarget = null;
+		this.zapChance = 0.0;
+		this.zapTarget = null;
 	}
 
 	strategize(stance, phase)
 	{
-		if (this.joltTarget !== null) {
-			this.queueSkill('jolt', Stance.Normal, this.joltTarget);
+		if (this.zapTarget !== null) {
+			this.queueSkill('electrocute', Stance.Normal, this.zapTarget);
+			this.zapTarget = null;
+			this.zapChance = 0.0;
 		}
 		else {
-			const healChance = 0.25 * (phase - 1);
-			const healMove = phase >= 3 ? 'heal' : 'rejuvenate';
-			const moveSet = [ 'hellfire', 'upheaval', 'windchill', 'electrocute' ];
-			if (Random.chance(0.25 * (phase - 1)))
-				this.queueSkill(healMove);
-			else
-				this.queueSkill(Random.sample(moveSet));
+			const healChance = 0.15 * (phase - 1);
+			const moveSet = [ 'flare', 'chill', 'lightning', 'quake' ];
+			if (!this.inQSCombo && Random.chance(healChance)) {
+				this.queueSkill('heal');
+			}
+			else {
+				if (!this.inQSCombo && !this.hasStatus('crackdown') && Random.chance(0.5))
+					this.inQSCombo = true;
+				if (this.inQSCombo) {
+					const turns = this.predictSkillTurns('quickstrike');
+					if (turns[0].unit === this.unit) {
+						this.queueSkill('quickstrike');
+					}
+					else {
+						this.queueSkill('swordSlash');
+						this.inQSCombo = false;
+					}
+				}
+				else {
+					this.queueSkill(Random.sample(moveSet));
+				}
+			}
 		}
 	}
 
@@ -44,7 +63,6 @@ class ScottTempleAI extends AutoBattler
 			this.queueSkill('omni', Stance.Normal, 'elysia');
 			break;
 		case 2:
-			this.moveSet.push('heal');
 			this.queueSkill('rejuvenate');
 			break;
 		case 3:
@@ -56,19 +74,19 @@ class ScottTempleAI extends AutoBattler
 	on_itemUsed(userID, itemID, targetIDs)
 	{
 		if (this.healingItems.anyIs(itemID))
-			this.joltTarget = targetIDs[0];
+			this.zapTarget = targetIDs[0];
 	}
 	
 	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
-		// if Temple is using Jolt now, revert to normal behavior
-		if (skillID === 'jolt' && userID === 'scottTemple')
-			this.joltTarget = null;
-
-		// if someone gets healed, zombify the target. in case of Renewal, retaliate with Omni.
-		if ((skillID === 'heal' || skillID === 'rejuvenate') && userID !== 'scottTemple')
-			this.joltTarget = targetIDs[0];
-		else if (skillID === 'renewal' && userID !== 'scottTemple')
-			this.queueSkill('omni', Stance.Normal, userID);
+		// if someone gets healed, zombify the target. in case of Renewal, retaliate with Discharge.
+		if ((skillID === 'heal' || skillID === 'rejuvenate') && userID !== 'scottTemple') {
+			this.zapChance += (skillID === 'rejuvenate' ? 0.25 : 0.15);
+			if (Random.chance(this.zapChance))
+				this.zapTarget = targetIDs[0];
+		}
+		else if (skillID === 'renewal' && userID !== 'scottTemple') {
+			this.queueSkill('discharge');
+		}
 	}
 }

@@ -7,7 +7,6 @@ import { from, Random } from 'sphere-runtime';
 
 import { Stance } from '../battleSystem/index.js';
 
-import { Game } from './game.js';
 import { Maths } from './maths.js';
 
 export
@@ -16,6 +15,7 @@ const Statuses =
 	crackdown: {
 		name: "Crackdown",
 		tags: [ 'ailment' ],
+		expiration: { beginTurn: 5 },
 		acting(unit, eventData) {
 			if (!eventData.action.isMelee)
 				return;
@@ -23,7 +23,7 @@ const Statuses =
 				.where(it => it.type == 'damage'))
 			{
 				let oldPower = effect.power;
-				effect.power = Math.max(Math.round(effect.power * Game.bonusMultiplier), 1);
+				effect.power = Math.max(Math.round(effect.power / 2.0), 1);
 				if (effect.power != oldPower) {
 					console.log(
 						`effect Power changed by Crackdown to ${effect.power}`,
@@ -68,9 +68,6 @@ const Statuses =
 		tags: [ 'acute' ],
 		expiration: { beginTurn: 5 },
 		overrules: [ 'immune' ],
-		statModifiers: {
-			agi: 1 / Game.bonusMultiplier,
-		},
 		ignoreEvents: [
 			'itemUsed',
 			'skillUsed',
@@ -84,7 +81,7 @@ const Statuses =
 				.where(it => it.type === 'damage');
 			for (const effect of damageEffects) {
 				let oldPower = effect.power;
-				effect.power *= Game.bonusMultiplier;
+				effect.power *= 2.0;
 				if (effect.power != oldPower) {
 					console.log(
 						`effect Power changed by Drunk to ${effect.power}`,
@@ -93,14 +90,7 @@ const Statuses =
 			}
 		},
 		aiming(unit, eventData) {
-			if (eventData.action.accuracyType === 'devour')
-				eventData.aimRate *= Game.bonusMultiplier;
-			else
-				eventData.aimRate /= Game.bonusMultiplier;
-		},
-		damaged(unit, eventData) {
-			if (from(eventData.tags).anyIs('earth'))
-				eventData.amount *= Game.bonusMultiplier;
+			eventData.aimRate /= 1.5;
 		},
 	},
 
@@ -128,7 +118,7 @@ const Statuses =
 			}
 		},
 		attacked(unit, eventData) {
-			this.fatigue *= Game.bonusMultiplier;
+			this.fatigue *= 1.25;
 			++this.rankPenalty;
 		},
 		damaged(unit, eventData) {
@@ -161,7 +151,7 @@ const Statuses =
 		},
 		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('fire') && unit.stance != Stance.Guard) {
-				eventData.amount *= Game.bonusMultiplier;
+				eventData.amount *= 1.5;
 				console.log("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
 			}
@@ -223,7 +213,7 @@ const Statuses =
 		},
 		damaged(unit, eventData) {
 			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
-				eventData.amount *= Game.bonusMultiplier;
+				eventData.amount *= 1.5;
 				console.log("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
 			}
@@ -249,7 +239,7 @@ const Statuses =
 		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
-				eventData.amount *= Game.bonusMultiplier;
+				eventData.amount *= 1.5;
 		},
 	},
 
@@ -260,7 +250,7 @@ const Statuses =
 		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected)
-				eventData.amount /= Game.bonusMultiplier;
+				eventData.amount /= 2.0;
 		},
 	},
 
@@ -280,8 +270,8 @@ const Statuses =
 		tags: [ 'ailment', 'undead' ],
 		overrules: [ 'ghost', 'zombie' ],
 		statModifiers: {
-			str: 1 / Game.bonusMultiplier,
-			mag: 1 / Game.bonusMultiplier,
+			str: 0.5,
+			mag: 0.5,
 		},
 		initialize(unit) {
 			this.allowDeath = false;
@@ -315,7 +305,7 @@ const Statuses =
 		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (!from(eventData.tags).anyIn([ 'special', 'zombie' ])) {
-				eventData.amount *= Game.bonusMultiplier;
+				eventData.amount *= 1.5;
 				unit.clearQueue();
 				unit.liftStatus('sniper');
 				unit.resetCounter(1);
@@ -366,7 +356,7 @@ const Statuses =
 		expiration: { beginTurn: 1 },
 		damaged(unit, eventData) {
 			if (eventData.actingUnit !== null)
-				eventData.amount *= Game.bonusMultiplier;
+				eventData.amount *= 1.5;
 		},
 	},
 

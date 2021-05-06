@@ -43,7 +43,7 @@ const Enemies =
 		fullName: "Scott Victor Temple",
 		hasLifeBar: true,
 		tier: 3,
-		turnRatio: 2.0,
+		turnRatio: 3.0,
 		baseStats: {
 			vit: 100,
 			str: 85,
