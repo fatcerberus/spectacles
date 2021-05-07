@@ -43,36 +43,31 @@ const Maths =
 
 	damage: {
 		calculate(power, level, targetTier, attack, defense) {
-			return power * level**0.5 * attack / defense;
+			return power * level * 1.02 ** (attack - defense);
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				userInfo.stats.str,
-				Maths.statValue(0, targetInfo.level));
+				userInfo.stats.str, 0);
 		},
 		breath(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				Math.round((userInfo.stats.vit * 2 + userInfo.stats.mag) / 3),
-				targetInfo.stats.vit);
+				userInfo.stats.str, targetInfo.stats.foc);
 		},
 		gun(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				Maths.statValue(100, userInfo.level),
-				targetInfo.stats.def);
+				100, targetInfo.stats.def);
 		},
 		magic(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
-				targetInfo.stats.foc);
+				userInfo.stats.mag, targetInfo.stats.foc);
 		},
 		physical(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				userInfo.stats.str,
-				Math.round((targetInfo.stats.def * 2 + targetInfo.stats.str) / 3));
+				userInfo.stats.str, targetInfo.stats.str);
 		},
 		physicalRecoil(userInfo, targetInfo, power) {
-			return Maths.damage.calculate(power / 2, userInfo.level, targetInfo.tier,
-				targetInfo.stats.str, userInfo.stats.str);
+			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
+				targetInfo.stats.def, userInfo.stats.def);
 		},
 		shuriken(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -80,8 +75,7 @@ const Maths =
 		},
 		staff(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				(userInfo.stats.str + userInfo.stats.agi) / 2,
-				targetInfo.stats.def);
+				userInfo.stats.str, targetInfo.stats.def);
 		},
 		sword(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -119,19 +113,12 @@ const Maths =
 
 	healing(userInfo, targetInfo, power) {
 		return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-			Math.round((userInfo.stats.mag * 2 + userInfo.stats.foc) / 3),
-			Maths.statValue(0, targetInfo.level));
+			userInfo.stats.mag, 0);
 	},
 
 	hp(unitInfo, level, tier) {
-		let statAverage = Math.round((unitInfo.baseStats.vit * 10
-			+ unitInfo.baseStats.str
-			+ unitInfo.baseStats.def
-			+ unitInfo.baseStats.foc
-			+ unitInfo.baseStats.mag
-			+ unitInfo.baseStats.agi) / 15);
-		statAverage = Maths.statValue(statAverage, level);
-		return 25 * tier**2 * statAverage;
+		const vit = Maths.statValue(unitInfo.baseStats.vit, level);
+		return 25 * tier * vit;
 	},
 
 	mp: {
@@ -164,7 +151,7 @@ const Maths =
 	},
 
 	statValue(baseStat, level) {
-		return Math.round((50 + 0.5 * baseStat) * (10 + level) / 110);
+		return Math.floor(baseStat / 10 + 0.9 * baseStat * level / 100);
 	},
 
 	timeUntilNextTurn(unitInfo, rank) {
