@@ -18,7 +18,7 @@ const Characters =
 			agi: 65,
 		},
 		skills: [
-			'whipstaff',
+			'whipstick',
 			'dispel',
 			'immunize',
 			'salve',

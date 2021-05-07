@@ -32,7 +32,6 @@ class ScottTempleAI extends AutoBattler
 		}
 		else {
 			const healChance = 0.15 * (phase - 1);
-			const moveSet = [ 'flare', 'chill', 'lightning', 'quake' ];
 			if (!this.inQSCombo && Random.chance(healChance)) {
 				this.queueSkill('heal');
 			}
@@ -50,6 +49,10 @@ class ScottTempleAI extends AutoBattler
 					}
 				}
 				else {
+					const magicUpChance = 0.35 * (phase - 1);
+					const moveSet = Random.chance(magicUpChance)
+						? [ 'hellfire', 'windchill', 'upheaval' ]
+						: [ 'flare', 'chill', 'lightning', 'quake' ];
 					this.queueSkill(Random.sample(moveSet));
 				}
 			}
