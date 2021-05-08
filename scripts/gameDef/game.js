@@ -18,7 +18,7 @@ const Game =
 	equipWeaponRank: 2,
 	guardBreakRank: 2,
 	reviveRank: 2,
-	stanceChangeRank: 3,
+	stanceChangeRank: 2,
 
 	initialParty: [
 		'scott',

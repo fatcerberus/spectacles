@@ -217,8 +217,7 @@ class BattleUnit
 		}
 		this.battlerInfo.statAverage = Math.round(statSum / numStats);
 		this.battlerInfo.baseStatAverage = Math.round(baseStatSum / numStats);
-		if (this.stance === Stance.Guard)
-			this.restoreMP(this.battlerInfo.stats.foc * 3);
+		this.mpPool.restore(this.battlerInfo.stats.mag / 10);
 	}
 
 	beginTargeting(actingUnit)
@@ -255,6 +254,7 @@ class BattleUnit
 			await this.battle.notifyAIs('stanceChanged', this.id, this.stance);
 			let stanceName = this.stance === Stance.Guard ? "Guard" : "Normal";
 			console.log(`${this.name} now in ${stanceName} stance`);
+			this.restoreMP(this.battlerInfo.stats.foc);
 		}
 	}
 
