@@ -71,7 +71,7 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 25,
+					strength: 50,
 				},
 			],
 		},
@@ -86,7 +86,7 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 50,
+					strength: 100,
 				},
 			],
 		},

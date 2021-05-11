@@ -7,57 +7,20 @@ import TestHarness from '../testHarness.js';
 
 TestHarness.addBattle('temple', {
 	battleID: 'scottTemple',
+	items: [ 'tonic', 'redBull', 'holyWater', 'alcohol' ],
 	party: {
-		elysia: {
-			level: 60,
-			weapon: 'powerBow',
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-			],
-		},
-		abigail: {
-			level: 60,
-			weapon: 'luckyStaff',
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-			],
-		},
-		bruce: {
-			level: 60,
-			weapon: 'arsenRifle',
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-				'alcohol',
-			],
-		},
-	},
+		elysia: { level: 60, weapon: 'powerBow', },
+		abigail: { level: 60, weapon: 'luckyStaff' },
+		bruce: { level: 60, weapon: 'arsenRifle' },
+	}
 });
 
 TestHarness.addBattle('starcross', {
 	battleID: 'scottStarcross',
+	items: [ 'tonic', 'redBull' ],
 	party: {
-		elysia: {
-			level: 100,
-			weapon: 'powerBow',
-			items: [ 'tonic', 'powerTonic', 'redBull' ],
-		},
-		bruce: {
-			level: 100,
-			weapon: 'arsenRifle',
-			items: [ 'tonic', 'powerTonic', 'redBull' ],
-		},
-		abigail: {
-			level: 100,
-			items: [ 'tonic', 'powerTonic', 'redBull' ],
-		},
-	},
+		elysia: { level: 100, weapon: 'powerBow' },
+		bruce: { level: 100, weapon: 'arsenRifle' },
+		abigail: { level: 100, weapon: 'luckyStuff' },
+	}
 });

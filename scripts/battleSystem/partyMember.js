@@ -21,7 +21,6 @@ class PartyMember
 		this.fullName = 'fullName' in Characters[characterID]
 			? Characters[characterID].fullName
 			: Characters[characterID].name;
-		this.items = [];
 		this.name = Characters[characterID].name;
 		this.skillList = [];
 		this.stats = {};

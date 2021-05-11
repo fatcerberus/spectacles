@@ -74,7 +74,7 @@ class BattleUnit
 			this.fullName = this.partyMember.fullName;
 			this.allowTargetScan = this.partyMember.isTargetScanOn;
 			this.skills = [ ...this.partyMember.getUsableSkills() ];
-			this.items = clone(this.partyMember.items);
+			this.items = battle.session.items;
 			for (const statID in this.baseStats)
 				this.stats[statID] = this.partyMember.stats[statID];
 			this.weapon = Weapons[this.partyMember.weaponID];

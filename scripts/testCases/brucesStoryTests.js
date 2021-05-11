@@ -7,36 +7,16 @@ import TestHarness from '../testHarness.js';
 
 TestHarness.addBattle('horse', {
 	battleID: 'headlessHorse',
+	items: [ 'tonic' ],
 	party: {
-		scott: {
-			level: 8,
-			weapon: 'templeSword',
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-				'alcohol',
-			],
-		},
-	},
+		scott: { level: 8, weapon: 'templeSword' },
+	}
 });
 
 TestHarness.addBattle('rsb2', {
 	battleID: 'rsbFinal',
+	items: [ 'tonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
 	party: {
-		scott: {
-			level: 50,
-			weapon: 'templeSword',
-			items: [
-				'tonic',
-				'powerTonic',
-				'redBull',
-				'holyWater',
-				'vaccine',
-				'alcohol',
-			],
-		},
+		scott: { level: 50, weapon: 'templeSword' },
 	},
 });

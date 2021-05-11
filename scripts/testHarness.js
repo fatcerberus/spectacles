@@ -51,9 +51,9 @@ class TestHarness
 					session.party.add(id, memberInfo.level);
 					if ('weapon' in memberInfo)
 						session.party.members[id].setWeapon(memberInfo.weapon);
-					for (let iItem = 0; iItem < memberInfo.items.length; ++iItem)
-						session.party.members[id].items.push(new ItemUsable(memberInfo.items[iItem]));
 				}
+				for (const itemID of this.setup.items)
+					session.items.push(new ItemUsable(itemID));
 				TestHarness.isBattleRunning = true;
 				await new Scene()
 					.battle(this.setup.battleID, session)

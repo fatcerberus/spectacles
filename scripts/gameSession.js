@@ -23,6 +23,7 @@ class GameSession
 		for (const characterID of Game.initialParty)
 			this.party.add(characterID);
 		this.battlesSeen = [];
+		this.items = [];
 	}
 }
 

@@ -81,7 +81,7 @@ const Statuses =
 				.where(it => it.type === 'damage');
 			for (const effect of damageEffects) {
 				let oldPower = effect.power;
-				effect.power *= 2.0;
+				effect.power *= 1.5;
 				if (effect.power != oldPower) {
 					console.log(
 						`effect Power changed by Drunk to ${effect.power}`,
@@ -90,7 +90,7 @@ const Statuses =
 			}
 		},
 		aiming(unit, eventData) {
-			eventData.aimRate /= 1.5;
+			eventData.aimRate /= 1.25;
 		},
 	},
 
@@ -132,9 +132,6 @@ const Statuses =
 		name: "Frostbite",
 		tags: [ 'ailment', 'damage' ],
 		overrules: [ 'ignite' ],
-		initialize(unit) {
-			this.multiplier = 1.0;
-		},
 		attacked(unit, eventData) {
 			let damageEffects = from(eventData.action.effects)
 				.where(it => it.type === 'damage');
@@ -150,16 +147,16 @@ const Statuses =
 			}
 		},
 		damaged(unit, eventData) {
-			if (from(eventData.tags).anyIs('fire') && unit.stance != Stance.Guard) {
+			if (from(eventData.tags).anyIs('fire')) {
 				eventData.amount *= 1.5;
 				console.log("Frostbite neutralized by fire, damage increased");
 				unit.liftStatus('frostbite');
 			}
 		},
 		endTurn(unit, eventData) {
-			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.takeDamage(0.5 * vit * this.multiplier, [ 'ice', 'special' ]);
-			this.multiplier = Math.min(this.multiplier + 0.1, 2.0);
+			const unitInfo = unit.battlerInfo;
+			const base = Maths.hp(unitInfo, unitInfo.level, 1);
+			unit.takeDamage(0.05 * base, [ 'fire', 'special' ]);
 		},
 	},
 
@@ -191,13 +188,10 @@ const Statuses =
 		name: "Ignite",
 		tags: [ 'ailment', 'damage' ],
 		overrules: [ 'frostbite' ],
-		initialize(unit) {
-			this.multiplier = 1.0;
-		},
 		beginCycle(unit, eventData) {
-			let vit = Maths.statValue(unit.battlerInfo.baseStats.vit, unit.battlerInfo.level);
-			unit.takeDamage(0.5 * vit * this.multiplier, [ 'fire', 'special' ]);
-			this.multiplier = Math.max(this.multiplier - 0.05, 0.5);
+			const unitInfo = unit.battlerInfo;
+			const base = Maths.hp(unitInfo, unitInfo.level, 1);
+			unit.takeDamage(0.01 * base, [ 'fire', 'special' ]);
 		},
 		attacked(unit, eventData) {
 			let damageEffects = from(eventData.action.effects)
@@ -212,7 +206,7 @@ const Statuses =
 				effect.type = null;
 		},
 		damaged(unit, eventData) {
-			if (from(eventData.tags).anyIs('ice') && unit.stance != Stance.Guard) {
+			if (from(eventData.tags).anyIs('ice')) {
 				eventData.amount *= 1.5;
 				console.log("Ignite neutralized by ice, damage increased");
 				unit.liftStatus('ignite');
@@ -260,7 +254,7 @@ const Statuses =
 		beginCycle(unit, eventData) {
 			const unitInfo = unit.battlerInfo;
 			const cap = Maths.hp(unitInfo, unitInfo.level, 1);
-			unit.heal(0.02 * cap, [ 'cure' ]);
+			unit.heal(0.05 * cap, [ 'cure' ]);
 		},
 	},
 
