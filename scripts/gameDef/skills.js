@@ -531,7 +531,7 @@ const Skills =
 		name: "Omni",
 		category: 'magic',
 		targetType: 'single',
-		baseMPCost: 50,
+		baseMPCost: 75,
 		actions: [
 			{
 				announceAs: "Omni",
@@ -647,7 +647,7 @@ const Skills =
 	purify: {
 		name: "Purify",
 		category: 'heal',
-		targetType: 'single',
+		targetType: 'ally',
 		baseMPCost: 30,
 		actions: [
 			{

@@ -51,7 +51,7 @@ const Statuses =
 	disarray: {
 		name: "Disarray",
 		tags: [ 'ailment', 'acute' ],
-		expiration: { endTurn: 3 },
+		expiration: { endTurn: 5 },
 		acting(unit, eventData) {
 			let oldRank = eventData.action.rank;
 			eventData.action.rank = Random.discrete(1, 5);
@@ -223,7 +223,7 @@ const Statuses =
 	immune: {
 		name: "Immune",
 		tags: [ 'buff' ],
-		expiration: { beginTurn: 3 },
+		expiration: { beginTurn: 5 },
 		afflicted(unit, eventData) {
 			let statusDef = Statuses[eventData.statusID];
 			if (from(statusDef.tags).anyIs('ailment')) {
@@ -246,18 +246,17 @@ const Statuses =
 	protect: {
 		name: "Protect",
 		tags: [ 'buff' ],
-		expiration: { beginTurn: 3 },
+		expiration: { beginTurn: 5 },
 		damaged(unit, eventData) {
 			let isProtected = !from(eventData.tags).anyIn([ 'special', 'zombie' ]);
 			if (isProtected)
-				eventData.amount /= 2.0;
+				eventData.amount /= 1.5;
 		},
 	},
 
 	reGen: {
 		name: "ReGen",
 		tags: [ 'buff' ],
-		expiration: { beginTurn: 10 },
 		beginCycle(unit, eventData) {
 			const unitInfo = unit.battlerInfo;
 			const cap = Maths.hp(unitInfo, unitInfo.level, 1);

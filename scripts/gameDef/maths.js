@@ -49,7 +49,7 @@ const Maths =
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.str, 0);
 		},
-		magicBow(userInfo, targetInfo, power) {
+		magicArrow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				userInfo.stats.mag, 0);
 		},
@@ -121,24 +121,16 @@ const Maths =
 	},
 
 	hp(unitInfo, level, tier) {
-		const vit = Maths.statValue(unitInfo.baseStats.vit, level);
-		return 25 * tier * vit;
+		return unitInfo.baseStats.vit * level * tier / 3;
 	},
 
 	mp: {
 		capacity(unitInfo) {
-			let statAverage = Math.round((unitInfo.baseStats.mag * 10
-				+ unitInfo.baseStats.vit
-				+ unitInfo.baseStats.str
-				+ unitInfo.baseStats.def
-				+ unitInfo.baseStats.foc
-				+ unitInfo.baseStats.agi) / 15);
-			statAverage = Maths.statValue(statAverage, unitInfo.level);
-			return 10 * unitInfo.tier * statAverage;
+			return unitInfo.baseStats.mag * unitInfo.level * unitInfo.tier / 10;
 		},
 		usage(skill, level, userInfo) {
 			let baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-			return baseCost * level**0.5 * userInfo.baseStats.mag / 100;
+			return userInfo.baseStats.mag * baseCost / 10;
 		},
 	},
 

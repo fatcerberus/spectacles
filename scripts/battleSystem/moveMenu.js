@@ -303,7 +303,7 @@ class MoveMenu extends Thread
 		Prim.drawRectangle(Surface.Screen, 0, yOrigin, 136, 16, 1, Color.Black.fadeTo(0.1 * this.fadeness));
 		Prim.drawSolidRectangle(Surface.Screen, 136, yOrigin, 24, 16, Color.Black.fadeTo(0.7 * this.fadeness));
 		Prim.drawRectangle(Surface.Screen, 136, yOrigin, 24, 16, 1, Color.Black.fadeTo(0.1 * this.fadeness));
-		drawTextEx(this.font, 68, yOrigin + 2, this.unit.fullName, Color.DarkGray.fadeTo(this.fadeness), 1, 'center');
+		drawTextEx(this.font, 68, yOrigin + 2, `${this.unit.name}'s turn`, Color.DarkGray.fadeTo(this.fadeness), 1, 'center');
 		drawTextEx(this.font, 148, yOrigin + 2, stanceText, Color.Khaki.fadeTo(this.fadeness), 1, 'center');
 		let itemWidth = 160 / this.drawers.length;
 		Prim.drawSolidRectangle(Surface.Screen, 0, 16, 160, yOrigin - 16, Color.Black.fadeTo(0.75 * this.fadeness));

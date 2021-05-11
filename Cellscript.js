@@ -13,12 +13,6 @@ Object.assign(Sphere.Game, {
 	apiLevel: 3,
 
 	main: 'scripts/main.js',
-	development: {
-		emptyPromises: false,
-		retrograde: true,
-		sandbox: 'relaxed',
-	},
-
 	resolution: '320x240',
 	fullScreen: false,
 
@@ -36,7 +30,6 @@ install('@/data', files('data/*.json', true));
 install('@/images', files('images/*.png', true));
 install('@/logos', files('logos/*.png', true));
 install('@/music', files('music/*.ogg', true));
-install('@/music', files('music/*.opus', true));
 install('@/shaders', files('shaders/*.glsl', true));
 install('@/spritesets', files('spritesets/*.rss', true));
 install('@/sounds', files('sounds/*.wav', true));

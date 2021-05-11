@@ -7,7 +7,7 @@ export
 const Characters =
 {
 	abigail: {
-		name: "Abigail",
+		name: "Abby",
 		fullName: "Abigail Adora",
 		baseStats: {
 			vit: 50,
@@ -61,8 +61,8 @@ const Characters =
 			vit: 65,
 			str: 100,
 			def: 50,
-			foc: 80,
 			mag: 30,
+			foc: 80,
 			agi: 55,
 		},
 		autoScan: true,
