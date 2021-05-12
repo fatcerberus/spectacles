@@ -628,7 +628,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		allowDeadTarget: true,
-		baseMPCost: 50,
+		baseMPCost: 30,
 		actions: [
 			{
 				announceAs: "Lazarus",
@@ -637,7 +637,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'revive',
-						healToFull: true,
+						strength: 100,
 						element: 'cure',
 					},
 				],
@@ -701,8 +701,6 @@ const Skills =
 						type: 'heal',
 						power: 35,
 						element: 'cure',
-						addStatus: 'reGen',
-						statusChance: 10,
 					},
 				],
 			},
@@ -712,7 +710,7 @@ const Skills =
 		name: "Renewal",
 		category: 'heal',
 		targetType: 'allAllies',
-		baseMPCost: 15,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Renewal",
@@ -723,8 +721,6 @@ const Skills =
 						type: 'heal',
 						power: 50,
 						element: 'cure',
-						addStatus: 'reGen',
-						statusChance: 25,
 					},
 				],
 			},

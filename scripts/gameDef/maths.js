@@ -43,7 +43,7 @@ const Maths =
 
 	damage: {
 		calculate(power, level, targetTier, attack, defense) {
-			return (level * power + power * (attack - defense)) / 10;
+			return ((level * power) + (power * (attack - defense))) / 10;
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -121,16 +121,16 @@ const Maths =
 	},
 
 	hp(unitInfo, level, tier) {
-		return unitInfo.baseStats.vit * level * tier / 3;
+		return unitInfo.baseStats.vit * level * tier / 4;
 	},
 
 	mp: {
 		capacity(unitInfo) {
-			return unitInfo.baseStats.mag * unitInfo.level * unitInfo.tier / 10;
+			return unitInfo.baseStats.mag * unitInfo.level * unitInfo.tier / 12;
 		},
 		usage(skill, level, userInfo) {
 			let baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-			return userInfo.baseStats.mag * baseCost / 10;
+			return userInfo.baseStats.mag * baseCost / 12;
 		},
 	},
 

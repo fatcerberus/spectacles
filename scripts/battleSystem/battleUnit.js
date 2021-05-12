@@ -605,14 +605,14 @@ class BattleUnit
 		this.actor.showHealing(`${amount}MP`, color);
 	}
 
-	resurrect(isFullHeal = false)
+	resurrect(strength = 0)
 	{
 		if (!this.isAlive()) {
 			this.lazarusFlag = true;
-			this.heal(isFullHeal ? this.maxHP : 1);
+			this.heal(Math.max(this.maxHP * strength / 100, 1));
 			this.actor.animate('revive');
 			this.resetCounter(Game.reviveRank);
-			console.log(`${this.name} brought back from the dead`);
+			console.log(`${this.name} was revived from K.O.`);
 		}
 		else {
 			this.actor.showHealing("ward", Color.Silver);

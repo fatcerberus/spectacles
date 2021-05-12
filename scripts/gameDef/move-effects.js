@@ -133,6 +133,6 @@ const MoveEffects =
 
 	revive(actor, targets, effect) {
 		for (const unit of targets)
-			unit.resurrect(effect.healToFull);
+			unit.resurrect(effect.strength);
 	},
 };
