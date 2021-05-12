@@ -292,7 +292,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'damage',
-						damageType: 'magicBow',
+						damageType: 'magicArrow',
 						power: 15,
 						element: 'fire',
 					},
@@ -315,7 +315,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'damage',
-						damageType: 'magicBow',
+						damageType: 'magicArrow',
 						power: 15,
 						element: 'lightning',
 					},
@@ -338,7 +338,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'damage',
-						damageType: 'magicBow',
+						damageType: 'magicArrow',
 						power: 15,
 						element: 'earth',
 					},
