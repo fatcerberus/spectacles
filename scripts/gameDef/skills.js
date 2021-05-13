@@ -54,7 +54,6 @@ const Skills =
 			{
 				announceAs: "wait for it...",
 				rank: 1,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'user',
@@ -73,7 +72,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 35,
+						power: 50,
 					},
 				],
 			},
@@ -88,7 +87,6 @@ const Skills =
 			{
 				announceAs: "Robert seems desperate...",
 				rank: 3,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'user',
@@ -120,7 +118,6 @@ const Skills =
 			{
 				announceAs: "Quickstrike",
 				isMelee: true,
-				preserveGuard: true,
 				rank: 1,
 				accuracyType: 'sword',
 				effects: [
@@ -556,38 +553,15 @@ const Skills =
 	},
 
 	// Curative/healing magicks
-	salve: {
-		name: "Salve",
-		category: 'strategy',
-		targetType: 'ally',
-		baseMPCost: 20,
-		allowAsCounter: false,
-		actions: [
-			{
-				announceAs: "Salve",
-				rank: 2,
-				preserveGuard: true,
-				effects: [
-					{
-						targetHint: 'selected',
-						type: 'addStatus',
-						status: 'reGen',
-					},
-				],
-			},
-		],
-	},
 	dispel: {
 		name: "Dispel",
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 40,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Dispel",
 				rank: 3,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -603,7 +577,6 @@ const Skills =
 		category: 'strategy',
 		targetType: 'ally',
 		baseMPCost: 50,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Immunize",
@@ -648,17 +621,35 @@ const Skills =
 		name: "Purify",
 		category: 'heal',
 		targetType: 'ally',
-		baseMPCost: 30,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Purify",
 				rank: 3,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'liftStatusTags',
 						tags: [ 'ailment' ],
+					},
+				],
+			},
+		],
+	},
+	salve: {
+		name: "Salve",
+		category: 'heal',
+		targetType: 'ally',
+		baseMPCost: 10,
+		actions: [
+			{
+				announceAs: "Salve",
+				rank: 3,
+				effects: [
+					{
+						targetHint: 'selected',
+						type: 'addStatus',
+						status: 'reGen',
 					},
 				],
 			},
@@ -678,7 +669,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 20,
+						power: 33,
 						element: 'cure',
 					},
 				],
@@ -699,7 +690,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 35,
+						power: 66,
 						element: 'cure',
 					},
 				],
@@ -719,7 +710,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 50,
+						power: 100,
 						element: 'cure',
 					},
 				],
@@ -733,12 +724,10 @@ const Skills =
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 50,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Crackdown",
 				rank: 3,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -754,12 +743,10 @@ const Skills =
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 50,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Curse",
 				rank: 3,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -775,7 +762,6 @@ const Skills =
 		category: 'strategy',
 		targetType: 'single',
 		baseMPCost: 15,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Necromancy",
@@ -795,7 +781,6 @@ const Skills =
 		category: 'strategy',
 		targetType: 'ally',
 		baseMPCost: 20,
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Protect",
@@ -927,7 +912,6 @@ const Skills =
 		name: "Delusion",
 		category: 'strategy',
 		targetType: 'single',
-		allowAsCounter: false,
 		actions: [
 			{
 				announceAs: "Delusion",
@@ -952,7 +936,6 @@ const Skills =
 				announceAs: "Flame Breath",
 				rank: 2,
 				accuracyType: 'breath',
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'selected',
@@ -974,7 +957,6 @@ const Skills =
 			{
 				announceAs: "Flare Up",
 				rank: 2,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'user',
@@ -1000,7 +982,6 @@ const Skills =
 			{
 				announceAs: "Rear Up",
 				rank: 1,
-				preserveGuard: true,
 				effects: [
 					{
 						targetHint: 'user',
@@ -1123,6 +1104,7 @@ function basicSpell(name, element)
 		name,
 		category: 'magic',
 		targetType: 'single',
+		groupCast: true,
 		baseMPCost: 10,
 		actions: [
 			{
@@ -1143,6 +1125,19 @@ function basicSpell(name, element)
 	};
 }
 
+function damageEffect(power, type)
+{
+	return {
+		targetHint: 'selected',
+		type: 'damage',
+		damageType: type,
+		power: power,
+		element: element,
+		addStatus: statusID,
+		statusChance: 10,
+	};
+}
+
 function powerSpell(name, element, statusID)
 {
 	return {
@@ -1160,7 +1155,7 @@ function powerSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 35,
+						power: 40,
 						element: element,
 						addStatus: statusID,
 						statusChance: 10,
@@ -1187,7 +1182,7 @@ function ultraSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 60,
 						element,
 						addStatus: statusID,
 						statusChance: 25,
@@ -1215,7 +1210,7 @@ function statusSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 1,
+						power: 10,
 						element,
 						addStatus: statusID,
 						statusChance: 100,

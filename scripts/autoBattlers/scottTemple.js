@@ -17,6 +17,7 @@ class ScottTempleAI extends AutoBattler
 		this.definePhases([ 4000, 1500 ], 100);
 		this.defaultSkill = 'swordSlash';
 
+		this.omniCounter = 'tenPointFive';
 		this.inQSCombo = false;
 		this.nextSpell = null;
 		this.spellTarget = null;
@@ -24,45 +25,17 @@ class ScottTempleAI extends AutoBattler
 
 	strategize()
 	{
-		const healChance = 0.15 * (this.phase - 1);
-		if (this.nextSpell !== null) {
-			this.queueSkill(this.nextSpell, Stance.Normal, this.spellTarget);
-			this.nextSpell = null;
-		}
-		else if (!this.inQSCombo && Random.chance(healChance)) {
-			this.queueSkill('heal');
+		const spellID = Random.sample([ 'hellfire', 'windchill', 'upheaval' ]);
+		if (this.inQSCombo || Random.chance(0.50)) {
+			const turns = this.predictSkillTurns('quickstrike');
+			this.inQSCombo = turns[0].unit === this.unit;
+			this.queueSkill(this.inQSCombo ? 'quickstrike' : 'swordSlash');
 		}
 		else {
-			const comboChance = this.phase < 3 ? 0.5 : 0.25;
-			if (!this.inQSCombo && !this.hasStatus('crackdown') && Random.chance(comboChance))
-				this.inQSCombo = true;
-			if (this.inQSCombo) {
-				const turns = this.predictSkillTurns('quickstrike');
-				if (turns[0].unit === this.unit) {
-					this.queueSkill('quickstrike');
-				}
-				else {
-					this.queueSkill('swordSlash');
-					this.inQSCombo = false;
-				}
-			}
-			else {
-				if (this.phase >= 3 && Random.chance(0.35)) {
-					this.queueSkill('tenPointFive');
-				}
-				else {
-					const usePowerSpell = Random.chance(0.25 * this.phase);
-					const moveID = usePowerSpell
-						? Random.sample([ 'hellfire', 'windchill' ])
-						: Random.sample([ 'flare', 'chill', 'lightning', 'quake' ]);
-					if (moveID === 'hellfire')
-						this.nextSpell = 'windchill';
-					else if (moveID === 'windchill')
-						this.nextSpell = 'hellfire';
-					this.spellTarget = Random.sample([ 'elysia', 'abigail', 'bruce' ]);
-					this.queueSkill(moveID, Stance.Normal, this.spellTarget);
-				}
-			}
+			const turns = this.predictSkillTurns('heal');
+			if (turns[0].unit === this.unit)
+				this.queueSkill('heal');
+			this.queueSkill(spellID);
 		}
 	}
 
@@ -72,6 +45,16 @@ class ScottTempleAI extends AutoBattler
 		case 1:
 			this.queueSkill('omni', Stance.Normal, 'elysia');
 			break;
+		}
+	}
+	
+	on_skillUsed(userID, skillID, stance, targetIDs)
+	{
+		if (skillID === 'salve' && userID !== 'scottTemple')
+			this.omniCounter = 'discharge';
+		if (skillID === 'omni' && userID !== 'scottTemple' && this.turnsTaken > 0) {
+			if (Random.chance(0.50 + 0.125 * this.phase))
+				this.queueSkill(this.omniCounter);
 		}
 	}
 

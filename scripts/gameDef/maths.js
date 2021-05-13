@@ -43,7 +43,7 @@ const Maths =
 
 	damage: {
 		calculate(power, level, targetTier, attack, defense) {
-			return ((level * power) + (power * (attack - defense))) / 10;
+			return ((level * power) + (power * (attack - defense))) / 15;
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,

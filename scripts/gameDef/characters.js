@@ -26,12 +26,12 @@ const Characters =
 			'quake',
 			'dispel',
 			'immunize',
-			'salve',
 			'heal',
 			'rejuvenate',
 			'renewal',
 			'lazarus',
 			'purify',
+			'salve',
 		],
 	},
 
