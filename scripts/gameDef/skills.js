@@ -659,6 +659,7 @@ const Skills =
 		name: "Heal",
 		category: 'heal',
 		targetType: 'ally',
+		groupCast: true,
 		baseMPCost: 5,
 		actions: [
 			{
@@ -680,6 +681,7 @@ const Skills =
 		name: "Rejuvenate",
 		category: 'heal',
 		targetType: 'ally',
+		groupCast: true,
 		baseMPCost: 10,
 		actions: [
 			{
@@ -700,7 +702,8 @@ const Skills =
 	renewal: {
 		name: "Renewal",
 		category: 'heal',
-		targetType: 'allAllies',
+		targetType: 'ally',
+		groupCast: true,
 		baseMPCost: 20,
 		actions: [
 			{
@@ -1104,7 +1107,6 @@ function basicSpell(name, element)
 		name,
 		category: 'magic',
 		targetType: 'single',
-		groupCast: true,
 		baseMPCost: 10,
 		actions: [
 			{

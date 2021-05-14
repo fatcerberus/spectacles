@@ -18,23 +18,21 @@ class ScottTempleAI extends AutoBattler
 		this.defaultSkill = 'swordSlash';
 
 		this.omniCounter = 'tenPointFive';
-		this.inQSCombo = false;
-		this.nextSpell = null;
-		this.spellTarget = null;
+		this.useQSNext = false;
 	}
 
 	strategize()
 	{
-		const spellID = Random.sample([ 'hellfire', 'windchill', 'upheaval' ]);
-		if (this.inQSCombo || Random.chance(0.50)) {
+		if (this.useQSNext || Random.chance(0.50)) {
 			const turns = this.predictSkillTurns('quickstrike');
-			this.inQSCombo = turns[0].unit === this.unit;
-			this.queueSkill(this.inQSCombo ? 'quickstrike' : 'swordSlash');
+			this.useQSNext = turns[0].unit === this.unit;
+			this.queueSkill(this.useQSNext ? 'quickstrike' : 'swordSlash');
 		}
 		else {
 			const turns = this.predictSkillTurns('heal');
 			if (turns[0].unit === this.unit)
 				this.queueSkill('heal');
+			const spellID = Random.sample([ 'hellfire', 'windchill', 'upheaval' ]);
 			this.queueSkill(spellID);
 		}
 	}
@@ -45,15 +43,18 @@ class ScottTempleAI extends AutoBattler
 		case 1:
 			this.queueSkill('omni', Stance.Normal, 'elysia');
 			break;
+		case 2:
+			this.queueSkill(this.omniCounter);
+			break;
 		}
 	}
-	
+
 	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
 		if (skillID === 'salve' && userID !== 'scottTemple')
 			this.omniCounter = 'discharge';
 		if (skillID === 'omni' && userID !== 'scottTemple' && this.turnsTaken > 0) {
-			if (Random.chance(0.50 + 0.125 * this.phase))
+			if (Random.chance(0.25 * (this.phase - 1)))
 				this.queueSkill(this.omniCounter);
 		}
 	}
@@ -61,6 +62,6 @@ class ScottTempleAI extends AutoBattler
 	on_unitReady(unitID)
 	{
 		if (unitID !== 'scottTemple')
-			this.inQSCombo = false;
+			this.useQSNext = false;
 	}
 }

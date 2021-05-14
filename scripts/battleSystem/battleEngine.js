@@ -224,7 +224,7 @@ class BattleEngine extends Thread
 			this.suspendCount = 0;
 	}
 
-	async runAction(action, actingUnit, targetUnits, useAiming = true)
+	async runAction(action, actingUnit, targetUnits, useAiming = true, isGroupCast = false)
 	{
 		let eventData = { action: action, targets: targetUnits };
 		this.raiseEvent('actionTaken', eventData);
@@ -236,7 +236,7 @@ class BattleEngine extends Thread
 		for (const effect of userEffects) {
 			console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
 			let effectHandler = MoveEffects[effect.type];
-			effectHandler(actingUnit, [ actingUnit ], effect);
+			effectHandler(actingUnit, [ actingUnit ], effect, false);
 		}
 		for (const target of targetUnits)
 			target.takeHit(actingUnit, action);
@@ -287,7 +287,7 @@ class BattleEngine extends Thread
 						? [ Random.sample(targetsHit) ]
 						: targetsHit;
 					console.log(`apply effect '${effect.type}'`, `retarg: ${effect.targetHint}`);
-					MoveEffects[effect.type](actingUnit, targets, effect);
+					MoveEffects[effect.type](actingUnit, targets, effect, isGroupCast);
 				}
 				return this.pc < this.effects.length;
 			},

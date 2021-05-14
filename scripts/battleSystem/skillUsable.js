@@ -24,6 +24,7 @@ class SkillUsable
 			this.levelUpTable[i] = xpNeeded;
 		}
 		this.skillInfo = Skills[skillID];
+		this.canGroupCast = this.skillInfo.groupCast ?? false;
 		this.experience = this.levelUpTable[level];
 		this.givesExperience = true;
 		this.isGroupCast = from([ 'allEnemies', 'allAllies' ])

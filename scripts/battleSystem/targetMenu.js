@@ -18,6 +18,7 @@ class TargetMenu extends Thread
 		super({ priority: 10 });
 
 		this.battle = battle;
+		this.canGroupCast = usable !== null ? usable.canGroupCast : false;
 		this.doChangeInfo = null;
 		this.isChoiceMade = false;
 		this.infoBoxFadeness = 1.0;
@@ -171,6 +172,17 @@ class TargetMenu extends Thread
 					.run();
 				this.updateTurnPreview();
 				break;
+			case Key.V:
+				if (this.canGroupCast && !this.isTargetLocked) {
+					this.isGroupCast = !this.isGroupCast;
+					if (this.isGroupCast)
+						this.targets = this.battle.alliesOf(this.targets[0]);
+					else
+						this.targets = [ this.battle.alliesOf(this.targets[0])[0] ];
+					this.updateInfo();
+					this.updateTurnPreview();
+				}
+				break;
 			case Key.Up:
 				if (!this.isTargetLocked) {
 					this.moveCursor(-1);
@@ -183,10 +195,11 @@ class TargetMenu extends Thread
 				break;
 			case Key.Left:
 				if (!this.isTargetLocked && this.targets != null) {
+					const enemyUnits = this.battle.enemiesOf(this.unit);
 					if (!this.isGroupCast)
-						this.targets = [ this.battle.enemiesOf(this.unit)[0] ];
+						this.targets = [ enemyUnits[0] ];
 					else
-						this.targets = this.battle.enemiesOf(this.unit);
+						this.targets = enemyUnits;
 					this.updateInfo();
 					this.updateTurnPreview();
 				}

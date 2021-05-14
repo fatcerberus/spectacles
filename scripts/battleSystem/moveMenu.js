@@ -199,7 +199,8 @@ class MoveMenu extends Thread
 			let targetMenu;
 			switch (this.stance) {
 				case Stance.Normal: {
-					chosenTargets = await new TargetMenu(this.unit, this.battle, this.selection, this.selection.name, this.stance).run();
+					const targeter = new TargetMenu(this.unit, this.battle, this.selection, this.selection.name, this.stance);
+					chosenTargets = await targeter.run();
 					break;
 				}
 				case Stance.Guard: {

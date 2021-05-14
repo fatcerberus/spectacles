@@ -18,6 +18,7 @@ class ItemUsable
 		if (!(itemID in Items))
 			throw new ReferenceError(`no such item '${itemID}'`);
 
+		this.canGroupCast = false;
 		this.givesExperience = false;
 		this.isUnlimited = false;
 		this.itemDef = clone(Items[itemID]);

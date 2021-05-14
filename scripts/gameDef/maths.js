@@ -42,8 +42,9 @@ const Maths =
 	},
 
 	damage: {
-		calculate(power, level, targetTier, attack, defense) {
-			return ((level * power) + (power * (attack - defense))) / 15;
+		calculate(power, level, targetTier, attack, defense, isGroupCast = false) {
+			const base = ((level * power) + (power * (attack - defense))) / 15;
+			return isGroupCast ? base * 0.5 : base;
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -61,9 +62,9 @@ const Maths =
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
 				100, targetInfo.stats.def);
 		},
-		magic(userInfo, targetInfo, power) {
+		magic(userInfo, targetInfo, power, isGroupCast) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-				userInfo.stats.mag, targetInfo.stats.foc);
+				userInfo.stats.mag, targetInfo.stats.foc, isGroupCast);
 		},
 		physical(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
@@ -115,9 +116,9 @@ const Maths =
 		},
 	},
 
-	healing(userInfo, targetInfo, power) {
+	healing(userInfo, targetInfo, power, isGroupCast) {
 		return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
-			userInfo.stats.mag, 0);
+			userInfo.stats.mag, 0, isGroupCast);
 	},
 
 	hp(unitInfo, level, tier) {

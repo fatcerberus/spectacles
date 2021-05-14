@@ -404,7 +404,7 @@ class BattleUnit
 		this.raiseEvent('acting', eventData);
 		eventData.action.rank = Math.max(Math.round(eventData.action.rank), 0);
 		if (this.isAlive()) {
-			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming);
+			let unitsHit = await this.battle.runAction(action, this, move.targets, move.usable.useAiming, move.usable.canGroupCast && move.targets.length > 1);
 			if (move.usable.givesExperience && unitsHit.length > 0) {
 				let experience = {};
 				for (let i = 0; i < unitsHit.length; ++i) {

@@ -33,14 +33,14 @@ const MoveEffects =
 			unit.addStatus(effect.status);
 	},
 
-	damage(actor, targets, effect) {
+	damage(actor, targets, effect, isGroupCast) {
 		let userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
 			let targetInfo = targets[i].battlerInfo;
 			let damageTags = [ effect.damageType ];
 			if ('element' in effect)
 				damageTags.push(effect.element);
-			let damage = Math.max(Math.round(Maths.damage[effect.damageType](userInfo, targetInfo, effect.power)), 1);
+			let damage = Math.max(Math.round(Maths.damage[effect.damageType](userInfo, targetInfo, effect.power, isGroupCast)), 1);
 			let tolerance = Math.round(damage / 10);
 			targets[i].takeDamage(Math.max(Random.uniform(damage, tolerance), 1), damageTags);
 			let recoilFunction = `${effect.damageType}Recoil`;
@@ -79,11 +79,11 @@ const MoveEffects =
 		}
 	},
 
-	heal(actor, targets, effect) {
+	heal(actor, targets, effect, isGroupCast) {
 		let userInfo = actor.battlerInfo;
 		for (let i = 0; i < targets.length; ++i) {
 			let targetInfo = targets[i].battlerInfo;
-			let healing = Math.max(Math.round(Maths.healing(userInfo, targetInfo, effect.power)), 1);
+			let healing = Math.max(Math.round(Maths.healing(userInfo, targetInfo, effect.power, isGroupCast)), 1);
 			let tolerance = Math.round(healing / 10);
 			targets[i].heal(Math.max(Random.uniform(healing, tolerance), 1), [ 'cure' ]);
 			if ('addStatus' in effect) {
