@@ -610,7 +610,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'revive',
-						strength: 100,
+						strength: 25,
 						element: 'cure',
 					},
 				],
@@ -670,7 +670,7 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 33,
+						power: 25,
 						element: 'cure',
 					},
 				],
@@ -682,7 +682,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		groupCast: true,
-		baseMPCost: 10,
+		baseMPCost: 15,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -692,28 +692,29 @@ const Skills =
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 66,
+						power: 50,
 						element: 'cure',
 					},
 				],
 			},
 		],
 	},
-	renewal: {
-		name: "Renewal",
+	renew: {
+		name: "Renew",
 		category: 'heal',
 		targetType: 'ally',
 		groupCast: true,
-		baseMPCost: 20,
+		baseMPCost: 25,
 		actions: [
 			{
-				announceAs: "Renewal",
-				rank: 4,
+				announceAs: "Renew",
+				rank: 2,
+				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 100,
+						power: 75,
 						element: 'cure',
 					},
 				],
@@ -1118,25 +1119,12 @@ function basicSpell(name, element)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 20,
+						power: 15,
 						element,
 					},
 				],
 			},
 		],
-	};
-}
-
-function damageEffect(power, type)
-{
-	return {
-		targetHint: 'selected',
-		type: 'damage',
-		damageType: type,
-		power: power,
-		element: element,
-		addStatus: statusID,
-		statusChance: 10,
 	};
 }
 
@@ -1157,7 +1145,7 @@ function powerSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 40,
+						power: 30,
 						element: element,
 						addStatus: statusID,
 						statusChance: 10,
@@ -1184,7 +1172,7 @@ function ultraSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 60,
+						power: 50,
 						element,
 						addStatus: statusID,
 						statusChance: 25,

@@ -33,7 +33,7 @@ const Items =
 	holyWater: {
 		name: "Holy Water",
 		tags: [ 'remedy' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Holy Water",
 			effects: [
@@ -45,18 +45,18 @@ const Items =
 			],
 		},
 	},
-	revival: {
-		name: "Revival",
+	lazarusPotion: {
+		name: "Lazarus Potion",
 		tags: [ 'drink', 'curative' ],
 		allowDeadTarget: true,
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Lazarus Potion",
 			effects: [
 				{
 					targetHint: 'selected',
 					type: 'revive',
-					strength: 25,
+					strength: 100,
 				},
 			],
 		},
@@ -64,14 +64,14 @@ const Items =
 	tonic: {
 		name: "Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Tonic",
 			effects: [
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 25,
+					strength: 100,
 				},
 			],
 		},
@@ -79,7 +79,7 @@ const Items =
 	powerTonic: {
 		name: "Power Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Power Tonic",
 			effects: [
@@ -94,7 +94,7 @@ const Items =
 	fullTonic: {
 		name: "Full Tonic",
 		tags: [ 'drink', 'curative' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Full Tonic",
 			effects: [
@@ -109,7 +109,7 @@ const Items =
 	redBull: {
 		name: "Red Bull",
 		tags: [ 'drink', 'curative' ],
-		uses: 10,
+		uses: 5,
 		action: {
 			announceAs: "Red Bull",
 			effects: [

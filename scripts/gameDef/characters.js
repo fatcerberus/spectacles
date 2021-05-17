@@ -7,7 +7,7 @@ export
 const Characters =
 {
 	abigail: {
-		name: "Abby",
+		name: "Abigail",
 		fullName: "Abigail Adora",
 		baseStats: {
 			vit: 30,
@@ -28,7 +28,7 @@ const Characters =
 			'immunize',
 			'heal',
 			'rejuvenate',
-			'renewal',
+			'renew',
 			'lazarus',
 			'purify',
 			'salve',

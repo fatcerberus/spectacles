@@ -16,7 +16,7 @@ TestHarness.addBattle('temple', {
 		'tonic',
 		'redBull',
 		'holyWater',
-		'revival',
+		'lazarusPotion',
 	],
 });
 

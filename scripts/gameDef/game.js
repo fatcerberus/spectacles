@@ -16,9 +16,8 @@ const Game =
 	defaultMoveRank: 2,
 	defaultItemRank: 1,
 	equipWeaponRank: 2,
-	guardBreakRank: 2,
+	guardRank: 2,
 	reviveRank: 2,
-	stanceChangeRank: 2,
 
 	initialParty: [
 		'scott',

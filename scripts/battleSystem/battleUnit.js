@@ -624,7 +624,7 @@ class BattleUnit
 		console.log(`${this.name} will switch to Guard Stance`);
 		await this.announce("Guard");
 		this.newStance = Stance.Guard;
-		this.resetCounter(Game.stanceChangeRank);
+		this.resetCounter(Game.guardRank);
 	}
 
 	async setWeapon(weaponID)

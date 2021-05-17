@@ -171,7 +171,7 @@ class MoveMenu extends Thread
 				}
 			}
 			else {
-				nextMoveOrRank = Game.stanceChangeRank;
+				nextMoveOrRank = Game.guardRank;
 			}
 			let nextActions = isNaN(nextMoveOrRank) ? nextMoveOrRank.peekActions() : [ nextMoveOrRank ];
 			let prediction = this.battle.predictTurns(this.unit, nextActions);

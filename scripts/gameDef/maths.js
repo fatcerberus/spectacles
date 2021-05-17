@@ -44,7 +44,7 @@ const Maths =
 	damage: {
 		calculate(power, level, targetTier, attack, defense, isGroupCast = false) {
 			const base = ((level * power) + (power * (attack - defense))) / 15;
-			return isGroupCast ? base * 0.5 : base;
+			return isGroupCast ? base / 1.5 : base;
 		},
 		bow(userInfo, targetInfo, power) {
 			return Maths.damage.calculate(power, userInfo.level, targetInfo.tier,
