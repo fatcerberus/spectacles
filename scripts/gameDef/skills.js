@@ -682,7 +682,7 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		groupCast: true,
-		baseMPCost: 15,
+		baseMPCost: 10,
 		actions: [
 			{
 				announceAs: "Rejuvenate",
@@ -704,17 +704,17 @@ const Skills =
 		category: 'heal',
 		targetType: 'ally',
 		groupCast: true,
-		baseMPCost: 25,
+		baseMPCost: 20,
 		actions: [
 			{
 				announceAs: "Renew",
-				rank: 2,
+				rank: 4,
 				accuracyType: 'magic',
 				effects: [
 					{
 						targetHint: 'selected',
 						type: 'heal',
-						power: 75,
+						power: 100,
 						element: 'cure',
 					},
 				],
@@ -1119,7 +1119,7 @@ function basicSpell(name, element)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 15,
+						power: 20,
 						element,
 					},
 				],
@@ -1145,7 +1145,7 @@ function powerSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 30,
+						power: 35,
 						element: element,
 						addStatus: statusID,
 						statusChance: 10,
@@ -1162,7 +1162,7 @@ function ultraSpell(name, element, statusID)
 		name,
 		category: 'magic',
 		targetType: 'allEnemies',
-		baseMPCost: 30,
+		baseMPCost: 40,
 		actions: [
 			{
 				announceAs: name,
@@ -1172,7 +1172,7 @@ function ultraSpell(name, element, statusID)
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'magic',
-						power: 50,
+						power: 65,
 						element,
 						addStatus: statusID,
 						statusChance: 25,

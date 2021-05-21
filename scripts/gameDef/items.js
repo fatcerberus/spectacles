@@ -71,7 +71,7 @@ const Items =
 				{
 					targetHint: 'selected',
 					type: 'recoverHP',
-					strength: 100,
+					strength: 25,
 				},
 			],
 		},
