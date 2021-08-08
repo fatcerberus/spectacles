@@ -156,7 +156,7 @@ const Statuses =
 		endTurn(unit, eventData) {
 			const unitInfo = unit.battlerInfo;
 			const base = Maths.hp(unitInfo, unitInfo.level, 1);
-			unit.takeDamage(0.05 * base, [ 'fire', 'special' ]);
+			unit.takeDamage(0.03 * base, [ 'ice', 'special' ]);
 		},
 	},
 

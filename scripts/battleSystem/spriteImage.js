@@ -10,8 +10,8 @@ class SpriteImage
 {
 	static async fromFile(fileName)
 	{
-		const data = await FS.readFile(fileName, DataType.Raw);
-		const fs = new BufferStream(data);
+		const fileData = await FS.readFile(fileName, DataType.Raw);
+		const fs = new BufferStream(fileData);
 		const rss = fs.readStruct({
 			signature:   'string/4',
 			version:     'uint16-le',

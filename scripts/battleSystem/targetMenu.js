@@ -100,7 +100,7 @@ class TargetMenu extends Thread
 				.call(() => {
 					this.unitToShowInfo = unit;
 					if (this.unitToShowInfo !== null) {
-						this.statusNames = !this.unitToShowInfo.isAlive() ? [ "Incapacitated" ] : [];
+						this.statusNames = !this.unitToShowInfo.isAlive() ? [ "KO" ] : [];
 						for (let i = 0; i < this.unitToShowInfo.statuses.length; ++i) {
 							this.statusNames.push(this.unitToShowInfo.statuses[i].name);
 						}

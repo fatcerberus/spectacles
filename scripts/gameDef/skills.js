@@ -34,7 +34,7 @@ const Skills =
 						targetHint: 'selected',
 						type: 'damage',
 						damageType: 'sword',
-						power: 9,
+						power: 100,
 					},
 					{
 						targetHint: 'user',
@@ -708,7 +708,7 @@ const Skills =
 		actions: [
 			{
 				announceAs: "Renew",
-				rank: 4,
+				rank: 3,
 				accuracyType: 'magic',
 				effects: [
 					{
