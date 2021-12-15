@@ -92,7 +92,7 @@ class BattleEngine extends Thread
 			let battlerInfo = this.session.party.members[key].getInfo();
 			let mpDonated = Math.round(Maths.mp.capacity(battlerInfo));
 			partyMaxMP += mpDonated;
-			console.log(`${Characters[battlerInfo.characterID].name} contributes ${mpDonated} MP`);
+			console.log(`${Characters[battlerInfo.characterID].name} contributes ${mpDonated} MP to party pool`);
 		}
 		partyMaxMP = Math.min(Math.max(partyMaxMP, 0), 9999);
 		let partyMPPool = new MPPool('partyMP', Math.min(Math.max(partyMaxMP, 0), 9999));

@@ -5,13 +5,11 @@
 
 describe({
 	version: 2,
-	apiLevel: 3,
-
+	apiLevel: 4,
 	name: "Spectacles: Bruce's Story",
 	author: "Fat Cerberus",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x240',
-
 	main: 'scripts/main.js',
 	saveID: 'Spectacles Saga',
 });
