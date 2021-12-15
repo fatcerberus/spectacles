@@ -2,7 +2,6 @@
 desktop.ini
 Thumbs.db
 
-*.ssuser
-*.sgm
 *.spk
+sphereStudio.usr
 dist/

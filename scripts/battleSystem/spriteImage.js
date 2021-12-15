@@ -3,15 +3,14 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { BufferStream, Prim } from 'sphere-runtime';
+import { DataStream, Prim } from 'sphere-runtime';
 
 export default
 class SpriteImage
 {
 	static async fromFile(fileName)
 	{
-		const fileData = await FS.readFile(fileName, DataType.Raw);
-		const fs = new BufferStream(fileData);
+		const fs = await DataStream.fromFile(fileName);
 		const rss = fs.readStruct({
 			signature:   'string/4',
 			version:     'uint16-le',
@@ -23,7 +22,7 @@ class SpriteImage
 			baseY1:      'uint16-le',
 			baseX2:      'uint16-le',
 			baseY2:      'uint16-le',
-			reserved:    'reserve/106',
+			reserved:    'nil/106',
 		});
 		if (rss.signature !== '.rss' || rss.version !== 3)
 			throw new Error(`Couldn't load Sphere spriteset '${fileName}'`);
@@ -36,15 +35,15 @@ class SpriteImage
 		for (let i = 0; i < rss.numPoses; ++i) {
 			const poseInfo = fs.readStruct({
 				numFrames: 'uint16-le',
-				reserved:  'reserve/6',
-				name:      'zstring16-le',
+				reserved:  'nil/6',
+				name:      'cstr16-le',
 			});
 			const pose = { frames: [] };
 			for (let j = 0; j < poseInfo.numFrames; ++j) {
 				const frameInfo = fs.readStruct({
 					imageIndex: 'uint16-le',
 					delay:      'uint16-le',
-					reserved:   'reserve/4',
+					reserved:   'nil/4',
 				});
 				const frame = { image: images[frameInfo.imageIndex], delay: frameInfo.delay };
 				pose.frames.push(frame);

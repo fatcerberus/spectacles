@@ -29,6 +29,8 @@ function clone(o, memo = [])
 export
 function drawTextEx(font, x, y, text, color = Color.White, shadowLength = 0, alignment = 'left')
 {
+	text = String(text);
+	
 	const Align =
 	{
 		'left':   (font, x, text) => x,

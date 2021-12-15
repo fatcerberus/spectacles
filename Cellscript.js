@@ -3,24 +3,17 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-Object.assign(Sphere.Game, {
-	name: "Spectacles: Bruce's Story",
-	saveID: 'fatCerberus.spectacles',
-	author: "Fat Cerberus",
-	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
-
+describe({
 	version: 2,
 	apiLevel: 3,
 
-	main: 'scripts/main.js',
+	name: "Spectacles: Bruce's Story",
+	author: "Fat Cerberus",
+	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x240',
-	fullScreen: false,
 
-	disableAnimations: false,
-	disableBattles: false,
-	disableSplash: false,
-	disableTalking: false,
-	disableTitleScreen: false,
+	main: 'scripts/main.js',
+	saveID: 'Spectacles Saga',
 });
 
 install('@/', files('icon.png'));
