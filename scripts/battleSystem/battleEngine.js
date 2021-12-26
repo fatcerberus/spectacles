@@ -171,17 +171,19 @@ class BattleEngine extends Thread
 		let forecast = [];
 		for (let turnIndex = 0; turnIndex < 8; ++turnIndex) {
 			if (actingUnit !== null && targetUnits !== null) {
-				from(nextActions).skip(turnIndex).take(1)
+				from(nextActions)
+					.skip(turnIndex)
+					.take(1)
 					.selectMany(action => typeof action === 'object' ? action.effects : [])
 					.where(effect => effect.type === 'knockBack' && effect.targetHint === 'selected')
-					.forEach(effect => {
-						for (const target of targetUnits) {
-							const divisor = target.turnRatio;
-							let delay = delayMap.get(target) || 0;
-							delay += Math.max(Math.round(Maths.timeUntilNextTurn(target.battlerInfo, effect.rank) / divisor), 1);
-							delayMap.set(target, delay);
-						}
-					});
+				.forEach(effect => {
+					for (const target of targetUnits) {
+						const divisor = target.turnRatio;
+						let delay = delayMap.get(target) || 0;
+						delay += Math.max(Math.round(Maths.timeUntilNextTurn(target.battlerInfo, effect.rank) / divisor), 1);
+						delayMap.set(target, delay);
+					}
+				});
 			}
 			let bias = 0;
 			const candidates = from(this.enemyUnits, this.playerUnits)
