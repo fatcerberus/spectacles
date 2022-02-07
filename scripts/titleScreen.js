@@ -3,12 +3,12 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Music, Prim, Scene, Thread } from 'sphere-runtime';
+import { Music, Prim, Scene, Task } from 'sphere-runtime';
 
 import MenuStrip from './menuStrip.js';
 
 export default
-class TitleScreen extends Thread
+class TitleScreen extends Task
 {
 	constructor(fileName = '@/data/titleScreen.json')
 	{
@@ -22,7 +22,7 @@ class TitleScreen extends Thread
 
 	async run(showLogos = true)
 	{
-	    this.data = await JSON.fromFile(this.fileName);
+	    this.data = await FS.readFile(this.fileName, DataType.JSON);
 		this.fadeAlpha = 0.0;
 		this.fadeTime = this.data.titleFadeFrames;
 		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
@@ -40,7 +40,7 @@ class TitleScreen extends Thread
 		if (showLogos) {
 			for (const splash of this.splashes) {
 				splash.thread.start();
-				await Thread.join(splash.thread);
+				await Task.join(splash.thread);
 			}
 		}
 		if (!this.data.musicOverSplash)
@@ -74,7 +74,7 @@ class TitleScreen extends Thread
 	}
 }
 
-class SplashThread extends Thread
+class SplashThread extends Task
 {
 	constructor(texture, fadeTime, holdTime)
 	{

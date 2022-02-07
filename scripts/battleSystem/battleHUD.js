@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Task } from 'sphere-runtime';
 
 import { Game } from '../gameDef/index.js';
 import { drawTextEx } from '../utilities.js';
@@ -13,7 +13,7 @@ import MPGauge from './mpGauge.js';
 import TurnPreview from './turnPreview.js';
 
 export default
-class BattleHUD extends Thread
+class BattleHUD extends Task
 {
 	constructor(partyMaxMP)
 	{

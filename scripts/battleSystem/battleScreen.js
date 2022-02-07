@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Task } from 'sphere-runtime';
 
 import { drawTextEx } from '../utilities.js';
 
@@ -11,7 +11,7 @@ import BattleActor from './battleActor.js';
 import BattleHUD from './battleHUD.js';
 
 export default
-class BattleScreen extends Thread
+class BattleScreen extends Task
 {
 	constructor(partyMaxMP)
 	{

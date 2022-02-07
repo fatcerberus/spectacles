@@ -3,10 +3,10 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Prim, Scene, Thread } from 'sphere-runtime';
+import { Prim, Scene, Task } from 'sphere-runtime';
 
 export default
-class AutoColorMask extends Thread
+class AutoColorMask extends Task
 {
 	constructor(initialMask = Color.Transparent)
 	{

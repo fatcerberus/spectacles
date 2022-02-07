@@ -3,12 +3,12 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { Music, Prim, Scene, Thread } from 'sphere-runtime';
+import { Music, Prim, Scene, Task } from 'sphere-runtime';
 
 import MenuStrip from './menuStrip.js';
 
 export default
-class GameOverScreen extends Thread
+class GameOverScreen extends Task
 {
 	constructor()
 	{

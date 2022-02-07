@@ -3,7 +3,7 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
-import { from, Music, Random, Thread } from 'sphere-runtime';
+import { from, Music, Random, Task } from 'sphere-runtime';
 
 import { Animations, Battles, Characters, Game, Maths, MoveEffects } from '../gameDef/index.js';
 import { clone } from '../utilities.js';
@@ -21,7 +21,7 @@ const BattleResult =
 };
 
 export default
-class BattleEngine extends Thread
+class BattleEngine extends Task
 {
 	constructor(session, battleID)
 	{
