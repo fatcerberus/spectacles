@@ -3,6 +3,8 @@
   *            Copyright (c) 2021 Fat Cerberus
 ***/
 
+// we regret to inform you that the pig is eaty
+
 describe({
 	version: 2,
 	apiLevel: 4,
