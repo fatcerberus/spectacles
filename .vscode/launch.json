@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "Run in neoSphere",
+            "type": "f5anything",
+            "request": "launch",
+            "command": "cell && echo. && spherun dist",
+            "showTerminal": false
+        }
+    ]
+}
