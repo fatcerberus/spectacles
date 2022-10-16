@@ -129,7 +129,7 @@ const Maths =
 
 	hp(unitInfo, level, tier) {
 		const vit = Maths.statValue(unitInfo.baseStats.vit, level);
-		return 25 * tier**2 * vit;
+		return 25 * vit * (tier ** 2);
 	},
 
 	mp: {

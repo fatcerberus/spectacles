@@ -135,7 +135,7 @@ class BattleHUD extends Task
 		if (slot < 0 || slot >= this.partyInfo.length)
 			throw new RangeError(`invalid party slot index '${slot}'`);
 
-		let hpGauge = new HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 10);
+		let hpGauge = new HPGauge(maxHP, Game.partyHPPerBar, this.partyHPGaugeColor, 5);
 		hpGauge.show();
 		this.partyInfo[slot] = {
 			unit: unit,

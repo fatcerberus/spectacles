@@ -4,7 +4,7 @@
             "name": "Run in neoSphere",
             "type": "f5anything",
             "request": "launch",
-            "command": "cell && echo. && spherun dist",
+            "command": "cell && spherun dist",
             "showTerminal": false
         }
     ]
