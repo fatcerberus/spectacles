@@ -1,6 +1,6 @@
 /***
  * Specs Engine v6: Spectacles Saga Game Engine
-  *            Copyright (c) 2021 Fat Cerberus
+  *            Copyright (c) 2023 Fat Cerberus
 ***/
 
 import { Music, Prim, Scene, Task } from 'sphere-runtime';
@@ -22,7 +22,7 @@ class TitleScreen extends Task
 
 	async run(showLogos = true)
 	{
-	    this.data = await FS.readFile(this.fileName, DataType.JSON);
+	    this.data = await File.load(this.fileName, DataType.JSON);
 		this.fadeAlpha = 0.0;
 		this.fadeTime = this.data.titleFadeFrames;
 		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
