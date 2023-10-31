@@ -8,8 +8,16 @@ import { Scene } from 'sphere-runtime';
 export
 const Battles =
 {
-	rsbFinal:
-	{
+	beverly: {
+		title: "Beverly, Wide-Load Queen",
+		bgm: 'basicInstinct',
+		battleLevel: 13,
+		enemies: [
+			'beverly',
+		],
+	},
+	
+	rsbFinal: {
 		title: "Robert Spellbinder",
 		isFinalBattle: true,
 		bgm: 'thePromise',
@@ -36,8 +44,7 @@ const Battles =
 		},
 	},
 
-	scottTemple:
-	{
+	scottTemple: {
 		title: "Scott Victor Temple",
 		isFinalBattle: true,
 		bgm: 'revelation',
@@ -47,8 +54,7 @@ const Battles =
 		],
 	},
 
-	scottStarcross:
-	{
+	scottStarcross: {
 		title: "Scott Starcross",
 		isFinalBattle: true,
 		bgm: 'sixthDimension',

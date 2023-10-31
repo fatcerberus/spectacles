@@ -13,9 +13,26 @@ TestHarness.addBattle('horse', {
 	}
 });
 
+TestHarness.addBattle('bev', {
+	battleID: 'beverly',
+	items: [ 'tonic', 'powerTonic', 'redBull' ],
+	party: {
+		scott: { level: 15, weapon: 'templeSword' },
+		maggie: { leve: 15 },
+		lauren: { level: 15, weapon: 'risingSun' },
+	}
+});
+
 TestHarness.addBattle('rsb2', {
 	battleID: 'rsbFinal',
-	items: [ 'tonic', 'redBull', 'holyWater', 'vaccine', 'alcohol' ],
+	items: [
+		'tonic',
+		'powerTonic',
+		'redBull',
+		'holyWater',
+		'vaccine',
+		'alcohol'
+	],
 	party: {
 		scott: { level: 50, weapon: 'templeSword' },
 	},

@@ -84,7 +84,7 @@ class AutoBattler
 					this.allies[ally.id] = ally;
 				}
 				this.targets = null;
-				this.updatePhase();
+				await this.updatePhase();
 				if (this.moveQueue.length == 0)
 					await this.strategize();
 				if (this.moveQueue.length == 0) {
@@ -248,7 +248,7 @@ class AutoBattler
 			throw new Error("AI has no strategy");
 	}
 
-	updatePhase()
+	async updatePhase()
 	{
 		let phaseToEnter = 1;
 		if (this.phasePoints !== null) {
@@ -262,7 +262,7 @@ class AutoBattler
 			console.log(
 				`${this.unit.name} is entering Phase ${this.currentPhase}`,
 				`prev: ${lastPhase > 0 ? lastPhase : "none"}`);
-			this.on_phaseChanged(this.currentPhase, lastPhase);
+			await this.on_phaseChanged(this.currentPhase, lastPhase);
 		}
 	}
 

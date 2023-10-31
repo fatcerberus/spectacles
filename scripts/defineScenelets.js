@@ -13,14 +13,9 @@ let fadeMask = new AutoColorMask();
 
 Scene.defineOp('adjustBGM',
 {
-	start(scene, volume, numFrames = 0)
+	async start(scene, volume, numFrames = 0)
 	{
-		Music.adjustVolume(volume, numFrames);
-	},
-
-	update(scene)
-	{
-		return Music.adjustingVolume;
+		await Music.adjustVolume(volume, numFrames);
 	},
 });
 

@@ -134,11 +134,12 @@ const Maths =
 
 	mp: {
 		capacity(unitInfo) {
-			return unitInfo.baseStats.mag * unitInfo.level * unitInfo.tier / 12;
+			const mag = Maths.statValue(unitInfo.baseStats.mag, unitInfo.level);
+			return 10 * mag * unitInfo.tier;
 		},
 		usage(skill, level, userInfo) {
-			let baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
-			return userInfo.baseStats.mag * baseCost / 12;
+			const baseCost = 'baseMPCost' in skill ? skill.baseMPCost : 0;
+			return userInfo.baseStats.foc * baseCost / 100;
 		},
 	},
 
@@ -148,9 +149,8 @@ const Maths =
 
 	skillRank(skill) {
 		let rankTotal = 0;
-		for (let i = 0; i < skill.actions.length; ++i) {
+		for (let i = 0; i < skill.actions.length; ++i)
 			rankTotal += skill.actions[i].rank;
-		}
 		return rankTotal;
 	},
 
