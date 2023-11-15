@@ -9,12 +9,17 @@ export
 const Battles =
 {
 	beverly: {
-		title: "Beverly, Wide-Load Queen",
+		title: "Beverly, the Wide-Load Queen",
 		bgm: 'basicInstinct',
 		battleLevel: 13,
 		enemies: [
 			'beverly',
 		],
+		async onStart() {
+			await new Scene()
+				.talk("Beverly", true, 1.0, Infinity, "Well, it seems I have a bit of a rat problem on my hands now, doesn't it?")
+				.run();
+}
 	},
 	
 	rsbFinal: {

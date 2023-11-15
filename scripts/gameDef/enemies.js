@@ -8,7 +8,7 @@ const Enemies =
 {
 	beverly: {
 		name: "Beverly",
-		fullName: "Beverly",
+		fullName: "Wide-Load Beverly",
 		hasLifeBar: true,
 		tier: 3,
 		turnRatio: 3.0,

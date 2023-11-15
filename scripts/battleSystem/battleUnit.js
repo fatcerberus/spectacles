@@ -729,7 +729,7 @@ class BattleUnit
 			}
 			console.log(`${this.name}'s turn is up`);
 			this.actor.animate('active');
-			this.battle.notifyAIs('unitReady', this.id);
+			await this.battle.notifyAIs('unitReady', this.id);
 			let eventData = { skipTurn: false };
 			this.raiseEvent('beginTurn', eventData);
 			if (!this.isAlive()) {
