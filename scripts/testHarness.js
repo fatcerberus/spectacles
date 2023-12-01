@@ -26,7 +26,7 @@ class TestHarness
 		this.tests = {};
 		this.isBattleRunning = false;
 
-		let fileNames = from([ 'brucesStoryTests.js', 'lastLucidanTests.js' ])
+		const fileNames = from([ 'brucesStoryTests.js', 'lastLucidanTests.js' ])
 			.besides(it => console.log(`loading testcases from '${it}'`))
 			.select(it => `./testCases/${it}`);
 		for (const fileName of fileNames)
@@ -43,11 +43,11 @@ class TestHarness
 					return;
 				}
 				console.log("preparing test battle", `battleID: ${this.setup.battleID}`);
-				let session = new GameSession();
+				const session = new GameSession();
 				for (const characterID of Game.initialParty)
 					session.party.remove(characterID);
 				for (const id in this.setup.party) {
-					let memberInfo = this.setup.party[id];
+					const memberInfo = this.setup.party[id];
 					session.party.add(id, memberInfo.level);
 					if ('weapon' in memberInfo)
 						session.party.members[id].setWeapon(memberInfo.weapon);

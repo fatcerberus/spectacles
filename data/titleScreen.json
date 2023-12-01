@@ -1,7 +1,7 @@
 {
 	"titleScreen": "images/titleScreen.png",
 	"music": "music/titleTheme.ogg",
-	"menuText": "DEMO",
+	"menuText": "main menu",
 	"musicOverSplash": true,
 	"persistBGM": false,
 	"splashFadeFrames": 60,

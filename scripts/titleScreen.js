@@ -10,7 +10,7 @@ import MenuStrip from './menuStrip.js';
 export default
 class TitleScreen extends Task
 {
-	constructor(fileName = '@/data/titleScreen.json')
+	constructor(fileName = 'data/titleScreen.json')
 	{
 		super();
 
@@ -25,13 +25,13 @@ class TitleScreen extends Task
 	    this.data = await File.load(this.fileName, DataType.JSON);
 		this.fadeAlpha = 0.0;
 		this.fadeTime = this.data.titleFadeFrames;
-		this.menu = new MenuStrip(this.data.menuText, false, [ "fight RSB", "exit" ]);
+		this.menu = new MenuStrip(this.data.menuText, false, [ "New Game", "Quit" ]);
 		this.texture = await Texture.fromFile(this.data.titleScreen);
 		this.splashes = [];
 		for (const splash of this.data.splashScreens) {
 			console.log(`splash '${splash.fileName}'`, `hold: ${splash.holdFrames}f`);
-			let texture = await Texture.fromFile(splash.fileName);
-			let thread = new SplashThread(texture, this.data.splashFadeFrames, splash.holdFrames);
+			const texture = await Texture.fromFile(splash.fileName);
+			const thread = new SplashThread(texture, this.data.splashFadeFrames, splash.holdFrames);
 			this.splashes.push({ thread });
 		}
 
@@ -69,7 +69,7 @@ class TitleScreen extends Task
 
 	on_render()
 	{
-		let fadeMask = Color.White.fadeTo(this.fadeAlpha);
+		const fadeMask = Color.White.fadeTo(this.fadeAlpha);
 		Prim.blit(Surface.Screen, 0, 0, this.texture, fadeMask);
 	}
 }

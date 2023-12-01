@@ -53,7 +53,7 @@ class GameOverScreen extends Task
 			case 'transitionIn':
 				if (!this.transition.running) {
 					this.mode = 'idle';
-					let menu = new MenuStrip("Game Over", false);
+					const menu = new MenuStrip("Game Over", false);
 					menu.addItem("Retry Battle", GameOverAction.Retry);
 					menu.addItem("Give Up", GameOverAction.Quit);
 					this.action = await menu.run();

@@ -7,6 +7,7 @@ import { Console, Music, Scene } from 'sphere-runtime';
 
 import DayNightClock from './dayNightClock.js';
 import TestHarness from './testHarness.js';
+import TitleScreen from './titleScreen.js';
 
 import './defineScenelets.js';
 
@@ -40,6 +41,8 @@ async function main()
 
 	await TestHarness.initialize();
 
-	let dayNight = new DayNightClock();
-	await TestHarness.run('bev');
+	//await new TitleScreen().run();
+	
+	const dayNight = new DayNightClock();
+	await TestHarness.run('rsb2');
 }

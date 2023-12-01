@@ -11,7 +11,7 @@ function clone(o, memo = [])
 			if (o === memo[i].original)
 				return memo[i].dolly;
 		}
-		let dolly = Array.isArray(o) ? []
+		const dolly = Array.isArray(o) ? []
 			: 'clone' in o && typeof o.clone === 'function' ? o.clone()
 			: {};
 		memo[memo.length] = { original: o, dolly: dolly };
@@ -38,7 +38,7 @@ function drawTextEx(font, x, y, text, color = Color.White, shadowLength = 0, ali
 		'right':  (font, x, text) => x - font.widthOf(text),
 	};
 
-	let shadowColor = Color.Black.fadeTo(color.a);
+	const shadowColor = Color.Black.fadeTo(color.a);
 	x = Math.trunc(Align[alignment](font, x, text));
 	y = Math.trunc(y);
 	font.drawText(Surface.Screen, x + shadowLength, y + shadowLength, text, shadowColor);

@@ -27,7 +27,7 @@ class HeadlessHorseAI extends AutoBattler
 	{
 		switch (this.phase) {
 			case 1: {
-				let hellfireTurns = this.predictSkillTurns('hellfire');
+				const hellfireTurns = this.predictSkillTurns('hellfire');
 				if (!this.unit.hasStatus('ignite')) {
 					this.queueSkill('hellfire', 'headlessHorse');
 					if (from(hellfireTurns).any(it => it.unit.id === 'elysia'))
@@ -42,7 +42,7 @@ class HeadlessHorseAI extends AutoBattler
 				if (this.spectralDrawPending) {
 					this.ghostTargetID = null;
 					let maxValue = 0;
-					for (let unitID in this.damageTaken) {
+					for (const unitID in this.damageTaken) {
 						if (this.damageTaken[unitID] > maxValue) {
 							this.ghostTargetID = unitID;
 							maxValue = this.damageTaken[unitID];
@@ -80,7 +80,7 @@ class HeadlessHorseAI extends AutoBattler
 	on_skillUsed(userID, skillID, stance, targetIDs)
 	{
 		if (from(targetIDs).anyIs('headlessHorse')) {
-			let iceSkills = [ 'chillShot', 'chill', 'windchill' ];
+			const iceSkills = [ 'chillShot', 'chill', 'windchill' ];
 			if (from(iceSkills).anyIs(skillID) && (this.unit.hasStatus('ignite') || this.unit.hasStatus('rearing')))
 				this.trampleTarget = userID;
 		}
@@ -110,7 +110,7 @@ class HeadlessHorseAI extends AutoBattler
 	on_unitTargeted(unit, action, actingUnit)
 	{
 		if (unit === this.unit) {
-			let isPhysical = from(action.effects)
+			const isPhysical = from(action.effects)
 				.where(it => it.type === 'damage')
 				.any(it => it.damageType === 'physical' || it.element === 'earth');
 			if (isPhysical && this.unit.hasStatus('rearing')) {
@@ -119,7 +119,7 @@ class HeadlessHorseAI extends AutoBattler
 				else if (this.trampleTarget !== null)
 					this.trampleTarget = actingUnit.id;
 			}
-			let isMagic = from(action.effects)
+			const isMagic = from(action.effects)
 				.where(it => it.type === 'damage')
 				.any(it => it.damageType === 'magic');
 			if (isMagic && this.unit.hasStatus('ghost') && actingUnit.id != this.ghostTargetID)
