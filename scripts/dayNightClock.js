@@ -1,7 +1,7 @@
-/***
- * Specs Engine v6: Spectacles Saga Game Engine
-  *            Copyright (c) 2023 Fat Cerberus
-***/
+/**
+ *  Specs Engine: the Spectacles Saga game engine
+ *  Copyright © 2024 Fat Cerberus
+**/
 
 // note: don't run more than one day/night clock at a time.  doing so will cause multiple
 //       filters to be applied to the screen, which won't look too nice. :o)

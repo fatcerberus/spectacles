@@ -1,7 +1,7 @@
-/***
- * Specs Engine v6: Spectacles Saga Game Engine
-  *            Copyright (c) 2023 Fat Cerberus
-***/
+/**
+ *  Specs Engine: the Spectacles Saga game engine
+ *  Copyright © 2024 Fat Cerberus
+**/
 
 export
 function clone(o, memo = [])
