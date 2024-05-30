@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Run in neoSphere",
+            "name": "neoSphere",
             "type": "f5anything",
             "request": "launch",
             "command": "cell && spherun dist",

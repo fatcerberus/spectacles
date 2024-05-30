@@ -7,7 +7,7 @@ export
 const Characters =
 {
 	abigail: {
-		name: "Abigail",
+		name: "Abby",
 		fullName: "Abigail Adora",
 		baseStats: {
 			vit: 30,
