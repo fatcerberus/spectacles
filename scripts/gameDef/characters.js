@@ -1,13 +1,14 @@
 /**
  *  Specs Engine: the Spectacles Saga game engine
- *  Copyright © 2024 Fat Cerberus
+ *  Copyright © 2012-2024 Where'd She Go? Productions
+ *  All rights reserved.
 **/
 
 export
 const Characters =
 {
 	abigail: {
-		name: "Abby",
+		name: "Abigail",
 		fullName: "Abigail Adora",
 		baseStats: {
 			vit: 30,
@@ -24,8 +25,6 @@ const Characters =
 			'chill',
 			'lightning',
 			'quake',
-			'dispel',
-			'immunize',
 			'heal',
 			'rejuvenate',
 			'renew',
@@ -96,6 +95,7 @@ const Characters =
 			foc: 90,
 			agi: 100,
 		},
+		autoScan: true,
 		startingWeapon: 'fireAndIce',
 		skills: [
 			'archery',
@@ -148,7 +148,7 @@ const Characters =
 
 	lauren: {
 		name: "Lauren",
-		fullName: "Lauren Adora",
+		fullName: "Lauren Impeta",
 		baseStats: {
 			vit: 30,
 			str: 60,

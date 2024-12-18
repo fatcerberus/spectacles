@@ -1,6 +1,7 @@
 /**
  *  Specs Engine: the Spectacles Saga game engine
- *  Copyright © 2024 Fat Cerberus
+ *  Copyright © 2012-2024 Where'd She Go? Productions
+ *  All rights reserved.
 **/
 
 import { Music, Prim, Scene, Task } from 'sphere-runtime';
@@ -14,7 +15,7 @@ class TitleScreen extends Task
 	{
 		super();
 
-		console.log(`initializing titlescreen`, `file: '${fileName}'`);
+		console.log(`initializing title screen`, `file: '${fileName}'`);
 
 		this.fileName = fileName;
 		this.start();

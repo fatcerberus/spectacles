@@ -1,13 +1,14 @@
 /**
  *  Specs Engine: the Spectacles Saga game engine
- *  Copyright © 2024 Fat Cerberus
+ *  Copyright © 2012-2024 Where'd She Go? Productions
+ *  All rights reserved.
 **/
 
 describe({
 	version: 2,
 	apiLevel: 4,
 	name: "Spectacles: Bruce's Story",
-	author: "Fat Cerberus",
+	author: "Where'd She Go? Productions",
 	summary: "Follow Scott Starcross in his quest to stop the Primus from destroying both worlds.",
 	resolution: '320x240',
 	main: 'scripts/main.js',

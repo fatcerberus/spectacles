@@ -1,6 +1,7 @@
 /**
  *  Specs Engine: the Spectacles Saga game engine
- *  Copyright © 2024 Fat Cerberus
+ *  Copyright © 2012-2024 Where'd She Go? Productions
+ *  All rights reserved.
 **/
 
 import { Prim, Scene } from 'sphere-runtime';
@@ -35,7 +36,7 @@ class MPGauge
 			drawTextEx(this.textFont, x + size - 21, y + size / 2 - 8, Math.round(this.reading), Color.White, 1, 'right');
 			drawTextEx(this.textFont, x + size - 20, y + size / 2 - 4, "MP", new Color(1, 0.75, 0), 1);
 		}
-		Surface.Screen.clipTo(0, 0, Surface.Screen.width, Surface.Screen.height);
+		Surface.Screen.unclip();
 	}
 
 	set(value)

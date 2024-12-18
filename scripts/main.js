@@ -1,6 +1,7 @@
 /**
  *  Specs Engine: the Spectacles Saga game engine
- *  Copyright © 2024 Fat Cerberus
+ *  Copyright © 2012-2024 Where'd She Go? Productions
+ *  All rights reserved.
 **/
 
 import { Console, Music, Scene } from 'sphere-runtime';
@@ -44,5 +45,5 @@ async function main()
 	//await new TitleScreen().run();
 	
 	const dayNight = new DayNightClock();
-	await TestHarness.run('rsb2');
+	await TestHarness.run('temple');
 }
