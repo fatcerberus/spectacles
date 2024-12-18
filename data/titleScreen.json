@@ -8,6 +8,6 @@
 	"titleFadeFrames": 120,
 	"splashScreens": [
 		{ "fileName": "logos/sphere.png", "holdFrames": 180 },
-		{ "fileName": "logos/spectaclesBS.png", "holdFrames": 180 }
+		{ "fileName": "logos/splashScreen.png", "holdFrames": 180 }
 	]
 }
